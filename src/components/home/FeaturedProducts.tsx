@@ -8,42 +8,42 @@ const mockProducts = [
     id: 1,
     title: "Modern Exhibition Stand",
     price: 149,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
     tags: ["Modern", "SKP", "3DS"],
   },
   {
     id: 2,
     title: "Corner Exhibition Booth",
     price: 199,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1483058712412-4245e9b90334?w=800&h=600&fit=crop",
     tags: ["Corner", "MAX", "PDF"],
   },
   {
     id: 3,
     title: "Island Exhibition Design",
     price: 249,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1496307653780-42ee777d4833?w=800&h=600&fit=crop",
     tags: ["Island", "SKP", "3DS"],
   },
   {
     id: 4,
     title: "Minimalist Display Stand",
     price: 129,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
     tags: ["Minimalist", "MAX", "PDF"],
   },
   {
     id: 5,
     title: "Interactive Booth Design",
     price: 299,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
     tags: ["Interactive", "SKP", "MAX"],
   },
   {
     id: 6,
     title: "Luxury Exhibition Display",
     price: 349,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop",
     tags: ["Luxury", "3DS", "PDF"],
   },
 ];
@@ -59,7 +59,7 @@ const FeaturedProducts = () => {
           </Link>
         </div>
         
-        <div className="product-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
           {mockProducts.map((product) => (
             <Card key={product.id} className="overflow-hidden transition-shadow hover:shadow-lg">
               <Link to={`/product/${product.id}`}>
