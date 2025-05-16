@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 const features = [
   {
     title: "Affordable Pricing",
-    description: "All design files available for just $10 - a fraction of the cost of custom designs."
+    description: "All design files available at an affordable price - a fraction of the cost of custom designs."
   },
   {
     title: "Multiple File Formats",

@@ -31,7 +31,7 @@ const AboutPage = () => {
             
             <h2 className="text-2xl font-semibold mt-8 mb-4">Our Approach</h2>
             <p>
-              Rather than letting these designs go to waste, I decided to offer them at an affordable price of $10 each.
+              Rather than letting these designs go to waste, I decided to offer them at an affordable price.
               This gives exhibition construction companies, other designers, and marketing teams access to 
               professional-quality designs at a fraction of the normal cost.
             </p>

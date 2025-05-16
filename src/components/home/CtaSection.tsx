@@ -10,12 +10,12 @@ const CtaSection = () => {
           Need Exhibition Stand Designs?
         </h2>
         <p className="text-lg mb-8 max-w-2xl mx-auto opacity-90">
-          Choose from our $10 ready-made designs or request a custom-designed exhibition 
+          Choose from our affordable ready-made designs or request a custom-designed exhibition 
           stand tailored to your specific requirements.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Button asChild size="lg" variant="secondary">
-            <Link to="/products">Browse $10 Designs</Link>
+            <Link to="/products">Browse Designs</Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white/10">
             <Link to="/contact">Request Custom Design</Link>

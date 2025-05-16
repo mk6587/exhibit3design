@@ -10,7 +10,7 @@ const HeroSection = () => {
           Affordable Exhibition Stand Designs
         </h1>
         <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto text-gray-700">
-          Get ready-to-use exhibition stand design files for just $10. Save time and money 
+          Get ready-to-use exhibition stand design files at an affordable price. Save time and money 
           by using our pre-designed stands that you can easily customize to your needs.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
