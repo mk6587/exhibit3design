@@ -4,28 +4,28 @@ import { Check } from "lucide-react";
 
 const features = [
   {
+    title: "Affordable Pricing",
+    description: "All design files available for just $10 - a fraction of the cost of custom designs."
+  },
+  {
     title: "Multiple File Formats",
-    description: "All designs available in SKP, 3DS, Max and PDF formats to fit your workflow."
+    description: "Download in SKP, 3DS, Max, and PDF formats to work with your preferred software."
   },
   {
-    title: "High Quality Renders",
-    description: "Professional quality rendering and realistic material settings included."
+    title: "Ready to Customize",
+    description: "Easily modify designs to match your specific requirements and client needs."
   },
   {
-    title: "Easy Customization",
-    description: "Well-organized layers and materials for quick and simple customization."
+    title: "Time-Saving Solution",
+    description: "Skip weeks of design work and start with a professional template instantly."
   },
   {
-    title: "Technical Documentation",
-    description: "Detailed specs and build instructions included with every design."
+    title: "Designer-Created",
+    description: "All designs created by an experienced exhibition stand designer with industry knowledge."
   },
   {
-    title: "Commercial License",
-    description: "Use our designs for your commercial exhibition projects."
-  },
-  {
-    title: "Support Included",
-    description: "Expert assistance available if you have questions about the files."
+    title: "Custom Design Services",
+    description: "Need something specific? We also offer affordable custom design services."
   }
 ];
 
@@ -34,10 +34,10 @@ const FeaturesSection = () => {
     <section className="py-16 px-4 featured-section">
       <div className="container mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className="text-3xl font-bold mb-4">Why Choose Our Design Files?</h2>
+          <h2 className="text-3xl font-bold mb-4">Why Use Our Design Files?</h2>
           <p className="text-muted-foreground">
-            Our exhibition stand designs give you everything you need to impress clients 
-            and create stunning exhibition experiences.
+            Get professional exhibition stand designs at a fraction of the cost, 
+            ready to customize for your next project.
           </p>
         </div>
         

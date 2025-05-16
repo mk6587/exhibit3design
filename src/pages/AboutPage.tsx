@@ -11,59 +11,54 @@ const AboutPage = () => {
           <div className="aspect-video bg-secondary mb-8 rounded-lg overflow-hidden">
             <img 
               src="/placeholder.svg" 
-              alt="ExhibitDesigns team" 
+              alt="Exhibition stand design" 
               className="w-full h-full object-cover" 
             />
           </div>
           
           <div className="prose max-w-none">
             <p className="lead text-lg mb-6">
-              ExhibitDesigns is a premium marketplace for high-quality exhibition stand design files, 
-              created by industry professionals for professionals.
+              ExhibitDesigns offers affordable exhibition stand design files created by an experienced designer 
+              with years of industry expertise.
             </p>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Our Mission</h2>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">Our Story</h2>
             <p>
-              Our mission is to provide exhibition designers, event companies, and marketing teams with 
-              access to professionally created exhibition stand designs that can be customized and 
-              implemented quickly, saving valuable time and resources.
+              As an exhibition stand designer, I've created hundreds of detailed stand designs throughout my career.
+              Many of these designs were never used, despite the hours of work put into them. I realized these 
+              unused designs could help other professionals in the industry who need quality solutions quickly and affordably.
             </p>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Our Team</h2>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">Our Approach</h2>
             <p>
-              Founded in 2018 by a group of exhibition design professionals with over 30 years of combined 
-              industry experience, ExhibitDesigns brings together expertise in architecture, 3D modeling, 
-              exhibition planning, and digital commerce.
+              Rather than letting these designs go to waste, I decided to offer them at an affordable price of $10 each.
+              This gives exhibition construction companies, other designers, and marketing teams access to 
+              professional-quality designs at a fraction of the normal cost.
             </p>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Quality Assurance</h2>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">Who Can Benefit</h2>
             <p>
-              Every design file on our platform undergoes rigorous quality checks to ensure:
-            </p>
-            <ul className="list-disc pl-6 mb-6">
-              <li>Accurate modeling and realistic rendering</li>
-              <li>Optimized file sizes without compromising detail</li>
-              <li>Compatibility with major 3D software platforms</li>
-              <li>Structural viability and practical implementation</li>
-              <li>Comprehensive documentation</li>
-            </ul>
-            
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Our Values</h2>
-            <p>
-              At ExhibitDesigns, we believe in:
+              Our design files are perfect for:
             </p>
             <ul className="list-disc pl-6 mb-6">
-              <li><strong>Quality:</strong> Providing the highest standard of design files</li>
-              <li><strong>Innovation:</strong> Constantly pushing the boundaries of exhibition design</li>
-              <li><strong>Accessibility:</strong> Making professional designs available to businesses of all sizes</li>
-              <li><strong>Support:</strong> Offering excellent customer service and technical assistance</li>
+              <li>Exhibition stand builders looking for ready-to-implement designs</li>
+              <li>Exhibition designers who need a starting point to save time</li>
+              <li>Marketing teams planning trade show appearances on a budget</li>
+              <li>Companies who need professional exhibition stands without the high design costs</li>
             </ul>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Join Our Community</h2>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">Custom Design Services</h2>
             <p>
-              Whether you're an exhibition industry professional or a business looking to make an impact at your 
-              next trade show, we invite you to join our growing community. Browse our collection of designs, 
-              connect with us on social media, or reach out directly with any questions.
+              Need something specific that isn't in our library? I also offer custom exhibition stand design services.
+              With my industry experience, I can create tailored designs that perfectly match your exhibition needs
+              and brand requirements.
+            </p>
+            
+            <h2 className="text-2xl font-semibold mt-8 mb-4">How It Works</h2>
+            <p>
+              Simply browse our collection of designs, purchase the one that best fits your needs, and download
+              the files immediately. You'll receive multiple file formats (SKP, 3DS, MAX, PDF) that you can 
+              customize to your specifications. It's that easy!
             </p>
           </div>
         </div>

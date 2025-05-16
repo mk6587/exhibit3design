@@ -23,13 +23,13 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
           <Link to="/products" className="text-sm font-medium hover:text-primary">
-            Browse Designs
-          </Link>
-          <Link to="/about" className="text-sm font-medium hover:text-primary">
-            About Us
+            $10 Designs
           </Link>
           <Link to="/contact" className="text-sm font-medium hover:text-primary">
-            Contact
+            Custom Services
+          </Link>
+          <Link to="/about" className="text-sm font-medium hover:text-primary">
+            About
           </Link>
           <Link to="/faq" className="text-sm font-medium hover:text-primary">
             FAQ
@@ -76,13 +76,13 @@ const Header = () => {
       )}>
         <nav className="container mx-auto px-4 py-4 flex flex-col space-y-3">
           <Link to="/products" className="p-2 hover:bg-muted rounded-md">
-            Browse Designs
-          </Link>
-          <Link to="/about" className="p-2 hover:bg-muted rounded-md">
-            About Us
+            $10 Designs
           </Link>
           <Link to="/contact" className="p-2 hover:bg-muted rounded-md">
-            Contact
+            Custom Services
+          </Link>
+          <Link to="/about" className="p-2 hover:bg-muted rounded-md">
+            About
           </Link>
           <Link to="/faq" className="p-2 hover:bg-muted rounded-md">
             FAQ
@@ -102,7 +102,7 @@ const Header = () => {
           <form className="flex items-center">
             <Input 
               type="search" 
-              placeholder="Search for designs..." 
+              placeholder="Search designs..." 
               className="flex-1" 
             />
             <Button type="submit" className="ml-2">
