@@ -47,10 +47,10 @@ const productData = {
     </ul>
   `,
   images: [
-    "/placeholder.svg",
-    "/placeholder.svg",
-    "/placeholder.svg",
-    "/placeholder.svg"
+    "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop"
   ],
   tags: ["Modern", "SKP", "3DS", "MAX", "PDF"],
   fileFormats: ["SKP", "3DS", "MAX", "PDF"],
