@@ -7,7 +7,6 @@ import AddToCartButton from "@/components/product/AddToCartButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import ImageHover from "@/components/ui/image-hover";
 
 // Mock product data
 const productData = {
@@ -53,8 +52,6 @@ const productData = {
     "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
     "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop"
   ],
-  sketchImage: "/lovable-uploads/7b54c3cb-029b-4274-b03c-8330f8a606fa.png",
-  renderedImage: "/lovable-uploads/af573dc2-1939-40c7-b754-7a6fbcd70d9e.png",
   tags: ["Modern", "SKP", "3DS", "MAX", "PDF"],
   fileFormats: ["SKP", "3DS", "MAX", "PDF"],
   fileSize: "258 MB",
@@ -87,21 +84,6 @@ const ProductDetailPage = () => {
           {/* Product Gallery */}
           <div>
             <ProductGallery images={product.images} title={product.title} />
-            
-            {/* Image Hover Effect */}
-            <div className="mt-8">
-              <h3 className="font-medium mb-4">Design Preview:</h3>
-              <ImageHover 
-                sketchSrc={product.sketchImage} 
-                renderedSrc={product.renderedImage} 
-                alt={product.title}
-                className="w-full aspect-square rounded-lg border border-border" 
-                gridSize={20}
-              />
-              <p className="text-sm text-muted-foreground mt-2">
-                Hover over the image to see the rendered design
-              </p>
-            </div>
           </div>
           
           {/* Product Information */}
@@ -157,7 +139,7 @@ const ProductDetailPage = () => {
             <TabsTrigger value="license">License</TabsTrigger>
           </TabsList>
           
-          <div className="mt-6 p-6 border rounded-lg bg-card">
+          <div className="mt-6 p-6 border rounded-lg">
             <TabsContent value="overview">
               <div dangerouslySetInnerHTML={{ __html: product.longDescription }} />
             </TabsContent>
