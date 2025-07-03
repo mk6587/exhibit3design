@@ -17,7 +17,7 @@ const Header = () => {
     <header className="border-b sticky top-0 bg-background z-40">
       <div className="container mx-auto px-4 flex justify-between items-center h-16">
         <Link to="/" className="font-bold text-xl text-primary">
-          ExhibitDesigns
+          Exhibit3Design
         </Link>
         
         {/* Desktop Navigation */}
