@@ -98,7 +98,7 @@ const AdminProductEditPage = () => {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-4">
               <Button 
-                onClick={() => navigate('/admin')} 
+                onClick={() => navigate('/admin/dashboard')} 
                 variant="outline"
                 size="sm"
               >
