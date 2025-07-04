@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
@@ -222,7 +223,10 @@ const AdminProductEditPage = () => {
                         onChange={handleImageUpload}
                         className="flex-1"
                       />
-                      <Button variant="outline" onClick={() => document.querySelector('input[type="file"]')?.click()}>
+                      <Button variant="outline" onClick={() => {
+                        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+                        fileInput?.click();
+                      }}>
                         <Upload className="mr-2 h-4 w-4" />
                         Upload
                       </Button>
