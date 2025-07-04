@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import { Chrome } from "lucide-react";
 
 interface AuthFormProps {
   type: "login" | "register" | "reset";
@@ -98,6 +98,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
                 className="w-full"
                 onClick={handleGoogleAuth}
               >
+                <Chrome className="mr-2 h-4 w-4" />
                 Google
               </Button>
             </>
