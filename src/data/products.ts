@@ -1,4 +1,3 @@
-
 export interface Product {
   id: number;
   title: string;
@@ -191,7 +190,7 @@ export const products: Product[] = [
     id: 6,
     title: "Luxury Brand Pavilion",
     price: 399,
-    image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
     tags: ["Luxury", "Premium", "Brand", "MAX", "3DS"],
     description: "Elegant luxury pavilion design for high-end brands and premium products.",
     longDescription: `
@@ -217,8 +216,8 @@ export const products: Product[] = [
       </ul>
     `,
     images: [
-      "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop"
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop"
     ],
     fileFormats: ["MAX", "3DS", "SKP", "PDF"],
     fileSize: "892 MB"
