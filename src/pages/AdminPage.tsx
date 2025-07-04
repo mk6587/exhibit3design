@@ -5,28 +5,7 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogOut, Edit, Eye } from 'lucide-react';
-
-// Mock products data (same as in ProductsPage)
-const products = [
-  {
-    id: 1,
-    title: "Modern Exhibition Stand",
-    price: 149,
-    image: "/placeholder.svg",
-  },
-  {
-    id: 2,
-    title: "Corner Exhibition Booth",
-    price: 199,
-    image: "/placeholder.svg",
-  },
-  {
-    id: 3,
-    title: "Island Exhibition Design",
-    price: 249,
-    image: "/placeholder.svg",
-  },
-];
+import { products } from '@/data/products';
 
 const AdminPage = () => {
   const { isAuthenticated, logout } = useAdmin();
@@ -64,7 +43,7 @@ const AdminPage = () => {
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Product Management</h2>
-          <p className="text-gray-600">Manage your exhibition stand designs and content</p>
+          <p className="text-gray-600">Manage your exhibition stand designs and content ({products.length} products total)</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

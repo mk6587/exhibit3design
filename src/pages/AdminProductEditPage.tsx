@@ -10,55 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-// Mock product data (in a real app, this would come from a database)
-const getProductData = (id: string) => ({
-  id: parseInt(id),
-  title: "Modern Exhibition Stand Design",
-  price: 149,
-  description: "A modern exhibition stand design perfect for showcasing your products at trade shows and exhibitions. This design features a clean, contemporary aesthetic with ample display space.",
-  longDescription: `
-    <p>This modern exhibition stand design is perfect for businesses looking to make an impact at trade shows and exhibitions. The design features a clean, contemporary aesthetic with ample display space.</p>
-    
-    <p>Key features include:</p>
-    <ul>
-      <li>Open layout with multiple product display areas</li>
-      <li>Integrated lighting system</li>
-      <li>Reception counter and meeting space</li>
-      <li>Storage area for marketing materials and personal items</li>
-      <li>Customizable graphics panels</li>
-    </ul>
-    
-    <p>The design is versatile and can be adapted to various exhibition spaces, making it an excellent investment for businesses that regularly attend trade shows.</p>
-  `,
-  specifications: `
-    <h4>Technical Specifications</h4>
-    <ul>
-      <li>Dimensions: 6m x 6m (customizable)</li>
-      <li>Height: 3.5m</li>
-      <li>Materials: Aluminum structure, MDF panels, glass shelving</li>
-      <li>Required floor space: 36m²</li>
-      <li>Setup time: Approximately 8 hours</li>
-    </ul>
-    
-    <h4>File Formats</h4>
-    <ul>
-      <li>SketchUp (.skp) - SketchUp 2020 compatible</li>
-      <li>3DS Max (.max) - 3DS Max 2019 compatible</li>
-      <li>3D Studio (.3ds) - Universal 3D format</li>
-      <li>PDF - Technical drawings and specifications</li>
-    </ul>
-  `,
-  images: [
-    "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop"
-  ],
-  tags: ["Modern", "SKP", "3DS", "MAX", "PDF"],
-  fileFormats: ["SKP", "3DS", "MAX", "PDF"],
-  fileSize: "258 MB"
-});
+import { products } from '@/data/products';
 
 const AdminProductEditPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,7 +18,8 @@ const AdminProductEditPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [product, setProduct] = useState(getProductData(id!));
+  const originalProduct = products.find(p => p.id === parseInt(id!));
+  const [product, setProduct] = useState(originalProduct || products[0]);
   const [imageUrls, setImageUrls] = useState(product.images.join('\n'));
 
   useEffect(() => {
