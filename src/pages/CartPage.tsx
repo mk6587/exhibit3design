@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -6,21 +5,21 @@ import CartItem, { CartItemType } from "@/components/cart/CartItem";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-// Mock cart items
+// Mock cart items with real product images
 const initialCartItems: CartItemType[] = [
   {
     id: 1,
     title: "Modern Exhibition Stand",
     price: 149,
     quantity: 1,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
   },
   {
     id: 3,
     title: "Island Exhibition Design",
     price: 249,
     quantity: 1,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
   },
 ];
 
