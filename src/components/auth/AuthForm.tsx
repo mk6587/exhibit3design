@@ -13,13 +13,11 @@ interface AuthFormProps {
 const AuthForm = ({ type }: AuthFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle auth logic here
-    console.log({ type, email, password, name, confirmPassword });
+    console.log({ type, email, password });
   };
   
   const handleGoogleAuth = () => {
@@ -37,24 +35,12 @@ const AuthForm = ({ type }: AuthFormProps) => {
         </CardTitle>
         <CardDescription>
           {type === "login" && "Enter your credentials to access your account"}
-          {type === "register" && "Fill in your details to create a new account"}
+          {type === "register" && "Enter your email and password to create a new account"}
           {type === "reset" && "Enter your email to receive a password reset link"}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {type === "register" && (
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input 
-                id="name" 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-                required 
-              />
-            </div>
-          )}
-          
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input 
@@ -74,19 +60,6 @@ const AuthForm = ({ type }: AuthFormProps) => {
                 type="password" 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
-                required 
-              />
-            </div>
-          )}
-          
-          {type === "register" && (
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm Password</Label>
-              <Input 
-                id="confirm-password" 
-                type="password" 
-                value={confirmPassword} 
-                onChange={(e) => setConfirmPassword(e.target.value)} 
                 required 
               />
             </div>
