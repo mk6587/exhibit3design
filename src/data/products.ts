@@ -10,6 +10,7 @@ export interface Product {
   images: string[];
   fileFormats: string[];
   fileSize: string;
+  featured?: boolean;
 }
 
 export const products: Product[] = [
@@ -47,7 +48,8 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop"
     ],
     fileFormats: ["SKP", "3DS", "MAX", "PDF"],
-    fileSize: "258 MB"
+    fileSize: "258 MB",
+    featured: true
   },
   {
     id: 2,
@@ -81,7 +83,8 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop"
     ],
     fileFormats: ["SKP", "MAX", "PDF"],
-    fileSize: "312 MB"
+    fileSize: "312 MB",
+    featured: true
   },
   {
     id: 3,
@@ -115,7 +118,8 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop"
     ],
     fileFormats: ["3DS", "MAX", "PDF"],
-    fileSize: "445 MB"
+    fileSize: "445 MB",
+    featured: true
   },
   {
     id: 4,

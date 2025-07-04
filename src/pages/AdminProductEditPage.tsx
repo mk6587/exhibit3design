@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
@@ -8,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Save, Eye, Upload, Trash2, Plus } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { ArrowLeft, Save, Eye, Upload, Trash2, Plus, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { products } from '@/data/products';
 import RichTextEditor from '@/components/ui/rich-text-editor';
@@ -177,6 +177,22 @@ const AdminProductEditPage = () => {
                       id="file-size"
                       value={product.fileSize}
                       onChange={(e) => setProduct({...product, fileSize: e.target.value})}
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2 p-4 border rounded-lg bg-amber-50">
+                    <Star className="h-5 w-5 text-amber-500" />
+                    <div className="flex-1">
+                      <Label htmlFor="featured" className="text-sm font-medium">
+                        Featured Product
+                      </Label>
+                      <p className="text-sm text-gray-600">
+                        Featured products are displayed on the home page
+                      </p>
+                    </div>
+                    <Switch
+                      id="featured"
+                      checked={product.featured || false}
+                      onCheckedChange={(checked) => setProduct({...product, featured: checked})}
                     />
                   </div>
                 </div>
