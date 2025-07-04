@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import ProductCard, { Product } from "@/components/product/ProductCard";
@@ -7,73 +6,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { products } from "@/data/products";
 
-// Mock products data
-const allProducts: Product[] = [
-  {
-    id: 1,
-    title: "Modern Exhibition Stand",
-    price: 149,
-    image: "/placeholder.svg",
-    tags: ["Modern", "SKP", "3DS"],
-  },
-  {
-    id: 2,
-    title: "Corner Exhibition Booth",
-    price: 199,
-    image: "/placeholder.svg",
-    tags: ["Corner", "MAX", "PDF"],
-  },
-  {
-    id: 3,
-    title: "Island Exhibition Design",
-    price: 249,
-    image: "/placeholder.svg",
-    tags: ["Island", "SKP", "3DS"],
-  },
-  {
-    id: 4,
-    title: "Minimalist Display Stand",
-    price: 129,
-    image: "/placeholder.svg",
-    tags: ["Minimalist", "MAX", "PDF"],
-  },
-  {
-    id: 5,
-    title: "Interactive Booth Design",
-    price: 299,
-    image: "/placeholder.svg",
-    tags: ["Interactive", "SKP", "MAX"],
-  },
-  {
-    id: 6,
-    title: "Luxury Exhibition Display",
-    price: 349,
-    image: "/placeholder.svg",
-    tags: ["Luxury", "3DS", "PDF"],
-  },
-  {
-    id: 7,
-    title: "Compact Exhibition Stand",
-    price: 129,
-    image: "/placeholder.svg",
-    tags: ["Compact", "SKP", "PDF"],
-  },
-  {
-    id: 8,
-    title: "Modular Exhibition System",
-    price: 279,
-    image: "/placeholder.svg",
-    tags: ["Modular", "MAX", "3DS"],
-  },
-  {
-    id: 9,
-    title: "Open Space Exhibition Design",
-    price: 229,
-    image: "/placeholder.svg",
-    tags: ["Open Space", "SKP", "MAX"],
-  },
-];
+// Convert products to match ProductCard interface
+const allProducts: Product[] = products.map(product => ({
+  id: product.id,
+  title: product.title,
+  price: product.price,
+  image: product.image,
+  tags: product.tags
+}));
 
 // Get unique tags from products
 const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags)));
