@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
@@ -11,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { products } from '@/data/products';
+import RichTextEditor from '@/components/ui/rich-text-editor';
 
 const AdminProductEditPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -146,32 +146,30 @@ const AdminProductEditPage = () => {
 
               <TabsContent value="description" className="space-y-4">
                 <div>
-                  <Label htmlFor="long-description">Detailed Description (HTML)</Label>
-                  <Textarea
-                    id="long-description"
+                  <Label htmlFor="long-description">Detailed Description</Label>
+                  <RichTextEditor
                     value={product.longDescription}
-                    onChange={(e) => setProduct({...product, longDescription: e.target.value})}
-                    rows={15}
-                    className="font-mono text-sm"
+                    onChange={(value) => setProduct({...product, longDescription: value})}
+                    placeholder="Enter detailed product description..."
+                    className="mt-2"
                   />
                   <p className="text-sm text-gray-600 mt-2">
-                    You can use HTML tags like &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;h4&gt;, etc.
+                    Use the rich text editor to format your product description with headings, lists, and styling.
                   </p>
                 </div>
               </TabsContent>
 
               <TabsContent value="specifications" className="space-y-4">
                 <div>
-                  <Label htmlFor="specifications">Specifications (HTML)</Label>
-                  <Textarea
-                    id="specifications"
+                  <Label htmlFor="specifications">Specifications</Label>
+                  <RichTextEditor
                     value={product.specifications}
-                    onChange={(e) => setProduct({...product, specifications: e.target.value})}
-                    rows={15}
-                    className="font-mono text-sm"
+                    onChange={(value) => setProduct({...product, specifications: value})}
+                    placeholder="Enter product specifications..."
+                    className="mt-2"
                   />
                   <p className="text-sm text-gray-600 mt-2">
-                    You can use HTML tags like &lt;h4&gt;, &lt;ul&gt;, &lt;li&gt;, etc.
+                    Use the rich text editor to format your specifications with headings and lists.
                   </p>
                 </div>
               </TabsContent>
