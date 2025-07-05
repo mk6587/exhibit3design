@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -174,9 +175,8 @@ const ProductDetailPage = () => {
           <div className="mt-6 p-6 border rounded-lg">
             <TabsContent value="specifications">
               <div className="space-y-8">
-                {/* Description Overview */}
+                {/* Description Overview - without title */}
                 <div>
-                  <h3 className="font-bold mb-4">Description</h3>
                   <div dangerouslySetInnerHTML={{ __html: product.longDescription }} />
                 </div>
                 
