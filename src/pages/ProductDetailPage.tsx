@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -156,12 +155,6 @@ const ProductDetailPage = () => {
             </div>
             
             <AddToCartButton productId={product.id} productName={product.title} />
-            
-            <div className="mt-4">
-              <Button variant="outline" className="w-full">
-                Preview Files
-              </Button>
-            </div>
           </div>
         </div>
         
