@@ -16,7 +16,8 @@ const ProductGallery = ({ images, title }: ProductGalleryProps) => {
   };
 
   const getImageSrc = (image: string, index: number) => {
-    if (imageErrors[index]) {
+    if (imageErrors[index] || image.startsWith('blob:')) {
+      // Use fallback for broken images or blob URLs
       return "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
     }
     return image;

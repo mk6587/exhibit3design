@@ -24,6 +24,12 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
   const handleMultipleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
+      toast({
+        title: "File Upload Notice",
+        description: "For persistent images, please use image URLs instead of file uploads. File uploads create temporary links that break after refresh.",
+        variant: "destructive",
+      });
+      
       const newImageUrls: string[] = [];
       
       Array.from(files).forEach(file => {
@@ -32,11 +38,6 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
       });
       
       onImageUrlsChange([...imageUrls, ...newImageUrls]);
-      
-      toast({
-        title: "Images Uploaded",
-        description: `${files.length} image(s) have been added to the gallery.`,
-      });
       
       event.target.value = '';
     }
@@ -120,7 +121,8 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
                   alt={`Product image ${index + 1}`}
                   className="w-full h-32 object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/placeholder.svg';
+                    // Fallback to a stock image if the URL fails
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop';
                   }}
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
