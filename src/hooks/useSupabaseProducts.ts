@@ -67,7 +67,7 @@ const fallbackProducts: Product[] = [
         hangingBanner: true
       }
     }),
-    images: ["https://images.unsplash.com/photo-1515378791036-0648a814c963?w=800&h=600&fit=crop"],
+    images: ["https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&h=600&fit=crop"],
     tags: ["Corporate", "Professional", "Conference"],
     file_size: "52MB",
     featured: true
