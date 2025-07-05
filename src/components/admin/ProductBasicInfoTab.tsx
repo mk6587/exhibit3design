@@ -6,19 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Star } from 'lucide-react';
 import AIContentGenerator from './AIContentGenerator';
-
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  longDescription: string;
-  specifications: string;
-  images: string[];
-  tags: string[];
-  fileSize: string;
-  featured?: boolean;
-}
+import { Product } from '@/types/product';
 
 interface ProductBasicInfoTabProps {
   product: Product;
@@ -78,8 +66,8 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
           <Label htmlFor="file-size">File Size</Label>
           <Input
             id="file-size"
-            value={product.fileSize}
-            onChange={(e) => onProductChange({...product, fileSize: e.target.value})}
+            value={product.file_size}
+            onChange={(e) => onProductChange({...product, file_size: e.target.value})}
           />
         </div>
         <div className="flex items-center space-x-2 p-4 border rounded-lg bg-amber-50">

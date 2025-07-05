@@ -3,19 +3,7 @@ import React from 'react';
 import { Label } from '@/components/ui/label';
 import RichTextEditor from '@/components/ui/rich-text-editor';
 import AIContentGenerator from './AIContentGenerator';
-
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  longDescription: string;
-  specifications: string;
-  images: string[];
-  tags: string[];
-  fileSize: string;
-  featured?: boolean;
-}
+import { Product } from '@/types/product';
 
 interface ProductDescriptionTabProps {
   product: Product;
@@ -33,14 +21,14 @@ const ProductDescriptionTab: React.FC<ProductDescriptionTabProps> = ({
       <AIContentGenerator
         contentType="description"
         onContentGenerated={(content) => onAIContentGenerated(content, 'longDescription')}
-        currentContent={product.longDescription}
+        currentContent={product.long_description}
       />
       
       <div>
         <Label htmlFor="long-description">Detailed Description</Label>
         <RichTextEditor
-          value={product.longDescription}
-          onChange={(value) => onProductChange({...product, longDescription: value})}
+          value={product.long_description}
+          onChange={(value) => onProductChange({...product, long_description: value})}
           placeholder="Enter detailed product description..."
           className="mt-2"
         />

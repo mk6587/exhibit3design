@@ -240,7 +240,7 @@ const ProductDetailPage = () => {
                                   <HardDrive className="h-4 w-4 mr-2 text-purple-600" />
                                   <span className="font-medium">File Size</span>
                                 </div>
-                                <span className="text-sm text-muted-foreground">{product.fileSize}</span>
+                                <span className="text-sm text-muted-foreground">{product.file_size}</span>
                               </div>
                               
                               <div className="flex items-center justify-between p-3 border rounded-lg">
