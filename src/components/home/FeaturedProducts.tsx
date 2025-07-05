@@ -3,12 +3,40 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { useProducts } from "@/contexts/ProductsContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const FeaturedProducts = () => {
-  const { products } = useProducts();
+  const { products, loading } = useProducts();
   
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
+  
+  if (loading) {
+    return (
+      <section className="py-16 px-4">
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold mb-8">Featured Designs</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="overflow-hidden">
+                <Skeleton className="aspect-[4/3] w-full" />
+                <CardContent className="pt-4">
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <div className="flex gap-1 mb-2">
+                    <Skeleton className="h-5 w-12" />
+                    <Skeleton className="h-5 w-12" />
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Skeleton className="h-5 w-16" />
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
   
   return (
     <section className="py-16 px-4">

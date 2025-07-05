@@ -1,12 +1,13 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { products as initialProducts } from '@/data/products';
-import { Product } from '@/types/product';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { useSupabaseProducts, Product } from '@/hooks/useSupabaseProducts';
 
 interface ProductsContextType {
   products: Product[];
-  updateProduct: (updatedProduct: Product) => void;
+  loading: boolean;
+  updateProduct: (updatedProduct: Product) => Promise<void>;
   getProductById: (id: number) => Product | undefined;
+  refetch: () => Promise<void>;
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
@@ -24,22 +25,10 @@ interface ProductsProviderProps {
 }
 
 export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-
-  const updateProduct = (updatedProduct: Product) => {
-    setProducts(prev => 
-      prev.map(product => 
-        product.id === updatedProduct.id ? updatedProduct : product
-      )
-    );
-  };
-
-  const getProductById = (id: number) => {
-    return products.find(product => product.id === id);
-  };
+  const supabaseProducts = useSupabaseProducts();
 
   return (
-    <ProductsContext.Provider value={{ products, updateProduct, getProductById }}>
+    <ProductsContext.Provider value={supabaseProducts}>
       {children}
     </ProductsContext.Provider>
   );

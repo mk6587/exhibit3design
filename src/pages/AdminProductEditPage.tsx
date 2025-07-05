@@ -17,7 +17,7 @@ import ProductImagesTab from '@/components/admin/ProductImagesTab';
 const AdminProductEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const { isAuthenticated } = useAdmin();
-  const { getProductById, updateProduct } = useProducts();
+  const { getProductById, updateProduct, loading } = useProducts();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -27,15 +27,16 @@ const AdminProductEditPage = () => {
     title: '',
     price: 0,
     description: '',
-    longDescription: '',
+    long_description: '',
     specifications: '',
     images: [],
     tags: [],
-    fileSize: '',
+    file_size: '',
     featured: false
   });
   const [imageUrls, setImageUrls] = useState(product.images);
   const [specificImageUrl, setSpecificImageUrl] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -50,21 +51,23 @@ const AdminProductEditPage = () => {
     }
   }, [originalProduct]);
 
-  const handleSave = () => {
-    const updatedProduct = {
-      ...product,
-      images: imageUrls
-    };
-    
-    updateProduct(updatedProduct);
-    setProduct(updatedProduct);
-    
-    console.log('Saving product:', updatedProduct);
-    
-    toast({
-      title: "Changes Saved",
-      description: "Product content has been updated successfully.",
-    });
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const updatedProduct = {
+        ...product,
+        images: imageUrls
+      };
+      
+      await updateProduct(updatedProduct);
+      setProduct(updatedProduct);
+      
+      console.log('Saving product:', updatedProduct);
+    } catch (error) {
+      console.error('Error saving product:', error);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handlePreview = () => {
@@ -75,13 +78,13 @@ const AdminProductEditPage = () => {
     if (field === 'description') {
       setProduct({...product, description: content});
     } else if (field === 'longDescription') {
-      setProduct({...product, longDescription: content});
+      setProduct({...product, long_description: content});
     } else if (field === 'specifications') {
       setProduct({...product, specifications: content});
     }
   };
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || loading) {
     return null;
   }
 
@@ -106,9 +109,9 @@ const AdminProductEditPage = () => {
                 <Eye className="mr-2 h-4 w-4" />
                 Preview
               </Button>
-              <Button onClick={handleSave}>
+              <Button onClick={handleSave} disabled={saving}>
                 <Save className="mr-2 h-4 w-4" />
-                Save Changes
+                {saving ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </div>

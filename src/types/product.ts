@@ -4,12 +4,14 @@ export interface Product {
   title: string;
   price: number;
   description: string;
-  longDescription: string;
-  specifications: string; // JSON string containing structured specifications
+  long_description: string;
+  specifications: string;
   images: string[];
   tags: string[];
-  fileSize: string;
-  featured?: boolean;
+  file_size: string;
+  featured: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface StandSpecifications {

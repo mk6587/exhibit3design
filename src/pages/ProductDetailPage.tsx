@@ -8,6 +8,7 @@ import { useProducts } from "@/contexts/ProductsContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { 
   Table, 
   TableBody, 
@@ -20,7 +21,7 @@ import { Check, X, FileText, Calendar, HardDrive, Download } from "lucide-react"
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
-  const { getProductById } = useProducts();
+  const { getProductById, loading } = useProducts();
   const [activeTab, setActiveTab] = useState("specifications");
   
   const product = getProductById(parseInt(id!));
@@ -51,6 +52,27 @@ const ProductDetailPage = () => {
     meetingRoom: "Meeting Room",
     hangingBanner: "Hanging Banner",
   };
+  
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            <Skeleton className="aspect-[4/3] w-full" />
+            <div className="space-y-4">
+              <Skeleton className="h-8 w-3/4" />
+              <div className="flex gap-2">
+                <Skeleton className="h-6 w-16" />
+                <Skeleton className="h-6 w-16" />
+              </div>
+              <Skeleton className="h-8 w-24" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
   
   if (!product) {
     return (
@@ -102,7 +124,7 @@ const ProductDetailPage = () => {
             
             <div className="mb-6">
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <div>File Size: {product.fileSize}</div>
+                <div>File Size: {product.file_size}</div>
               </div>
             </div>
             
@@ -122,7 +144,7 @@ const ProductDetailPage = () => {
               <div className="space-y-8">
                 {/* Description Overview */}
                 <div>
-                  <div dangerouslySetInnerHTML={{ __html: product.longDescription }} />
+                  <div dangerouslySetInnerHTML={{ __html: product.long_description }} />
                 </div>
                 
                 {/* Specifications */}
