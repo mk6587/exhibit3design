@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -7,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   Table, 
   TableBody, 
@@ -167,140 +168,155 @@ const ProductDetailPage = () => {
         
         {/* Product Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
-          <TabsList className="grid grid-cols-3 w-full md:w-fit">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="specifications">Specifications</TabsTrigger>
+          <TabsList className="grid grid-cols-2 w-full md:w-fit">
+            <TabsTrigger value="overview">Overview & Specifications</TabsTrigger>
             <TabsTrigger value="license">License</TabsTrigger>
           </TabsList>
           
           <div className="mt-6 p-6 border rounded-lg">
             <TabsContent value="overview">
-              <div dangerouslySetInnerHTML={{ __html: product.longDescription }} />
-            </TabsContent>
-            
-            <TabsContent value="specifications">
-              <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Physical Specifications</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableBody>
-                        <TableRow>
-                          <TableHead className="w-1/3 font-medium">Dimensions</TableHead>
-                          <TableCell>{specifications.dimensions || 'Not specified'}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableHead className="font-medium">Height</TableHead>
-                          <TableCell>{specifications.height || 'Not specified'}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableHead className="font-medium">Layout</TableHead>
-                          <TableCell>{specifications.layout || 'Not specified'}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableHead className="font-medium">Lighting</TableHead>
-                          <TableCell>{specifications.lighting || 'Not specified'}</TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
+              <div className="space-y-8">
+                {/* Description Overview */}
+                <div>
+                  <h3 className="font-bold mb-4">Description</h3>
+                  <div dangerouslySetInnerHTML={{ __html: product.longDescription }} />
+                </div>
+                
+                {/* Description Text Area */}
+                <div>
+                  <h3 className="font-bold mb-4">Additional Notes</h3>
+                  <Textarea
+                    placeholder="Add your custom description or notes about this product..."
+                    className="min-h-[120px]"
+                  />
+                </div>
+                
+                {/* Specifications */}
+                <div className="space-y-6">
+                  <h3 className="font-bold text-xl">Specifications</h3>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Physical Specifications</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableBody>
+                          <TableRow>
+                            <TableHead className="w-1/3 font-medium">Dimensions</TableHead>
+                            <TableCell>{specifications.dimensions || 'Not specified'}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableHead className="font-medium">Height</TableHead>
+                            <TableCell>{specifications.height || 'Not specified'}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableHead className="font-medium">Layout</TableHead>
+                            <TableCell>{specifications.layout || 'Not specified'}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableHead className="font-medium">Lighting</TableHead>
+                            <TableCell>{specifications.lighting || 'Not specified'}</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Stand Specifications</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {Object.entries(facilityLabels).map(([key, label]) => (
-                        <div key={key} className="flex items-center justify-between p-3 border rounded-lg">
-                          <span className="font-medium">{label}</span>
-                          <div className="flex items-center">
-                            {specifications.specifications?.[key] ? (
-                              <div className="flex items-center text-green-600">
-                                <Check className="h-4 w-4 mr-1" />
-                                <span className="text-sm">Included</span>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Stand Specifications</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {Object.entries(facilityLabels).map(([key, label]) => (
+                          <div key={key} className="flex items-center justify-between p-3 border rounded-lg">
+                            <span className="font-medium">{label}</span>
+                            <div className="flex items-center">
+                              {specifications.specifications?.[key] ? (
+                                <div className="flex items-center text-green-600">
+                                  <Check className="h-4 w-4 mr-1" />
+                                  <span className="text-sm">Included</span>
+                                </div>
+                              ) : (
+                                <div className="flex items-center text-gray-400">
+                                  <X className="h-4 w-4 mr-1" />
+                                  <span className="text-sm">Not included</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>File Formats & Technical Details</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        <div>
+                          <h4 className="font-semibold mb-3">File Formats Included</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {product.fileFormats.map((format) => (
+                              <div key={format} className="flex items-center justify-between p-3 border rounded-lg">
+                                <div className="flex items-center">
+                                  <FileText className="h-4 w-4 mr-2 text-blue-600" />
+                                  <span className="font-medium">{format}</span>
+                                </div>
+                                <div className="flex items-center text-green-600">
+                                  <Check className="h-4 w-4 mr-1" />
+                                  <span className="text-sm">Included</span>
+                                </div>
                               </div>
-                            ) : (
-                              <div className="flex items-center text-gray-400">
-                                <X className="h-4 w-4 mr-1" />
-                                <span className="text-sm">Not included</span>
-                              </div>
-                            )}
+                            ))}
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>File Formats & Technical Details</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      <div>
-                        <h4 className="font-semibold mb-3">File Formats Included</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {product.fileFormats.map((format) => (
-                            <div key={format} className="flex items-center justify-between p-3 border rounded-lg">
+                        
+                        <div>
+                          <h4 className="font-semibold mb-3">Technical Information</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="flex items-center justify-between p-3 border rounded-lg">
                               <div className="flex items-center">
-                                <FileText className="h-4 w-4 mr-2 text-blue-600" />
-                                <span className="font-medium">{format}</span>
+                                <HardDrive className="h-4 w-4 mr-2 text-purple-600" />
+                                <span className="font-medium">File Size</span>
                               </div>
-                              <div className="flex items-center text-green-600">
-                                <Check className="h-4 w-4 mr-1" />
-                                <span className="text-sm">Included</span>
+                              <span className="text-sm text-muted-foreground">{product.fileSize}</span>
+                            </div>
+                            
+                            <div className="flex items-center justify-between p-3 border rounded-lg">
+                              <div className="flex items-center">
+                                <Calendar className="h-4 w-4 mr-2 text-orange-600" />
+                                <span className="font-medium">Published</span>
                               </div>
+                              <span className="text-sm text-muted-foreground">
+                                {new Date(product.createdAt).toLocaleDateString()}
+                              </span>
                             </div>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <h4 className="font-semibold mb-3">Technical Information</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="flex items-center justify-between p-3 border rounded-lg">
-                            <div className="flex items-center">
-                              <HardDrive className="h-4 w-4 mr-2 text-purple-600" />
-                              <span className="font-medium">File Size</span>
+                            
+                            <div className="flex items-center justify-between p-3 border rounded-lg">
+                              <div className="flex items-center">
+                                <Download className="h-4 w-4 mr-2 text-green-600" />
+                                <span className="font-medium">SketchUp Compatibility</span>
+                              </div>
+                              <span className="text-sm text-muted-foreground">2020+</span>
                             </div>
-                            <span className="text-sm text-muted-foreground">{product.fileSize}</span>
-                          </div>
-                          
-                          <div className="flex items-center justify-between p-3 border rounded-lg">
-                            <div className="flex items-center">
-                              <Calendar className="h-4 w-4 mr-2 text-orange-600" />
-                              <span className="font-medium">Published</span>
+                            
+                            <div className="flex items-center justify-between p-3 border rounded-lg">
+                              <div className="flex items-center">
+                                <Download className="h-4 w-4 mr-2 text-red-600" />
+                                <span className="font-medium">3DS Max Compatibility</span>
+                              </div>
+                              <span className="text-sm text-muted-foreground">2019+</span>
                             </div>
-                            <span className="text-sm text-muted-foreground">
-                              {new Date(product.createdAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                          
-                          <div className="flex items-center justify-between p-3 border rounded-lg">
-                            <div className="flex items-center">
-                              <Download className="h-4 w-4 mr-2 text-green-600" />
-                              <span className="font-medium">SketchUp Compatibility</span>
-                            </div>
-                            <span className="text-sm text-muted-foreground">2020+</span>
-                          </div>
-                          
-                          <div className="flex items-center justify-between p-3 border rounded-lg">
-                            <div className="flex items-center">
-                              <Download className="h-4 w-4 mr-2 text-red-600" />
-                              <span className="font-medium">3DS Max Compatibility</span>
-                            </div>
-                            <span className="text-sm text-muted-foreground">2019+</span>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             </TabsContent>
             
