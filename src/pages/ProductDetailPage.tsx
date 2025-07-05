@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -8,7 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { 
   Table, 
   TableBody, 
@@ -68,7 +66,7 @@ const productData = {
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("specifications");
   
   // In a real app, you'd fetch the product data based on the ID
   // For now, we'll just use our mock data
@@ -169,26 +167,17 @@ const ProductDetailPage = () => {
         {/* Product Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
           <TabsList className="grid grid-cols-2 w-full md:w-fit">
-            <TabsTrigger value="overview">Overview & Specifications</TabsTrigger>
+            <TabsTrigger value="specifications">Specifications</TabsTrigger>
             <TabsTrigger value="license">License</TabsTrigger>
           </TabsList>
           
           <div className="mt-6 p-6 border rounded-lg">
-            <TabsContent value="overview">
+            <TabsContent value="specifications">
               <div className="space-y-8">
                 {/* Description Overview */}
                 <div>
                   <h3 className="font-bold mb-4">Description</h3>
                   <div dangerouslySetInnerHTML={{ __html: product.longDescription }} />
-                </div>
-                
-                {/* Description Text Area */}
-                <div>
-                  <h3 className="font-bold mb-4">Additional Notes</h3>
-                  <Textarea
-                    placeholder="Add your custom description or notes about this product..."
-                    className="min-h-[120px]"
-                  />
                 </div>
                 
                 {/* Specifications */}
