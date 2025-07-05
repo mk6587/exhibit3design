@@ -4,12 +4,41 @@ import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { useProducts } from "@/contexts/ProductsContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
+import ImageViewer from "@/components/ui/image-viewer";
+import "@/components/ui/rich-text-editor.css";
 
 const FeaturedProducts = () => {
   const { products, loading } = useProducts();
+  const [imageViewerState, setImageViewerState] = useState({
+    isOpen: false,
+    images: [] as string[],
+    title: '',
+    initialIndex: 0
+  });
   
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
+
+  const handleImageClick = (product: any, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const validImage = product.images[0] && !product.images[0].startsWith('blob:') 
+      ? product.images[0] 
+      : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
+      
+    setImageViewerState({
+      isOpen: true,
+      images: [validImage],
+      title: product.title,
+      initialIndex: 0
+    });
+  };
+
+  const closeImageViewer = () => {
+    setImageViewerState(prev => ({ ...prev, isOpen: false }));
+  };
   
   if (loading) {
     return (
@@ -57,7 +86,7 @@ const FeaturedProducts = () => {
             {featuredProducts.map((product) => (
               <Card key={product.id} className="overflow-hidden transition-shadow hover:shadow-lg">
                 <Link to={`/product/${product.id}`}>
-                  <div className="aspect-[4/3] overflow-hidden bg-secondary">
+                  <div className="aspect-[4/3] overflow-hidden bg-secondary clickable-image-container">
                     <img
                       src={
                         product.images[0] && !product.images[0].startsWith('blob:') 
@@ -65,10 +94,11 @@ const FeaturedProducts = () => {
                           : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop"
                       }
                       alt={product.title}
-                      className="w-full h-full object-cover transition-transform hover:scale-105"
+                      className="w-full h-full object-cover transition-transform hover:scale-105 cursor-pointer"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
                       }}
+                      onClick={(e) => handleImageClick(product, e)}
                     />
                   </div>
                 </Link>
@@ -98,6 +128,14 @@ const FeaturedProducts = () => {
           </div>
         )}
       </div>
+
+      <ImageViewer
+        isOpen={imageViewerState.isOpen}
+        onClose={closeImageViewer}
+        images={imageViewerState.images}
+        title={imageViewerState.title}
+        initialIndex={imageViewerState.initialIndex}
+      />
     </section>
   );
 };

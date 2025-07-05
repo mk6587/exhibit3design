@@ -37,6 +37,31 @@
   line-height: 1.7;
 }
 
+/* Clickable image overlay */
+.clickable-image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.clickable-image-container::after {
+  content: '🔍';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.clickable-image-container:hover::after {
+  opacity: 1;
+}
+
 .rich-text-content h1,
 .rich-text-content h2,
 .rich-text-content h3,
