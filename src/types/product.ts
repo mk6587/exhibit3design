@@ -15,17 +15,15 @@ export interface Product {
 export interface StandSpecifications {
   dimensions: string;
   height: string;
-  floor: string;
-  powerSupply: string;
+  layout: string;
   lighting: string;
-  facilities: {
+  specifications: {
     infoDesk: boolean;
-    vipRoom: boolean;
     storage: boolean;
-    meetingArea: boolean;
-    productDisplay: boolean;
-    reception: boolean;
-    kitchenette: boolean;
-    multimedia: boolean;
+    screen: boolean;
+    kitchen: boolean;
+    seatingArea: boolean;
+    meetingRoom: boolean;
+    hangingBanner: boolean;
   };
 }

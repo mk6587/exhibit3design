@@ -15,18 +15,16 @@ interface ProductSpecificationsTabProps {
 interface StandSpecifications {
   dimensions: string;
   height: string;
-  floor: string;
-  powerSupply: string;
+  layout: string;
   lighting: string;
-  facilities: {
+  specifications: {
     infoDesk: boolean;
-    vipRoom: boolean;
     storage: boolean;
-    meetingArea: boolean;
-    productDisplay: boolean;
-    reception: boolean;
-    kitchenette: boolean;
-    multimedia: boolean;
+    screen: boolean;
+    kitchen: boolean;
+    seatingArea: boolean;
+    meetingRoom: boolean;
+    hangingBanner: boolean;
   };
 }
 
@@ -42,18 +40,16 @@ const ProductSpecificationsTab: React.FC<ProductSpecificationsTabProps> = ({
       return {
         dimensions: '',
         height: '',
-        floor: '',
-        powerSupply: '',
+        layout: '',
         lighting: '',
-        facilities: {
+        specifications: {
           infoDesk: false,
-          vipRoom: false,
           storage: false,
-          meetingArea: false,
-          productDisplay: false,
-          reception: false,
-          kitchenette: false,
-          multimedia: false,
+          screen: false,
+          kitchen: false,
+          seatingArea: false,
+          meetingRoom: false,
+          hangingBanner: false,
         }
       };
     }
@@ -61,7 +57,7 @@ const ProductSpecificationsTab: React.FC<ProductSpecificationsTabProps> = ({
 
   const specifications = parseSpecifications(product.specifications);
 
-  const updateSpecification = (field: keyof Omit<StandSpecifications, 'facilities'>, value: string) => {
+  const updateSpecification = (field: keyof Omit<StandSpecifications, 'specifications'>, value: string) => {
     const updatedSpecs = {
       ...specifications,
       [field]: value
@@ -72,12 +68,12 @@ const ProductSpecificationsTab: React.FC<ProductSpecificationsTabProps> = ({
     });
   };
 
-  const updateFacility = (facility: keyof StandSpecifications['facilities'], checked: boolean) => {
+  const updateSpecificationItem = (item: keyof StandSpecifications['specifications'], checked: boolean) => {
     const updatedSpecs = {
       ...specifications,
-      facilities: {
-        ...specifications.facilities,
-        [facility]: checked
+      specifications: {
+        ...specifications.specifications,
+        [item]: checked
       }
     };
     onProductChange({
@@ -117,28 +113,17 @@ const ProductSpecificationsTab: React.FC<ProductSpecificationsTabProps> = ({
             </div>
             
             <div>
-              <Label htmlFor="floor">Floor Type</Label>
+              <Label htmlFor="layout">Layout</Label>
               <Input
-                id="floor"
-                value={specifications.floor}
-                onChange={(e) => updateSpecification('floor', e.target.value)}
-                placeholder="e.g., Carpet, Wood, Tiles"
+                id="layout"
+                value={specifications.layout}
+                onChange={(e) => updateSpecification('layout', e.target.value)}
+                placeholder="2-sided open"
                 className="mt-1"
               />
             </div>
             
             <div>
-              <Label htmlFor="powerSupply">Power Supply</Label>
-              <Input
-                id="powerSupply"
-                value={specifications.powerSupply}
-                onChange={(e) => updateSpecification('powerSupply', e.target.value)}
-                placeholder="e.g., 220V, 5kW"
-                className="mt-1"
-              />
-            </div>
-            
-            <div className="md:col-span-2">
               <Label htmlFor="lighting">Lighting</Label>
               <Input
                 id="lighting"
@@ -154,22 +139,72 @@ const ProductSpecificationsTab: React.FC<ProductSpecificationsTabProps> = ({
 
       <Card>
         <CardHeader>
-          <CardTitle>Stand Facilities</CardTitle>
+          <CardTitle>Stand Specifications</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(specifications.facilities).map(([key, value]) => (
-              <div key={key} className="flex items-center space-x-2">
-                <Checkbox
-                  id={key}
-                  checked={value}
-                  onCheckedChange={(checked) => updateFacility(key as keyof StandSpecifications['facilities'], checked as boolean)}
-                />
-                <Label htmlFor={key} className="capitalize">
-                  {key.replace(/([A-Z])/g, ' $1').trim()}
-                </Label>
-              </div>
-            ))}
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="infoDesk"
+                checked={specifications.specifications.infoDesk}
+                onCheckedChange={(checked) => updateSpecificationItem('infoDesk', checked as boolean)}
+              />
+              <Label htmlFor="infoDesk">Info desk</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="storage"
+                checked={specifications.specifications.storage}
+                onCheckedChange={(checked) => updateSpecificationItem('storage', checked as boolean)}
+              />
+              <Label htmlFor="storage">Storage</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="screen"
+                checked={specifications.specifications.screen}
+                onCheckedChange={(checked) => updateSpecificationItem('screen', checked as boolean)}
+              />
+              <Label htmlFor="screen">Screen</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="kitchen"
+                checked={specifications.specifications.kitchen}
+                onCheckedChange={(checked) => updateSpecificationItem('kitchen', checked as boolean)}
+              />
+              <Label htmlFor="kitchen">Kitchen</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="seatingArea"
+                checked={specifications.specifications.seatingArea}
+                onCheckedChange={(checked) => updateSpecificationItem('seatingArea', checked as boolean)}
+              />
+              <Label htmlFor="seatingArea">Seating area</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="meetingRoom"
+                checked={specifications.specifications.meetingRoom}
+                onCheckedChange={(checked) => updateSpecificationItem('meetingRoom', checked as boolean)}
+              />
+              <Label htmlFor="meetingRoom">Meeting room</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="hangingBanner"
+                checked={specifications.specifications.hangingBanner}
+                onCheckedChange={(checked) => updateSpecificationItem('hangingBanner', checked as boolean)}
+              />
+              <Label htmlFor="hangingBanner">Hanging banner</Label>
+            </div>
           </div>
         </CardContent>
       </Card>
