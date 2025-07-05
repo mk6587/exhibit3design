@@ -2,13 +2,14 @@
 import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
+import { useProducts } from '@/contexts/ProductsContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogOut, Edit, Eye } from 'lucide-react';
-import { products } from '@/data/products';
 
 const AdminPage = () => {
   const { isAuthenticated, logout } = useAdmin();
+  const { products, loading } = useProducts();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,6 +25,17 @@ const AdminPage = () => {
 
   if (!isAuthenticated) {
     return null;
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -51,7 +63,7 @@ const AdminPage = () => {
             <Card key={product.id}>
               <CardHeader>
                 <img 
-                  src={product.image} 
+                  src={product.images[0] || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop"} 
                   alt={product.title}
                   className="w-full h-48 object-cover rounded-md mb-4"
                 />
