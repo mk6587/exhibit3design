@@ -26,11 +26,11 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
 
   const compressImage = async (file: File): Promise<File> => {
     const options = {
-      maxSizeMB: 2, // Compress to max 2MB
+      maxSizeMB: 4, // Compress to max 4MB for better quality
       maxWidthOrHeight: 1920, // Max dimension
       useWebWorker: true,
       fileType: 'image/jpeg', // Convert to JPEG for better compression
-      quality: 0.8 // 80% quality
+      quality: 0.85 // 85% quality for better image quality
     };
 
     try {
@@ -64,7 +64,7 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
           // Compress the image
           const compressedFile = await compressImage(originalFile);
 
-          // Check compressed file size (should be under 2MB now, but double-check)
+          // Check compressed file size (should be under 4MB now, but double-check)
           if (compressedFile.size > 5 * 1024 * 1024) {
             toast({
               title: "File still too large",
@@ -165,7 +165,7 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
             </Button>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Images are automatically compressed to under 2MB and uploaded to Supabase Storage for permanent hosting.
+            Images are automatically compressed to under 4MB with 85% quality and uploaded to Supabase Storage for permanent hosting.
           </p>
         </div>
 
