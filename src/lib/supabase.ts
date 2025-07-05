@@ -14,13 +14,17 @@ if (supabaseUrl && supabaseAnonKey) {
   console.log('Supabase client created successfully')
 } else {
   console.warn('Supabase environment variables missing. Using fallback mode.')
-  // Create a mock client that won't break the app
+  // Create a mock client that won't break the app with proper method chaining
   supabase = {
     from: () => ({
       select: () => Promise.resolve({ data: [], error: null }),
-      update: () => Promise.resolve({ error: null }),
+      update: () => ({
+        eq: () => Promise.resolve({ error: null }),
+      }),
       insert: () => Promise.resolve({ error: null }),
-      delete: () => Promise.resolve({ error: null }),
+      delete: () => ({
+        eq: () => Promise.resolve({ error: null }),
+      }),
     })
   }
 }
