@@ -12,6 +12,7 @@ import { ArrowLeft, Save, Eye, Upload, Trash2, Plus, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { products } from '@/data/products';
 import RichTextEditor from '@/components/ui/rich-text-editor';
+import AIContentGenerator from '@/components/admin/AIContentGenerator';
 
 const AdminProductEditPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -87,6 +88,16 @@ const AdminProductEditPage = () => {
     window.open(`/product/${id}`, '_blank');
   };
 
+  const handleAIContentGenerated = (content: string, field: string) => {
+    if (field === 'description') {
+      setProduct({...product, description: content});
+    } else if (field === 'longDescription') {
+      setProduct({...product, longDescription: content});
+    } else if (field === 'specifications') {
+      setProduct({...product, specifications: content});
+    }
+  };
+
   if (!isAuthenticated) {
     return null;
   }
@@ -136,6 +147,12 @@ const AdminProductEditPage = () => {
               </TabsList>
 
               <TabsContent value="basic" className="space-y-4">
+                <AIContentGenerator
+                  contentType="basic-info"
+                  onContentGenerated={(content) => handleAIContentGenerated(content, 'description')}
+                  currentContent={product.description}
+                />
+                
                 <div className="grid gap-4">
                   <div>
                     <Label htmlFor="title">Product Title</Label>
@@ -199,6 +216,12 @@ const AdminProductEditPage = () => {
               </TabsContent>
 
               <TabsContent value="description" className="space-y-4">
+                <AIContentGenerator
+                  contentType="description"
+                  onContentGenerated={(content) => handleAIContentGenerated(content, 'longDescription')}
+                  currentContent={product.longDescription}
+                />
+                
                 <div>
                   <Label htmlFor="long-description">Detailed Description</Label>
                   <RichTextEditor
@@ -214,6 +237,12 @@ const AdminProductEditPage = () => {
               </TabsContent>
 
               <TabsContent value="specifications" className="space-y-4">
+                <AIContentGenerator
+                  contentType="specification"
+                  onContentGenerated={(content) => handleAIContentGenerated(content, 'specifications')}
+                  currentContent={product.specifications}
+                />
+                
                 <div>
                   <Label htmlFor="specifications">Specifications</Label>
                   <RichTextEditor
