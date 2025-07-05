@@ -182,8 +182,6 @@ const ProductDetailPage = () => {
                 
                 {/* Specifications */}
                 <div className="space-y-6">
-                  <h3 className="font-bold text-xl">Specifications</h3>
-                  
                   <Card>
                     <CardHeader>
                       <CardTitle>Physical Specifications</CardTitle>
