@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -17,7 +16,7 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { Check, X } from "lucide-react";
+import { Check, X, FileText, Download, Calendar, HardDrive } from "lucide-react";
 
 // Mock product data
 const productData = {
@@ -211,7 +210,7 @@ const ProductDetailPage = () => {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Stand Features</CardTitle>
+                    <CardTitle>Stand Specifications</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -237,35 +236,71 @@ const ProductDetailPage = () => {
                   </CardContent>
                 </Card>
 
-                <Accordion type="single" collapsible>
-                  <AccordionItem value="file-formats">
-                    <AccordionTrigger>File Formats & Technical Details</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-4">
-                        <div>
-                          <h4 className="font-semibold mb-2">File Formats Included:</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {product.fileFormats.map((format) => (
-                              <Badge key={format} variant="secondary">
-                                {format}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold mb-2">Technical Information:</h4>
-                          <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-                            <li>Total file size: {product.fileSize}</li>
-                            <li>Compatible with SketchUp 2020+</li>
-                            <li>3DS Max 2019+ compatible</li>
-                            <li>Universal 3D formats included</li>
-                            <li>Technical drawings in PDF format</li>
-                          </ul>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>File Formats & Technical Details</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      <div>
+                        <h4 className="font-semibold mb-3">File Formats Included</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {product.fileFormats.map((format) => (
+                            <div key={format} className="flex items-center justify-between p-3 border rounded-lg">
+                              <div className="flex items-center">
+                                <FileText className="h-4 w-4 mr-2 text-blue-600" />
+                                <span className="font-medium">{format}</span>
+                              </div>
+                              <div className="flex items-center text-green-600">
+                                <Check className="h-4 w-4 mr-1" />
+                                <span className="text-sm">Included</span>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+                      
+                      <div>
+                        <h4 className="font-semibold mb-3">Technical Information</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center">
+                              <HardDrive className="h-4 w-4 mr-2 text-purple-600" />
+                              <span className="font-medium">File Size</span>
+                            </div>
+                            <span className="text-sm text-muted-foreground">{product.fileSize}</span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center">
+                              <Calendar className="h-4 w-4 mr-2 text-orange-600" />
+                              <span className="font-medium">Published</span>
+                            </div>
+                            <span className="text-sm text-muted-foreground">
+                              {new Date(product.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center">
+                              <Download className="h-4 w-4 mr-2 text-green-600" />
+                              <span className="font-medium">SketchUp Compatibility</span>
+                            </div>
+                            <span className="text-sm text-muted-foreground">2020+</span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center">
+                              <Download className="h-4 w-4 mr-2 text-red-600" />
+                              <span className="font-medium">3DS Max Compatibility</span>
+                            </div>
+                            <span className="text-sm text-muted-foreground">2019+</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </TabsContent>
             
