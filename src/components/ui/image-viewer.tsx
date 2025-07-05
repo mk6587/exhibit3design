@@ -25,7 +25,10 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const imageContainerRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     setCurrentIndex(initialIndex);
@@ -37,22 +40,77 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     }
   }, [isOpen, currentIndex]);
 
+  // Update container size on resize
+  useEffect(() => {
+    const updateContainerSize = () => {
+      if (imageContainerRef.current) {
+        const rect = imageContainerRef.current.getBoundingClientRect();
+        setContainerSize({ width: rect.width, height: rect.height });
+      }
+    };
+
+    if (isOpen) {
+      updateContainerSize();
+      window.addEventListener('resize', updateContainerSize);
+      return () => window.removeEventListener('resize', updateContainerSize);
+    }
+  }, [isOpen]);
+
   const resetView = () => {
     setScale(1);
     setPosition({ x: 0, y: 0 });
   };
 
+  const handleImageLoad = () => {
+    if (imageRef.current) {
+      const { naturalWidth, naturalHeight } = imageRef.current;
+      const { width: containerWidth, height: containerHeight } = containerSize;
+      
+      // Calculate the display size at scale 1
+      const aspectRatio = naturalWidth / naturalHeight;
+      let displayWidth, displayHeight;
+      
+      if (containerWidth / containerHeight > aspectRatio) {
+        // Container is wider, fit to height
+        displayHeight = Math.min(containerHeight * 0.9, naturalHeight);
+        displayWidth = displayHeight * aspectRatio;
+      } else {
+        // Container is taller, fit to width
+        displayWidth = Math.min(containerWidth * 0.9, naturalWidth);
+        displayHeight = displayWidth / aspectRatio;
+      }
+      
+      setImageSize({ width: displayWidth, height: displayHeight });
+    }
+  };
+
+  const constrainPosition = (newX: number, newY: number, currentScale: number) => {
+    if (currentScale <= 1) return { x: 0, y: 0 };
+    
+    const scaledImageWidth = imageSize.width * currentScale;
+    const scaledImageHeight = imageSize.height * currentScale;
+    
+    const maxX = Math.max(0, (scaledImageWidth - containerSize.width) / 2);
+    const maxY = Math.max(0, (scaledImageHeight - containerSize.height) / 2);
+    
+    return {
+      x: Math.max(-maxX, Math.min(maxX, newX)),
+      y: Math.max(-maxY, Math.min(maxY, newY))
+    };
+  };
+
   const handleZoomIn = () => {
     const newScale = Math.min(scale * 1.2, 3);
     setScale(newScale);
+    const constrainedPos = constrainPosition(position.x, position.y, newScale);
+    setPosition(constrainedPos);
   };
 
   const handleZoomOut = () => {
-    const newScale = Math.max(scale / 1.2, 0.8);
+    const newScale = Math.max(scale / 1.2, 0.5);
     setScale(newScale);
-    if (newScale <= 1) {
-      setPosition({ x: 0, y: 0 });
-    }
+    const constrainedPos = constrainPosition(position.x, position.y, newScale);
+    setPosition(constrainedPos);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -71,10 +129,10 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     if (isDragging && scale > 1) {
       e.preventDefault();
       e.stopPropagation();
-      setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
-      });
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+      const constrainedPos = constrainPosition(newX, newY, scale);
+      setPosition(constrainedPos);
     }
   };
 
@@ -89,12 +147,11 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     e.stopPropagation();
     
     const delta = e.deltaY > 0 ? 0.95 : 1.05;
-    const newScale = Math.min(Math.max(scale * delta, 0.8), 3);
+    const newScale = Math.min(Math.max(scale * delta, 0.5), 3);
     setScale(newScale);
     
-    if (newScale <= 1) {
-      setPosition({ x: 0, y: 0 });
-    }
+    const constrainedPos = constrainPosition(position.x, position.y, newScale);
+    setPosition(constrainedPos);
   };
 
   const goToPrevious = () => {
@@ -150,7 +207,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
           </DialogDescription>
         </VisuallyHidden>
         
-        {/* Fixed Header */}
+        {/* Fixed Header with only one close button */}
         <div className="flex justify-between items-center p-4 border-b bg-gray-50 flex-shrink-0">
           <div>
             {title && <h3 className="text-lg font-semibold text-gray-900">{title}</h3>}
@@ -170,20 +227,22 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
           </Button>
         </div>
 
-        {/* Fixed Image Container - This area will never move */}
+        {/* Fixed Image Container */}
         <div className="flex-1 bg-gray-100 relative overflow-hidden">
           <div 
             ref={imageContainerRef}
             className="absolute inset-0 flex items-center justify-center"
           >
-            {/* Zoom/Pan Wrapper - Only this moves */}
+            {/* Image Wrapper - Only this transforms */}
             <div
-              className="relative select-none"
+              className="relative flex items-center justify-center"
               style={{
                 transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                 transformOrigin: 'center center',
                 transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-                cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default'
+                cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
+                width: 'fit-content',
+                height: 'fit-content'
               }}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
@@ -192,9 +251,10 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               onWheel={handleWheel}
             >
               <img
+                ref={imageRef}
                 src={images[currentIndex]}
                 alt={`${title || 'Image'} ${currentIndex + 1}`}
-                className="block"
+                className="block max-w-none"
                 style={{
                   maxHeight: scale <= 1 ? '70vh' : 'none',
                   maxWidth: scale <= 1 ? '90vw' : 'none',
@@ -202,16 +262,16 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
                   width: 'auto'
                 }}
                 draggable={false}
+                onLoad={handleImageLoad}
               />
             </div>
             
-            {/* Fixed Navigation arrows - Never move */}
+            {/* Fixed Navigation arrows */}
             {images.length > 1 && (
               <>
                 <button
                   onClick={goToPrevious}
                   className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-colors z-10"
-                  style={{ position: 'absolute' }}
                   aria-label="Previous image"
                 >
                   ←
@@ -219,7 +279,6 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
                 <button
                   onClick={goToNext}
                   className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-colors z-10"
-                  style={{ position: 'absolute' }}
                   aria-label="Next image"
                 >
                   →
@@ -229,13 +288,13 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
           </div>
         </div>
 
-        {/* Fixed Controls Footer - Never moves */}
+        {/* Fixed Controls Footer */}
         <div className="flex justify-center items-center gap-2 p-4 border-t bg-gray-50 flex-shrink-0">
           <Button
             variant="outline"
             size="sm"
             onClick={handleZoomOut}
-            disabled={scale <= 0.8}
+            disabled={scale <= 0.5}
             className="text-gray-700"
             aria-label="Zoom out"
           >
@@ -271,7 +330,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
           </Button>
         </div>
 
-        {/* Fixed Thumbnails - Never move */}
+        {/* Fixed Thumbnails */}
         {images.length > 1 && (
           <div className="flex justify-center gap-2 p-3 bg-gray-50 border-t flex-shrink-0 overflow-x-auto">
             {images.map((image, index) => (
