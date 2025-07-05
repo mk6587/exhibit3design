@@ -44,15 +44,17 @@
 }
 
 .clickable-image-container::after {
-  content: '🔍';
+  content: 'Click to view details • Ctrl+Click to zoom';
   position: absolute;
-  top: 8px;
+  bottom: 8px;
+  left: 8px;
   right: 8px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 4px 8px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 11px;
+  text-align: center;
   opacity: 0;
   transition: opacity 0.2s ease;
   pointer-events: none;

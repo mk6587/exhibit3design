@@ -21,19 +21,23 @@ const FeaturedProducts = () => {
   const featuredProducts = products.filter(product => product.featured);
 
   const handleImageClick = (product: any, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const validImage = product.images[0] && !product.images[0].startsWith('blob:') 
-      ? product.images[0] 
-      : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
+    // Only show image viewer if clicked with modifier key (Ctrl/Cmd)
+    if (e.ctrlKey || e.metaKey || e.button === 2) {
+      e.preventDefault();
+      e.stopPropagation();
       
-    setImageViewerState({
-      isOpen: true,
-      images: [validImage],
-      title: product.title,
-      initialIndex: 0
-    });
+      const validImage = product.images[0] && !product.images[0].startsWith('blob:') 
+        ? product.images[0] 
+        : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
+        
+      setImageViewerState({
+        isOpen: true,
+        images: [validImage],
+        title: product.title,
+        initialIndex: 0
+      });
+    }
+    // Otherwise, let the Link handle navigation to product detail page
   };
 
   const closeImageViewer = () => {

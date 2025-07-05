@@ -22,9 +22,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
 
   const handleImageClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsViewerOpen(true);
+    // Only show image viewer if clicked with modifier key (Ctrl/Cmd) or right-click
+    if (e.ctrlKey || e.metaKey || e.button === 2) {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsViewerOpen(true);
+    }
+    // Otherwise, let the Link handle navigation to product detail page
   };
 
   return (
