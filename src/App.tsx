@@ -51,7 +51,7 @@ const App = () => (
                   <AdminPage />
                 </ProtectedAdminRoute>
               } />
-              <Route path="/admin/product/:id" element={
+              <Route path="/admin/product/:id/edit" element={
                 <ProtectedAdminRoute>
                   <AdminProductEditPage />
                 </ProtectedAdminRoute>
