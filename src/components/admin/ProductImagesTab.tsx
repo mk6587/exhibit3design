@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, Trash2, Plus } from 'lucide-react';
+import { Upload, Trash2, Plus, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { uploadImageToSupabase, deleteImageFromSupabase } from '@/lib/supabaseStorage';
 
 interface ProductImagesTabProps {
   imageUrls: string[];
@@ -20,36 +21,72 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
   onSpecificImageUrlChange
 }) => {
   const { toast } = useToast();
+  const [uploading, setUploading] = useState(false);
 
-  const handleMultipleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMultipleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
-      toast({
-        title: "File Upload Notice",
-        description: "For persistent images, please use image URLs instead of file uploads. File uploads create temporary links that break after refresh.",
-        variant: "destructive",
-      });
-      
+      setUploading(true);
       const newImageUrls: string[] = [];
       
-      Array.from(files).forEach(file => {
-        const imageUrl = URL.createObjectURL(file);
-        newImageUrls.push(imageUrl);
-      });
-      
-      onImageUrlsChange([...imageUrls, ...newImageUrls]);
-      
-      event.target.value = '';
+      try {
+        for (const file of Array.from(files)) {
+          // Check file size (limit to 5MB)
+          if (file.size > 5 * 1024 * 1024) {
+            toast({
+              title: "File too large",
+              description: `${file.name} is too large. Please use images under 5MB.`,
+              variant: "destructive",
+            });
+            continue;
+          }
+
+          const uploadedUrl = await uploadImageToSupabase(file);
+          if (uploadedUrl) {
+            newImageUrls.push(uploadedUrl);
+          } else {
+            toast({
+              title: "Upload failed",
+              description: `Failed to upload ${file.name}`,
+              variant: "destructive",
+            });
+          }
+        }
+        
+        if (newImageUrls.length > 0) {
+          onImageUrlsChange([...imageUrls, ...newImageUrls]);
+          toast({
+            title: "Images Uploaded",
+            description: `${newImageUrls.length} image(s) uploaded successfully and will persist permanently.`,
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Upload Error",
+          description: "An error occurred while uploading images.",
+          variant: "destructive",
+        });
+      } finally {
+        setUploading(false);
+        event.target.value = '';
+      }
     }
   };
 
-  const handleDeleteImage = (index: number) => {
+  const handleDeleteImage = async (index: number) => {
+    const imageUrl = imageUrls[index];
+    
+    // If it's a Supabase storage URL, delete it from storage
+    if (imageUrl.includes('supabase') && imageUrl.includes('/storage/v1/object/public/')) {
+      await deleteImageFromSupabase(imageUrl);
+    }
+    
     const updatedImages = imageUrls.filter((_, i) => i !== index);
     onImageUrlsChange(updatedImages);
     
     toast({
       title: "Image Deleted",
-      description: "Image has been removed from the gallery.",
+      description: "Image has been removed from the gallery and storage.",
     });
   };
 
@@ -78,16 +115,24 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
               onChange={handleMultipleImageUpload}
               className="flex-1"
             />
-            <Button variant="outline" onClick={() => {
-              const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-              fileInput?.click();
-            }}>
-              <Upload className="mr-2 h-4 w-4" />
-              Select Images
+            <Button 
+              variant="outline" 
+              disabled={uploading}
+              onClick={() => {
+                const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+                fileInput?.click();
+              }}
+            >
+              {uploading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="mr-2 h-4 w-4" />
+              )}
+              {uploading ? 'Uploading...' : 'Select Images'}
             </Button>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Select multiple images from your device to add to the product gallery.
+            Upload images to Supabase Storage for permanent hosting. Images will persist after refresh and be publicly accessible.
           </p>
         </div>
 
