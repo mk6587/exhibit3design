@@ -246,8 +246,8 @@ export const useSupabaseProducts = () => {
         )
       );
 
-      // In fallback mode, don't refetch as it will override local changes
-      console.log('Product updated locally - skipping refetch in fallback mode');
+      // Refetch products to ensure all components get updated data
+      await fetchProducts();
 
       toast({
         title: "Success",
