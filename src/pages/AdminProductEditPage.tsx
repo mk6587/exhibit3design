@@ -31,17 +31,27 @@ const AdminProductEditPage = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Create a URL for the uploaded file (in a real app, you'd upload to a server/CDN)
-      const imageUrl = URL.createObjectURL(file);
-      setImageUrls([...imageUrls, imageUrl]);
+  const handleMultipleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const newImageUrls: string[] = [];
+      
+      // Process each selected file
+      Array.from(files).forEach(file => {
+        const imageUrl = URL.createObjectURL(file);
+        newImageUrls.push(imageUrl);
+      });
+      
+      // Add all new images to the existing array
+      setImageUrls([...imageUrls, ...newImageUrls]);
       
       toast({
-        title: "Image Uploaded",
-        description: "Image has been added to the gallery.",
+        title: "Images Uploaded",
+        description: `${files.length} image(s) have been added to the gallery.`,
       });
+      
+      // Clear the file input
+      event.target.value = '';
     }
   };
 
@@ -260,12 +270,13 @@ const AdminProductEditPage = () => {
               <TabsContent value="images" className="space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <Label>Upload New Image</Label>
+                    <Label>Upload Multiple Images</Label>
                     <div className="flex items-center space-x-2 mt-2">
                       <Input
                         type="file"
                         accept="image/*"
-                        onChange={handleImageUpload}
+                        multiple
+                        onChange={handleMultipleImageUpload}
                         className="flex-1"
                       />
                       <Button variant="outline" onClick={() => {
@@ -273,11 +284,11 @@ const AdminProductEditPage = () => {
                         fileInput?.click();
                       }}>
                         <Upload className="mr-2 h-4 w-4" />
-                        Upload
+                        Select Images
                       </Button>
                     </div>
                     <p className="text-sm text-gray-600 mt-1">
-                      Upload images from your device to add to the product gallery.
+                      Select multiple images from your device to add to the product gallery.
                     </p>
                   </div>
 
