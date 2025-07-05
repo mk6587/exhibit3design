@@ -7,6 +7,17 @@ import AddToCartButton from "@/components/product/AddToCartButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import { Check, X } from "lucide-react";
 
 // Mock product data
 const productData = {
@@ -28,24 +39,21 @@ const productData = {
     
     <p>The design is versatile and can be adapted to various exhibition spaces, making it an excellent investment for businesses that regularly attend trade shows.</p>
   `,
-  specifications: `
-    <h4>Technical Specifications</h4>
-    <ul>
-      <li>Dimensions: 6m x 6m (customizable)</li>
-      <li>Height: 3.5m</li>
-      <li>Materials: Aluminum structure, MDF panels, glass shelving</li>
-      <li>Required floor space: 36m²</li>
-      <li>Setup time: Approximately 8 hours</li>
-    </ul>
-    
-    <h4>File Formats</h4>
-    <ul>
-      <li>SketchUp (.skp) - SketchUp 2020 compatible</li>
-      <li>3DS Max (.max) - 3DS Max 2019 compatible</li>
-      <li>3D Studio (.3ds) - Universal 3D format</li>
-      <li>PDF - Technical drawings and specifications</li>
-    </ul>
-  `,
+  specifications: JSON.stringify({
+    dimensions: "6m x 4m",
+    height: "3.5m",
+    layout: "2-sided open",
+    lighting: "LED spotlights with track lighting",
+    specifications: {
+      infoDesk: true,
+      storage: true,
+      screen: true,
+      kitchen: false,
+      seatingArea: true,
+      meetingRoom: false,
+      hangingBanner: true,
+    }
+  }),
   images: [
     "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
     "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
@@ -65,6 +73,33 @@ const ProductDetailPage = () => {
   // In a real app, you'd fetch the product data based on the ID
   // For now, we'll just use our mock data
   const product = productData;
+  
+  // Parse specifications
+  const parseSpecifications = (specs: string) => {
+    try {
+      return JSON.parse(specs);
+    } catch {
+      return {
+        dimensions: '',
+        height: '',
+        layout: '',
+        lighting: '',
+        specifications: {}
+      };
+    }
+  };
+
+  const specifications = parseSpecifications(product.specifications);
+  
+  const facilityLabels = {
+    infoDesk: "Info Desk",
+    storage: "Storage",
+    screen: "Screen",
+    kitchen: "Kitchen",
+    seatingArea: "Seating Area",
+    meetingRoom: "Meeting Room",
+    hangingBanner: "Hanging Banner",
+  };
   
   if (!product) {
     return (
@@ -145,7 +180,93 @@ const ProductDetailPage = () => {
             </TabsContent>
             
             <TabsContent value="specifications">
-              <div dangerouslySetInnerHTML={{ __html: product.specifications }} />
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Physical Specifications</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableBody>
+                        <TableRow>
+                          <TableHead className="w-1/3 font-medium">Dimensions</TableHead>
+                          <TableCell>{specifications.dimensions || 'Not specified'}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableHead className="font-medium">Height</TableHead>
+                          <TableCell>{specifications.height || 'Not specified'}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableHead className="font-medium">Layout</TableHead>
+                          <TableCell>{specifications.layout || 'Not specified'}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableHead className="font-medium">Lighting</TableHead>
+                          <TableCell>{specifications.lighting || 'Not specified'}</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Stand Features</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {Object.entries(facilityLabels).map(([key, label]) => (
+                        <div key={key} className="flex items-center justify-between p-3 border rounded-lg">
+                          <span className="font-medium">{label}</span>
+                          <div className="flex items-center">
+                            {specifications.specifications?.[key] ? (
+                              <div className="flex items-center text-green-600">
+                                <Check className="h-4 w-4 mr-1" />
+                                <span className="text-sm">Included</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center text-gray-400">
+                                <X className="h-4 w-4 mr-1" />
+                                <span className="text-sm">Not included</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="file-formats">
+                    <AccordionTrigger>File Formats & Technical Details</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="font-semibold mb-2">File Formats Included:</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {product.fileFormats.map((format) => (
+                              <Badge key={format} variant="secondary">
+                                {format}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-2">Technical Information:</h4>
+                          <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                            <li>Total file size: {product.fileSize}</li>
+                            <li>Compatible with SketchUp 2020+</li>
+                            <li>3DS Max 2019+ compatible</li>
+                            <li>Universal 3D formats included</li>
+                            <li>Technical drawings in PDF format</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
             </TabsContent>
             
             <TabsContent value="license">
