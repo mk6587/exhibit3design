@@ -116,7 +116,6 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   const handleMouseDown = (e: React.MouseEvent) => {
     if (scale > 0.5) {
       e.preventDefault();
-      e.stopPropagation();
       setIsDragging(true);
       setDragStart({
         x: e.clientX - position.x,
@@ -125,39 +124,26 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     }
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging && scale > 0.5) {
-      e.preventDefault();
-      e.stopPropagation();
-      const newX = e.clientX - dragStart.x;
-      const newY = e.clientY - dragStart.y;
-      const constrainedPos = constrainPosition(newX, newY, scale);
-      setPosition(constrainedPos);
-    }
-  };
-
-  const handleMouseUp = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-
-  // Add global mouse event listeners for better dragging experience
+  // Global mouse event listeners for better dragging experience
   useEffect(() => {
-    if (isDragging) {
-      const handleGlobalMouseMove = (e: MouseEvent) => {
-        if (scale > 0.5) {
-          const newX = e.clientX - dragStart.x;
-          const newY = e.clientY - dragStart.y;
-          const constrainedPos = constrainPosition(newX, newY, scale);
-          setPosition(constrainedPos);
-        }
-      };
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (isDragging && scale > 0.5) {
+        e.preventDefault();
+        const newX = e.clientX - dragStart.x;
+        const newY = e.clientY - dragStart.y;
+        const constrainedPos = constrainPosition(newX, newY, scale);
+        setPosition(constrainedPos);
+      }
+    };
 
-      const handleGlobalMouseUp = () => {
+    const handleGlobalMouseUp = (e: MouseEvent) => {
+      if (isDragging) {
+        e.preventDefault();
         setIsDragging(false);
-      };
+      }
+    };
 
+    if (isDragging) {
       document.addEventListener('mousemove', handleGlobalMouseMove);
       document.addEventListener('mouseup', handleGlobalMouseUp);
 
@@ -166,11 +152,10 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
         document.removeEventListener('mouseup', handleGlobalMouseUp);
       };
     }
-  }, [isDragging, dragStart, scale, imageSize, containerSize]);
+  }, [isDragging, dragStart, scale, imageSize, containerSize, position]);
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     
     const delta = e.deltaY > 0 ? 0.95 : 1.05;
     const newScale = Math.min(Math.max(scale * delta, 0.25), 3);
@@ -253,7 +238,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
           >
             {/* Image Wrapper - Only this transforms */}
             <div
-              className="relative flex items-center justify-center"
+              className="relative flex items-center justify-center select-none"
               style={{
                 transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                 transformOrigin: 'center center',
@@ -263,16 +248,13 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
                 height: 'fit-content'
               }}
               onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
               onWheel={handleWheel}
             >
               <img
                 ref={imageRef}
                 src={images[currentIndex]}
                 alt={`${title || 'Image'} ${currentIndex + 1}`}
-                className="block max-w-none select-none"
+                className="block max-w-none select-none pointer-events-none"
                 style={{
                   maxHeight: scale <= 0.5 ? '70vh' : 'none',
                   maxWidth: scale <= 0.5 ? '90vw' : 'none',
