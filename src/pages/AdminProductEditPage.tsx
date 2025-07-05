@@ -2,12 +2,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
+import { useProducts } from '@/contexts/ProductsContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { products } from '@/data/products';
 import { Product } from '@/types/product';
 import ProductBasicInfoTab from '@/components/admin/ProductBasicInfoTab';
 import ProductDescriptionTab from '@/components/admin/ProductDescriptionTab';
@@ -17,11 +17,23 @@ import ProductImagesTab from '@/components/admin/ProductImagesTab';
 const AdminProductEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const { isAuthenticated } = useAdmin();
+  const { getProductById, updateProduct } = useProducts();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const originalProduct = products.find(p => p.id === parseInt(id!));
-  const [product, setProduct] = useState<Product>(originalProduct || products[0]);
+  const originalProduct = getProductById(parseInt(id!));
+  const [product, setProduct] = useState<Product>(originalProduct || {
+    id: 1,
+    title: '',
+    price: 0,
+    description: '',
+    longDescription: '',
+    specifications: '',
+    images: [],
+    tags: [],
+    fileSize: '',
+    featured: false
+  });
   const [imageUrls, setImageUrls] = useState(product.images);
   const [specificImageUrl, setSpecificImageUrl] = useState('');
 
@@ -31,11 +43,20 @@ const AdminProductEditPage = () => {
     }
   }, [isAuthenticated, navigate]);
 
+  useEffect(() => {
+    if (originalProduct) {
+      setProduct(originalProduct);
+      setImageUrls(originalProduct.images);
+    }
+  }, [originalProduct]);
+
   const handleSave = () => {
     const updatedProduct = {
       ...product,
       images: imageUrls
     };
+    
+    updateProduct(updatedProduct);
     setProduct(updatedProduct);
     
     console.log('Saving product:', updatedProduct);

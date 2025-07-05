@@ -1,29 +1,31 @@
+
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import ProductCard, { Product } from "@/components/product/ProductCard";
+import { useProducts } from "@/contexts/ProductsContext";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { products } from "@/data/products";
-
-// Convert products to match ProductCard interface
-const allProducts: Product[] = products.map(product => ({
-  id: product.id,
-  title: product.title,
-  price: product.price,
-  image: product.image,
-  tags: product.tags
-}));
-
-// Get unique tags from products
-const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags)));
 
 const ProductsPage = () => {
+  const { products } = useProducts();
   const [searchText, setSearchText] = useState("");
   const [sort, setSort] = useState("latest");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  
+  // Convert products to match ProductCard interface
+  const allProducts: Product[] = products.map(product => ({
+    id: product.id,
+    title: product.title,
+    price: product.price,
+    image: product.images[0] || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
+    tags: product.tags
+  }));
+
+  // Get unique tags from products
+  const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags)));
   
   // Filter and sort products
   const filteredProducts = allProducts
