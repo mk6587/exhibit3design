@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ZoomIn, ZoomOut, RotateCcw, X } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 interface ImageViewerProps {
@@ -21,7 +21,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   title
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(0.5); // Changed from 1 to 0.5 (50%)
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -57,7 +57,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   }, [isOpen]);
 
   const resetView = () => {
-    setScale(1);
+    setScale(0.5); // Changed from 1 to 0.5 (50%)
     setPosition({ x: 0, y: 0 });
   };
 
@@ -85,7 +85,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const constrainPosition = (newX: number, newY: number, currentScale: number) => {
-    if (currentScale <= 1) return { x: 0, y: 0 };
+    if (currentScale <= 0.5) return { x: 0, y: 0 }; // Changed from 1 to 0.5
     
     const scaledImageWidth = imageSize.width * currentScale;
     const scaledImageHeight = imageSize.height * currentScale;
@@ -107,14 +107,14 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const handleZoomOut = () => {
-    const newScale = Math.max(scale / 1.2, 0.5);
+    const newScale = Math.max(scale / 1.2, 0.25); // Changed from 0.5 to 0.25 to allow more zoom out
     setScale(newScale);
     const constrainedPos = constrainPosition(position.x, position.y, newScale);
     setPosition(constrainedPos);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (scale > 1) {
+    if (scale > 0.5) { // Changed from 1 to 0.5
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(true);
@@ -126,7 +126,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging && scale > 1) {
+    if (isDragging && scale > 0.5) { // Changed from 1 to 0.5
       e.preventDefault();
       e.stopPropagation();
       const newX = e.clientX - dragStart.x;
@@ -147,7 +147,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     e.stopPropagation();
     
     const delta = e.deltaY > 0 ? 0.95 : 1.05;
-    const newScale = Math.min(Math.max(scale * delta, 0.5), 3);
+    const newScale = Math.min(Math.max(scale * delta, 0.25), 3); // Changed from 0.5 to 0.25
     setScale(newScale);
     
     const constrainedPos = constrainPosition(position.x, position.y, newScale);
@@ -207,7 +207,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
           </DialogDescription>
         </VisuallyHidden>
         
-        {/* Fixed Header with only one close button */}
+        {/* Fixed Header with title and image counter only */}
         <div className="flex justify-between items-center p-4 border-b bg-gray-50 flex-shrink-0">
           <div>
             {title && <h3 className="text-lg font-semibold text-gray-900">{title}</h3>}
@@ -217,14 +217,6 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               </p>
             )}
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <X className="h-5 w-5" />
-          </Button>
         </div>
 
         {/* Fixed Image Container */}
@@ -240,7 +232,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
                 transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                 transformOrigin: 'center center',
                 transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-                cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
+                cursor: scale > 0.5 ? (isDragging ? 'grabbing' : 'grab') : 'default', // Changed from 1 to 0.5
                 width: 'fit-content',
                 height: 'fit-content'
               }}
@@ -256,8 +248,8 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
                 alt={`${title || 'Image'} ${currentIndex + 1}`}
                 className="block max-w-none"
                 style={{
-                  maxHeight: scale <= 1 ? '70vh' : 'none',
-                  maxWidth: scale <= 1 ? '90vw' : 'none',
+                  maxHeight: scale <= 0.5 ? '70vh' : 'none', // Changed from 1 to 0.5
+                  maxWidth: scale <= 0.5 ? '90vw' : 'none', // Changed from 1 to 0.5
                   height: 'auto',
                   width: 'auto'
                 }}
@@ -289,44 +281,57 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
         </div>
 
         {/* Fixed Controls Footer */}
-        <div className="flex justify-center items-center gap-2 p-4 border-t bg-gray-50 flex-shrink-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleZoomOut}
-            disabled={scale <= 0.5}
-            className="text-gray-700"
-            aria-label="Zoom out"
-          >
-            <ZoomOut className="h-4 w-4 mr-1" />
-            Zoom Out
-          </Button>
-          
-          <div className="text-gray-700 text-sm px-3 py-1 bg-gray-200 rounded">
-            {Math.round(scale * 100)}%
+        <div className="flex justify-between items-center gap-2 p-4 border-t bg-gray-50 flex-shrink-0">
+          <div className="flex justify-center items-center gap-2 flex-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomOut}
+              disabled={scale <= 0.25} // Changed from 0.5 to 0.25
+              className="text-gray-700"
+              aria-label="Zoom out"
+            >
+              <ZoomOut className="h-4 w-4 mr-1" />
+              Zoom Out
+            </Button>
+            
+            <div className="text-gray-700 text-sm px-3 py-1 bg-gray-200 rounded">
+              {Math.round(scale * 100)}%
+            </div>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomIn}
+              disabled={scale >= 3}
+              className="text-gray-700"
+              aria-label="Zoom in"
+            >
+              <ZoomIn className="h-4 w-4 mr-1" />
+              Zoom In
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetView}
+              className="text-gray-700"
+              aria-label="Reset view"
+            >
+              <RotateCcw className="h-4 w-4 mr-1" />
+              Reset
+            </Button>
           </div>
           
+          {/* Close button moved to footer */}
           <Button
             variant="outline"
             size="sm"
-            onClick={handleZoomIn}
-            disabled={scale >= 3}
+            onClick={onClose}
             className="text-gray-700"
-            aria-label="Zoom in"
+            aria-label="Close"
           >
-            <ZoomIn className="h-4 w-4 mr-1" />
-            Zoom In
-          </Button>
-          
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={resetView}
-            className="text-gray-700"
-            aria-label="Reset view"
-          >
-            <RotateCcw className="h-4 w-4 mr-1" />
-            Reset
+            Close
           </Button>
         </div>
 
