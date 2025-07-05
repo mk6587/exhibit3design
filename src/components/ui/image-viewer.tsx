@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
@@ -44,16 +46,11 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   const handleZoomIn = () => {
     const newScale = Math.min(scale * 1.2, 3);
     setScale(newScale);
-    // Keep image centered when zooming
-    if (newScale === 1) {
-      setPosition({ x: 0, y: 0 });
-    }
   };
 
   const handleZoomOut = () => {
     const newScale = Math.max(scale / 1.2, 0.8);
     setScale(newScale);
-    // Reset position when zooming out to normal size
     if (newScale <= 1) {
       setPosition({ x: 0, y: 0 });
     }
@@ -61,6 +58,8 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (scale > 1) {
+      e.preventDefault();
+      e.stopPropagation();
       setIsDragging(true);
       setDragStart({
         x: e.clientX - position.x,
@@ -71,6 +70,8 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (isDragging && scale > 1) {
+      e.preventDefault();
+      e.stopPropagation();
       setPosition({
         x: e.clientX - dragStart.x,
         y: e.clientY - dragStart.y
@@ -78,17 +79,20 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     }
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setIsDragging(false);
   };
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    
     const delta = e.deltaY > 0 ? 0.95 : 1.05;
     const newScale = Math.min(Math.max(scale * delta, 0.8), 3);
     setScale(newScale);
     
-    // Reset position when zooming out to normal size
     if (newScale <= 1) {
       setPosition({ x: 0, y: 0 });
     }
@@ -162,27 +166,38 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
 
           {/* Image Container */}
           <div 
-            className="flex-1 flex items-center justify-center bg-gray-100 cursor-grab active:cursor-grabbing overflow-hidden relative"
+            ref={containerRef}
+            className="flex-1 flex items-center justify-center bg-gray-100 overflow-hidden relative select-none"
             style={{ minHeight: '400px', maxHeight: 'calc(90vh - 180px)' }}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            onWheel={handleWheel}
           >
-            <img
-              ref={imageRef}
-              src={images[currentIndex]}
-              alt={`${title || 'Image'} ${currentIndex + 1}`}
-              className="max-w-none transition-transform duration-200 select-none"
+            <div
+              className="relative"
               style={{
                 transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
-                cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
-                maxHeight: scale <= 1 ? 'calc(90vh - 240px)' : 'none',
-                maxWidth: scale <= 1 ? '100%' : 'none'
+                transformOrigin: 'center center',
+                transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default'
               }}
-              draggable={false}
-            />
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onWheel={handleWheel}
+            >
+              <img
+                ref={imageRef}
+                src={images[currentIndex]}
+                alt={`${title || 'Image'} ${currentIndex + 1}`}
+                className="block max-w-none"
+                style={{
+                  maxHeight: scale <= 1 ? 'calc(90vh - 240px)' : 'none',
+                  maxWidth: scale <= 1 ? 'calc(100vw - 100px)' : 'none',
+                  height: 'auto',
+                  width: 'auto'
+                }}
+                draggable={false}
+              />
+            </div>
             
             {/* Navigation arrows */}
             {images.length > 1 && (
