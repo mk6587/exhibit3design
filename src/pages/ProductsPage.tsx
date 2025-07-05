@@ -20,7 +20,9 @@ const ProductsPage = () => {
     id: product.id,
     title: product.title,
     price: product.price,
-    image: product.images[0] || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
+    image: (product.images[0] && !product.images[0].startsWith('blob:')) 
+      ? product.images[0] 
+      : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
     tags: product.tags
   }));
 

@@ -59,9 +59,16 @@ const FeaturedProducts = () => {
                 <Link to={`/product/${product.id}`}>
                   <div className="aspect-[4/3] overflow-hidden bg-secondary">
                     <img
-                      src={product.images[0] || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop"}
+                      src={
+                        product.images[0] && !product.images[0].startsWith('blob:') 
+                          ? product.images[0] 
+                          : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop"
+                      }
                       alt={product.title}
                       className="w-full h-full object-cover transition-transform hover:scale-105"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
+                      }}
                     />
                   </div>
                 </Link>

@@ -20,11 +20,14 @@ const ProductCard = ({ product }: ProductCardProps) => {
     <Card className="overflow-hidden transition-shadow hover:shadow-lg">
       <Link to={`/product/${product.id}`}>
         <div className="aspect-[4/3] overflow-hidden bg-secondary">
-          <img
-            src={product.image}
-            alt={product.title}
-            className="w-full h-full object-cover transition-transform hover:scale-105"
-          />
+      <img
+        src={product.image}
+        alt={product.title}
+        className="w-full h-full object-cover transition-transform hover:scale-105"
+        onError={(e) => {
+          (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
+        }}
+      />
         </div>
       </Link>
       <CardContent className="pt-4">
