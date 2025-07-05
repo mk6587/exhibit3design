@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ZoomIn, ZoomOut, X, RotateCcw } from 'lucide-react';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 interface ImageViewerProps {
   isOpen: boolean;
@@ -123,6 +124,13 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-screen max-h-screen w-screen h-screen bg-black/95 border-none p-0 overflow-hidden">
+        <VisuallyHidden>
+          <DialogTitle>{title || 'Image Viewer'}</DialogTitle>
+          <DialogDescription>
+            Viewing {title || 'image'} - use zoom controls to magnify, arrow keys to navigate
+          </DialogDescription>
+        </VisuallyHidden>
+        
         <div className="relative w-full h-full flex flex-col">
           {/* Header */}
           <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-4 bg-gradient-to-b from-black/50 to-transparent">
