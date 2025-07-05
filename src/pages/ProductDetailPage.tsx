@@ -18,6 +18,7 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Check, X, FileText, Calendar, HardDrive, Download } from "lucide-react";
+import "@/components/ui/rich-text-editor.css";
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -144,7 +145,7 @@ const ProductDetailPage = () => {
               <div className="space-y-8">
                 {/* Description Overview */}
                 <div>
-                  <div dangerouslySetInnerHTML={{ __html: product.long_description }} />
+                  <div className="rich-text-content" dangerouslySetInnerHTML={{ __html: product.long_description }} />
                 </div>
                 
                 {/* Specifications */}
