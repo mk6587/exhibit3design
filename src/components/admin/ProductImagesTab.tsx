@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Upload, Trash2, Plus, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { uploadImageToSupabase, deleteImageFromSupabase } from '@/lib/supabaseStorage';
+import imageCompression from 'browser-image-compression';
 
 interface ProductImagesTabProps {
   imageUrls: string[];
@@ -23,6 +24,25 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
 
+  const compressImage = async (file: File): Promise<File> => {
+    const options = {
+      maxSizeMB: 2, // Compress to max 2MB
+      maxWidthOrHeight: 1920, // Max dimension
+      useWebWorker: true,
+      fileType: 'image/jpeg', // Convert to JPEG for better compression
+      quality: 0.8 // 80% quality
+    };
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      console.log(`Original size: ${(file.size / 1024 / 1024).toFixed(2)}MB, Compressed size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+      return compressedFile;
+    } catch (error) {
+      console.error('Error compressing image:', error);
+      return file; // Return original if compression fails
+    }
+  };
+
   const handleMultipleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
@@ -30,24 +50,37 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
       const newImageUrls: string[] = [];
       
       try {
-        for (const file of Array.from(files)) {
-          // Check file size (limit to 5MB)
-          if (file.size > 5 * 1024 * 1024) {
+        for (const originalFile of Array.from(files)) {
+          // Check if file is an image
+          if (!originalFile.type.startsWith('image/')) {
             toast({
-              title: "File too large",
-              description: `${file.name} is too large. Please use images under 5MB.`,
+              title: "Invalid file type",
+              description: `${originalFile.name} is not an image file.`,
               variant: "destructive",
             });
             continue;
           }
 
-          const uploadedUrl = await uploadImageToSupabase(file);
+          // Compress the image
+          const compressedFile = await compressImage(originalFile);
+
+          // Check compressed file size (should be under 2MB now, but double-check)
+          if (compressedFile.size > 5 * 1024 * 1024) {
+            toast({
+              title: "File still too large",
+              description: `${originalFile.name} is still too large after compression.`,
+              variant: "destructive",
+            });
+            continue;
+          }
+
+          const uploadedUrl = await uploadImageToSupabase(compressedFile);
           if (uploadedUrl) {
             newImageUrls.push(uploadedUrl);
           } else {
             toast({
               title: "Upload failed",
-              description: `Failed to upload ${file.name}`,
+              description: `Failed to upload ${originalFile.name}`,
               variant: "destructive",
             });
           }
@@ -57,13 +90,13 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
           onImageUrlsChange([...imageUrls, ...newImageUrls]);
           toast({
             title: "Images Uploaded",
-            description: `${newImageUrls.length} image(s) uploaded successfully and will persist permanently.`,
+            description: `${newImageUrls.length} image(s) compressed and uploaded successfully.`,
           });
         }
       } catch (error) {
         toast({
           title: "Upload Error",
-          description: "An error occurred while uploading images.",
+          description: "An error occurred while processing images.",
           variant: "destructive",
         });
       } finally {
@@ -132,7 +165,7 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
             </Button>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Upload images to Supabase Storage for permanent hosting. Images will persist after refresh and be publicly accessible.
+            Images are automatically compressed to under 2MB and uploaded to Supabase Storage for permanent hosting.
           </p>
         </div>
 
