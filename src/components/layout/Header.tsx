@@ -45,7 +45,7 @@ const Header = () => {
 
           {/* User Menu */}
           <Button variant="ghost" size="icon" asChild className="hidden md:flex">
-            <Link to="/account">
+            <Link to="/login">
               <User className="h-5 w-5" />
             </Link>
           </Button>
@@ -87,8 +87,8 @@ const Header = () => {
           <Link to="/faq" className="p-2 hover:bg-muted rounded-md">
             FAQ
           </Link>
-          <Link to="/account" className="p-2 hover:bg-muted rounded-md">
-            My Account
+          <Link to="/login" className="p-2 hover:bg-muted rounded-md">
+            Login / Register
           </Link>
         </nav>
       </div>

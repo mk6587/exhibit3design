@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Chrome } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface AuthFormProps {
   type: "login" | "register" | "reset";
@@ -13,16 +15,85 @@ interface AuthFormProps {
 const AuthForm = ({ type }: AuthFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle auth logic here
-    console.log({ type, email, password });
+    setLoading(true);
+    
+    try {
+      if (type === "login") {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Success!",
+          description: "You have been logged in successfully.",
+        });
+        navigate("/");
+        
+      } else if (type === "register") {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`
+          }
+        });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Check your email",
+          description: "We've sent you a confirmation link to complete your registration.",
+        });
+        
+      } else if (type === "reset") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/`,
+        });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Reset link sent",
+          description: "Check your email for a password reset link.",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "An error occurred. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
   
-  const handleGoogleAuth = () => {
-    // Handle Google auth
-    console.log("Google auth clicked");
+  const handleGoogleAuth = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+      
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to authenticate with Google.",
+      });
+    }
   };
   
   return (
@@ -73,10 +144,14 @@ const AuthForm = ({ type }: AuthFormProps) => {
             </div>
           )}
           
-          <Button type="submit" className="w-full">
-            {type === "login" && "Login"}
-            {type === "register" && "Register"}
-            {type === "reset" && "Send Reset Link"}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Loading..." : (
+              <>
+                {type === "login" && "Login"}
+                {type === "register" && "Register"}
+                {type === "reset" && "Send Reset Link"}
+              </>
+            )}
           </Button>
           
           {type !== "reset" && (
@@ -97,9 +172,10 @@ const AuthForm = ({ type }: AuthFormProps) => {
                 variant="outline"
                 className="w-full"
                 onClick={handleGoogleAuth}
+                disabled={loading}
               >
                 <Chrome className="mr-2 h-4 w-4" />
-                Google
+                Continue with Google
               </Button>
             </>
           )}
