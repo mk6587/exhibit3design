@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import ProductGallery from "@/components/product/ProductGallery";
@@ -26,6 +26,11 @@ const ProductDetailPage = () => {
   const [activeTab, setActiveTab] = useState("specifications");
   
   const product = getProductById(parseInt(id!));
+  
+  // Scroll to top when component mounts or product ID changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
   
   // Parse specifications
   const parseSpecifications = (specs: string) => {
