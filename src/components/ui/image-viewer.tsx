@@ -42,11 +42,11 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const handleZoomIn = () => {
-    setScale(prev => Math.min(prev * 1.5, 5));
+    setScale(prev => Math.min(prev * 1.2, 3)); // Max 300%
   };
 
   const handleZoomOut = () => {
-    setScale(prev => Math.max(prev / 1.5, 0.5));
+    setScale(prev => Math.max(prev / 1.2, 0.8)); // Min 80%
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -74,8 +74,8 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
-    const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    setScale(prev => Math.min(Math.max(prev * delta, 0.5), 5));
+    const delta = e.deltaY > 0 ? 0.95 : 1.05;
+    setScale(prev => Math.min(Math.max(prev * delta, 0.8), 3));
   };
 
   const goToPrevious = () => {
@@ -123,7 +123,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-screen max-h-screen w-screen h-screen bg-black/95 border-none p-0 overflow-hidden">
+      <DialogContent className="max-w-4xl max-h-[90vh] w-full bg-white border shadow-xl p-0 overflow-hidden">
         <VisuallyHidden>
           <DialogTitle>{title || 'Image Viewer'}</DialogTitle>
           <DialogDescription>
@@ -131,28 +131,31 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
           </DialogDescription>
         </VisuallyHidden>
         
-        <div className="relative w-full h-full flex flex-col">
+        <div className="relative w-full h-full flex flex-col max-h-[90vh]">
           {/* Header */}
-          <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-4 bg-gradient-to-b from-black/50 to-transparent">
-            <div className="text-white">
-              {title && <h3 className="text-lg font-semibold">{title}</h3>}
-              <p className="text-sm opacity-70">
-                {currentIndex + 1} of {images.length}
-              </p>
+          <div className="flex justify-between items-center p-4 border-b bg-gray-50">
+            <div>
+              {title && <h3 className="text-lg font-semibold text-gray-900">{title}</h3>}
+              {images.length > 1 && (
+                <p className="text-sm text-gray-600">
+                  {currentIndex + 1} of {images.length}
+                </p>
+              )}
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="text-white hover:bg-white/20"
+              className="text-gray-600 hover:bg-gray-200"
             >
-              <X className="h-6 w-6" />
+              <X className="h-5 w-5" />
             </Button>
           </div>
 
           {/* Image Container */}
           <div 
-            className="flex-1 flex items-center justify-center cursor-grab active:cursor-grabbing"
+            className="flex-1 flex items-center justify-center bg-gray-100 cursor-grab active:cursor-grabbing overflow-hidden relative"
+            style={{ minHeight: '400px', maxHeight: 'calc(90vh - 120px)' }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
@@ -166,80 +169,85 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               className="max-w-none transition-transform duration-200 select-none"
               style={{
                 transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
-                cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default'
+                cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
+                maxHeight: 'calc(90vh - 180px)',
+                maxWidth: '100%'
               }}
               draggable={false}
             />
+            
+            {/* Navigation arrows */}
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={goToPrevious}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-700 p-2 rounded-full shadow-lg transition-colors z-10"
+                  aria-label="Previous image"
+                >
+                  ←
+                </button>
+                <button
+                  onClick={goToNext}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-700 p-2 rounded-full shadow-lg transition-colors z-10"
+                  aria-label="Next image"
+                >
+                  →
+                </button>
+              </>
+            )}
           </div>
 
-          {/* Navigation */}
-          {images.length > 1 && (
-            <>
-              <button
-                onClick={goToPrevious}
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-colors"
-                aria-label="Previous image"
-              >
-                ←
-              </button>
-              <button
-                onClick={goToNext}
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-colors"
-                aria-label="Next image"
-              >
-                →
-              </button>
-            </>
-          )}
-
           {/* Controls */}
-          <div className="absolute bottom-0 left-0 right-0 z-10 flex justify-center items-center gap-2 p-4 bg-gradient-to-t from-black/50 to-transparent">
+          <div className="flex justify-center items-center gap-2 p-4 border-t bg-gray-50">
             <Button
-              variant="ghost"
-              size="icon"
+              variant="outline"
+              size="sm"
               onClick={handleZoomOut}
-              disabled={scale <= 0.5}
-              className="text-white hover:bg-white/20"
+              disabled={scale <= 0.8}
+              className="text-gray-700"
               aria-label="Zoom out"
             >
-              <ZoomOut className="h-5 w-5" />
+              <ZoomOut className="h-4 w-4 mr-1" />
+              Zoom Out
             </Button>
             
-            <div className="text-white text-sm px-2">
+            <div className="text-gray-700 text-sm px-3 py-1 bg-gray-200 rounded">
               {Math.round(scale * 100)}%
             </div>
             
             <Button
-              variant="ghost"
-              size="icon"
+              variant="outline"
+              size="sm"
               onClick={handleZoomIn}
-              disabled={scale >= 5}
-              className="text-white hover:bg-white/20"
+              disabled={scale >= 3}
+              className="text-gray-700"
               aria-label="Zoom in"
             >
-              <ZoomIn className="h-5 w-5" />
+              <ZoomIn className="h-4 w-4 mr-1" />
+              Zoom In
             </Button>
             
             <Button
-              variant="ghost"
-              size="icon"
+              variant="outline"
+              size="sm"
               onClick={resetView}
-              className="text-white hover:bg-white/20"
+              className="text-gray-700"
               aria-label="Reset view"
             >
-              <RotateCcw className="h-5 w-5" />
+              <RotateCcw className="h-4 w-4 mr-1" />
+              Reset
             </Button>
           </div>
 
           {/* Thumbnails for multiple images */}
           {images.length > 1 && (
-            <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2 bg-black/50 p-2 rounded-lg">
+            <div className="flex justify-center gap-2 p-3 bg-gray-50 border-t">
               {images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
                   className={`w-12 h-12 rounded overflow-hidden border-2 transition-colors ${
-                    index === currentIndex ? 'border-white' : 'border-transparent opacity-60 hover:opacity-80'
+                    index === currentIndex ? 'border-blue-500' : 'border-gray-300 opacity-60 hover:opacity-80'
                   }`}
                 >
                   <img
