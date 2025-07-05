@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, X } from 'lucide-react';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 interface ImageViewerProps {
@@ -25,8 +25,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const containerRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setCurrentIndex(initialIndex);
@@ -143,7 +142,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] w-full bg-white border shadow-xl p-0 overflow-hidden">
+      <DialogContent className="max-w-4xl w-full h-[90vh] bg-white border shadow-xl p-0 overflow-hidden flex flex-col">
         <VisuallyHidden>
           <DialogTitle>{title || 'Image Viewer'}</DialogTitle>
           <DialogDescription>
@@ -151,27 +150,35 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
           </DialogDescription>
         </VisuallyHidden>
         
-        <div className="relative w-full h-full flex flex-col max-h-[90vh]">
-          {/* Header */}
-          <div className="flex justify-between items-center p-4 border-b bg-gray-50">
-            <div>
-              {title && <h3 className="text-lg font-semibold text-gray-900">{title}</h3>}
-              {images.length > 1 && (
-                <p className="text-sm text-gray-600">
-                  {currentIndex + 1} of {images.length}
-                </p>
-              )}
-            </div>
+        {/* Fixed Header */}
+        <div className="flex justify-between items-center p-4 border-b bg-gray-50 flex-shrink-0">
+          <div>
+            {title && <h3 className="text-lg font-semibold text-gray-900">{title}</h3>}
+            {images.length > 1 && (
+              <p className="text-sm text-gray-600">
+                {currentIndex + 1} of {images.length}
+              </p>
+            )}
           </div>
-
-          {/* Image Container */}
-          <div 
-            ref={containerRef}
-            className="flex-1 flex items-center justify-center bg-gray-100 overflow-hidden relative select-none"
-            style={{ minHeight: '400px', maxHeight: 'calc(90vh - 180px)' }}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
           >
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+
+        {/* Fixed Image Container - This area will never move */}
+        <div className="flex-1 bg-gray-100 relative overflow-hidden">
+          <div 
+            ref={imageContainerRef}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            {/* Zoom/Pan Wrapper - Only this moves */}
             <div
-              className="relative"
+              className="relative select-none"
               style={{
                 transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                 transformOrigin: 'center center',
@@ -185,13 +192,12 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               onWheel={handleWheel}
             >
               <img
-                ref={imageRef}
                 src={images[currentIndex]}
                 alt={`${title || 'Image'} ${currentIndex + 1}`}
-                className="block max-w-none"
+                className="block"
                 style={{
-                  maxHeight: scale <= 1 ? 'calc(90vh - 240px)' : 'none',
-                  maxWidth: scale <= 1 ? 'calc(100vw - 100px)' : 'none',
+                  maxHeight: scale <= 1 ? '70vh' : 'none',
+                  maxWidth: scale <= 1 ? '90vw' : 'none',
                   height: 'auto',
                   width: 'auto'
                 }}
@@ -199,19 +205,21 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               />
             </div>
             
-            {/* Navigation arrows */}
+            {/* Fixed Navigation arrows - Never move */}
             {images.length > 1 && (
               <>
                 <button
                   onClick={goToPrevious}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-700 p-2 rounded-full shadow-lg transition-colors z-10"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-colors z-10"
+                  style={{ position: 'absolute' }}
                   aria-label="Previous image"
                 >
                   ←
                 </button>
                 <button
                   onClick={goToNext}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-700 p-2 rounded-full shadow-lg transition-colors z-10"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-700 p-3 rounded-full shadow-lg transition-colors z-10"
+                  style={{ position: 'absolute' }}
                   aria-label="Next image"
                 >
                   →
@@ -219,70 +227,70 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               </>
             )}
           </div>
-
-          {/* Controls */}
-          <div className="flex justify-center items-center gap-2 p-4 border-t bg-gray-50">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleZoomOut}
-              disabled={scale <= 0.8}
-              className="text-gray-700"
-              aria-label="Zoom out"
-            >
-              <ZoomOut className="h-4 w-4 mr-1" />
-              Zoom Out
-            </Button>
-            
-            <div className="text-gray-700 text-sm px-3 py-1 bg-gray-200 rounded">
-              {Math.round(scale * 100)}%
-            </div>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleZoomIn}
-              disabled={scale >= 3}
-              className="text-gray-700"
-              aria-label="Zoom in"
-            >
-              <ZoomIn className="h-4 w-4 mr-1" />
-              Zoom In
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={resetView}
-              className="text-gray-700"
-              aria-label="Reset view"
-            >
-              <RotateCcw className="h-4 w-4 mr-1" />
-              Reset
-            </Button>
-          </div>
-
-          {/* Thumbnails for multiple images */}
-          {images.length > 1 && (
-            <div className="flex justify-center gap-2 p-3 bg-gray-50 border-t">
-              {images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`w-12 h-12 rounded overflow-hidden border-2 transition-colors ${
-                    index === currentIndex ? 'border-blue-500' : 'border-gray-300 opacity-60 hover:opacity-80'
-                  }`}
-                >
-                  <img
-                    src={image}
-                    alt={`Thumbnail ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          )}
         </div>
+
+        {/* Fixed Controls Footer - Never moves */}
+        <div className="flex justify-center items-center gap-2 p-4 border-t bg-gray-50 flex-shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleZoomOut}
+            disabled={scale <= 0.8}
+            className="text-gray-700"
+            aria-label="Zoom out"
+          >
+            <ZoomOut className="h-4 w-4 mr-1" />
+            Zoom Out
+          </Button>
+          
+          <div className="text-gray-700 text-sm px-3 py-1 bg-gray-200 rounded">
+            {Math.round(scale * 100)}%
+          </div>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleZoomIn}
+            disabled={scale >= 3}
+            className="text-gray-700"
+            aria-label="Zoom in"
+          >
+            <ZoomIn className="h-4 w-4 mr-1" />
+            Zoom In
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={resetView}
+            className="text-gray-700"
+            aria-label="Reset view"
+          >
+            <RotateCcw className="h-4 w-4 mr-1" />
+            Reset
+          </Button>
+        </div>
+
+        {/* Fixed Thumbnails - Never move */}
+        {images.length > 1 && (
+          <div className="flex justify-center gap-2 p-3 bg-gray-50 border-t flex-shrink-0 overflow-x-auto">
+            {images.map((image, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-12 h-12 rounded overflow-hidden border-2 transition-colors flex-shrink-0 ${
+                  index === currentIndex ? 'border-blue-500' : 'border-gray-300 opacity-60 hover:opacity-80'
+                }`}
+              >
+                <img
+                  src={image}
+                  alt={`Thumbnail ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            ))}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
