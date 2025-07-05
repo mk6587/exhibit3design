@@ -180,8 +180,11 @@ if (supabaseUrl && supabaseAnonKey) {
       select: () => ({
         order: () => Promise.resolve({ data: fallbackProducts, error: null })
       }),
-      update: () => ({
-        eq: () => Promise.resolve({ error: null }),
+      update: (updateData) => ({
+        eq: (field, value) => {
+          console.log('Mock update successful for product:', value);
+          return Promise.resolve({ data: [updateData], error: null });
+        },
       }),
       insert: () => Promise.resolve({ error: null }),
       delete: () => ({
