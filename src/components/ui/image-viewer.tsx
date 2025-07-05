@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ZoomIn, ZoomOut, X, RotateCcw } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 interface ImageViewerProps {
@@ -42,11 +42,21 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const handleZoomIn = () => {
-    setScale(prev => Math.min(prev * 1.2, 3)); // Max 300%
+    const newScale = Math.min(scale * 1.2, 3);
+    setScale(newScale);
+    // Keep image centered when zooming
+    if (newScale === 1) {
+      setPosition({ x: 0, y: 0 });
+    }
   };
 
   const handleZoomOut = () => {
-    setScale(prev => Math.max(prev / 1.2, 0.8)); // Min 80%
+    const newScale = Math.max(scale / 1.2, 0.8);
+    setScale(newScale);
+    // Reset position when zooming out to normal size
+    if (newScale <= 1) {
+      setPosition({ x: 0, y: 0 });
+    }
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -75,7 +85,13 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? 0.95 : 1.05;
-    setScale(prev => Math.min(Math.max(prev * delta, 0.8), 3));
+    const newScale = Math.min(Math.max(scale * delta, 0.8), 3);
+    setScale(newScale);
+    
+    // Reset position when zooming out to normal size
+    if (newScale <= 1) {
+      setPosition({ x: 0, y: 0 });
+    }
   };
 
   const goToPrevious = () => {
@@ -117,7 +133,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
       document.addEventListener('keydown', handleKeyDown);
       return () => document.removeEventListener('keydown', handleKeyDown);
     }
-  }, [isOpen, currentIndex]);
+  }, [isOpen, currentIndex, scale]);
 
   if (!images.length) return null;
 
@@ -142,20 +158,12 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
                 </p>
               )}
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="text-gray-600 hover:bg-gray-200"
-            >
-              <X className="h-5 w-5" />
-            </Button>
           </div>
 
           {/* Image Container */}
           <div 
             className="flex-1 flex items-center justify-center bg-gray-100 cursor-grab active:cursor-grabbing overflow-hidden relative"
-            style={{ minHeight: '400px', maxHeight: 'calc(90vh - 120px)' }}
+            style={{ minHeight: '400px', maxHeight: 'calc(90vh - 180px)' }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
@@ -170,8 +178,8 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               style={{
                 transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                 cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
-                maxHeight: 'calc(90vh - 180px)',
-                maxWidth: '100%'
+                maxHeight: scale <= 1 ? 'calc(90vh - 240px)' : 'none',
+                maxWidth: scale <= 1 ? '100%' : 'none'
               }}
               draggable={false}
             />
