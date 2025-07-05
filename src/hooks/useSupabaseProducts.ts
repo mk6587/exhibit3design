@@ -239,12 +239,15 @@ export const useSupabaseProducts = () => {
         throw error;
       }
 
-      // Update local state
+      // Update local state immediately
       setProducts(prev => 
         prev.map(product => 
           product.id === updatedProduct.id ? updatedProduct : product
         )
       );
+
+      // Refetch products to ensure all components get updated data
+      await fetchProducts();
 
       toast({
         title: "Success",
