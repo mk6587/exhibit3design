@@ -151,6 +151,7 @@ const AdminProductEditPage = () => {
                   contentType="basic-info"
                   onContentGenerated={(content) => handleAIContentGenerated(content, 'description')}
                   currentContent={product.description}
+                  productImages={imageUrls}
                 />
                 
                 <div className="grid gap-4">
@@ -220,6 +221,7 @@ const AdminProductEditPage = () => {
                   contentType="description"
                   onContentGenerated={(content) => handleAIContentGenerated(content, 'longDescription')}
                   currentContent={product.longDescription}
+                  productImages={imageUrls}
                 />
                 
                 <div>
@@ -241,6 +243,7 @@ const AdminProductEditPage = () => {
                   contentType="specification"
                   onContentGenerated={(content) => handleAIContentGenerated(content, 'specifications')}
                   currentContent={product.specifications}
+                  productImages={imageUrls}
                 />
                 
                 <div>
