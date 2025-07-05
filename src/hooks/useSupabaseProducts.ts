@@ -18,6 +18,36 @@ export interface Product {
   updated_at?: string;
 }
 
+// Fallback data in case Supabase is not available
+const fallbackProducts: Product[] = [
+  {
+    id: 1,
+    title: "Modern Exhibition Stand Design",
+    price: 299,
+    description: "A sleek and modern exhibition stand perfect for tech companies and startups.",
+    long_description: "<p>This modern exhibition stand design features clean lines and contemporary aesthetics.</p>",
+    specifications: JSON.stringify({
+      dimensions: "6m x 3m",
+      height: "3m",
+      layout: "Open concept",
+      lighting: "LED spotlights",
+      specifications: {
+        infoDesk: true,
+        storage: true,
+        screen: true,
+        kitchen: false,
+        seatingArea: true,
+        meetingRoom: false,
+        hangingBanner: true
+      }
+    }),
+    images: ["https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"],
+    tags: ["Modern", "Tech", "Minimalist"],
+    file_size: "45MB",
+    featured: true
+  }
+];
+
 export const useSupabaseProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,20 +57,27 @@ export const useSupabaseProducts = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
+      console.log('Fetching products from Supabase...');
+      
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .order('id', { ascending: true });
 
-      if (error) throw error;
-      setProducts(data || []);
+      if (error) {
+        console.error('Supabase error:', error);
+        // Use fallback data if Supabase fails
+        setProducts(fallbackProducts);
+        console.log('Using fallback products data');
+      } else {
+        console.log('Products fetched successfully:', data?.length || 0);
+        setProducts(data || fallbackProducts);
+      }
     } catch (error) {
       console.error('Error fetching products:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load products",
-        variant: "destructive",
-      });
+      // Use fallback data on any error
+      setProducts(fallbackProducts);
+      console.log('Using fallback products due to error');
     } finally {
       setLoading(false);
     }
@@ -49,6 +86,8 @@ export const useSupabaseProducts = () => {
   // Update a product
   const updateProduct = async (updatedProduct: Product) => {
     try {
+      console.log('Updating product:', updatedProduct.id);
+      
       const { error } = await supabase
         .from('products')
         .update({
@@ -65,7 +104,10 @@ export const useSupabaseProducts = () => {
         })
         .eq('id', updatedProduct.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Update error:', error);
+        throw error;
+      }
 
       // Update local state
       setProducts(prev => 
