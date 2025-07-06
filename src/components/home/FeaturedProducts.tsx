@@ -1,15 +1,17 @@
-
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { useProducts } from "@/contexts/ProductsContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ImageViewer from "@/components/ui/image-viewer";
+import CachedImage from "@/components/ui/cached-image";
+import { useImagePreloader } from "@/hooks/useImageCache";
 import "@/components/ui/rich-text-editor.css";
 
 const FeaturedProducts = () => {
   const { products, loading } = useProducts();
+  const { preloadImages } = useImagePreloader();
   const [imageViewerState, setImageViewerState] = useState({
     isOpen: false,
     images: [] as string[],
@@ -19,6 +21,17 @@ const FeaturedProducts = () => {
   
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
+
+  // Preload featured product images
+  useEffect(() => {
+    if (featuredProducts.length > 0) {
+      const imageUrls = featuredProducts
+        .flatMap(product => product.images)
+        .filter(url => url && !url.startsWith('blob:'));
+      
+      preloadImages(imageUrls);
+    }
+  }, [featuredProducts, preloadImages]);
 
   const handleImageClick = (product: any, e: React.MouseEvent) => {
     // Only show image viewer if clicked with modifier key (Ctrl/Cmd)
@@ -91,7 +104,7 @@ const FeaturedProducts = () => {
               <Card key={product.id} className="overflow-hidden transition-shadow hover:shadow-lg">
                 <Link to={`/product/${product.id}`}>
                   <div className="aspect-[4/3] overflow-hidden bg-secondary clickable-image-container">
-                    <img
+                    <CachedImage
                       src={
                         product.images[0] && !product.images[0].startsWith('blob:') 
                           ? product.images[0] 
@@ -99,10 +112,8 @@ const FeaturedProducts = () => {
                       }
                       alt={product.title}
                       className="w-full h-full object-cover transition-transform hover:scale-105 cursor-pointer"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
-                      }}
                       onClick={(e) => handleImageClick(product, e)}
+                      skeletonClassName="w-full h-full"
                     />
                   </div>
                 </Link>
