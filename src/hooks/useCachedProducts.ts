@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase, Product } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
+
 import { cache } from '@/lib/cache';
-import { Product } from '@/hooks/useSupabaseProducts';
 
 const PRODUCTS_CACHE_KEY = 'products_list';
 const PRODUCTS_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
@@ -17,7 +17,7 @@ export const useCachedProducts = () => {
   const fetchProducts = async (forceRefresh = false) => {
     try {
       setLoading(true);
-      console.log('Fetching products with cache...');
+      console.log('Fetching products with cache...', { forceRefresh, loading });
       
       // Check cache first unless forcing refresh
       if (!forceRefresh) {
@@ -140,6 +140,7 @@ export const useCachedProducts = () => {
   };
 
   useEffect(() => {
+    console.log('useCachedProducts: Starting initial fetch...');
     fetchProducts();
   }, []);
 
