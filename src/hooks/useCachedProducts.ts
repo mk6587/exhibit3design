@@ -181,18 +181,8 @@ export const useCachedProducts = () => {
   };
 
   useEffect(() => {
-    console.log('useCachedProducts: Initial load');
     fetchProducts();
   }, []);
-
-  // Add debug logging
-  useEffect(() => {
-    console.log('useCachedProducts state changed:', { 
-      productsCount: products.length, 
-      loading,
-      firstProduct: products[0]?.title 
-    });
-  }, [products, loading]);
 
   return {
     products,
