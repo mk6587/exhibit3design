@@ -5,11 +5,14 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { useProducts } from '@/contexts/ProductsContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogOut, Edit, Eye } from 'lucide-react';
+import { LogOut, Edit, Eye, RefreshCw } from 'lucide-react';
+import { cache } from '@/lib/cache';
+import { useToast } from '@/hooks/use-toast';
 
 const AdminPage = () => {
   const { isAuthenticated, isAdmin, logout, user } = useAdmin();
-  const { products, loading } = useProducts();
+  const { products, loading, refreshProducts } = useProducts();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,6 +24,28 @@ const AdminPage = () => {
   const handleLogout = async () => {
     await logout();
     navigate('/admin/login');
+  };
+
+  const handleClearCache = async () => {
+    try {
+      // Clear all caches
+      cache.clearAll();
+      
+      // Refresh products from server
+      await refreshProducts();
+      
+      toast({
+        title: "Success",
+        description: "Cache cleared successfully. All data refreshed from server.",
+      });
+    } catch (error) {
+      console.error('Error clearing cache:', error);
+      toast({
+        title: "Error",
+        description: "Failed to clear cache. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (!isAuthenticated || !isAdmin) {
@@ -49,10 +74,16 @@ const AdminPage = () => {
                 Welcome, {user?.email}
               </p>
             </div>
-            <Button onClick={handleLogout} variant="outline">
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={handleClearCache} variant="outline">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Clear Cache
+              </Button>
+              <Button onClick={handleLogout} variant="outline">
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </header>

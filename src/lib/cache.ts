@@ -1,4 +1,3 @@
-
 interface CacheItem<T> {
   data: T;
   timestamp: number;
@@ -99,6 +98,23 @@ class Cache {
       });
     } catch (error) {
       console.warn('Failed to clear localStorage cache:', error);
+    }
+  }
+
+  // Hard clear all caches including image cache
+  clearAll(): void {
+    this.clear();
+    // Also clear any blob URLs that might be cached
+    try {
+      // Clear any cached image blob URLs
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('image_') || key.startsWith(this.STORAGE_PREFIX)) {
+          localStorage.removeItem(key);
+        }
+      });
+    } catch (error) {
+      console.warn('Failed to clear all caches:', error);
     }
   }
 
