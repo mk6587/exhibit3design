@@ -57,30 +57,48 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   }, [isOpen]);
 
   const resetView = () => {
-    setScale(0.5); // Changed from 1 to 0.5 (50%)
+    // Calculate optimal scale to fit the entire image
+    if (imageSize.width && imageSize.height && containerSize.width && containerSize.height) {
+      const scaleToFitWidth = containerSize.width / imageSize.width;
+      const scaleToFitHeight = containerSize.height / imageSize.height;
+      const optimalScale = Math.min(scaleToFitWidth, scaleToFitHeight, 1); // Don't exceed 100%
+      setScale(Math.max(optimalScale, 0.25)); // Minimum 25% scale
+    } else {
+      setScale(0.8); // Default to 80% if sizes not available
+    }
     setPosition({ x: 0, y: 0 });
   };
 
   const handleImageLoad = () => {
-    if (imageRef.current) {
+    if (imageRef.current && containerSize.width && containerSize.height) {
       const { naturalWidth, naturalHeight } = imageRef.current;
-      const { width: containerWidth, height: containerHeight } = containerSize;
       
-      // Calculate the display size at scale 1
-      const aspectRatio = naturalWidth / naturalHeight;
+      // Calculate the display size to fit the image properly in the container
+      const containerAspectRatio = containerSize.width / containerSize.height;
+      const imageAspectRatio = naturalWidth / naturalHeight;
+      
       let displayWidth, displayHeight;
       
-      if (containerWidth / containerHeight > aspectRatio) {
-        // Container is wider, fit to height
-        displayHeight = Math.min(containerHeight * 0.9, naturalHeight);
-        displayWidth = displayHeight * aspectRatio;
+      if (imageAspectRatio > containerAspectRatio) {
+        // Image is wider relative to container, fit to width with some padding
+        displayWidth = containerSize.width * 0.9;
+        displayHeight = displayWidth / imageAspectRatio;
       } else {
-        // Container is taller, fit to width
-        displayWidth = Math.min(containerWidth * 0.9, naturalWidth);
-        displayHeight = displayWidth / aspectRatio;
+        // Image is taller relative to container, fit to height with some padding
+        displayHeight = containerSize.height * 0.9;
+        displayWidth = displayHeight * imageAspectRatio;
       }
       
       setImageSize({ width: displayWidth, height: displayHeight });
+      
+      // Auto-reset view to show full image after size calculation
+      setTimeout(() => {
+        const scaleToFitWidth = containerSize.width / displayWidth;
+        const scaleToFitHeight = containerSize.height / displayHeight;
+        const optimalScale = Math.min(scaleToFitWidth, scaleToFitHeight, 1);
+        setScale(Math.max(optimalScale * 0.9, 0.25)); // 90% of optimal with padding
+        setPosition({ x: 0, y: 0 });
+      }, 50);
     }
   };
 
@@ -290,10 +308,10 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
                 alt={`${title || 'Image'} ${currentIndex + 1}`}
                 className="block max-w-none"
                 style={{
-                  maxHeight: scale <= 0.5 ? '70vh' : 'none',
-                  maxWidth: scale <= 0.5 ? '90vw' : 'none',
                   height: 'auto',
-                  width: 'auto'
+                  width: 'auto',
+                  maxWidth: '100%',
+                  maxHeight: '100%'
                 }}
                 draggable={false}
                 onLoad={handleImageLoad}
