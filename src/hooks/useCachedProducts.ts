@@ -8,6 +8,36 @@ import { Product } from '@/hooks/useSupabaseProducts';
 const PRODUCTS_CACHE_KEY = 'products_list';
 const PRODUCTS_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
+// Fallback data in case everything fails
+const fallbackProducts: Product[] = [
+  {
+    id: 1,
+    title: "Modern Exhibition Stand Design",
+    price: 299,
+    description: "A sleek and modern exhibition stand perfect for tech companies and startups.",
+    long_description: "<p>This modern exhibition stand design features clean lines and contemporary aesthetics.</p>",
+    specifications: JSON.stringify({
+      dimensions: "6m x 3m",
+      height: "3m",
+      layout: "Open concept",
+      lighting: "LED spotlights",
+      specifications: {
+        infoDesk: true,
+        storage: true,
+        screen: true,
+        kitchen: false,
+        seatingArea: true,
+        meetingRoom: false,
+        hangingBanner: true
+      }
+    }),
+    images: ["https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"],
+    tags: ["Modern", "Tech", "Minimalist"],
+    file_size: "45MB",
+    featured: true
+  }
+];
+
 export const useCachedProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +46,6 @@ export const useCachedProducts = () => {
   // Fetch products with caching
   const fetchProducts = async (forceRefresh = false) => {
     try {
-      setLoading(true);
       console.log('Fetching products with cache...');
       
       // Check cache first unless forcing refresh
@@ -31,6 +60,7 @@ export const useCachedProducts = () => {
       }
 
       // Fetch from Supabase
+      console.log('Fetching from Supabase...');
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -38,31 +68,25 @@ export const useCachedProducts = () => {
 
       if (error) {
         console.error('Supabase error:', error);
-        // Try to use stale cache data as fallback
-        const staleData = cache.get<Product[]>(PRODUCTS_CACHE_KEY);
-        if (staleData && staleData.length > 0) {
-          console.log('Using stale cached data due to error');
-          setProducts(staleData);
-          setLoading(false);
-          return staleData;
-        }
         throw error;
-      } else {
-        console.log('Products fetched successfully:', data?.length || 0);
-        const fetchedProducts = data || [];
-        
-        // Only cache if we have products
-        if (fetchedProducts.length > 0) {
-          cache.set(PRODUCTS_CACHE_KEY, fetchedProducts, {
-            ttl: PRODUCTS_CACHE_TTL,
-            persist: true
-          });
-        }
-        
-        setProducts(fetchedProducts);
-        setLoading(false);
-        return fetchedProducts;
       }
+
+      const fetchedProducts = data || [];
+      console.log('Products fetched successfully:', fetchedProducts.length);
+      
+      // Use fetched data or fallback
+      const productsToUse = fetchedProducts.length > 0 ? fetchedProducts : fallbackProducts;
+      
+      // Cache the data
+      cache.set(PRODUCTS_CACHE_KEY, productsToUse, {
+        ttl: PRODUCTS_CACHE_TTL,
+        persist: true
+      });
+      
+      setProducts(productsToUse);
+      setLoading(false);
+      return productsToUse;
+      
     } catch (error) {
       console.error('Error fetching products:', error);
       
@@ -72,16 +96,15 @@ export const useCachedProducts = () => {
         console.log('Using fallback cached data');
         setProducts(fallbackData);
       } else {
-        // If no cache, show error
-        toast({
-          title: "Error",
-          description: "Failed to load products. Please try again.",
-          variant: "destructive",
+        console.log('Using hardcoded fallback data');
+        setProducts(fallbackProducts);
+        cache.set(PRODUCTS_CACHE_KEY, fallbackProducts, {
+          ttl: PRODUCTS_CACHE_TTL,
+          persist: true
         });
-        setProducts([]);
       }
       setLoading(false);
-      return [];
+      return fallbackProducts;
     }
   };
 

@@ -29,7 +29,6 @@ interface ProductsProviderProps {
 export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) => {
   const cachedProducts = useCachedProducts();
 
-  // Add some debugging
   console.log('ProductsProvider rendering with:', {
     productsCount: cachedProducts.products.length,
     loading: cachedProducts.loading
