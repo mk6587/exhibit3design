@@ -45,13 +45,20 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     const updateContainerSize = () => {
       if (imageContainerRef.current) {
         const rect = imageContainerRef.current.getBoundingClientRect();
-        setContainerSize({ width: rect.width, height: rect.height });
-        console.log('Container size updated:', { width: rect.width, height: rect.height });
+        const newSize = { width: rect.width, height: rect.height };
+        setContainerSize(newSize);
+        console.log('Container size updated:', newSize);
+        
+        // Recalculate image size if image is loaded
+        if (imageRef.current && imageRef.current.complete) {
+          calculateImageSize(newSize);
+        }
       }
     };
 
     if (isOpen) {
-      updateContainerSize();
+      // Use setTimeout to ensure DOM is ready
+      setTimeout(updateContainerSize, 100);
       window.addEventListener('resize', updateContainerSize);
       return () => window.removeEventListener('resize', updateContainerSize);
     }
@@ -64,30 +71,43 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     setIsDragging(false);
   };
 
-  const handleImageLoad = () => {
-    if (imageRef.current) {
+  const calculateImageSize = (containerSizeToUse = containerSize) => {
+    if (imageRef.current && containerSizeToUse.width > 0 && containerSizeToUse.height > 0) {
       const { naturalWidth, naturalHeight } = imageRef.current;
-      const { width: containerWidth, height: containerHeight } = containerSize;
       
-      console.log('Image loaded:', { naturalWidth, naturalHeight, containerWidth, containerHeight });
+      console.log('Calculating image size:', { 
+        naturalWidth, 
+        naturalHeight, 
+        containerWidth: containerSizeToUse.width, 
+        containerHeight: containerSizeToUse.height 
+      });
       
       // Calculate the display size at scale 1
       const aspectRatio = naturalWidth / naturalHeight;
       let displayWidth, displayHeight;
       
-      if (containerWidth / containerHeight > aspectRatio) {
+      if (containerSizeToUse.width / containerSizeToUse.height > aspectRatio) {
         // Container is wider, fit to height
-        displayHeight = Math.min(containerHeight * 0.9, naturalHeight);
+        displayHeight = Math.min(containerSizeToUse.height * 0.9, naturalHeight);
         displayWidth = displayHeight * aspectRatio;
       } else {
         // Container is taller, fit to width
-        displayWidth = Math.min(containerWidth * 0.9, naturalWidth);
+        displayWidth = Math.min(containerSizeToUse.width * 0.9, naturalWidth);
         displayHeight = displayWidth / aspectRatio;
       }
       
-      setImageSize({ width: displayWidth, height: displayHeight });
-      console.log('Image size set:', { width: displayWidth, height: displayHeight });
+      const newImageSize = { width: displayWidth, height: displayHeight };
+      setImageSize(newImageSize);
+      console.log('Image size calculated and set:', newImageSize);
+      
+      return newImageSize;
     }
+    return null;
+  };
+
+  const handleImageLoad = () => {
+    console.log('Image loaded, calculating size...');
+    calculateImageSize();
   };
 
   const constrainPosition = (newX: number, newY: number, currentScale: number) => {
@@ -96,8 +116,21 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
       return { x: 0, y: 0 };
     }
     
-    const scaledImageWidth = imageSize.width * currentScale;
-    const scaledImageHeight = imageSize.height * currentScale;
+    // Use current imageSize or recalculate if needed
+    let currentImageSize = imageSize;
+    if (currentImageSize.width === 0 || currentImageSize.height === 0) {
+      console.log('Image size not set, attempting to calculate...');
+      const calculated = calculateImageSize();
+      currentImageSize = calculated || { width: 0, height: 0 };
+    }
+    
+    if (currentImageSize.width === 0 || currentImageSize.height === 0) {
+      console.log('Cannot constrain position - image size still 0');
+      return { x: 0, y: 0 };
+    }
+    
+    const scaledImageWidth = currentImageSize.width * currentScale;
+    const scaledImageHeight = currentImageSize.height * currentScale;
     
     const maxX = Math.max(0, (scaledImageWidth - containerSize.width) / 2);
     const maxY = Math.max(0, (scaledImageHeight - containerSize.height) / 2);
@@ -111,7 +144,8 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
       input: { newX, newY },
       output: constrainedPos,
       constraints: { maxX, maxY },
-      scaledImageSize: { scaledImageWidth, scaledImageHeight }
+      scaledImageSize: { scaledImageWidth, scaledImageHeight },
+      currentImageSize
     });
     
     return constrainedPos;
@@ -134,9 +168,9 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    console.log('Mouse down triggered:', { scale, canDrag: scale > 0.5 });
+    console.log('Mouse down triggered:', { scale, canDrag: scale > 0.5, imageSize });
     
-    if (scale > 0.5) {
+    if (scale > 0.5 && (imageSize.width > 0 && imageSize.height > 0)) {
       e.preventDefault();
       e.stopPropagation();
       
@@ -153,6 +187,8 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
       
       setIsDragging(true);
       setDragStart(startPos);
+    } else {
+      console.log('Cannot start drag - either scale too low or image size not set');
     }
   };
 
@@ -286,7 +322,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     scale, 
     position, 
     isDragging, 
-    canDrag: scale > 0.5,
+    canDrag: scale > 0.5 && imageSize.width > 0,
     imageSize,
     containerSize 
   });
@@ -326,7 +362,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
                 transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                 transformOrigin: 'center center',
                 transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-                cursor: scale > 0.5 ? (isDragging ? 'grabbing' : 'grab') : 'default',
+                cursor: scale > 0.5 && imageSize.width > 0 ? (isDragging ? 'grabbing' : 'grab') : 'default',
                 width: 'fit-content',
                 height: 'fit-content'
               }}
