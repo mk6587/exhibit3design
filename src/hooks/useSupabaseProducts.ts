@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 
 export interface Product {
@@ -179,12 +179,12 @@ const fallbackProducts: Product[] = [
 ];
 
 export const useSupabaseProducts = () => {
-  const [products, setProducts] = useState<Product[]>(fallbackProducts);
-  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   // Fetch all products
-  const fetchProducts = async (): Promise<Product[]> => {
+  const fetchProducts = async () => {
     try {
       setLoading(true);
       console.log('Fetching products from Supabase...');
@@ -194,26 +194,20 @@ export const useSupabaseProducts = () => {
         .select('*')
         .order('id', { ascending: true });
 
-      console.log('Supabase response:', { data: data?.length, error });
-
       if (error) {
         console.error('Supabase error:', error);
         // Use fallback data if Supabase fails
-        console.log('Using fallback products data');
         setProducts(fallbackProducts);
-        return fallbackProducts;
+        console.log('Using fallback products data');
       } else {
         console.log('Products fetched successfully:', data?.length || 0);
-        const products = data || fallbackProducts;
-        setProducts(products);
-        return products;
+        setProducts(data || fallbackProducts);
       }
     } catch (error) {
       console.error('Error fetching products:', error);
       // Use fallback data on any error
-      console.log('Using fallback products due to error');
       setProducts(fallbackProducts);
-      return fallbackProducts;
+      console.log('Using fallback products due to error');
     } finally {
       setLoading(false);
     }
@@ -270,7 +264,7 @@ export const useSupabaseProducts = () => {
   };
 
   // Get product by ID
-  const getProductById = (id: number): Product | undefined => {
+  const getProductById = (id: number) => {
     return products.find(product => product.id === id);
   };
 

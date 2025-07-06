@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -98,6 +99,9 @@ const FeaturedProducts = () => {
                       }
                       alt={product.title}
                       className="w-full h-full object-cover transition-transform hover:scale-105 cursor-pointer"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
+                      }}
                       onClick={(e) => handleImageClick(product, e)}
                     />
                   </div>

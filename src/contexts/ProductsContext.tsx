@@ -7,7 +7,7 @@ interface ProductsContextType {
   loading: boolean;
   updateProduct: (updatedProduct: Product) => Promise<void>;
   getProductById: (id: number) => Product | undefined;
-  refetch: () => Promise<Product[]>;
+  refetch: () => Promise<void>;
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);

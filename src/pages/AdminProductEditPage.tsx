@@ -16,16 +16,10 @@ import ProductImagesTab from '@/components/admin/ProductImagesTab';
 
 const AdminProductEditPage = () => {
   const { id } = useParams<{ id: string }>();
-  const { isAuthenticated, isAdmin } = useAdmin();
+  const { isAuthenticated } = useAdmin();
   const { getProductById, updateProduct, loading } = useProducts();
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (!isAuthenticated || !isAdmin) {
-      navigate('/admin/login');
-    }
-  }, [isAuthenticated, isAdmin, navigate]);
 
   const originalProduct = getProductById(parseInt(id!));
   const [product, setProduct] = useState<Product>(originalProduct || {
@@ -43,6 +37,12 @@ const AdminProductEditPage = () => {
   const [imageUrls, setImageUrls] = useState(product.images);
   const [specificImageUrl, setSpecificImageUrl] = useState('');
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/admin/login');
+    }
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     if (originalProduct) {
@@ -84,7 +84,7 @@ const AdminProductEditPage = () => {
     }
   };
 
-  if (!isAuthenticated || !isAdmin || loading) {
+  if (!isAuthenticated || loading) {
     return null;
   }
 

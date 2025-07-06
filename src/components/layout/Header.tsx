@@ -1,36 +1,17 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Search, User, Menu, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
-import { User as SupabaseUser } from "@supabase/supabase-js";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [user, setUser] = useState<SupabaseUser | null>(null);
   
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
-
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null);
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   return (
     <header className="border-b sticky top-0 bg-background z-40">
@@ -64,7 +45,7 @@ const Header = () => {
 
           {/* User Menu */}
           <Button variant="ghost" size="icon" asChild className="hidden md:flex">
-            <Link to={user ? "/profile" : "/login"}>
+            <Link to="/account">
               <User className="h-5 w-5" />
             </Link>
           </Button>
@@ -106,8 +87,8 @@ const Header = () => {
           <Link to="/faq" className="p-2 hover:bg-muted rounded-md">
             FAQ
           </Link>
-          <Link to={user ? "/profile" : "/login"} className="p-2 hover:bg-muted rounded-md">
-            {user ? "Profile" : "Login / Register"}
+          <Link to="/account" className="p-2 hover:bg-muted rounded-md">
+            My Account
           </Link>
         </nav>
       </div>

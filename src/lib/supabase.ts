@@ -170,16 +170,28 @@ const fallbackProducts = [
 // Create a fallback client if environment variables are missing
 let supabase;
 if (supabaseUrl && supabaseAnonKey) {
-  try {
-    supabase = createClient(supabaseUrl, supabaseAnonKey);
-    console.log('Supabase client created successfully');
-  } catch (error) {
-    console.error('Failed to create Supabase client:', error);
-    supabase = null;
-  }
+  supabase = createClient(supabaseUrl, supabaseAnonKey)
+  console.log('Supabase client created successfully')
 } else {
-  console.warn('Supabase environment variables missing. Using fallback mode.');
-  supabase = null;
+  console.warn('Supabase environment variables missing. Using fallback mode.')
+  // Create a mock client that supports proper method chaining
+  supabase = {
+    from: () => ({
+      select: () => ({
+        order: () => Promise.resolve({ data: fallbackProducts, error: null })
+      }),
+      update: (updateData) => ({
+        eq: (field, value) => {
+          console.log('Mock update successful for product:', value);
+          return Promise.resolve({ data: [updateData], error: null });
+        },
+      }),
+      insert: () => Promise.resolve({ error: null }),
+      delete: () => ({
+        eq: () => Promise.resolve({ error: null }),
+      }),
+    })
+  }
 }
 
 export { supabase }

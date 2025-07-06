@@ -7,11 +7,11 @@ const RegisterPage = () => {
     <Layout>
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-md mx-auto">
-          <h1 className="text-3xl font-bold text-center mb-8">Join Exhibit3Design</h1>
+          <h1 className="text-3xl font-bold text-center mb-8">Create an Account</h1>
           <p className="text-center mb-6 text-muted-foreground">
-            Create your account to access affordable exhibition stand design files
+            Join now to access affordable exhibition stand design files that save you time and money
           </p>
-          <AuthForm type="smart" />
+          <AuthForm type="register" />
         </div>
       </div>
     </Layout>

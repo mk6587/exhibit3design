@@ -21,11 +21,12 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   title
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [scale, setScale] = useState(0.5);
+  const [scale, setScale] = useState(0.5); // Changed from 1 to 0.5 (50%)
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
+  const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -39,82 +40,118 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     }
   }, [isOpen, currentIndex]);
 
+  // Update container size on resize
+  useEffect(() => {
+    const updateContainerSize = () => {
+      if (imageContainerRef.current) {
+        const rect = imageContainerRef.current.getBoundingClientRect();
+        setContainerSize({ width: rect.width, height: rect.height });
+      }
+    };
+
+    if (isOpen) {
+      updateContainerSize();
+      window.addEventListener('resize', updateContainerSize);
+      return () => window.removeEventListener('resize', updateContainerSize);
+    }
+  }, [isOpen]);
+
   const resetView = () => {
-    setScale(0.5);
+    setScale(0.5); // Changed from 1 to 0.5 (50%)
     setPosition({ x: 0, y: 0 });
-    setLastPosition({ x: 0, y: 0 });
+  };
+
+  const handleImageLoad = () => {
+    if (imageRef.current) {
+      const { naturalWidth, naturalHeight } = imageRef.current;
+      const { width: containerWidth, height: containerHeight } = containerSize;
+      
+      // Calculate the display size at scale 1
+      const aspectRatio = naturalWidth / naturalHeight;
+      let displayWidth, displayHeight;
+      
+      if (containerWidth / containerHeight > aspectRatio) {
+        // Container is wider, fit to height
+        displayHeight = Math.min(containerHeight * 0.9, naturalHeight);
+        displayWidth = displayHeight * aspectRatio;
+      } else {
+        // Container is taller, fit to width
+        displayWidth = Math.min(containerWidth * 0.9, naturalWidth);
+        displayHeight = displayWidth / aspectRatio;
+      }
+      
+      setImageSize({ width: displayWidth, height: displayHeight });
+    }
+  };
+
+  const constrainPosition = (newX: number, newY: number, currentScale: number) => {
+    if (currentScale <= 0.5) return { x: 0, y: 0 }; // Changed from 1 to 0.5
+    
+    const scaledImageWidth = imageSize.width * currentScale;
+    const scaledImageHeight = imageSize.height * currentScale;
+    
+    const maxX = Math.max(0, (scaledImageWidth - containerSize.width) / 2);
+    const maxY = Math.max(0, (scaledImageHeight - containerSize.height) / 2);
+    
+    return {
+      x: Math.max(-maxX, Math.min(maxX, newX)),
+      y: Math.max(-maxY, Math.min(maxY, newY))
+    };
   };
 
   const handleZoomIn = () => {
     const newScale = Math.min(scale * 1.2, 3);
     setScale(newScale);
+    const constrainedPos = constrainPosition(position.x, position.y, newScale);
+    setPosition(constrainedPos);
   };
 
   const handleZoomOut = () => {
-    const newScale = Math.max(scale / 1.2, 0.25);
+    const newScale = Math.max(scale / 1.2, 0.25); // Changed from 0.5 to 0.25 to allow more zoom out
     setScale(newScale);
-    if (newScale <= 0.5) {
-      setPosition({ x: 0, y: 0 });
-      setLastPosition({ x: 0, y: 0 });
-    }
+    const constrainedPos = constrainPosition(position.x, position.y, newScale);
+    setPosition(constrainedPos);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (scale > 0.5) {
+    if (scale > 0.5) { // Changed from 1 to 0.5
       e.preventDefault();
+      e.stopPropagation();
       setIsDragging(true);
-      setDragStart({ x: e.clientX, y: e.clientY });
-      setLastPosition(position);
-    }
-  };
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (isDragging && scale > 0.5) {
-      e.preventDefault();
-      const deltaX = e.clientX - dragStart.x;
-      const deltaY = e.clientY - dragStart.y;
-      
-      setPosition({
-        x: lastPosition.x + deltaX,
-        y: lastPosition.y + deltaY
+      setDragStart({
+        x: e.clientX - position.x,
+        y: e.clientY - position.y
       });
     }
   };
 
-  const handleMouseUp = (e: MouseEvent) => {
-    if (isDragging) {
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDragging && scale > 0.5) { // Changed from 1 to 0.5
       e.preventDefault();
-      setIsDragging(false);
-      setLastPosition(position);
+      e.stopPropagation();
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+      const constrainedPos = constrainPosition(newX, newY, scale);
+      setPosition(constrainedPos);
     }
   };
 
-  // Set up global mouse event listeners
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      document.body.style.userSelect = 'none';
-
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-        document.body.style.userSelect = '';
-      };
-    }
-  }, [isDragging, dragStart, lastPosition, position, scale]);
+  const handleMouseUp = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     const delta = e.deltaY > 0 ? 0.95 : 1.05;
-    const newScale = Math.min(Math.max(scale * delta, 0.25), 3);
+    const newScale = Math.min(Math.max(scale * delta, 0.25), 3); // Changed from 0.5 to 0.25
     setScale(newScale);
     
-    if (newScale <= 0.5) {
-      setPosition({ x: 0, y: 0 });
-      setLastPosition({ x: 0, y: 0 });
-    }
+    const constrainedPos = constrainPosition(position.x, position.y, newScale);
+    setPosition(constrainedPos);
   };
 
   const goToPrevious = () => {
@@ -188,32 +225,36 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
             ref={imageContainerRef}
             className="absolute inset-0 flex items-center justify-center"
           >
-            {/* Image Wrapper */}
+            {/* Image Wrapper - Only this transforms */}
             <div
-              className="relative flex items-center justify-center select-none"
+              className="relative flex items-center justify-center"
               style={{
-                transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+                transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                 transformOrigin: 'center center',
                 transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-                cursor: scale > 0.5 ? (isDragging ? 'grabbing' : 'grab') : 'default',
+                cursor: scale > 0.5 ? (isDragging ? 'grabbing' : 'grab') : 'default', // Changed from 1 to 0.5
                 width: 'fit-content',
                 height: 'fit-content'
               }}
               onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
               onWheel={handleWheel}
             >
               <img
                 ref={imageRef}
                 src={images[currentIndex]}
                 alt={`${title || 'Image'} ${currentIndex + 1}`}
-                className="block max-w-none select-none"
+                className="block max-w-none"
                 style={{
-                  maxHeight: scale <= 0.5 ? '70vh' : 'none',
-                  maxWidth: scale <= 0.5 ? '90vw' : 'none',
+                  maxHeight: scale <= 0.5 ? '70vh' : 'none', // Changed from 1 to 0.5
+                  maxWidth: scale <= 0.5 ? '90vw' : 'none', // Changed from 1 to 0.5
                   height: 'auto',
                   width: 'auto'
                 }}
                 draggable={false}
+                onLoad={handleImageLoad}
               />
             </div>
             
@@ -246,7 +287,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               variant="outline"
               size="sm"
               onClick={handleZoomOut}
-              disabled={scale <= 0.25}
+              disabled={scale <= 0.25} // Changed from 0.5 to 0.25
               className="text-gray-700"
               aria-label="Zoom out"
             >
@@ -282,7 +323,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
             </Button>
           </div>
           
-          {/* Close button */}
+          {/* Close button moved to footer */}
           <Button
             variant="outline"
             size="sm"

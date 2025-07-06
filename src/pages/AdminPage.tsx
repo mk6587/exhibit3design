@@ -8,22 +8,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { LogOut, Edit, Eye } from 'lucide-react';
 
 const AdminPage = () => {
-  const { isAuthenticated, isAdmin, logout, user } = useAdmin();
+  const { isAuthenticated, logout } = useAdmin();
   const { products, loading } = useProducts();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated || !isAdmin) {
+    if (!isAuthenticated) {
       navigate('/admin/login');
     }
-  }, [isAuthenticated, isAdmin, navigate]);
+  }, [isAuthenticated, navigate]);
 
-  const handleLogout = async () => {
-    await logout();
+  const handleLogout = () => {
+    logout();
     navigate('/admin/login');
   };
 
-  if (!isAuthenticated || !isAdmin) {
+  if (!isAuthenticated) {
     return null;
   }
 
@@ -43,12 +43,7 @@ const AdminPage = () => {
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
-              <p className="text-sm text-gray-600 mt-1">
-                Welcome, {user?.email}
-              </p>
-            </div>
+            <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
             <Button onClick={handleLogout} variant="outline">
               <LogOut className="mr-2 h-4 w-4" />
               Logout

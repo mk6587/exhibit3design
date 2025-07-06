@@ -3,257 +3,41 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
+import { Chrome } from "lucide-react";
 
 interface AuthFormProps {
-  type: "login" | "register" | "reset" | "smart";
+  type: "login" | "register" | "reset";
 }
 
 const AuthForm = ({ type }: AuthFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
-  const navigate = useNavigate();
   
-  // Input validation
-  const validateInput = (email: string, password?: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
-    if (!email || !emailRegex.test(email)) {
-      throw new Error("Please enter a valid email address");
-    }
-    
-    if (password !== undefined && password.length < 6) {
-      throw new Error("Password must be at least 6 characters long");
-    }
-  };
-  
-  const handleSmartAuth = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    
-    try {
-      validateInput(email, password);
-      
-      console.log("Smart auth attempt with email:", email);
-      
-      // First, try to sign in
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      console.log("Sign in attempt result:", { signInData, signInError });
-      
-      if (!signInError && signInData.user) {
-        // Successful login
-        toast({
-          title: "Welcome back!",
-          description: "You have been logged in successfully.",
-        });
-        navigate("/");
-        return;
-      }
-      
-      // If sign in failed, check the error type
-      if (signInError) {
-        console.log("Sign in error message:", signInError.message);
-        
-        // If it's an invalid credentials error, try to determine if user exists
-        if (signInError.message.includes("Invalid login credentials") || 
-            signInError.message.includes("invalid_credentials")) {
-          
-          // Try to sign up (this will fail if user exists with different password)
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              emailRedirectTo: `${window.location.origin}/`
-            }
-          });
-          
-          console.log("Sign up attempt result:", { signUpData, signUpError });
-          
-          if (!signUpError && signUpData.user) {
-            // Successful registration
-            toast({
-              title: "Account created!",
-              description: "Please check your email to confirm your account. The confirmation email is from Exhibit3Design with information about our premium exhibition stand design services.",
-            });
-            return;
-          }
-          
-          if (signUpError) {
-            console.log("Sign up error message:", signUpError.message);
-            
-            // If user already exists, it means wrong password - suggest reset
-            if (signUpError.message.includes("already registered") || 
-                signUpError.message.includes("already been registered")) {
-              
-              toast({
-                title: "Wrong password?",
-                description: "This email exists but password is incorrect. Try password reset.",
-                action: (
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => handlePasswordReset()}
-                  >
-                    Reset Password
-                  </Button>
-                ),
-              });
-              return;
-            }
-          }
-        }
-      }
-      
-      // If we get here, show generic error
-      throw new Error("Authentication failed. Please try again.");
-      
-    } catch (error: any) {
-      console.error("Smart auth error:", error);
-      toast({
-        variant: "destructive",
-        title: "Authentication Error",
-        description: error.message || "Something went wrong. Please try again.",
-      });
-    } finally {
-      setLoading(false);
-    }
+    // Handle auth logic here
+    console.log({ type, email, password });
   };
   
-  const handlePasswordReset = async () => {
-    if (!email) {
-      toast({
-        variant: "destructive",
-        title: "Email required",
-        description: "Please enter your email address first.",
-      });
-      return;
-    }
-    
-    try {
-      validateInput(email);
-      
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/`,
-      });
-      
-      if (error) throw error;
-      
-      toast({
-        title: "Reset link sent",
-        description: "Check your email for a password reset link from Exhibit3Design.",
-      });
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "Failed to send reset email.",
-      });
-    }
-  };
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (type === "smart") {
-      return handleSmartAuth(e);
-    }
-    
-    setLoading(true);
-    
-    try {
-      if (type === "login") {
-        validateInput(email, password);
-        
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        
-        if (error) throw error;
-        
-        toast({
-          title: "Success!",
-          description: "You have been logged in successfully.",
-        });
-        navigate("/");
-        
-      } else if (type === "register") {
-        validateInput(email, password);
-        
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`
-          }
-        });
-        
-        if (error) throw error;
-        
-        toast({
-          title: "Check your email",
-          description: "We've sent you a confirmation link from Exhibit3Design to complete your registration.",
-        });
-        
-      } else if (type === "reset") {
-        validateInput(email);
-        
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/`,
-        });
-        
-        if (error) throw error;
-        
-        toast({
-          title: "Reset link sent",
-          description: "Check your email for a password reset link from Exhibit3Design.",
-        });
-      }
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "An error occurred. Please try again.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  const getTitle = () => {
-    if (type === "smart") return "Sign In or Create Account";
-    if (type === "login") return "Login to Your Account";
-    if (type === "register") return "Create an Account";
-    if (type === "reset") return "Reset Your Password";
-  };
-  
-  const getDescription = () => {
-    if (type === "smart") return "Enter your email and password. We'll automatically log you in or create a new account.";
-    if (type === "login") return "Enter your credentials to access your account";
-    if (type === "register") return "Enter your email and password to create a new account";
-    if (type === "reset") return "Enter your email to receive a password reset link";
-  };
-  
-  const getButtonText = () => {
-    if (type === "smart") return "Continue";
-    if (type === "login") return "Login";
-    if (type === "register") return "Register";
-    if (type === "reset") return "Send Reset Link";
+  const handleGoogleAuth = () => {
+    // Handle Google auth
+    console.log("Google auth clicked");
   };
   
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>{getTitle()}</CardTitle>
-        <CardDescription>{getDescription()}</CardDescription>
+        <CardTitle>
+          {type === "login" && "Login to Your Account"}
+          {type === "register" && "Create an Account"}
+          {type === "reset" && "Reset Your Password"}
+        </CardTitle>
+        <CardDescription>
+          {type === "login" && "Enter your credentials to access your account"}
+          {type === "register" && "Enter your email and password to create a new account"}
+          {type === "reset" && "Enter your email to receive a password reset link"}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -265,7 +49,6 @@ const AuthForm = ({ type }: AuthFormProps) => {
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
-              disabled={loading}
             />
           </div>
           
@@ -278,8 +61,6 @@ const AuthForm = ({ type }: AuthFormProps) => {
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
                 required 
-                disabled={loading}
-                minLength={6}
               />
             </div>
           )}
@@ -292,40 +73,64 @@ const AuthForm = ({ type }: AuthFormProps) => {
             </div>
           )}
           
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Please wait..." : getButtonText()}
+          <Button type="submit" className="w-full">
+            {type === "login" && "Login"}
+            {type === "register" && "Register"}
+            {type === "reset" && "Send Reset Link"}
           </Button>
+          
+          {type !== "reset" && (
+            <>
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+              
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleGoogleAuth}
+              >
+                <Chrome className="mr-2 h-4 w-4" />
+                Google
+              </Button>
+            </>
+          )}
         </form>
       </CardContent>
-      
-      {type !== "smart" && (
-        <CardFooter className="flex justify-center border-t pt-6">
-          {type === "login" && (
-            <p className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
-              <Link to="/register" className="text-primary hover:underline">
-                Register
-              </Link>
-            </p>
-          )}
-          {type === "register" && (
-            <p className="text-sm text-muted-foreground">
-              Already have an account?{" "}
-              <Link to="/login" className="text-primary hover:underline">
-                Login
-              </Link>
-            </p>
-          )}
-          {type === "reset" && (
-            <p className="text-sm text-muted-foreground">
-              Remember your password?{" "}
-              <Link to="/login" className="text-primary hover:underline">
-                Login
-              </Link>
-            </p>
-          )}
-        </CardFooter>
-      )}
+      <CardFooter className="flex justify-center border-t pt-6">
+        {type === "login" && (
+          <p className="text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-primary hover:underline">
+              Register
+            </Link>
+          </p>
+        )}
+        {type === "register" && (
+          <p className="text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link to="/login" className="text-primary hover:underline">
+              Login
+            </Link>
+          </p>
+        )}
+        {type === "reset" && (
+          <p className="text-sm text-muted-foreground">
+            Remember your password?{" "}
+            <Link to="/login" className="text-primary hover:underline">
+              Login
+            </Link>
+          </p>
+        )}
+      </CardFooter>
     </Card>
   );
 };
