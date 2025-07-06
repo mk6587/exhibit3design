@@ -16,10 +16,16 @@ const ProductsPage = () => {
   const [sort, setSort] = useState("latest");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
-  console.log('ProductsPage rendering:', { productsCount: products?.length, loading });
+  console.log('ProductsPage rendering:', { 
+    productsCount: products?.length, 
+    loading,
+    productsArray: Array.isArray(products),
+    firstProduct: products?.[0]?.title
+  });
   
   // Show loading state
   if (loading) {
+    console.log('ProductsPage: Showing loading state');
     return (
       <Layout>
         <div className="container mx-auto px-4 py-12">
@@ -38,8 +44,26 @@ const ProductsPage = () => {
     );
   }
 
-  // Ensure products is an array
+  // Ensure products is an array and has data
   const safeProducts = Array.isArray(products) ? products : [];
+  console.log('ProductsPage: Safe products:', safeProducts.length);
+  
+  if (safeProducts.length === 0) {
+    console.log('ProductsPage: No products available');
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <h1 className="text-3xl font-bold mb-8">Browse Exhibition Stand Designs</h1>
+          <div className="py-12 text-center">
+            <h3 className="text-xl font-medium mb-2">No products available</h3>
+            <p className="text-muted-foreground">
+              Please check back later or contact support if this persists.
+            </p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
   
   // Convert products to match ProductCard interface
   const allProducts: Product[] = safeProducts.map(product => ({
@@ -51,6 +75,8 @@ const ProductsPage = () => {
       : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
     tags: product.tags || []
   }));
+
+  console.log('ProductsPage: Converted products:', allProducts.length);
 
   // Get unique tags from products
   const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags || [])));
@@ -86,6 +112,8 @@ const ProductsPage = () => {
     setSelectedTags([]);
     setSort("latest");
   };
+  
+  console.log('ProductsPage: Rendering products grid with', filteredProducts.length, 'products');
   
   return (
     <Layout>
@@ -155,14 +183,9 @@ const ProductsPage = () => {
           </div>
         ) : (
           <div className="py-12 text-center">
-            <h3 className="text-xl font-medium mb-2">
-              {safeProducts.length === 0 ? "No products available" : "No designs found"}
-            </h3>
+            <h3 className="text-xl font-medium mb-2">No designs found</h3>
             <p className="text-muted-foreground">
-              {safeProducts.length === 0 
-                ? "Please check back later or contact support if this persists." 
-                : "Try adjusting your search or filter criteria"
-              }
+              Try adjusting your search or filter criteria
             </p>
           </div>
         )}

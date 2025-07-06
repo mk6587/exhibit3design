@@ -46,12 +46,12 @@ export const useCachedProducts = () => {
   // Fetch products with caching
   const fetchProducts = async (forceRefresh = false) => {
     try {
-      console.log('Fetching products with cache...');
+      console.log('Fetching products with cache...', { forceRefresh });
       
       // Check cache first unless forcing refresh
       if (!forceRefresh) {
         const cachedProducts = cache.get<Product[]>(PRODUCTS_CACHE_KEY);
-        if (cachedProducts && cachedProducts.length > 0) {
+        if (cachedProducts && Array.isArray(cachedProducts) && cachedProducts.length > 0) {
           console.log('Using cached products:', cachedProducts.length);
           setProducts(cachedProducts);
           setLoading(false);
@@ -68,13 +68,18 @@ export const useCachedProducts = () => {
 
       if (error) {
         console.error('Supabase error:', error);
-        throw error;
+        // Use fallback on error
+        console.log('Using fallback products due to Supabase error');
+        setProducts(fallbackProducts);
+        setLoading(false);
+        return fallbackProducts;
       }
 
       const fetchedProducts = data || [];
       console.log('Products fetched successfully:', fetchedProducts.length);
+      console.log('First product:', fetchedProducts[0]);
       
-      // Use fetched data or fallback
+      // Always use fetched data if available, otherwise fallback
       const productsToUse = fetchedProducts.length > 0 ? fetchedProducts : fallbackProducts;
       
       // Cache the data
@@ -92,7 +97,7 @@ export const useCachedProducts = () => {
       
       // Try to use any cached data as fallback
       const fallbackData = cache.get<Product[]>(PRODUCTS_CACHE_KEY);
-      if (fallbackData && fallbackData.length > 0) {
+      if (fallbackData && Array.isArray(fallbackData) && fallbackData.length > 0) {
         console.log('Using fallback cached data');
         setProducts(fallbackData);
       } else {
@@ -162,18 +167,32 @@ export const useCachedProducts = () => {
 
   // Get product by ID (with caching)
   const getProductById = (id: number) => {
-    return products.find(product => product.id === id);
+    const product = products.find(product => product.id === id);
+    console.log('Getting product by ID:', id, 'Found:', !!product);
+    return product;
   };
 
   // Clear cache and refetch
   const refreshProducts = () => {
+    console.log('Refreshing products - clearing cache');
     cache.delete(PRODUCTS_CACHE_KEY);
+    setLoading(true);
     return fetchProducts(true);
   };
 
   useEffect(() => {
+    console.log('useCachedProducts: Initial load');
     fetchProducts();
   }, []);
+
+  // Add debug logging
+  useEffect(() => {
+    console.log('useCachedProducts state changed:', { 
+      productsCount: products.length, 
+      loading,
+      firstProduct: products[0]?.title 
+    });
+  }, [products, loading]);
 
   return {
     products,

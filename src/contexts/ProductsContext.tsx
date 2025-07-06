@@ -31,7 +31,8 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) 
 
   console.log('ProductsProvider rendering with:', {
     productsCount: cachedProducts.products.length,
-    loading: cachedProducts.loading
+    loading: cachedProducts.loading,
+    hasProducts: cachedProducts.products.length > 0
   });
 
   return (
