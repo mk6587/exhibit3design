@@ -8,26 +8,52 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ProductsPage = () => {
-  const { products } = useProducts();
+  const { products, loading } = useProducts();
   const [searchText, setSearchText] = useState("");
   const [sort, setSort] = useState("latest");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
+  console.log('ProductsPage rendering:', { productsCount: products?.length, loading });
+  
+  // Show loading state
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <h1 className="text-3xl font-bold mb-8">Browse Exhibition Stand Designs</h1>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="space-y-4">
+                <Skeleton className="aspect-[4/3] w-full" />
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Ensure products is an array
+  const safeProducts = Array.isArray(products) ? products : [];
+  
   // Convert products to match ProductCard interface
-  const allProducts: Product[] = products.map(product => ({
+  const allProducts: Product[] = safeProducts.map(product => ({
     id: product.id,
     title: product.title,
     price: product.price,
-    image: (product.images[0] && !product.images[0].startsWith('blob:')) 
+    image: (product.images && product.images[0] && !product.images[0].startsWith('blob:')) 
       ? product.images[0] 
       : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
-    tags: product.tags
+    tags: product.tags || []
   }));
 
   // Get unique tags from products
-  const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags)));
+  const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags || [])));
   
   // Filter and sort products
   const filteredProducts = allProducts
@@ -37,7 +63,7 @@ const ProductsPage = () => {
       
       // Tag filter
       const matchesTags = selectedTags.length === 0 || 
-        selectedTags.some(tag => product.tags.includes(tag));
+        selectedTags.some(tag => (product.tags || []).includes(tag));
         
       return matchesSearch && matchesTags;
     })
@@ -90,21 +116,23 @@ const ProductsPage = () => {
             </Select>
           </div>
           
-          <div>
-            <p className="text-sm font-medium mb-2">Filter by format:</p>
-            <div className="flex flex-wrap gap-2">
-              {allTags.map(tag => (
-                <Badge 
-                  key={tag}
-                  variant={selectedTags.includes(tag) ? "default" : "outline"}
-                  className="cursor-pointer"
-                  onClick={() => handleTagSelect(tag)}
-                >
-                  {tag}
-                </Badge>
-              ))}
+          {allTags.length > 0 && (
+            <div>
+              <p className="text-sm font-medium mb-2">Filter by format:</p>
+              <div className="flex flex-wrap gap-2">
+                {allTags.map(tag => (
+                  <Badge 
+                    key={tag}
+                    variant={selectedTags.includes(tag) ? "default" : "outline"}
+                    className="cursor-pointer"
+                    onClick={() => handleTagSelect(tag)}
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
           
           {(searchText || selectedTags.length > 0 || sort !== "latest") && (
             <Button 
@@ -127,9 +155,14 @@ const ProductsPage = () => {
           </div>
         ) : (
           <div className="py-12 text-center">
-            <h3 className="text-xl font-medium mb-2">No designs found</h3>
+            <h3 className="text-xl font-medium mb-2">
+              {safeProducts.length === 0 ? "No products available" : "No designs found"}
+            </h3>
             <p className="text-muted-foreground">
-              Try adjusting your search or filter criteria
+              {safeProducts.length === 0 
+                ? "Please check back later or contact support if this persists." 
+                : "Try adjusting your search or filter criteria"
+              }
             </p>
           </div>
         )}

@@ -25,7 +25,9 @@ const ProductDetailPage = () => {
   const { getProductById, loading } = useProducts();
   const [activeTab, setActiveTab] = useState("specifications");
   
-  const product = getProductById(parseInt(id!));
+  const product = id ? getProductById(parseInt(id)) : undefined;
+  
+  console.log('ProductDetailPage rendering:', { id, product: !!product, loading });
   
   // Scroll to top when component mounts or product ID changes
   useEffect(() => {
@@ -47,7 +49,7 @@ const ProductDetailPage = () => {
     }
   };
 
-  const specifications = product ? parseSpecifications(product.specifications) : null;
+  const specifications = product ? parseSpecifications(product.specifications || '{}') : null;
   
   const facilityLabels = {
     infoDesk: "Info Desk",
@@ -97,14 +99,14 @@ const ProductDetailPage = () => {
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {/* Product Gallery */}
           <div>
-            <ProductGallery images={product.images} title={product.title} />
+            <ProductGallery images={product.images || []} title={product.title} />
           </div>
           
           {/* Product Information */}
           <div>
             <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
             <div className="flex flex-wrap gap-1 mb-4">
-              {product.tags.map((tag) => (
+              {(product.tags || []).map((tag) => (
                 <Badge key={tag} variant="outline">
                   {tag}
                 </Badge>
@@ -120,7 +122,7 @@ const ProductDetailPage = () => {
             <div className="mb-6">
               <h3 className="font-medium mb-2">File Formats Included:</h3>
               <div className="flex flex-wrap gap-2">
-                {product.tags.map((format) => (
+                {(product.tags || []).map((format) => (
                   <Badge key={format} variant="secondary">
                     {format}
                   </Badge>
@@ -130,7 +132,7 @@ const ProductDetailPage = () => {
             
             <div className="mb-6">
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <div>File Size: {product.file_size}</div>
+                <div>File Size: {product.file_size || 'N/A'}</div>
               </div>
             </div>
             
@@ -150,7 +152,7 @@ const ProductDetailPage = () => {
               <div className="space-y-8">
                 {/* Description Overview */}
                 <div>
-                  <div className="rich-text-content" dangerouslySetInnerHTML={{ __html: product.long_description }} />
+                  <div className="rich-text-content" dangerouslySetInnerHTML={{ __html: product.long_description || product.description || '' }} />
                 </div>
                 
                 {/* Specifications */}
@@ -223,7 +225,7 @@ const ProductDetailPage = () => {
                           <div>
                             <h4 className="font-semibold mb-3">File Formats Included</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {product.tags.map((format) => (
+                              {(product.tags || []).map((format) => (
                                 <div key={format} className="flex items-center justify-between p-3 border rounded-lg">
                                   <div className="flex items-center">
                                     <FileText className="h-4 w-4 mr-2 text-blue-600" />
@@ -246,7 +248,7 @@ const ProductDetailPage = () => {
                                   <HardDrive className="h-4 w-4 mr-2 text-purple-600" />
                                   <span className="font-medium">File Size</span>
                                 </div>
-                                <span className="text-sm text-muted-foreground">{product.file_size}</span>
+                                <span className="text-sm text-muted-foreground">{product.file_size || 'N/A'}</span>
                               </div>
                               
                               <div className="flex items-center justify-between p-3 border rounded-lg">

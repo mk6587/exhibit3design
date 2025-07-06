@@ -22,7 +22,7 @@ export const useCachedProducts = () => {
       // Check cache first unless forcing refresh
       if (!forceRefresh) {
         const cachedProducts = cache.get<Product[]>(PRODUCTS_CACHE_KEY);
-        if (cachedProducts) {
+        if (cachedProducts && cachedProducts.length > 0) {
           console.log('Using cached products:', cachedProducts.length);
           setProducts(cachedProducts);
           setLoading(false);
@@ -40,9 +40,10 @@ export const useCachedProducts = () => {
         console.error('Supabase error:', error);
         // Try to use stale cache data as fallback
         const staleData = cache.get<Product[]>(PRODUCTS_CACHE_KEY);
-        if (staleData) {
+        if (staleData && staleData.length > 0) {
           console.log('Using stale cached data due to error');
           setProducts(staleData);
+          setLoading(false);
           return staleData;
         }
         throw error;
@@ -50,25 +51,37 @@ export const useCachedProducts = () => {
         console.log('Products fetched successfully:', data?.length || 0);
         const fetchedProducts = data || [];
         
-        // Cache the results
-        cache.set(PRODUCTS_CACHE_KEY, fetchedProducts, {
-          ttl: PRODUCTS_CACHE_TTL,
-          persist: true
-        });
+        // Only cache if we have products
+        if (fetchedProducts.length > 0) {
+          cache.set(PRODUCTS_CACHE_KEY, fetchedProducts, {
+            ttl: PRODUCTS_CACHE_TTL,
+            persist: true
+          });
+        }
         
         setProducts(fetchedProducts);
+        setLoading(false);
         return fetchedProducts;
       }
     } catch (error) {
       console.error('Error fetching products:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load products. Please try again.",
-        variant: "destructive",
-      });
-      return [];
-    } finally {
+      
+      // Try to use any cached data as fallback
+      const fallbackData = cache.get<Product[]>(PRODUCTS_CACHE_KEY);
+      if (fallbackData && fallbackData.length > 0) {
+        console.log('Using fallback cached data');
+        setProducts(fallbackData);
+      } else {
+        // If no cache, show error
+        toast({
+          title: "Error",
+          description: "Failed to load products. Please try again.",
+          variant: "destructive",
+        });
+        setProducts([]);
+      }
       setLoading(false);
+      return [];
     }
   };
 
@@ -99,16 +112,12 @@ export const useCachedProducts = () => {
       }
 
       // Update local state immediately
-      setProducts(prev => 
-        prev.map(product => 
-          product.id === updatedProduct.id ? updatedProduct : product
-        )
-      );
-
-      // Update cache with new data
       const updatedProducts = products.map(product => 
         product.id === updatedProduct.id ? updatedProduct : product
       );
+      setProducts(updatedProducts);
+
+      // Update cache with new data
       cache.set(PRODUCTS_CACHE_KEY, updatedProducts, {
         ttl: PRODUCTS_CACHE_TTL,
         persist: true
