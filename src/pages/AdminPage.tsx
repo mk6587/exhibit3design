@@ -6,12 +6,11 @@ import { useProducts } from '@/contexts/ProductsContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogOut, Edit, Eye, RefreshCw } from 'lucide-react';
-import { cache } from '@/lib/cache';
 import { useToast } from '@/hooks/use-toast';
 
 const AdminPage = () => {
   const { isAuthenticated, isAdmin, logout, user } = useAdmin();
-  const { products, loading, refreshProducts } = useProducts();
+  const { products, loading, refetch } = useProducts();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -26,23 +25,20 @@ const AdminPage = () => {
     navigate('/admin/login');
   };
 
-  const handleClearCache = async () => {
-    try {
-      // Clear all caches
-      cache.clearAll();
-      
+  const handleRefreshProducts = async () => {
+    try {      
       // Refresh products from server
-      await refreshProducts();
+      await refetch();
       
       toast({
         title: "Success",
-        description: "Cache cleared successfully. All data refreshed from server.",
+        description: "Products refreshed successfully.",
       });
     } catch (error) {
-      console.error('Error clearing cache:', error);
+      console.error('Error refreshing products:', error);
       toast({
         title: "Error",
-        description: "Failed to clear cache. Please try again.",
+        description: "Failed to refresh products. Please try again.",
         variant: "destructive",
       });
     }
@@ -75,9 +71,9 @@ const AdminPage = () => {
               </p>
             </div>
             <div className="flex gap-2">
-              <Button onClick={handleClearCache} variant="outline">
+              <Button onClick={handleRefreshProducts} variant="outline">
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Clear Cache
+                Refresh Products
               </Button>
               <Button onClick={handleLogout} variant="outline">
                 <LogOut className="mr-2 h-4 w-4" />
