@@ -85,27 +85,27 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const canDragImage = () => {
-    const scaledImageWidth = imageSize.width * scale;
-    const scaledImageHeight = imageSize.height * scale;
-    return scaledImageWidth > containerSize.width || scaledImageHeight > containerSize.height;
+    // Allow dragging when scale is above 50%, regardless of image size vs container size
+    return scale > 0.5;
   };
 
   const constrainPosition = (newX: number, newY: number, currentScale: number) => {
-    const scaledImageWidth = imageSize.width * currentScale;
-    const scaledImageHeight = imageSize.height * currentScale;
-    
-    // Only constrain if image is larger than container
-    if (scaledImageWidth <= containerSize.width && scaledImageHeight <= containerSize.height) {
-      return { x: 0, y: 0 };
+    // Allow free movement when scale > 0.5, with reasonable bounds
+    if (currentScale > 0.5) {
+      const scaledImageWidth = imageSize.width * currentScale;
+      const scaledImageHeight = imageSize.height * currentScale;
+      
+      // Set reasonable movement bounds - allow moving beyond container edges
+      const maxX = Math.max(containerSize.width * 0.3, (scaledImageWidth - containerSize.width) / 2);
+      const maxY = Math.max(containerSize.height * 0.3, (scaledImageHeight - containerSize.height) / 2);
+      
+      return {
+        x: Math.max(-maxX, Math.min(maxX, newX)),
+        y: Math.max(-maxY, Math.min(maxY, newY))
+      };
     }
     
-    const maxX = Math.max(0, (scaledImageWidth - containerSize.width) / 2);
-    const maxY = Math.max(0, (scaledImageHeight - containerSize.height) / 2);
-    
-    return {
-      x: Math.max(-maxX, Math.min(maxX, newX)),
-      y: Math.max(-maxY, Math.min(maxY, newY))
-    };
+    return { x: 0, y: 0 };
   };
 
   const handleZoomIn = () => {
