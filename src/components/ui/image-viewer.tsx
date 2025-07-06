@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -111,11 +110,6 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const constrainPosition = (newX: number, newY: number, currentScale: number) => {
-    if (currentScale <= 0.5) {
-      console.log('Scale too low for constraints:', currentScale);
-      return { x: 0, y: 0 };
-    }
-    
     // Use current imageSize or recalculate if needed
     let currentImageSize = imageSize;
     if (currentImageSize.width === 0 || currentImageSize.height === 0) {
@@ -132,12 +126,17 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     const scaledImageWidth = currentImageSize.width * currentScale;
     const scaledImageHeight = currentImageSize.height * currentScale;
     
-    const maxX = Math.max(0, (scaledImageWidth - containerSize.width) / 2);
-    const maxY = Math.max(0, (scaledImageHeight - containerSize.height) / 2);
+    // Calculate how much the scaled image exceeds the container
+    const excessWidth = Math.max(0, scaledImageWidth - containerSize.width);
+    const excessHeight = Math.max(0, scaledImageHeight - containerSize.height);
+    
+    // Only allow dragging if there's excess size to scroll
+    const maxX = excessWidth / 2;
+    const maxY = excessHeight / 2;
     
     const constrainedPos = {
-      x: Math.max(-maxX, Math.min(maxX, newX)),
-      y: Math.max(-maxY, Math.min(maxY, newY))
+      x: maxX > 0 ? Math.max(-maxX, Math.min(maxX, newX)) : 0,
+      y: maxY > 0 ? Math.max(-maxY, Math.min(maxY, newY)) : 0
     };
     
     console.log('Position constrained:', {
@@ -145,10 +144,24 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
       output: constrainedPos,
       constraints: { maxX, maxY },
       scaledImageSize: { scaledImageWidth, scaledImageHeight },
-      currentImageSize
+      containerSize,
+      currentImageSize,
+      excessSize: { excessWidth, excessHeight }
     });
     
     return constrainedPos;
+  };
+
+  const canDragImage = () => {
+    if (scale <= 0.5 || imageSize.width === 0 || imageSize.height === 0) {
+      return false;
+    }
+    
+    const scaledImageWidth = imageSize.width * scale;
+    const scaledImageHeight = imageSize.height * scale;
+    
+    // Can drag if scaled image is larger than container in at least one dimension
+    return scaledImageWidth > containerSize.width || scaledImageHeight > containerSize.height;
   };
 
   const handleZoomIn = () => {
@@ -168,9 +181,10 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    console.log('Mouse down triggered:', { scale, canDrag: scale > 0.5, imageSize });
+    const dragAllowed = canDragImage();
+    console.log('Mouse down triggered:', { scale, canDrag: dragAllowed, imageSize });
     
-    if (scale > 0.5 && (imageSize.width > 0 && imageSize.height > 0)) {
+    if (dragAllowed) {
       e.preventDefault();
       e.stopPropagation();
       
@@ -188,12 +202,12 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
       setIsDragging(true);
       setDragStart(startPos);
     } else {
-      console.log('Cannot start drag - either scale too low or image size not set');
+      console.log('Cannot start drag - conditions not met');
     }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging && scale > 0.5) {
+    if (isDragging && canDragImage()) {
       e.preventDefault();
       e.stopPropagation();
       
@@ -223,7 +237,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   // Global mouse event listeners for better drag handling
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (isDragging && scale > 0.5) {
+      if (isDragging && canDragImage()) {
         e.preventDefault();
         
         const newX = e.clientX - dragStart.x;
@@ -318,11 +332,12 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
 
   if (!images.length) return null;
 
+  const dragAllowed = canDragImage();
   console.log('Rendering ImageViewer:', { 
     scale, 
     position, 
     isDragging, 
-    canDrag: scale > 0.5 && imageSize.width > 0,
+    canDrag: dragAllowed,
     imageSize,
     containerSize 
   });
@@ -362,7 +377,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
                 transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                 transformOrigin: 'center center',
                 transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-                cursor: scale > 0.5 && imageSize.width > 0 ? (isDragging ? 'grabbing' : 'grab') : 'default',
+                cursor: dragAllowed ? (isDragging ? 'grabbing' : 'grab') : 'default',
                 width: 'fit-content',
                 height: 'fit-content'
               }}
