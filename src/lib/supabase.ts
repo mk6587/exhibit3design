@@ -1,25 +1,14 @@
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { useToast } from '@/hooks/use-toast';
+import { createClient } from '@supabase/supabase-js'
 
-export interface Product {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  long_description: string;
-  specifications: string;
-  images: string[];
-  tags: string[];
-  file_size: string;
-  featured: boolean;
-  created_at?: string;
-  updated_at?: string;
-}
+const supabaseUrl = 'https://fipebdkvzdrljwwxccrj.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGViZGt2emRybGp3d3hjY3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjczMTAsImV4cCI6MjA2NzMwMzMxMH0.N_48R70OWvLsf5INnGiswao__kjUW6ybYdnPIRm0owk'
 
-// Fallback data in case Supabase is not available
-const fallbackProducts: Product[] = [
+console.log('Supabase URL:', supabaseUrl ? 'Set' : 'Missing')
+console.log('Supabase Anon Key:', supabaseAnonKey ? 'Set' : 'Missing')
+
+// Fallback data for when Supabase is not available
+const fallbackProducts = [
   {
     id: 1,
     title: "Modern Exhibition Stand Design",
@@ -178,105 +167,47 @@ const fallbackProducts: Product[] = [
   }
 ];
 
-export const useSupabaseProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+// Create a fallback client if environment variables are missing
+let supabase;
+if (supabaseUrl && supabaseAnonKey) {
+  supabase = createClient(supabaseUrl, supabaseAnonKey)
+  console.log('Supabase client created successfully')
+} else {
+  console.warn('Supabase environment variables missing. Using fallback mode.')
+  // Create a mock client that supports proper method chaining
+  supabase = {
+    from: () => ({
+      select: () => ({
+        order: () => Promise.resolve({ data: fallbackProducts, error: null })
+      }),
+      update: (updateData) => ({
+        eq: (field, value) => {
+          console.log('Mock update successful for product:', value);
+          return Promise.resolve({ data: [updateData], error: null });
+        },
+      }),
+      insert: () => Promise.resolve({ error: null }),
+      delete: () => ({
+        eq: () => Promise.resolve({ error: null }),
+      }),
+    })
+  }
+}
 
-  // Fetch all products
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      console.log('Fetching products from Supabase...');
-      
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('id', { ascending: true });
+export { supabase }
 
-      if (error) {
-        console.error('Supabase error:', error);
-        // Use fallback data if Supabase fails
-        setProducts(fallbackProducts);
-        console.log('Using fallback products data');
-      } else {
-        console.log('Products fetched successfully:', data?.length || 0);
-        setProducts(data || fallbackProducts);
-      }
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      // Use fallback data on any error
-      setProducts(fallbackProducts);
-      console.log('Using fallback products due to error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Update a product
-  const updateProduct = async (updatedProduct: Product) => {
-    try {
-      console.log('Updating product:', updatedProduct.id);
-      
-      const { error } = await supabase
-        .from('products')
-        .update({
-          title: updatedProduct.title,
-          price: updatedProduct.price,
-          description: updatedProduct.description,
-          long_description: updatedProduct.long_description,
-          specifications: updatedProduct.specifications,
-          images: updatedProduct.images,
-          tags: updatedProduct.tags,
-          file_size: updatedProduct.file_size,
-          featured: updatedProduct.featured,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', updatedProduct.id);
-
-      if (error) {
-        console.error('Update error:', error);
-        throw error;
-      }
-
-      // Update local state immediately
-      setProducts(prev => 
-        prev.map(product => 
-          product.id === updatedProduct.id ? updatedProduct : product
-        )
-      );
-
-      // Refetch products to ensure all components get updated data
-      await fetchProducts();
-
-      toast({
-        title: "Success",
-        description: "Product updated successfully",
-      });
-    } catch (error) {
-      console.error('Error updating product:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update product",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Get product by ID
-  const getProductById = (id: number) => {
-    return products.find(product => product.id === id);
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  return {
-    products,
-    loading,
-    updateProduct,
-    getProductById,
-    refetch: fetchProducts
-  };
-};
+// Database types
+export interface Product {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  long_description: string;
+  specifications: string;
+  images: string[];
+  tags: string[];
+  file_size: string;
+  featured: boolean;
+  created_at?: string;
+  updated_at?: string;
+}

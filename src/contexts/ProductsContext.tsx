@@ -1,25 +1,24 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useSupabaseProducts, Product } from '@/hooks/useSupabaseProducts';
+import { useCachedProducts } from '@/hooks/useCachedProducts';
+import { Product } from '@/hooks/useSupabaseProducts';
 
 interface ProductsContextType {
   products: Product[];
   loading: boolean;
   updateProduct: (updatedProduct: Product) => Promise<void>;
   getProductById: (id: number) => Product | undefined;
-  refetch: () => Promise<void>;
+  refetch: () => Promise<Product[]>;
+  refreshProducts: () => Promise<Product[]>;
 }
 
-const ProductsContext = createContext<ProductsContextType>({
-  products: [],
-  loading: true,
-  updateProduct: async () => {},
-  getProductById: () => undefined,
-  refetch: async () => {}
-});
+const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
 
 export const useProducts = () => {
   const context = useContext(ProductsContext);
+  if (!context) {
+    throw new Error('useProducts must be used within a ProductsProvider');
+  }
   return context;
 };
 
@@ -28,18 +27,10 @@ interface ProductsProviderProps {
 }
 
 export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) => {
-  const supabaseProducts = useSupabaseProducts();
-
-  const contextValue = {
-    products: supabaseProducts.products || [],
-    loading: supabaseProducts.loading,
-    updateProduct: supabaseProducts.updateProduct,
-    getProductById: supabaseProducts.getProductById,
-    refetch: supabaseProducts.refetch
-  };
+  const cachedProducts = useCachedProducts();
 
   return (
-    <ProductsContext.Provider value={contextValue}>
+    <ProductsContext.Provider value={cachedProducts}>
       {children}
     </ProductsContext.Provider>
   );

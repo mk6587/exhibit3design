@@ -5,13 +5,11 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { useProducts } from '@/contexts/ProductsContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogOut, Edit, Eye, RefreshCw } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { LogOut, Edit, Eye } from 'lucide-react';
 
 const AdminPage = () => {
   const { isAuthenticated, isAdmin, logout, user } = useAdmin();
-  const { products, loading, refetch } = useProducts();
-  const { toast } = useToast();
+  const { products, loading } = useProducts();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,25 +21,6 @@ const AdminPage = () => {
   const handleLogout = async () => {
     await logout();
     navigate('/admin/login');
-  };
-
-  const handleRefreshProducts = async () => {
-    try {      
-      // Refresh products from server
-      await refetch();
-      
-      toast({
-        title: "Success",
-        description: "Products refreshed successfully.",
-      });
-    } catch (error) {
-      console.error('Error refreshing products:', error);
-      toast({
-        title: "Error",
-        description: "Failed to refresh products. Please try again.",
-        variant: "destructive",
-      });
-    }
   };
 
   if (!isAuthenticated || !isAdmin) {
@@ -70,16 +49,10 @@ const AdminPage = () => {
                 Welcome, {user?.email}
               </p>
             </div>
-            <div className="flex gap-2">
-              <Button onClick={handleRefreshProducts} variant="outline">
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Refresh Products
-              </Button>
-              <Button onClick={handleLogout} variant="outline">
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
-              </Button>
-            </div>
+            <Button onClick={handleLogout} variant="outline">
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
           </div>
         </div>
       </header>

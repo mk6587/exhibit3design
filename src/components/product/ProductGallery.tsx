@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
+import ImageViewer from "@/components/ui/image-viewer";
+import CachedImage from "@/components/ui/cached-image";
 
 interface ProductGalleryProps {
   images: string[];
@@ -24,12 +26,13 @@ const ProductGallery = ({ images, title }: ProductGalleryProps) => {
   return (
     <div className="space-y-4">
       <Card className="overflow-hidden p-2 bg-secondary">
-        <div className="aspect-[4/3] overflow-hidden rounded cursor-pointer hover:opacity-90 transition-opacity">
-          <img
+        <div className="aspect-[4/3] overflow-hidden rounded cursor-pointer hover:opacity-90 transition-opacity clickable-image-container">
+          <CachedImage
             src={validImages[activeImage]} 
             alt={`${title} - preview ${activeImage + 1}`}
             className="w-full h-full object-contain"
             onClick={handleImageClick}
+            skeletonClassName="w-full h-full rounded"
           />
         </div>
       </Card>
@@ -46,16 +49,24 @@ const ProductGallery = ({ images, title }: ProductGalleryProps) => {
                   : "ring-1 ring-border hover:ring-primary/50 hover:scale-105"
               }`}
             >
-              <img
+              <CachedImage
                 src={validImages[index]} 
                 alt={`${title} - thumbnail ${index + 1}`}
                 className="w-full h-full object-cover"
+                skeletonClassName="w-full h-full"
               />
             </button>
           ))}
         </div>
       )}
 
+      <ImageViewer
+        isOpen={isViewerOpen}
+        onClose={() => setIsViewerOpen(false)}
+        images={validImages}
+        initialIndex={activeImage}
+        title={title}
+      />
     </div>
   );
 };
