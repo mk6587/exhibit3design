@@ -103,13 +103,17 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const canDragImage = () => {
-    // Always allow dragging when scale is above 50%
-    return scale > 0.5;
+    const canDrag = scale > 0.5;
+    console.log('canDragImage check:', { scale, canDrag });
+    return canDrag;
   };
 
   const constrainPosition = (newX: number, newY: number, currentScale: number) => {
+    console.log('constrainPosition input:', { newX, newY, currentScale, imageSize, containerSize });
+    
     // Allow free movement when scale > 0.5
     if (currentScale <= 0.5) {
+      console.log('Scale too low, returning (0,0)');
       return { x: 0, y: 0 };
     }
     
@@ -124,10 +128,23 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     const maxX = (excessWidth / 2) + containerSize.width * 0.1;
     const maxY = (excessHeight / 2) + containerSize.height * 0.1;
     
-    return {
+    const result = {
       x: Math.max(-maxX, Math.min(maxX, newX)),
       y: Math.max(-maxY, Math.min(maxY, newY))
     };
+    
+    console.log('constrainPosition result:', { 
+      scaledImageWidth, 
+      scaledImageHeight, 
+      excessWidth, 
+      excessHeight, 
+      maxX, 
+      maxY, 
+      input: { newX, newY }, 
+      result 
+    });
+    
+    return result;
   };
 
   const handleZoomIn = () => {
@@ -146,7 +163,10 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
 
   // Mouse handlers
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (canDragImage()) {
+    const canDrag = canDragImage();
+    console.log('handleMouseDown:', { scale, canDrag, imageSize, containerSize });
+    
+    if (canDrag) {
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(true);
@@ -154,16 +174,21 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
         x: e.clientX - position.x,
         y: e.clientY - position.y
       });
+      console.log('Started dragging at:', { clientX: e.clientX, clientY: e.clientY, position });
     }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging && canDragImage()) {
+    const canDrag = canDragImage();
+    console.log('handleMouseMove:', { isDragging, canDrag, scale });
+    
+    if (isDragging && canDrag) {
       e.preventDefault();
       e.stopPropagation();
       const newX = e.clientX - dragStart.x;
       const newY = e.clientY - dragStart.y;
       const constrainedPos = constrainPosition(newX, newY, scale);
+      console.log('Moving to:', { newX, newY, constrainedPos });
       setPosition(constrainedPos);
     }
   };
