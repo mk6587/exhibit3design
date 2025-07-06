@@ -38,17 +38,37 @@ const AdminLoginPage = () => {
       }
 
       // Check admin status after successful login
-      await checkAdminStatus();
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
       
-      // The useEffect will handle navigation if user is admin
-      if (!isAdmin) {
+      if (!currentUser) {
+        throw new Error("Failed to get user information");
+      }
+
+      // Check if user has admin role directly
+      const { data: roles, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', currentUser.id)
+        .eq('role', 'admin');
+
+      if (roleError) {
+        console.error('Error checking admin role:', roleError);
+        throw new Error("Failed to verify admin status");
+      }
+
+      if (!roles || roles.length === 0) {
         toast({
           title: "Access Denied",
           description: "You don't have admin privileges to access this area.",
           variant: "destructive",
         });
         await supabase.auth.signOut();
+        return;
       }
+
+      // Update the admin context
+      await checkAdminStatus();
+      
     } catch (error: any) {
       toast({
         title: "Login Failed",
