@@ -153,15 +153,23 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const canDragImage = () => {
-    if (scale <= 0.5 || imageSize.width === 0 || imageSize.height === 0) {
+    if (imageSize.width === 0 || imageSize.height === 0) {
       return false;
     }
     
-    const scaledImageWidth = imageSize.width * scale;
-    const scaledImageHeight = imageSize.height * scale;
+    // Allow dragging when zoomed above the initial scale (0.5)
+    // or when the scaled image is larger than the container
+    if (scale > 0.5) {
+      const scaledImageWidth = imageSize.width * scale;
+      const scaledImageHeight = imageSize.height * scale;
+      
+      // Can drag if scaled image is larger than container OR if we're zoomed beyond initial scale
+      return scaledImageWidth > containerSize.width || 
+             scaledImageHeight > containerSize.height ||
+             scale > 0.8; // Allow dragging when zoomed beyond 80%
+    }
     
-    // Can drag if scaled image is larger than container in at least one dimension
-    return scaledImageWidth > containerSize.width || scaledImageHeight > containerSize.height;
+    return false;
   };
 
   const handleZoomIn = () => {
