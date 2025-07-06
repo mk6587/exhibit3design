@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 export interface Product {
@@ -179,7 +179,7 @@ const fallbackProducts: Product[] = [
 ];
 
 export const useSupabaseProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(fallbackProducts);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -196,8 +196,10 @@ export const useSupabaseProducts = () => {
       if (error) {
         console.error('Supabase error:', error);
         setProducts(fallbackProducts);
+      } else if (data && data.length > 0) {
+        setProducts(data);
       } else {
-        setProducts(data || fallbackProducts);
+        setProducts(fallbackProducts);
       }
     } catch (error) {
       console.error('Error fetching products:', error);
