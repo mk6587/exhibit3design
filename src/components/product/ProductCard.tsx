@@ -1,10 +1,6 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import ImageViewer from "@/components/ui/image-viewer";
-import CachedImage from "@/components/ui/cached-image";
-import "@/components/ui/rich-text-editor.css";
 
 export interface Product {
   id: number;
@@ -19,28 +15,14 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const [isViewerOpen, setIsViewerOpen] = useState(false);
-
-  const handleImageClick = (e: React.MouseEvent) => {
-    // Only show image viewer if clicked with modifier key (Ctrl/Cmd) or right-click
-    if (e.ctrlKey || e.metaKey || e.button === 2) {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsViewerOpen(true);
-    }
-    // Otherwise, let the Link handle navigation to product detail page
-  };
-
   return (
     <Card className="overflow-hidden transition-shadow hover:shadow-lg">
       <Link to={`/product/${product.id}`}>
-        <div className="aspect-[4/3] overflow-hidden bg-secondary clickable-image-container">
-          <CachedImage
+        <div className="aspect-[4/3] overflow-hidden bg-secondary">
+          <img
             src={product.image}
             alt={product.title}
             className="w-full h-full object-cover transition-transform hover:scale-105 cursor-pointer"
-            onClick={handleImageClick}
-            skeletonClassName="w-full h-full"
           />
         </div>
       </Link>
@@ -66,12 +48,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </Link>
       </CardFooter>
 
-      <ImageViewer
-        isOpen={isViewerOpen}
-        onClose={() => setIsViewerOpen(false)}
-        images={[product.image]}
-        title={product.title}
-      />
     </Card>
   );
 };
