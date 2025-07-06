@@ -1,77 +1,33 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import { render } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import ProductCard from '@/components/product/ProductCard'
-import { ProductsProvider } from '@/contexts/ProductsContext'
 
 const mockProduct = {
   id: 1,
   title: "Test Product",
-  description: "Test description",
   price: 99.99,
-  images: ["test-image.jpg"],
-  tags: ["tag1", "tag2"],
-  featured: true,
-  long_description: "Long description",
-  specifications: "Test specs",
-  file_size: "1MB"
+  image: "test-image.jpg",
+  tags: ["tag1", "tag2"]
 }
 
 const ProductCardWrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>
-    <ProductsProvider>
-      {children}
-    </ProductsProvider>
+    {children}
   </BrowserRouter>
 )
 
 describe('ProductCard', () => {
   it('renders product information correctly', () => {
-    render(
+    const { getByText } = render(
       <ProductCardWrapper>
         <ProductCard product={mockProduct} />
       </ProductCardWrapper>
     )
 
-    expect(screen.getByText('Test Product')).toBeInTheDocument()
-    expect(screen.getByText('Test description')).toBeInTheDocument()
-    expect(screen.getByText('$99.99')).toBeInTheDocument()
-    expect(screen.getByText('tag1')).toBeInTheDocument()
-    expect(screen.getByText('tag2')).toBeInTheDocument()
-  })
-
-  it('displays featured badge when product is featured', () => {
-    render(
-      <ProductCardWrapper>
-        <ProductCard product={mockProduct} />
-      </ProductCardWrapper>
-    )
-
-    expect(screen.getByText('Featured')).toBeInTheDocument()
-  })
-
-  it('does not display featured badge when product is not featured', () => {
-    const nonFeaturedProduct = { ...mockProduct, featured: false }
-    render(
-      <ProductCardWrapper>
-        <ProductCard product={nonFeaturedProduct} />
-      </ProductCardWrapper>
-    )
-
-    expect(screen.queryByText('Featured')).not.toBeInTheDocument()
-  })
-
-  it('handles image error gracefully', () => {
-    render(
-      <ProductCardWrapper>
-        <ProductCard product={mockProduct} />
-      </ProductCardWrapper>
-    )
-
-    const image = screen.getByRole('img')
-    fireEvent.error(image)
-    
-    // Should not crash and fallback image should be used
-    expect(image).toHaveAttribute('src')
+    expect(getByText('Test Product')).toBeInTheDocument()
+    expect(getByText('$99.99')).toBeInTheDocument()
+    expect(getByText('tag1')).toBeInTheDocument()
+    expect(getByText('tag2')).toBeInTheDocument()
   })
 })

@@ -1,43 +1,22 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useProducts } from "@/contexts/ProductsContext";
 import Layout from "@/components/layout/Layout";
-import CartItem, { CartItemType } from "@/components/cart/CartItem";
+import CartItem from "@/components/cart/CartItem";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-
-// Mock cart items with real product images
-const initialCartItems: CartItemType[] = [
-  {
-    id: 1,
-    title: "Modern Exhibition Stand",
-    price: 149,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
-  },
-  {
-    id: 3,
-    title: "Island Exhibition Design",
-    price: 249,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
-  },
-];
+import { Link } from "react-router-dom";
+import ErrorBoundary from "@/components/ui/error-boundary";
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState<CartItemType[]>(initialCartItems);
+  const { cartItems, removeFromCart, updateCartQuantity, cartTotal } = useProducts();  
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   
   const handleRemoveItem = (id: number) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
-    toast.success("Item removed from cart");
+    removeFromCart(id);
   };
   
   const handleUpdateQuantity = (id: number, quantity: number) => {
-    setCartItems(prev => 
-      prev.map(item => 
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
+    updateCartQuantity(id, quantity);
   };
   
   const handleCheckout = () => {
@@ -54,10 +33,7 @@ const CartPage = () => {
   };
   
   // Calculate cart totals
-  const subtotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+  const subtotal = cartTotal;
   
   return (
     <Layout>

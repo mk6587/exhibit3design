@@ -1,8 +1,10 @@
 
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
+import { useProducts } from "@/contexts/ProductsContext";
+import ErrorBoundary from "@/components/ui/error-boundary";
 
 interface AddToCartButtonProps {
   productId: number;
@@ -11,36 +13,35 @@ interface AddToCartButtonProps {
 
 const AddToCartButton = ({ productId, productName }: AddToCartButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const { getProductById, addToCart } = useProducts();
   
   const handleAddToCart = () => {
+    const product = getProductById(productId);
+    if (!product) {
+      toast.error("Product not found");
+      return;
+    }
+    
     setIsLoading(true);
     
-    // Simulate API call
+    // Simulate brief loading for UX
     setTimeout(() => {
-      // Add to cart logic would go here
-      console.log(`Added product ${productId} to cart`);
-      
-      toast.success(`${productName} added to your cart!`, {
-        description: "Go to cart to complete your purchase",
-        action: {
-          label: "View Cart",
-          onClick: () => window.location.href = "/cart"
-        },
-      });
-      
+      addToCart(product);
       setIsLoading(false);
-    }, 800);
+    }, 300);
   };
   
   return (
-    <Button 
-      onClick={handleAddToCart} 
-      disabled={isLoading}
-      className="w-full"
-    >
-      <ShoppingCart className="mr-2 h-4 w-4" />
-      {isLoading ? "Adding..." : "Add to Cart"}
-    </Button>
+    <ErrorBoundary>
+      <Button 
+        onClick={handleAddToCart} 
+        disabled={isLoading}
+        className="w-full"
+      >
+        <ShoppingCart className="mr-2 h-4 w-4" />
+        {isLoading ? "Adding..." : "Add to Cart"}
+      </Button>
+    </ErrorBoundary>
   );
 };
 
