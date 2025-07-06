@@ -7,11 +7,11 @@ const LoginPage = () => {
     <Layout>
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-md mx-auto">
-          <h1 className="text-3xl font-bold text-center mb-8">Login to Your Account</h1>
+          <h1 className="text-3xl font-bold text-center mb-8">Welcome to Exhibit3Design</h1>
           <p className="text-center mb-6 text-muted-foreground">
-            Access your purchased designs or buy affordable exhibition stand files
+            Sign in to your account or create a new one to access premium exhibition stand designs
           </p>
-          <AuthForm type="login" />
+          <AuthForm type="smart" />
         </div>
       </div>
     </Layout>
