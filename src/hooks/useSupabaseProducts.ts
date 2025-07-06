@@ -179,8 +179,8 @@ const fallbackProducts: Product[] = [
 ];
 
 export const useSupabaseProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(fallbackProducts);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   // Fetch all products
@@ -194,11 +194,13 @@ export const useSupabaseProducts = () => {
         .select('*')
         .order('id', { ascending: true });
 
+      console.log('Supabase response:', { data: data?.length, error });
+
       if (error) {
         console.error('Supabase error:', error);
         // Use fallback data if Supabase fails
-        setProducts(fallbackProducts);
         console.log('Using fallback products data');
+        setProducts(fallbackProducts);
         return fallbackProducts;
       } else {
         console.log('Products fetched successfully:', data?.length || 0);
@@ -209,8 +211,8 @@ export const useSupabaseProducts = () => {
     } catch (error) {
       console.error('Error fetching products:', error);
       // Use fallback data on any error
-      setProducts(fallbackProducts);
       console.log('Using fallback products due to error');
+      setProducts(fallbackProducts);
       return fallbackProducts;
     } finally {
       setLoading(false);
