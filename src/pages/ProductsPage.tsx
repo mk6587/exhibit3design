@@ -48,7 +48,7 @@ const ProductsPage = () => {
   const safeProducts = Array.isArray(products) ? products : [];
   console.log('ProductsPage: Safe products:', safeProducts.length);
   
-  if (safeProducts.length === 0) {
+  if (safeProducts.length === 0 && !loading) {
     console.log('ProductsPage: No products available');
     return (
       <Layout>

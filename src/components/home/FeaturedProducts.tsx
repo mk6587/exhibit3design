@@ -20,7 +20,7 @@ const FeaturedProducts = () => {
   });
   
   // Filter products to show only featured ones
-  const featuredProducts = products.filter(product => product.featured);
+  const featuredProducts = (products || []).filter(product => product?.featured);
 
   // Preload featured product images
   useEffect(() => {
