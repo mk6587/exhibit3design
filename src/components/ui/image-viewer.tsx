@@ -84,11 +84,20 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     }
   };
 
+  const canDragImage = () => {
+    const scaledImageWidth = imageSize.width * scale;
+    const scaledImageHeight = imageSize.height * scale;
+    return scaledImageWidth > containerSize.width || scaledImageHeight > containerSize.height;
+  };
+
   const constrainPosition = (newX: number, newY: number, currentScale: number) => {
-    if (currentScale <= 0.5) return { x: 0, y: 0 }; // Changed from 1 to 0.5
-    
     const scaledImageWidth = imageSize.width * currentScale;
     const scaledImageHeight = imageSize.height * currentScale;
+    
+    // Only constrain if image is larger than container
+    if (scaledImageWidth <= containerSize.width && scaledImageHeight <= containerSize.height) {
+      return { x: 0, y: 0 };
+    }
     
     const maxX = Math.max(0, (scaledImageWidth - containerSize.width) / 2);
     const maxY = Math.max(0, (scaledImageHeight - containerSize.height) / 2);
@@ -107,14 +116,15 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const handleZoomOut = () => {
-    const newScale = Math.max(scale / 1.2, 0.25); // Changed from 0.5 to 0.25 to allow more zoom out
+    const newScale = Math.max(scale / 1.2, 0.25);
     setScale(newScale);
     const constrainedPos = constrainPosition(position.x, position.y, newScale);
     setPosition(constrainedPos);
   };
 
+  // Mouse handlers
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (scale > 0.5) { // Changed from 1 to 0.5
+    if (canDragImage()) {
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(true);
@@ -126,7 +136,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging && scale > 0.5) { // Changed from 1 to 0.5
+    if (isDragging && canDragImage()) {
       e.preventDefault();
       e.stopPropagation();
       const newX = e.clientX - dragStart.x;
@@ -139,6 +149,35 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   const handleMouseUp = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  // Touch handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (canDragImage()) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      setIsDragging(true);
+      setDragStart({
+        x: touch.clientX - position.x,
+        y: touch.clientY - position.y
+      });
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isDragging && canDragImage()) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const newX = touch.clientX - dragStart.x;
+      const newY = touch.clientY - dragStart.y;
+      const constrainedPos = constrainPosition(newX, newY, scale);
+      setPosition(constrainedPos);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault();
     setIsDragging(false);
   };
 
@@ -232,7 +271,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
                 transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                 transformOrigin: 'center center',
                 transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-                cursor: scale > 0.5 ? (isDragging ? 'grabbing' : 'grab') : 'default', // Changed from 1 to 0.5
+                cursor: canDragImage() ? (isDragging ? 'grabbing' : 'grab') : 'default',
                 width: 'fit-content',
                 height: 'fit-content'
               }}
@@ -240,6 +279,9 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
               onWheel={handleWheel}
             >
               <img
@@ -248,8 +290,8 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
                 alt={`${title || 'Image'} ${currentIndex + 1}`}
                 className="block max-w-none"
                 style={{
-                  maxHeight: scale <= 0.5 ? '70vh' : 'none', // Changed from 1 to 0.5
-                  maxWidth: scale <= 0.5 ? '90vw' : 'none', // Changed from 1 to 0.5
+                  maxHeight: scale <= 0.5 ? '70vh' : 'none',
+                  maxWidth: scale <= 0.5 ? '90vw' : 'none',
                   height: 'auto',
                   width: 'auto'
                 }}
