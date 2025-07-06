@@ -10,13 +10,16 @@ interface ProductsContextType {
   refetch: () => Promise<void>;
 }
 
-const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
+const ProductsContext = createContext<ProductsContextType>({
+  products: [],
+  loading: true,
+  updateProduct: async () => {},
+  getProductById: () => undefined,
+  refetch: async () => {}
+});
 
 export const useProducts = () => {
   const context = useContext(ProductsContext);
-  if (!context) {
-    throw new Error('useProducts must be used within a ProductsProvider');
-  }
   return context;
 };
 
@@ -27,8 +30,16 @@ interface ProductsProviderProps {
 export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) => {
   const supabaseProducts = useSupabaseProducts();
 
+  const contextValue = {
+    products: supabaseProducts.products || [],
+    loading: supabaseProducts.loading,
+    updateProduct: supabaseProducts.updateProduct,
+    getProductById: supabaseProducts.getProductById,
+    refetch: supabaseProducts.refetch
+  };
+
   return (
-    <ProductsContext.Provider value={supabaseProducts}>
+    <ProductsContext.Provider value={contextValue}>
       {children}
     </ProductsContext.Provider>
   );
