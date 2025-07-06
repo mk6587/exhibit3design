@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,7 +56,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
             email,
             password,
             options: {
-              emailRedirectTo: `${window.location.origin}/`
+              emailRedirectTo: "https://exhibit3design.com/"
             }
           });
           
@@ -67,7 +66,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
             // Successful registration
             toast({
               title: "Account created!",
-              description: "Please check your email to confirm your account.",
+              description: "Please check your email to confirm your account. The confirmation email is from Exhibit3Design with information about our premium exhibition stand design services.",
             });
             return;
           }
@@ -125,14 +124,14 @@ const AuthForm = ({ type }: AuthFormProps) => {
     
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/`,
+        redirectTo: "https://exhibit3design.com/",
       });
       
       if (error) throw error;
       
       toast({
         title: "Reset link sent",
-        description: "Check your email for a password reset link.",
+        description: "Check your email for a password reset link from Exhibit3Design.",
       });
     } catch (error: any) {
       toast({
@@ -172,7 +171,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`
+            emailRedirectTo: "https://exhibit3design.com/"
           }
         });
         
@@ -180,19 +179,19 @@ const AuthForm = ({ type }: AuthFormProps) => {
         
         toast({
           title: "Check your email",
-          description: "We've sent you a confirmation link to complete your registration.",
+          description: "We've sent you a confirmation link from Exhibit3Design to complete your registration.",
         });
         
       } else if (type === "reset") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo: "https://exhibit3design.com/",
         });
         
         if (error) throw error;
         
         toast({
           title: "Reset link sent",
-          description: "Check your email for a password reset link.",
+          description: "Check your email for a password reset link from Exhibit3Design.",
         });
       }
     } catch (error: any) {
