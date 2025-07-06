@@ -184,7 +184,7 @@ export const useSupabaseProducts = () => {
   const { toast } = useToast();
 
   // Fetch all products
-  const fetchProducts = async () => {
+  const fetchProducts = async (): Promise<Product[]> => {
     try {
       setLoading(true);
       console.log('Fetching products from Supabase...');
@@ -199,15 +199,19 @@ export const useSupabaseProducts = () => {
         // Use fallback data if Supabase fails
         setProducts(fallbackProducts);
         console.log('Using fallback products data');
+        return fallbackProducts;
       } else {
         console.log('Products fetched successfully:', data?.length || 0);
-        setProducts(data || fallbackProducts);
+        const products = data || fallbackProducts;
+        setProducts(products);
+        return products;
       }
     } catch (error) {
       console.error('Error fetching products:', error);
       // Use fallback data on any error
       setProducts(fallbackProducts);
       console.log('Using fallback products due to error');
+      return fallbackProducts;
     } finally {
       setLoading(false);
     }
@@ -264,7 +268,7 @@ export const useSupabaseProducts = () => {
   };
 
   // Get product by ID
-  const getProductById = (id: number) => {
+  const getProductById = (id: number): Product | undefined => {
     return products.find(product => product.id === id);
   };
 

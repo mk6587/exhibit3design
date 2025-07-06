@@ -1,7 +1,6 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useCachedProducts } from '@/hooks/useCachedProducts';
-import { Product } from '@/hooks/useSupabaseProducts';
+import { useSupabaseProducts, Product } from '@/hooks/useSupabaseProducts';
 
 interface ProductsContextType {
   products: Product[];
@@ -9,7 +8,6 @@ interface ProductsContextType {
   updateProduct: (updatedProduct: Product) => Promise<void>;
   getProductById: (id: number) => Product | undefined;
   refetch: () => Promise<Product[]>;
-  refreshProducts: () => Promise<Product[]>;
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
@@ -27,10 +25,10 @@ interface ProductsProviderProps {
 }
 
 export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) => {
-  const cachedProducts = useCachedProducts();
+  const supabaseProducts = useSupabaseProducts();
 
   return (
-    <ProductsContext.Provider value={cachedProducts}>
+    <ProductsContext.Provider value={supabaseProducts}>
       {children}
     </ProductsContext.Provider>
   );
