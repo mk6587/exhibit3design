@@ -28,21 +28,29 @@ const AdminLoginPage = () => {
     setLoading(true);
 
     try {
+      console.log('Starting admin login...');
+      
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        console.error('Auth error:', error);
         throw error;
       }
+
+      console.log('Authentication successful, checking admin status...');
 
       // Check admin status after successful login
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       
       if (!currentUser) {
+        console.error('No user found after login');
         throw new Error("Failed to get user information");
       }
+
+      console.log('Current user:', currentUser.id);
 
       // Check if user has admin role directly
       const { data: roles, error: roleError } = await supabase
@@ -51,12 +59,15 @@ const AdminLoginPage = () => {
         .eq('user_id', currentUser.id)
         .eq('role', 'admin');
 
+      console.log('Role check result:', { roles, roleError });
+
       if (roleError) {
         console.error('Error checking admin role:', roleError);
         throw new Error("Failed to verify admin status");
       }
 
       if (!roles || roles.length === 0) {
+        console.log('User is not an admin');
         toast({
           title: "Access Denied",
           description: "You don't have admin privileges to access this area.",
@@ -66,10 +77,14 @@ const AdminLoginPage = () => {
         return;
       }
 
+      console.log('User is admin, updating context...');
       // Update the admin context
       await checkAdminStatus();
       
+      console.log('Admin login successful');
+      
     } catch (error: any) {
+      console.error('Login error:', error);
       toast({
         title: "Login Failed",
         description: error.message || "Invalid email or password",
