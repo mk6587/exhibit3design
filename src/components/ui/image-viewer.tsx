@@ -109,31 +109,41 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const constrainPosition = (newX: number, newY: number, currentScale: number) => {
-    console.log('constrainPosition input:', { newX, newY, currentScale, imageSize, containerSize });
-    
     // Allow free movement when scale > 0.5
     if (currentScale <= 0.5) {
-      console.log('Scale too low, returning (0,0)');
       return { x: 0, y: 0 };
+    }
+    
+    // Ensure imageSize and containerSize are valid
+    if (imageSize.width === 0 || imageSize.height === 0 || containerSize.width === 0 || containerSize.height === 0) {
+      console.log('Invalid sizes, allowing free movement:', { imageSize, containerSize });
+      // Allow generous movement when sizes aren't calculated yet
+      const maxMove = Math.max(containerSize.width || 500, containerSize.height || 500) * 0.5;
+      return {
+        x: Math.max(-maxMove, Math.min(maxMove, newX)),
+        y: Math.max(-maxMove, Math.min(maxMove, newY))
+      };
     }
     
     const scaledImageWidth = imageSize.width * currentScale;
     const scaledImageHeight = imageSize.height * currentScale;
     
-    // Calculate how much the scaled image exceeds the container
+    // For high scales, allow generous movement bounds
     const excessWidth = Math.max(0, scaledImageWidth - containerSize.width);
     const excessHeight = Math.max(0, scaledImageHeight - containerSize.height);
     
-    // Allow movement up to half the excess, plus some padding
-    const maxX = (excessWidth / 2) + containerSize.width * 0.1;
-    const maxY = (excessHeight / 2) + containerSize.height * 0.1;
+    // Allow movement beyond the excess with generous padding for high scales
+    const paddingFactor = currentScale > 1 ? 0.3 : 0.1;
+    const maxX = (excessWidth / 2) + containerSize.width * paddingFactor;
+    const maxY = (excessHeight / 2) + containerSize.height * paddingFactor;
     
     const result = {
       x: Math.max(-maxX, Math.min(maxX, newX)),
       y: Math.max(-maxY, Math.min(maxY, newY))
     };
     
-    console.log('constrainPosition result:', { 
+    console.log('constrainPosition:', { 
+      currentScale,
       scaledImageWidth, 
       scaledImageHeight, 
       excessWidth, 
@@ -161,7 +171,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     setPosition(constrainedPos);
   };
 
-  // Mouse handlers
+  // Mouse handlers with improved event handling
   const handleMouseDown = (e: React.MouseEvent) => {
     const canDrag = canDragImage();
     console.log('handleMouseDown:', { scale, canDrag, imageSize, containerSize });
@@ -170,17 +180,22 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(true);
+      
+      // Use getBoundingClientRect for more accurate positioning
+      const rect = e.currentTarget.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left - rect.width / 2;
+      const offsetY = e.clientY - rect.top - rect.height / 2;
+      
       setDragStart({
         x: e.clientX - position.x,
         y: e.clientY - position.y
       });
-      console.log('Started dragging at:', { clientX: e.clientX, clientY: e.clientY, position });
+      console.log('Started dragging at:', { clientX: e.clientX, clientY: e.clientY, position, offsetX, offsetY });
     }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const canDrag = canDragImage();
-    console.log('handleMouseMove:', { isDragging, canDrag, scale });
     
     if (isDragging && canDrag) {
       e.preventDefault();
@@ -188,14 +203,13 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
       const newX = e.clientX - dragStart.x;
       const newY = e.clientY - dragStart.y;
       const constrainedPos = constrainPosition(newX, newY, scale);
-      console.log('Moving to:', { newX, newY, constrainedPos });
+      console.log('Moving to:', { newX, newY, constrainedPos, scale });
       setPosition(constrainedPos);
     }
   };
 
   const handleMouseUp = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+    console.log('Mouse up, was dragging:', isDragging);
     setIsDragging(false);
   };
 
