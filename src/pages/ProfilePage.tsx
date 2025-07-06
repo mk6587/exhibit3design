@@ -176,7 +176,7 @@ const ProfilePage = () => {
                   <Label htmlFor="email">Email</Label>
                   <Input 
                     id="email" 
-                    value={profile?.email || ""} 
+                    value={user?.email || profile?.email || ""} 
                     disabled 
                     className="bg-gray-100"
                   />
@@ -185,7 +185,7 @@ const ProfilePage = () => {
                   <Label htmlFor="joined">Member Since</Label>
                   <Input 
                     id="joined" 
-                    value={profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : ""} 
+                    value={user?.created_at ? new Date(user.created_at).toLocaleDateString() : profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : ""} 
                     disabled 
                     className="bg-gray-100"
                   />
