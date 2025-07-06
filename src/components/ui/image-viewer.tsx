@@ -116,15 +116,13 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     const scaledImageWidth = imageSize.width * currentScale;
     const scaledImageHeight = imageSize.height * currentScale;
     
-    // For scales above 50%, allow generous movement bounds
-    const maxX = Math.max(
-      containerSize.width * 0.4, // Allow moving 40% of container width
-      (scaledImageWidth - containerSize.width) / 2 + containerSize.width * 0.2
-    );
-    const maxY = Math.max(
-      containerSize.height * 0.4, // Allow moving 40% of container height  
-      (scaledImageHeight - containerSize.height) / 2 + containerSize.height * 0.2
-    );
+    // Calculate how much the scaled image exceeds the container
+    const excessWidth = Math.max(0, scaledImageWidth - containerSize.width);
+    const excessHeight = Math.max(0, scaledImageHeight - containerSize.height);
+    
+    // Allow movement up to half the excess, plus some padding
+    const maxX = (excessWidth / 2) + containerSize.width * 0.1;
+    const maxY = (excessHeight / 2) + containerSize.height * 0.1;
     
     return {
       x: Math.max(-maxX, Math.min(maxX, newX)),
@@ -133,7 +131,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const handleZoomIn = () => {
-    const newScale = Math.min(scale * 1.2, 3);
+    const newScale = Math.min(scale * 1.2, 2); // Changed max from 3 to 2 (200%)
     setScale(newScale);
     const constrainedPos = constrainPosition(position.x, position.y, newScale);
     setPosition(constrainedPos);
@@ -210,7 +208,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     e.stopPropagation();
     
     const delta = e.deltaY > 0 ? 0.95 : 1.05;
-    const newScale = Math.min(Math.max(scale * delta, 0.25), 3); // Changed from 0.5 to 0.25
+    const newScale = Math.min(Math.max(scale * delta, 0.25), 2); // Changed max from 3 to 2
     setScale(newScale);
     
     const constrainedPos = constrainPosition(position.x, position.y, newScale);
@@ -370,7 +368,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               variant="outline"
               size="sm"
               onClick={handleZoomIn}
-              disabled={scale >= 3}
+              disabled={scale >= 2} // Changed from 3 to 2
               className="text-gray-700"
               aria-label="Zoom in"
             >
