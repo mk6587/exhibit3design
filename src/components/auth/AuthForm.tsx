@@ -18,11 +18,26 @@ const AuthForm = ({ type }: AuthFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
+  // Input validation
+  const validateInput = (email: string, password?: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (!email || !emailRegex.test(email)) {
+      throw new Error("Please enter a valid email address");
+    }
+    
+    if (password !== undefined && password.length < 6) {
+      throw new Error("Password must be at least 6 characters long");
+    }
+  };
+  
   const handleSmartAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
     try {
+      validateInput(email, password);
+      
       console.log("Smart auth attempt with email:", email);
       
       // First, try to sign in
@@ -56,7 +71,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
             email,
             password,
             options: {
-              emailRedirectTo: "https://exhibit3design.com/"
+              emailRedirectTo: `${window.location.origin}/`
             }
           });
           
@@ -123,8 +138,10 @@ const AuthForm = ({ type }: AuthFormProps) => {
     }
     
     try {
+      validateInput(email);
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://exhibit3design.com/",
+        redirectTo: `${window.location.origin}/`,
       });
       
       if (error) throw error;
@@ -153,6 +170,8 @@ const AuthForm = ({ type }: AuthFormProps) => {
     
     try {
       if (type === "login") {
+        validateInput(email, password);
+        
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -167,11 +186,13 @@ const AuthForm = ({ type }: AuthFormProps) => {
         navigate("/");
         
       } else if (type === "register") {
+        validateInput(email, password);
+        
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: "https://exhibit3design.com/"
+            emailRedirectTo: `${window.location.origin}/`
           }
         });
         
@@ -183,8 +204,10 @@ const AuthForm = ({ type }: AuthFormProps) => {
         });
         
       } else if (type === "reset") {
+        validateInput(email);
+        
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: "https://exhibit3design.com/",
+          redirectTo: `${window.location.origin}/`,
         });
         
         if (error) throw error;
@@ -242,6 +265,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
+              disabled={loading}
             />
           </div>
           
@@ -254,6 +278,8 @@ const AuthForm = ({ type }: AuthFormProps) => {
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
                 required 
+                disabled={loading}
+                minLength={6}
               />
             </div>
           )}
