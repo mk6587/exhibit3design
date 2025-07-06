@@ -103,27 +103,33 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const canDragImage = () => {
-    // Allow dragging when scale is above 50%, regardless of image size vs container size
+    // Always allow dragging when scale is above 50%
     return scale > 0.5;
   };
 
   const constrainPosition = (newX: number, newY: number, currentScale: number) => {
-    // Allow free movement when scale > 0.5, with reasonable bounds
-    if (currentScale > 0.5) {
-      const scaledImageWidth = imageSize.width * currentScale;
-      const scaledImageHeight = imageSize.height * currentScale;
-      
-      // Set reasonable movement bounds - allow moving beyond container edges
-      const maxX = Math.max(containerSize.width * 0.3, (scaledImageWidth - containerSize.width) / 2);
-      const maxY = Math.max(containerSize.height * 0.3, (scaledImageHeight - containerSize.height) / 2);
-      
-      return {
-        x: Math.max(-maxX, Math.min(maxX, newX)),
-        y: Math.max(-maxY, Math.min(maxY, newY))
-      };
+    // Allow free movement when scale > 0.5
+    if (currentScale <= 0.5) {
+      return { x: 0, y: 0 };
     }
     
-    return { x: 0, y: 0 };
+    const scaledImageWidth = imageSize.width * currentScale;
+    const scaledImageHeight = imageSize.height * currentScale;
+    
+    // For scales above 50%, allow generous movement bounds
+    const maxX = Math.max(
+      containerSize.width * 0.4, // Allow moving 40% of container width
+      (scaledImageWidth - containerSize.width) / 2 + containerSize.width * 0.2
+    );
+    const maxY = Math.max(
+      containerSize.height * 0.4, // Allow moving 40% of container height  
+      (scaledImageHeight - containerSize.height) / 2 + containerSize.height * 0.2
+    );
+    
+    return {
+      x: Math.max(-maxX, Math.min(maxX, newX)),
+      y: Math.max(-maxY, Math.min(maxY, newY))
+    };
   };
 
   const handleZoomIn = () => {
@@ -288,10 +294,11 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               style={{
                 transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                 transformOrigin: 'center center',
-                transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                transition: isDragging ? 'none' : 'transform 0.05s ease-out',
                 cursor: canDragImage() ? (isDragging ? 'grabbing' : 'grab') : 'default',
                 width: 'fit-content',
-                height: 'fit-content'
+                height: 'fit-content',
+                touchAction: 'none' // Prevent default touch behaviors on mobile
               }}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
