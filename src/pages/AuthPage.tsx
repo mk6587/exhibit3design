@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -168,26 +168,10 @@ const AuthPage = () => {
                 
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {isRegisterMode 
-                    ? (loading ? "Creating account..." : "Create Account")
-                    : (loading ? "Signing in..." : "Sign In")
-                  }
+                  {loading ? "Processing..." : "Login / Register"}
                 </Button>
               </form>
             </CardContent>
-            <CardFooter className="flex justify-center border-t pt-6">
-              <Button 
-                variant="link" 
-                className="p-0 h-auto text-primary hover:underline"
-                onClick={() => {
-                  setIsRegisterMode(!isRegisterMode);
-                  setError(null);
-                  setShowForgotPassword(false);
-                }}
-              >
-                {isRegisterMode ? "Switch to Sign In" : "Switch to Create Account"}
-              </Button>
-            </CardFooter>
           </Card>
         </div>
       </div>
