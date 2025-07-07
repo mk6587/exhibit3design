@@ -23,9 +23,17 @@ Deno.serve(async (req) => {
   }
 
   try {
+    console.log('Received webhook request')
     const payload = await req.text()
     const headers = Object.fromEntries(req.headers)
+    console.log('Headers received:', headers)
+    
+    if (!hookSecret) {
+      throw new Error('SEND_EMAIL_HOOK_SECRET not configured')
+    }
+    
     const wh = new Webhook(hookSecret.replace('v1,whsec_', ''))
+    console.log('Attempting webhook verification...')
     
     const {
       user,
@@ -42,6 +50,8 @@ Deno.serve(async (req) => {
         site_url: string
       }
     }
+    
+    console.log('Webhook verified successfully for user:', user.email, 'action:', email_action_type)
 
     // Only send custom emails for signup confirmations
     if (email_action_type !== 'signup') {
