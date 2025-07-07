@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
   try {
     const payload = await req.text()
     const headers = Object.fromEntries(req.headers)
-    const wh = new Webhook(hookSecret)
+    const wh = new Webhook(hookSecret.replace('v1,whsec_', ''))
     
     const {
       user,
