@@ -67,7 +67,7 @@ const Header = () => {
           ) : (
             <div className="hidden md:flex items-center space-x-2">
               <Button size="sm" asChild>
-                <Link to="/auth">Login/Register</Link>
+                <Link to="/auth">Login / Register</Link>
               </Button>
             </div>
           )}
@@ -127,7 +127,7 @@ const Header = () => {
           ) : (
             <>
               <Link to="/auth" className="p-2 hover:bg-muted rounded-md" onClick={() => setIsMenuOpen(false)}>
-                Login/Register
+                Login / Register
               </Link>
             </>
           )}
