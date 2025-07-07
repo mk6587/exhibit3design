@@ -187,7 +187,7 @@ export const useSupabaseProducts = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      console.log('Fetching products from Supabase...');
+      console.log('🔄 Starting to fetch products from Supabase...');
       
       const { data, error } = await supabase
         .from('products')
@@ -195,20 +195,21 @@ export const useSupabaseProducts = () => {
         .order('id', { ascending: true });
 
       if (error) {
-        console.error('Supabase error:', error);
+        console.error('❌ Supabase error:', error);
         // Use fallback data if Supabase fails
         setProducts(fallbackProducts);
-        console.log('Using fallback products data');
+        console.log('📋 Using fallback products data');
       } else {
-        console.log('Products fetched successfully:', data?.length || 0);
+        console.log('✅ Products fetched successfully:', data?.length || 0);
         setProducts(data || fallbackProducts);
       }
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('❌ Error fetching products:', error);
       // Use fallback data on any error
       setProducts(fallbackProducts);
-      console.log('Using fallback products due to error');
+      console.log('📋 Using fallback products due to error');
     } finally {
+      console.log('🏁 Setting loading to false');
       setLoading(false);
     }
   };
@@ -269,6 +270,7 @@ export const useSupabaseProducts = () => {
   };
 
   useEffect(() => {
+    console.log('🚀 useSupabaseProducts hook mounted, calling fetchProducts');
     fetchProducts();
   }, []);
 
