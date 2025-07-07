@@ -18,7 +18,7 @@ export interface Product {
   updated_at?: string;
 }
 
-// Fallback data in case Supabase is not available
+// Simple fallback data
 const fallbackProducts: Product[] = [
   {
     id: 1,
@@ -26,21 +26,7 @@ const fallbackProducts: Product[] = [
     price: 299,
     description: "A sleek and modern exhibition stand perfect for tech companies and startups.",
     long_description: "<p>This modern exhibition stand design features clean lines and contemporary aesthetics.</p>",
-    specifications: JSON.stringify({
-      dimensions: "6m x 3m",
-      height: "3m",
-      layout: "Open concept",
-      lighting: "LED spotlights",
-      specifications: {
-        infoDesk: true,
-        storage: true,
-        screen: true,
-        kitchen: false,
-        seatingArea: true,
-        meetingRoom: false,
-        hangingBanner: true
-      }
-    }),
+    specifications: '{"dimensions": "6m x 3m", "height": "3m"}',
     images: ["https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"],
     tags: ["Modern", "Tech", "Minimalist"],
     file_size: "45MB",
@@ -52,21 +38,7 @@ const fallbackProducts: Product[] = [
     price: 450,
     description: "Professional conference booth designed for corporate presentations and networking.",
     long_description: "<p>This corporate conference booth offers a professional appearance with integrated presentation capabilities.</p>",
-    specifications: JSON.stringify({
-      dimensions: "8m x 4m",
-      height: "3.5m",
-      layout: "Enclosed presentation area",
-      lighting: "Professional conference lighting",
-      specifications: {
-        infoDesk: true,
-        storage: true,
-        screen: true,
-        kitchen: true,
-        seatingArea: true,
-        meetingRoom: true,
-        hangingBanner: true
-      }
-    }),
+    specifications: '{"dimensions": "8m x 4m", "height": "3.5m"}',
     images: ["https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&h=600&fit=crop"],
     tags: ["Corporate", "Professional", "Conference"],
     file_size: "52MB",
@@ -78,149 +50,58 @@ const fallbackProducts: Product[] = [
     price: 350,
     description: "Vibrant and creative stand perfect for design agencies and creative businesses.",
     long_description: "<p>This creative showcase stand features bold colors and innovative design elements to attract attention.</p>",
-    specifications: JSON.stringify({
-      dimensions: "5m x 3m",
-      height: "2.8m",
-      layout: "Open creative space",
-      lighting: "Colorful LED displays",
-      specifications: {
-        infoDesk: true,
-        storage: false,
-        screen: true,
-        kitchen: false,
-        seatingArea: true,
-        meetingRoom: false,
-        hangingBanner: true
-      }
-    }),
+    specifications: '{"dimensions": "5m x 3m", "height": "2.8m"}',
     images: ["https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=600&fit=crop"],
     tags: ["Creative", "Design", "Colorful"],
     file_size: "38MB",
     featured: false
-  },
-  {
-    id: 4,
-    title: "Industrial Trade Fair Stand",
-    price: 550,
-    description: "Robust industrial design for manufacturing and heavy industry exhibitions.",
-    long_description: "<p>This industrial trade fair stand is built for durability and showcases heavy machinery and industrial products.</p>",
-    specifications: JSON.stringify({
-      dimensions: "10m x 5m",
-      height: "4m",
-      layout: "Heavy-duty display area",
-      lighting: "Industrial spotlights",
-      specifications: {
-        infoDesk: true,
-        storage: true,
-        screen: true,
-        kitchen: true,
-        seatingArea: true,
-        meetingRoom: true,
-        hangingBanner: true
-      }
-    }),
-    images: ["https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop"],
-    tags: ["Industrial", "Manufacturing", "Heavy-duty"],
-    file_size: "65MB",
-    featured: true
-  },
-  {
-    id: 5,
-    title: "Startup Innovation Hub",
-    price: 275,
-    description: "Compact and efficient design perfect for startups and small businesses.",
-    long_description: "<p>This startup innovation hub maximizes space efficiency while providing all essential features for emerging businesses.</p>",
-    specifications: JSON.stringify({
-      dimensions: "4m x 2.5m",
-      height: "2.5m",
-      layout: "Compact efficiency",
-      lighting: "Modern LED strips",
-      specifications: {
-        infoDesk: true,
-        storage: true,
-        screen: true,
-        kitchen: false,
-        seatingArea: false,
-        meetingRoom: false,
-        hangingBanner: true
-      }
-    }),
-    images: ["https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop"],
-    tags: ["Startup", "Compact", "Innovative"],
-    file_size: "28MB",
-    featured: false
-  },
-  {
-    id: 6,
-    title: "Luxury Brand Pavilion",
-    price: 750,
-    description: "Premium luxury design for high-end brands and exclusive product launches.",
-    long_description: "<p>This luxury brand pavilion features premium materials and sophisticated design elements for prestigious brand presentations.</p>",
-    specifications: JSON.stringify({
-      dimensions: "12m x 6m",
-      height: "4.5m",
-      layout: "Luxury showcase",
-      lighting: "Premium ambient lighting",
-      specifications: {
-        infoDesk: true,
-        storage: true,
-        screen: true,
-        kitchen: true,
-        seatingArea: true,
-        meetingRoom: true,
-        hangingBanner: true
-      }
-    }),
-    images: ["https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=600&fit=crop"],
-    tags: ["Luxury", "Premium", "Exclusive"],
-    file_size: "78MB",
-    featured: true
   }
 ];
 
 export const useSupabaseProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(fallbackProducts);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  // Fetch all products
-  const fetchProducts = async () => {
+  // Simplified fetch function
+  const fetchProducts = async() => {
     try {
+      console.log('📦 Fetching products...');
       setLoading(true);
-      console.log('🔄 Starting to fetch products from Supabase...');
       
-      const { data, error } = await supabase
+      // Simple timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 10000)
+      );
+      
+      const fetchPromise = supabase
         .from('products')
         .select('*')
         .order('id', { ascending: true });
+      
+      const result = await Promise.race([fetchPromise, timeoutPromise]);
+      const { data, error } = result as any;
 
       if (error) {
-        console.error('❌ Supabase error:', error);
-        // Use fallback data if Supabase fails
-        console.log('📋 Using fallback products data');
-        setProducts(fallbackProducts);
+        console.error('Database error:', error);
+        console.log('✅ Using fallback data');
+      } else if (data && data.length > 0) {
+        console.log('✅ Database products loaded:', data.length);
+        setProducts(data);
       } else {
-        console.log('✅ Products fetched successfully:', data?.length || 0);
-        // Ensure we have data before setting it
-        const productsData = data && data.length > 0 ? data : fallbackProducts;
-        setProducts(productsData);
+        console.log('✅ No database products, using fallback');
       }
     } catch (error) {
-      console.error('❌ Error fetching products:', error);
-      // Use fallback data on any error
-      console.log('📋 Using fallback products due to error');
-      setProducts(fallbackProducts);
+      console.error('Fetch error:', error);
+      console.log('✅ Using fallback data');
     } finally {
-      console.log('🏁 Setting loading to false');
       setLoading(false);
+      console.log('✅ Loading complete');
     }
   };
 
-  // Update a product
   const updateProduct = async (updatedProduct: Product) => {
     try {
-      console.log('Updating product:', updatedProduct.id);
-      
       const { error } = await supabase
         .from('products')
         .update({
@@ -237,20 +118,13 @@ export const useSupabaseProducts = () => {
         })
         .eq('id', updatedProduct.id);
 
-      if (error) {
-        console.error('Update error:', error);
-        throw error;
-      }
+      if (error) throw error;
 
-      // Update local state immediately
       setProducts(prev => 
         prev.map(product => 
           product.id === updatedProduct.id ? updatedProduct : product
         )
       );
-
-      // Refetch products to ensure all components get updated data
-      await fetchProducts();
 
       toast({
         title: "Success",
@@ -266,13 +140,12 @@ export const useSupabaseProducts = () => {
     }
   };
 
-  // Get product by ID
   const getProductById = (id: number) => {
     return products.find(product => product.id === id);
   };
 
   useEffect(() => {
-    console.log('🚀 useSupabaseProducts hook mounted, calling fetchProducts');
+    console.log('🚀 Products hook initialized');
     fetchProducts();
   }, []);
 
