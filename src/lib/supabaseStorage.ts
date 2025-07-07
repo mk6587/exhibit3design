@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 export const uploadImageToSupabase = async (file: File, folder: string = 'product-images'): Promise<string | null> => {
   try {

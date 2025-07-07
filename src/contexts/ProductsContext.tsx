@@ -1,5 +1,4 @@
 
-// Add cart functionality to ProductsContext
 import React, { createContext, useContext, ReactNode, useState, useCallback } from 'react';
 import { useSupabaseProducts, Product } from '@/hooks/useSupabaseProducts';
 import { toast } from 'sonner';
