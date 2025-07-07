@@ -16,8 +16,6 @@ interface AuthFormProps {
 const AuthForm = ({ type }: AuthFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -42,7 +40,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
           navigate("/profile");
         }
       } else if (type === "register") {
-        const { error } = await signUp(email, password, firstName, lastName);
+        const { error } = await signUp(email, password);
         if (error) {
           if (error.message.includes('User already registered')) {
             // Try to sign in instead
@@ -100,28 +98,6 @@ const AuthForm = ({ type }: AuthFormProps) => {
         )}
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          {type === "register" && (
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input 
-                  id="firstName" 
-                  type="text" 
-                  value={firstName} 
-                  onChange={(e) => setFirstName(e.target.value)} 
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input 
-                  id="lastName" 
-                  type="text" 
-                  value={lastName} 
-                  onChange={(e) => setLastName(e.target.value)} 
-                />
-              </div>
-            </div>
-          )}
           
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>

@@ -18,7 +18,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string, firstName?: string, lastName?: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   // Create initial profile with location
-  const createInitialProfile = async (userId: string, firstName?: string, lastName?: string) => {
+  const createInitialProfile = async (userId: string) => {
     const location = await getUserLocation();
     
     try {
@@ -91,8 +91,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         .from('profiles')
         .insert({
           user_id: userId,
-          first_name: firstName || null,
-          last_name: lastName || null,
+          first_name: null,
+          last_name: null,
           country: location.country,
           city: location.city,
         })
@@ -135,11 +135,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               
               // If no profile exists, create one (this handles existing users)
               if (!profileData) {
-                profileData = await createInitialProfile(
-                  session.user.id,
-                  session.user.user_metadata?.first_name,
-                  session.user.user_metadata?.last_name
-                );
+                profileData = await createInitialProfile(session.user.id);
               }
               
               setProfile(profileData);
@@ -167,7 +163,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, firstName?: string, lastName?: string) => {
+  const signUp = async (email: string, password: string) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
@@ -176,10 +172,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         password,
         options: {
           emailRedirectTo: redirectUrl,
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-          }
         }
       });
 
