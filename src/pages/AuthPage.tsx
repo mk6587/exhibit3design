@@ -16,6 +16,7 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   
   const { signIn, signUp, resetPassword } = useAuth();
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ const AuthPage = () => {
             }
           } else {
             // Registration successful - new user
-            // Don't navigate, let user confirm email first
+            setRegistrationSuccess(true);
           }
         } else {
           setError(signInError.message);
@@ -94,56 +95,94 @@ const AuthPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {error && (
-                <Alert className="mb-4">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-              
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
-                    required 
-                    disabled={loading}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input 
-                    id="password" 
-                    type="password" 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
-                    required 
-                    disabled={loading}
-                  />
-                </div>
-                
-                {showForgotPassword && (
-                  <div className="text-sm">
-                    <Button 
-                      type="button" 
-                      variant="link" 
-                      className="p-0 h-auto text-primary hover:underline"
-                      onClick={handleForgotPassword}
-                      disabled={loading}
-                    >
-                      Forgot password?
-                    </Button>
+              {registrationSuccess ? (
+                <div className="text-center space-y-4">
+                  <div className="mb-6">
+                    <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                      <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Registration Successful!</h3>
+                    <p className="text-muted-foreground">
+                      We've sent a confirmation email to <strong>{email}</strong>
+                    </p>
                   </div>
-                )}
-                 
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {loading ? "Processing..." : "Login / Register"}
-                </Button>
-              </form>
+                  
+                  <Alert>
+                    <AlertDescription>
+                      Please check your email and click the confirmation link to activate your account. 
+                      Don't forget to check your spam folder if you don't see the email.
+                    </AlertDescription>
+                  </Alert>
+                  
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setRegistrationSuccess(false);
+                      setEmail("");
+                      setPassword("");
+                      setError(null);
+                    }}
+                    className="w-full"
+                  >
+                    Back to Login
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  {error && (
+                    <Alert className="mb-4">
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
+                  
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)} 
+                        required 
+                        disabled={loading}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="password">Password</Label>
+                      <Input 
+                        id="password" 
+                        type="password" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)} 
+                        required 
+                        disabled={loading}
+                      />
+                    </div>
+                    
+                    {showForgotPassword && (
+                      <div className="text-sm">
+                        <Button 
+                          type="button" 
+                          variant="link" 
+                          className="p-0 h-auto text-primary hover:underline"
+                          onClick={handleForgotPassword}
+                          disabled={loading}
+                        >
+                          Forgot password?
+                        </Button>
+                      </div>
+                    )}
+                     
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {loading ? "Processing..." : "Login / Register"}
+                    </Button>
+                  </form>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
