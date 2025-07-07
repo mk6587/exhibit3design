@@ -63,17 +63,18 @@ export const useSupabaseProducts = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  // Force load database products
+  // Force load database products with REST API fallback
   const fetchProducts = async() => {
-    console.log('🔄 Fetching database products...');
+    console.log('🔄 Trying multiple approaches to fetch products...');
     
     try {
-      // Add timeout protection and try both approaches
+      // Method 1: Try the standard approach with shorter timeout
+      console.log('📡 Method 1: Standard Supabase query...');
       const timeoutPromise = new Promise((resolve) => {
         setTimeout(() => {
-          console.log('⏰ Timeout reached, query taking too long');
+          console.log('⏰ Method 1 timeout (3s)');
           resolve({ data: null, error: { message: 'timeout' } });
-        }, 5000);
+        }, 3000);
       });
       
       const queryPromise = supabase
@@ -81,25 +82,44 @@ export const useSupabaseProducts = () => {
         .select('*')
         .order('id', { ascending: true });
       
-      console.log('📡 Starting query...');
       const response = await Promise.race([queryPromise, timeoutPromise]) as any;
-      console.log('📊 Query completed:', response);
       
       if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-        console.log('✅ SUCCESS! Found', response.data.length, 'products');
-        console.log('📋 First product:', response.data[0]?.title);
+        console.log('✅ Method 1 SUCCESS! Found', response.data.length, 'products');
         setProducts(response.data);
-      } else {
-        console.log('❌ No valid data received:', response.error || 'No data');
-        setProducts([]);
+        setLoading(false);
+        return;
       }
+      
+      console.log('❌ Method 1 failed, trying Method 2...');
+      
+      // Method 2: Direct REST API call
+      console.log('📡 Method 2: Direct REST API...');
+      const restResponse = await fetch('https://fipebdkvzdrljwwxccrj.supabase.co/rest/v1/products?select=*&order=id.asc', {
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGViZGt2emRybGp3d3hjY3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjczMTAsImV4cCI6MjA2NzMwMzMxMH0.N_48R70OWvLsf5INnGiswao__kjUW6ybYdnPIRm0owk',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGViZGt2emRybGp3d3hjY3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjczMTAsImV4cCI6MjA2NzMwMzMxMH0.N_48R70OWvLsf5INnGiswao__kjUW6ybYdnPIRm0owk'
+        }
+      });
+      
+      if (restResponse.ok) {
+        const restData = await restResponse.json();
+        console.log('✅ Method 2 SUCCESS! Found', restData.length, 'products via REST');
+        setProducts(restData);
+        setLoading(false);
+        return;
+      }
+      
+      console.log('❌ Both methods failed');
+      setProducts([]);
+      
     } catch (error) {
-      console.error('❌ Catch error:', error);
+      console.error('❌ All methods failed:', error);
       setProducts([]);
     }
     
     setLoading(false);
-    console.log('✅ Fetch completed, loading set to false');
+    console.log('✅ Fetch completed');
   };
 
   const updateProduct = async (updatedProduct: Product) => {
