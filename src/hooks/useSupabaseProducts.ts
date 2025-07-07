@@ -68,31 +68,38 @@ export const useSupabaseProducts = () => {
     console.log('🔄 Fetching database products...');
     
     try {
-      // Direct query without any complications
-      const response = await supabase
+      // Add timeout protection and try both approaches
+      const timeoutPromise = new Promise((resolve) => {
+        setTimeout(() => {
+          console.log('⏰ Timeout reached, query taking too long');
+          resolve({ data: null, error: { message: 'timeout' } });
+        }, 5000);
+      });
+      
+      const queryPromise = supabase
         .from('products')
-        .select('*');
+        .select('*')
+        .order('id', { ascending: true });
       
-      console.log('📊 Raw response:', response);
+      console.log('📡 Starting query...');
+      const response = await Promise.race([queryPromise, timeoutPromise]) as any;
+      console.log('📊 Query completed:', response);
       
-      if (response.data && response.data.length > 0) {
-        console.log('✅ SUCCESS! Found', response.data.length, 'products in database');
-        console.log('📋 Products:', response.data.map(p => p.title));
+      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+        console.log('✅ SUCCESS! Found', response.data.length, 'products');
+        console.log('📋 First product:', response.data[0]?.title);
         setProducts(response.data);
-      } else if (response.error) {
-        console.error('❌ Database error:', response.error);
-        setProducts([]); // Empty state on error
       } else {
-        console.log('⚠️ No data returned from database');
-        setProducts([]); // Empty state when no data
+        console.log('❌ No valid data received:', response.error || 'No data');
+        setProducts([]);
       }
     } catch (error) {
       console.error('❌ Catch error:', error);
-      setProducts([]); // Empty state on catch
+      setProducts([]);
     }
     
     setLoading(false);
-    console.log('✅ Fetch attempt completed');
+    console.log('✅ Fetch completed, loading set to false');
   };
 
   const updateProduct = async (updatedProduct: Product) => {
