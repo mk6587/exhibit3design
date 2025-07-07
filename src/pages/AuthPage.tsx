@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Chrome, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
@@ -81,13 +81,6 @@ const AuthPage = () => {
     setLoading(false);
   };
   
-  const handleGoogleAuth = async () => {
-    toast({
-      title: "Feature coming soon",
-      description: "Google authentication will be available in a future update.",
-    });
-  };
-  
   return (
     <Layout>
       <div className="container mx-auto px-4 py-16">
@@ -95,7 +88,7 @@ const AuthPage = () => {
           <Card className="w-full">
             <CardHeader>
               <CardTitle>
-                {isRegisterMode ? "Create an Account" : "Sign In to Your Account"}
+                Login / Register to Your Account
               </CardTitle>
               <CardDescription>
                 {isRegisterMode 
@@ -180,44 +173,20 @@ const AuthPage = () => {
                     : (loading ? "Signing in..." : "Sign In")
                   }
                 </Button>
-                
-                <div className="relative my-4">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
-                      Or continue with
-                    </span>
-                  </div>
-                </div>
-                
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleGoogleAuth}
-                >
-                  <Chrome className="mr-2 h-4 w-4" />
-                  Google
-                </Button>
               </form>
             </CardContent>
             <CardFooter className="flex justify-center border-t pt-6">
-              <p className="text-sm text-muted-foreground">
-                {isRegisterMode ? "Already have an account?" : "Don't have an account?"}{" "}
-                <Button 
-                  variant="link" 
-                  className="p-0 h-auto text-primary hover:underline"
-                  onClick={() => {
-                    setIsRegisterMode(!isRegisterMode);
-                    setError(null);
-                    setShowForgotPassword(false);
-                  }}
-                >
-                  {isRegisterMode ? "Sign In" : "Create Account"}
-                </Button>
-              </p>
+              <Button 
+                variant="link" 
+                className="p-0 h-auto text-primary hover:underline"
+                onClick={() => {
+                  setIsRegisterMode(!isRegisterMode);
+                  setError(null);
+                  setShowForgotPassword(false);
+                }}
+              >
+                {isRegisterMode ? "Switch to Sign In" : "Switch to Create Account"}
+              </Button>
             </CardFooter>
           </Card>
         </div>
