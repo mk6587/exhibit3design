@@ -13,8 +13,6 @@ import Layout from "@/components/layout/Layout";
 const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -36,7 +34,7 @@ const AuthPage = () => {
         if (signInError.message.includes('Invalid login credentials')) {
           // Could be either email doesn't exist OR wrong password
           // Try to register - if user exists, it will fail with specific message
-          const { error: signUpError } = await signUp(email, password, firstName, lastName);
+          const { error: signUpError } = await signUp(email, password);
           
           if (signUpError) {
             if (signUpError.message.includes('User already registered') || 
@@ -103,27 +101,6 @@ const AuthPage = () => {
               )}
               
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name (optional)</Label>
-                    <Input 
-                      id="firstName" 
-                      type="text" 
-                      value={firstName} 
-                      onChange={(e) => setFirstName(e.target.value)} 
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name (optional)</Label>
-                    <Input 
-                      id="lastName" 
-                      type="text" 
-                      value={lastName} 
-                      onChange={(e) => setLastName(e.target.value)} 
-                    />
-                  </div>
-                </div>
-                
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input 
