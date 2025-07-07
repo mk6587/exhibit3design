@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
 
     console.log('Sending email via Resend...')
     const { error } = await resend.emails.send({
-      from: 'Exhibit3Design <onboarding@resend.dev>',
+      from: 'Exhibit3Design <noreply@exhibit3design.com>', // Change this to your domain
       to: [user.email],
       subject: 'Welcome to Exhibit3Design - Confirm Your Account',
       html,
