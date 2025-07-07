@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link } from "react-router-dom";
-import { Chrome } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Chrome, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/hooks/use-toast";
 
 interface AuthFormProps {
   type: "login" | "register" | "reset";
@@ -13,16 +16,66 @@ interface AuthFormProps {
 const AuthForm = ({ type }: AuthFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const { signIn, signUp, resetPassword } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle auth logic here
-    console.log({ type, email, password });
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (type === "login") {
+        const { error } = await signIn(email, password);
+        if (error) {
+          if (error.message.includes('Invalid login credentials')) {
+            setError("Incorrect email or password");
+          } else {
+            setError(error.message);
+          }
+        } else {
+          navigate("/profile");
+        }
+      } else if (type === "register") {
+        const { error } = await signUp(email, password, firstName, lastName);
+        if (error) {
+          if (error.message.includes('User already registered')) {
+            // Try to sign in instead
+            const { error: signInError } = await signIn(email, password);
+            if (signInError) {
+              setError("An account with this email already exists. Please sign in or use a different email.");
+            } else {
+              navigate("/profile");
+            }
+          } else {
+            setError(error.message);
+          }
+        } else {
+          navigate("/profile");
+        }
+      } else if (type === "reset") {
+        const { error } = await resetPassword(email);
+        if (error) {
+          setError(error.message);
+        }
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
   
-  const handleGoogleAuth = () => {
-    // Handle Google auth
-    console.log("Google auth clicked");
+  const handleGoogleAuth = async () => {
+    toast({
+      title: "Feature coming soon",
+      description: "Google authentication will be available in a future update.",
+    });
   };
   
   return (
@@ -40,7 +93,36 @@ const AuthForm = ({ type }: AuthFormProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {error && (
+          <Alert className="mb-4">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        
         <form onSubmit={handleSubmit} className="space-y-4">
+          {type === "register" && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input 
+                  id="firstName" 
+                  type="text" 
+                  value={firstName} 
+                  onChange={(e) => setFirstName(e.target.value)} 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input 
+                  id="lastName" 
+                  type="text" 
+                  value={lastName} 
+                  onChange={(e) => setLastName(e.target.value)} 
+                />
+              </div>
+            </div>
+          )}
+          
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input 
@@ -49,6 +131,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
+              disabled={loading}
             />
           </div>
           
@@ -61,6 +144,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
                 required 
+                disabled={loading}
               />
             </div>
           )}
@@ -73,10 +157,11 @@ const AuthForm = ({ type }: AuthFormProps) => {
             </div>
           )}
           
-          <Button type="submit" className="w-full">
-            {type === "login" && "Login"}
-            {type === "register" && "Register"}
-            {type === "reset" && "Send Reset Link"}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {type === "login" && (loading ? "Signing in..." : "Login")}
+            {type === "register" && (loading ? "Creating account..." : "Register")}
+            {type === "reset" && (loading ? "Sending..." : "Send Reset Link")}
           </Button>
           
           {type !== "reset" && (

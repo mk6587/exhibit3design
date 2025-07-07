@@ -1,17 +1,26 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Search, User, Menu, X } from "lucide-react";
+import { ShoppingCart, Search, User, Menu, X, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+    setIsMenuOpen(false);
+  };
 
   return (
     <header className="border-b sticky top-0 bg-background z-40">
@@ -44,11 +53,27 @@ const Header = () => {
           </Button>
 
           {/* User Menu */}
-          <Button variant="ghost" size="icon" asChild className="hidden md:flex">
-            <Link to="/account">
-              <User className="h-5 w-5" />
-            </Link>
-          </Button>
+          {user ? (
+            <div className="hidden md:flex items-center space-x-2">
+              <Button variant="ghost" size="icon" asChild>
+                <Link to="/profile">
+                  <User className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center space-x-2">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link to="/register">Register</Link>
+              </Button>
+            </div>
+          )}
 
           {/* Cart */}
           <Button variant="ghost" size="icon" asChild>
@@ -84,12 +109,34 @@ const Header = () => {
           <Link to="/about" className="p-2 hover:bg-muted rounded-md">
             About
           </Link>
-          <Link to="/faq" className="p-2 hover:bg-muted rounded-md">
+          <Link to="/faq" className="p-2 hover:bg-muted rounded-md" onClick={() => setIsMenuOpen(false)}>
             FAQ
           </Link>
-          <Link to="/account" className="p-2 hover:bg-muted rounded-md">
-            My Account
-          </Link>
+          
+          {user ? (
+            <>
+              <Link to="/profile" className="p-2 hover:bg-muted rounded-md flex items-center" onClick={() => setIsMenuOpen(false)}>
+                <User className="h-4 w-4 mr-2" />
+                My Profile
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="p-2 hover:bg-muted rounded-md text-left flex items-center w-full"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="p-2 hover:bg-muted rounded-md" onClick={() => setIsMenuOpen(false)}>
+                Login
+              </Link>
+              <Link to="/register" className="p-2 hover:bg-muted rounded-md" onClick={() => setIsMenuOpen(false)}>
+                Register
+              </Link>
+            </>
+          )}
         </nav>
       </div>
 

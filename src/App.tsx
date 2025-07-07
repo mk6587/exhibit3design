@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { ProductsProvider } from "@/contexts/ProductsContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ui/error-boundary";
 import Index from "./pages/Index";
 import ProductsPage from "./pages/ProductsPage";
@@ -18,6 +19,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ProfilePage from "./pages/ProfilePage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminPage from "./pages/AdminPage";
 import AdminProductEditPage from "./pages/AdminProductEditPage";
@@ -28,9 +30,10 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ProductsProvider>
-      <AdminProvider>
-        <TooltipProvider>
+    <AuthProvider>
+      <ProductsProvider>
+        <AdminProvider>
+          <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -46,6 +49,7 @@ const App = () => (
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="/admin/login" element={<AdminLoginPage />} />
               <Route path="/admin/dashboard" element={
                 <ProtectedAdminRoute>
@@ -60,9 +64,10 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
-        </TooltipProvider>
-      </AdminProvider>
-    </ProductsProvider>
+          </TooltipProvider>
+        </AdminProvider>
+      </ProductsProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
