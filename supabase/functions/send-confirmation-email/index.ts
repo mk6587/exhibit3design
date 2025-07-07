@@ -24,16 +24,22 @@ Deno.serve(async (req) => {
 
   try {
     console.log('Received webhook request')
-    const payload = await req.text()
-    const headers = Object.fromEntries(req.headers)
-    console.log('Headers received:', headers)
     
+    // Check if secrets are configured
+    if (!Deno.env.get('RESEND_API_KEY')) {
+      throw new Error('RESEND_API_KEY not configured')
+    }
     if (!hookSecret) {
       throw new Error('SEND_EMAIL_HOOK_SECRET not configured')
     }
+
+    const payload = await req.text()
+    const headers = Object.fromEntries(req.headers)
+    console.log('Processing webhook for signup confirmation')
     
-    const wh = new Webhook(hookSecret.replace('v1,whsec_', ''))
-    console.log('Attempting webhook verification...')
+    // Remove the v1,whsec_ prefix if present
+    const cleanSecret = hookSecret.startsWith('v1,whsec_') ? hookSecret.slice(9) : hookSecret
+    const wh = new Webhook(cleanSecret)
     
     const {
       user,
@@ -50,20 +56,22 @@ Deno.serve(async (req) => {
         site_url: string
       }
     }
-    
-    console.log('Webhook verified successfully for user:', user.email, 'action:', email_action_type)
+
+    console.log(`Webhook verified for user: ${user.email}, action: ${email_action_type}`)
 
     // Only send custom emails for signup confirmations
     if (email_action_type !== 'signup') {
+      console.log('Email type not signup, skipping custom email')
       return new Response(
         JSON.stringify({ message: 'Email type not handled by custom sender' }),
         { status: 200, headers: corsHeaders }
       )
     }
 
+    console.log('Rendering email template...')
     const html = await renderAsync(
       React.createElement(SignupConfirmationEmail, {
-        supabase_url: Deno.env.get('SUPABASE_URL') ?? '',
+        supabase_url: Deno.env.get('SUPABASE_URL') ?? 'https://fipebdkvzdrljwwxccrj.supabase.co',
         token,
         token_hash,
         redirect_to,
@@ -72,6 +80,7 @@ Deno.serve(async (req) => {
       })
     )
 
+    console.log('Sending email via Resend...')
     const { error } = await resend.emails.send({
       from: 'Exhibit3Design <onboarding@resend.dev>',
       to: [user.email],
@@ -81,10 +90,10 @@ Deno.serve(async (req) => {
 
     if (error) {
       console.error('Resend error:', error)
-      throw error
+      throw new Error(`Resend error: ${error.message || 'Unknown Resend error'}`)
     }
 
-    console.log(`Custom confirmation email sent to ${user.email}`)
+    console.log(`Custom confirmation email sent successfully to ${user.email}`)
 
     return new Response(
       JSON.stringify({ message: 'Email sent successfully' }),
