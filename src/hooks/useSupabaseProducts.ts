@@ -60,37 +60,36 @@ const fallbackProducts: Product[] = [
 
 export const useSupabaseProducts = () => {
   const [products, setProducts] = useState<Product[]>(fallbackProducts);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  // Simplified fetch function
+  // Force load database products
   const fetchProducts = async() => {
+    console.log('🔄 Force fetching database products...');
+    
     try {
-      console.log('📦 Fetching products from database...');
-      setLoading(true);
-      
-      const { data, error } = await supabase
+      // Direct query without any complications
+      const response = await supabase
         .from('products')
-        .select('*')
-        .order('id', { ascending: true });
-
-      if (error) {
-        console.error('❌ Database error:', error);
-        console.log('📋 Keeping fallback data due to error');
-      } else if (data && data.length > 0) {
-        console.log('✅ Database products loaded:', data.length, 'records');
-        console.log('Products:', data.map(p => ({ id: p.id, title: p.title })));
-        setProducts(data);
+        .select('*');
+      
+      console.log('📊 Raw response:', response);
+      
+      if (response.data && response.data.length > 0) {
+        console.log('✅ SUCCESS! Found', response.data.length, 'products in database');
+        console.log('📋 Products:', response.data.map(p => p.title));
+        setProducts(response.data);
+      } else if (response.error) {
+        console.error('❌ Database error:', response.error);
       } else {
-        console.log('⚠️ No products found in database, keeping fallback');
+        console.log('⚠️ No data returned from database');
       }
     } catch (error) {
-      console.error('❌ Fetch error:', error);
-      console.log('📋 Keeping fallback data due to error');
-    } finally {
-      setLoading(false);
-      console.log('✅ Loading complete');
+      console.error('❌ Catch error:', error);
     }
+    
+    setLoading(false);
+    console.log('✅ Fetch attempt completed');
   };
 
   const updateProduct = async (updatedProduct: Product) => {
