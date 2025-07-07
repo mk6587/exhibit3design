@@ -31,7 +31,7 @@ const AuthPage = () => {
 
     try {
       if (isRegisterMode) {
-        // Register mode - try to sign up
+        // Register mode - only try to sign up
         const { error } = await signUp(email, password, firstName, lastName);
         if (error) {
           if (error.message.includes('User already registered')) {
@@ -40,29 +40,16 @@ const AuthPage = () => {
             setError(error.message);
           }
         } else {
-          navigate("/profile");
+          // Don't navigate immediately for registration, user needs to confirm email
+          // The toast is already shown by the signUp function
         }
       } else {
-        // Login mode - try to sign in first
+        // Login mode - only try to sign in, don't auto-register
         const { error } = await signIn(email, password);
         if (error) {
           if (error.message.includes('Invalid login credentials')) {
-            // For invalid credentials, first try to register (in case email doesn't exist)
-            const { error: signUpError } = await signUp(email, password);
-            if (signUpError) {
-              if (signUpError.message.includes('User already registered')) {
-                // User exists but password is wrong
-                setError("Incorrect password");
-                setShowForgotPassword(true);
-              } else if (signUpError.message.includes('weak_password') || signUpError.message.includes('Password should be at least')) {
-                setError("Password should be at least 6 characters long");
-              } else {
-                setError(signUpError.message);
-              }
-            } else {
-              // Registration successful for new user
-              navigate("/profile");
-            }
+            setError("Incorrect email or password");
+            setShowForgotPassword(true);
           } else {
             setError(error.message);
           }
@@ -175,11 +162,26 @@ const AuthPage = () => {
                     </Button>
                   </div>
                 )}
-                
+                 
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {loading ? "Processing..." : "Login / Register"}
+                  {loading ? "Processing..." : (isRegisterMode ? "Register" : "Login")}
                 </Button>
+                
+                <div className="text-center pt-4">
+                  <Button 
+                    type="button"
+                    variant="link" 
+                    className="text-sm text-muted-foreground hover:text-primary"
+                    onClick={() => {
+                      setIsRegisterMode(!isRegisterMode);
+                      setError(null);
+                      setShowForgotPassword(false);
+                    }}
+                  >
+                    {isRegisterMode ? "Already have an account? Login" : "Don't have an account? Register"}
+                  </Button>
+                </div>
               </form>
             </CardContent>
           </Card>
