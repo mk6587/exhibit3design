@@ -122,24 +122,32 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch or create profile
-          let profileData = await fetchProfile(session.user.id);
-          
-          // If no profile exists, create one (this handles existing users)
-          if (!profileData) {
-            profileData = await createInitialProfile(
-              session.user.id,
-              session.user.user_metadata?.first_name,
-              session.user.user_metadata?.last_name
-            );
-          }
-          
-          setProfile(profileData);
+          // Handle profile fetching in background
+          setTimeout(async () => {
+            try {
+              let profileData = await fetchProfile(session.user.id);
+              
+              // If no profile exists, create one (this handles existing users)
+              if (!profileData) {
+                profileData = await createInitialProfile(
+                  session.user.id,
+                  session.user.user_metadata?.first_name,
+                  session.user.user_metadata?.last_name
+                );
+              }
+              
+              setProfile(profileData);
+            } catch (error) {
+              console.error('Profile fetch error:', error);
+              setProfile(null);
+            }
+          }, 0);
         } else {
           setProfile(null);
         }
@@ -150,11 +158,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
-      if (!session) {
-        setLoading(false);
-      }
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
