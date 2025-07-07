@@ -15,7 +15,6 @@ const AuthPage = () => {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -30,32 +29,37 @@ const AuthPage = () => {
     setShowForgotPassword(false);
 
     try {
-      if (isRegisterMode) {
-        // Register mode - only try to sign up
-        const { error } = await signUp(email, password, firstName, lastName);
-        if (error) {
-          if (error.message.includes('User already registered')) {
-            setError("An account with this email already exists. Please use the login form.");
+      // First try to sign in
+      const { error: signInError } = await signIn(email, password);
+      
+      if (signInError) {
+        if (signInError.message.includes('Invalid login credentials')) {
+          // Could be either email doesn't exist OR wrong password
+          // Try to register - if user exists, it will fail with specific message
+          const { error: signUpError } = await signUp(email, password, firstName, lastName);
+          
+          if (signUpError) {
+            if (signUpError.message.includes('User already registered') || 
+                signUpError.message.includes('already been registered')) {
+              // User exists, so the original sign in failure was due to wrong password
+              setError("Incorrect password");
+              setShowForgotPassword(true);
+            } else if (signUpError.message.includes('weak_password') || 
+                       signUpError.message.includes('Password should be at least')) {
+              setError("For new accounts, password must be at least 6 characters long");
+            } else {
+              setError(signUpError.message);
+            }
           } else {
-            setError(error.message);
+            // Registration successful - new user
+            // Don't navigate, let user confirm email first
           }
         } else {
-          // Don't navigate immediately for registration, user needs to confirm email
-          // The toast is already shown by the signUp function
+          setError(signInError.message);
         }
       } else {
-        // Login mode - only try to sign in, don't auto-register
-        const { error } = await signIn(email, password);
-        if (error) {
-          if (error.message.includes('Invalid login credentials')) {
-            setError("Incorrect email or password");
-            setShowForgotPassword(true);
-          } else {
-            setError(error.message);
-          }
-        } else {
-          navigate("/profile");
-        }
+        // Sign in successful
+        navigate("/profile");
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
@@ -77,7 +81,7 @@ const AuthPage = () => {
     }
     setLoading(false);
   };
-  
+   
   return (
     <Layout>
       <div className="container mx-auto px-4 py-16">
@@ -88,10 +92,7 @@ const AuthPage = () => {
                 Login / Register to Your Account
               </CardTitle>
               <CardDescription>
-                {isRegisterMode 
-                  ? "Join now to access affordable exhibition stand design files that save you time and money"
-                  : "Access your purchased designs or buy affordable exhibition stand files"
-                }
+                Access your purchased designs or buy affordable exhibition stand files
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -102,28 +103,26 @@ const AuthPage = () => {
               )}
               
               <form onSubmit={handleSubmit} className="space-y-4">
-                {isRegisterMode && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName">First Name</Label>
-                      <Input 
-                        id="firstName" 
-                        type="text" 
-                        value={firstName} 
-                        onChange={(e) => setFirstName(e.target.value)} 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName">Last Name</Label>
-                      <Input 
-                        id="lastName" 
-                        type="text" 
-                        value={lastName} 
-                        onChange={(e) => setLastName(e.target.value)} 
-                      />
-                    </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">First Name (optional)</Label>
+                    <Input 
+                      id="firstName" 
+                      type="text" 
+                      value={firstName} 
+                      onChange={(e) => setFirstName(e.target.value)} 
+                    />
                   </div>
-                )}
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Last Name (optional)</Label>
+                    <Input 
+                      id="lastName" 
+                      type="text" 
+                      value={lastName} 
+                      onChange={(e) => setLastName(e.target.value)} 
+                    />
+                  </div>
+                </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
@@ -149,7 +148,7 @@ const AuthPage = () => {
                   />
                 </div>
                 
-                {showForgotPassword && !isRegisterMode && (
+                {showForgotPassword && (
                   <div className="text-sm">
                     <Button 
                       type="button" 
@@ -165,23 +164,8 @@ const AuthPage = () => {
                  
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {loading ? "Processing..." : (isRegisterMode ? "Register" : "Login")}
+                  {loading ? "Processing..." : "Login / Register"}
                 </Button>
-                
-                <div className="text-center pt-4">
-                  <Button 
-                    type="button"
-                    variant="link" 
-                    className="text-sm text-muted-foreground hover:text-primary"
-                    onClick={() => {
-                      setIsRegisterMode(!isRegisterMode);
-                      setError(null);
-                      setShowForgotPassword(false);
-                    }}
-                  >
-                    {isRegisterMode ? "Already have an account? Login" : "Don't have an account? Register"}
-                  </Button>
-                </div>
               </form>
             </CardContent>
           </Card>
