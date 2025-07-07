@@ -1,0 +1,22 @@
+project_id = "fipebdkvzdrljwwxccrj"
+
+[auth]
+enable_signup = true
+enable_confirmations = true
+
+[auth.external]
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+
+[auth.email.template.confirmation]
+subject = "Welcome to Exhibit3Design - Confirm Your Account"
+
+[auth.hooks.send_email]
+enabled = true
+uri = "supabase_functions://send-confirmation-email"
+secrets = ["RESEND_API_KEY", "SEND_EMAIL_HOOK_SECRET"]
+
+[functions.send-confirmation-email]
+verify_jwt = false
