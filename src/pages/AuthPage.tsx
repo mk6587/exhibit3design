@@ -31,6 +31,7 @@ const AuthPage = () => {
 
     try {
       if (isRegisterMode) {
+        // Register mode - try to sign up
         const { error } = await signUp(email, password, firstName, lastName);
         if (error) {
           if (error.message.includes('User already registered')) {
@@ -48,11 +49,23 @@ const AuthPage = () => {
           navigate("/profile");
         }
       } else {
+        // Login mode - try to sign in first, then register if email doesn't exist
         const { error } = await signIn(email, password);
         if (error) {
           if (error.message.includes('Invalid login credentials')) {
-            setError("Incorrect password");
-            setShowForgotPassword(true);
+            // Email might not exist, try to register automatically
+            const { error: signUpError } = await signUp(email, password);
+            if (signUpError) {
+              if (signUpError.message.includes('User already registered')) {
+                setError("Incorrect password");
+                setShowForgotPassword(true);
+              } else {
+                setError(signUpError.message);
+              }
+            } else {
+              // Registration successful
+              navigate("/profile");
+            }
           } else {
             setError(error.message);
           }
