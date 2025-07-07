@@ -35,13 +35,7 @@ const AuthPage = () => {
         const { error } = await signUp(email, password, firstName, lastName);
         if (error) {
           if (error.message.includes('User already registered')) {
-            // Try to sign in instead
-            const { error: signInError } = await signIn(email, password);
-            if (signInError) {
-              setError("An account with this email already exists. Please sign in or use a different email.");
-            } else {
-              navigate("/profile");
-            }
+            setError("An account with this email already exists. Please use the login form.");
           } else {
             setError(error.message);
           }
@@ -49,21 +43,24 @@ const AuthPage = () => {
           navigate("/profile");
         }
       } else {
-        // Login mode - try to sign in first, then register if email doesn't exist
+        // Login mode - try to sign in first
         const { error } = await signIn(email, password);
         if (error) {
           if (error.message.includes('Invalid login credentials')) {
-            // Email might not exist, try to register automatically
+            // For invalid credentials, first try to register (in case email doesn't exist)
             const { error: signUpError } = await signUp(email, password);
             if (signUpError) {
               if (signUpError.message.includes('User already registered')) {
+                // User exists but password is wrong
                 setError("Incorrect password");
                 setShowForgotPassword(true);
+              } else if (signUpError.message.includes('weak_password') || signUpError.message.includes('Password should be at least')) {
+                setError("Password should be at least 6 characters long");
               } else {
                 setError(signUpError.message);
               }
             } else {
-              // Registration successful
+              // Registration successful for new user
               navigate("/profile");
             }
           } else {
