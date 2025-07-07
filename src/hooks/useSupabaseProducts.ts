@@ -66,34 +66,27 @@ export const useSupabaseProducts = () => {
   // Simplified fetch function
   const fetchProducts = async() => {
     try {
-      console.log('📦 Fetching products...');
+      console.log('📦 Fetching products from database...');
       setLoading(true);
       
-      // Simple timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout')), 10000)
-      );
-      
-      const fetchPromise = supabase
+      const { data, error } = await supabase
         .from('products')
         .select('*')
         .order('id', { ascending: true });
-      
-      const result = await Promise.race([fetchPromise, timeoutPromise]);
-      const { data, error } = result as any;
 
       if (error) {
-        console.error('Database error:', error);
-        console.log('✅ Using fallback data');
+        console.error('❌ Database error:', error);
+        console.log('📋 Keeping fallback data due to error');
       } else if (data && data.length > 0) {
-        console.log('✅ Database products loaded:', data.length);
+        console.log('✅ Database products loaded:', data.length, 'records');
+        console.log('Products:', data.map(p => ({ id: p.id, title: p.title })));
         setProducts(data);
       } else {
-        console.log('✅ No database products, using fallback');
+        console.log('⚠️ No products found in database, keeping fallback');
       }
     } catch (error) {
-      console.error('Fetch error:', error);
-      console.log('✅ Using fallback data');
+      console.error('❌ Fetch error:', error);
+      console.log('📋 Keeping fallback data due to error');
     } finally {
       setLoading(false);
       console.log('✅ Loading complete');
