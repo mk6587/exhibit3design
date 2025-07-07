@@ -59,13 +59,13 @@ const fallbackProducts: Product[] = [
 ];
 
 export const useSupabaseProducts = () => {
-  const [products, setProducts] = useState<Product[]>(fallbackProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   // Force load database products
   const fetchProducts = async() => {
-    console.log('🔄 Force fetching database products...');
+    console.log('🔄 Fetching database products...');
     
     try {
       // Direct query without any complications
@@ -81,11 +81,14 @@ export const useSupabaseProducts = () => {
         setProducts(response.data);
       } else if (response.error) {
         console.error('❌ Database error:', response.error);
+        setProducts([]); // Empty state on error
       } else {
         console.log('⚠️ No data returned from database');
+        setProducts([]); // Empty state when no data
       }
     } catch (error) {
       console.error('❌ Catch error:', error);
+      setProducts([]); // Empty state on catch
     }
     
     setLoading(false);
