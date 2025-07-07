@@ -197,17 +197,19 @@ export const useSupabaseProducts = () => {
       if (error) {
         console.error('❌ Supabase error:', error);
         // Use fallback data if Supabase fails
-        setProducts(fallbackProducts);
         console.log('📋 Using fallback products data');
+        setProducts(fallbackProducts);
       } else {
         console.log('✅ Products fetched successfully:', data?.length || 0);
-        setProducts(data || fallbackProducts);
+        // Ensure we have data before setting it
+        const productsData = data && data.length > 0 ? data : fallbackProducts;
+        setProducts(productsData);
       }
     } catch (error) {
       console.error('❌ Error fetching products:', error);
       // Use fallback data on any error
-      setProducts(fallbackProducts);
       console.log('📋 Using fallback products due to error');
+      setProducts(fallbackProducts);
     } finally {
       console.log('🏁 Setting loading to false');
       setLoading(false);
