@@ -13,10 +13,9 @@ enable_confirmations = true
 [auth.email.template.confirmation]
 subject = "Welcome to Exhibit3Design - Confirm Your Account"
 
-[auth.hooks.send_email]
+[auth.hook.send_email]
 enabled = true
-uri = "supabase_functions://send-confirmation-email"
-secrets = ["RESEND_API_KEY", "SEND_EMAIL_HOOK_SECRET"]
+uri = "https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/send-confirmation-email"
 
 [functions.send-confirmation-email]
 verify_jwt = false
