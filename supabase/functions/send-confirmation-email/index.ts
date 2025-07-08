@@ -23,28 +23,40 @@ Deno.serve(async (req) => {
   }
 
   try {
-    console.log('Received webhook request')
+    console.log('=== Function started ===')
     
     // Check if secrets are configured
     const resendApiKey = Deno.env.get('RESEND_API_KEY')
+    const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET')
+    
     console.log('RESEND_API_KEY configured:', !!resendApiKey)
+    console.log('SEND_EMAIL_HOOK_SECRET configured:', !!hookSecret)
     
     if (!resendApiKey) {
       console.error('RESEND_API_KEY not configured')
-      throw new Error('RESEND_API_KEY not configured')
+      return new Response(
+        JSON.stringify({ error: 'RESEND_API_KEY not configured' }),
+        { status: 500, headers: corsHeaders }
+      )
     }
+    
     if (!hookSecret) {
       console.error('SEND_EMAIL_HOOK_SECRET not configured')
-      throw new Error('SEND_EMAIL_HOOK_SECRET not configured')
+      return new Response(
+        JSON.stringify({ error: 'SEND_EMAIL_HOOK_SECRET not configured' }),
+        { status: 500, headers: corsHeaders }
+      )
     }
 
+    console.log('=== Getting request data ===')
     const payload = await req.text()
     const headers = Object.fromEntries(req.headers)
-    console.log('Processing webhook for signup confirmation')
+    
     console.log('Payload length:', payload.length)
     console.log('Headers present:', Object.keys(headers))
     
     // Try webhook verification
+    console.log('=== Starting webhook verification ===')
     try {
       const wh = new Webhook(hookSecret)
       const webhookData = wh.verify(payload, headers) as {
@@ -60,9 +72,10 @@ Deno.serve(async (req) => {
         }
       }
       
+      console.log('=== Webhook verified successfully ===')
       const { user, email_data: { token, token_hash, redirect_to, email_action_type } } = webhookData
 
-      console.log(`Webhook verified for user: ${user.email}, action: ${email_action_type}`)
+      console.log(`User email: ${user.email}, action: ${email_action_type}`)
 
       // Only send custom emails for signup confirmations
       if (email_action_type !== 'signup') {
@@ -73,7 +86,7 @@ Deno.serve(async (req) => {
         )
       }
 
-      console.log('Rendering email template...')
+      console.log('=== Rendering email template ===')
       const html = await renderAsync(
         React.createElement(SignupConfirmationEmail, {
           supabase_url: Deno.env.get('SUPABASE_URL') ?? 'https://fipebdkvzdrljwwxccrj.supabase.co',
@@ -85,7 +98,7 @@ Deno.serve(async (req) => {
         })
       )
 
-      console.log('Sending email via Resend...')
+      console.log('=== Sending email via Resend ===')
       const { error } = await resend.emails.send({
         from: 'Exhibit3Design <noreply@registration.exhibit3design.com>',
         to: [user.email],
@@ -95,23 +108,33 @@ Deno.serve(async (req) => {
 
       if (error) {
         console.error('Resend error:', error)
-        throw new Error(`Resend error: ${error.message || 'Unknown Resend error'}`)
+        return new Response(
+          JSON.stringify({ error: `Resend error: ${error.message || 'Unknown Resend error'}` }),
+          { status: 500, headers: corsHeaders }
+        )
       }
 
-      console.log(`Custom confirmation email sent successfully to ${user.email}`)
-
+      console.log(`=== Success! Email sent to ${user.email} ===`)
       return new Response(
         JSON.stringify({ message: 'Email sent successfully' }),
         { status: 200, headers: corsHeaders }
       )
       
     } catch (webhookError) {
-      console.error('Webhook verification failed:', webhookError)
-      throw new Error(`Webhook verification failed: ${webhookError.message}`)
+      console.error('=== Webhook verification failed ===')
+      console.error('Webhook error:', webhookError)
+      console.error('Webhook error message:', webhookError.message)
+      return new Response(
+        JSON.stringify({ error: `Webhook verification failed: ${webhookError.message}` }),
+        { status: 500, headers: corsHeaders }
+      )
     }
     
   } catch (error) {
-    console.error('Error in send-confirmation-email function:', error)
+    console.error('=== Fatal error in function ===')
+    console.error('Error:', error)
+    console.error('Error message:', error.message)
+    console.error('Error stack:', error.stack)
     return new Response(
       JSON.stringify({
         error: {
