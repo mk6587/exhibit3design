@@ -26,7 +26,10 @@ Deno.serve(async (req) => {
     console.log('Received webhook request')
     
     // Check if secrets are configured
-    if (!Deno.env.get('RESEND_API_KEY')) {
+    const resendApiKey = Deno.env.get('RESEND_API_KEY')
+    console.log('RESEND_API_KEY configured:', !!resendApiKey)
+    
+    if (!resendApiKey) {
       console.error('RESEND_API_KEY not configured')
       throw new Error('RESEND_API_KEY not configured')
     }
@@ -39,7 +42,7 @@ Deno.serve(async (req) => {
     const headers = Object.fromEntries(req.headers)
     console.log('Processing webhook for signup confirmation')
     console.log('Payload length:', payload.length)
-    console.log('Headers:', JSON.stringify(headers, null, 2))
+    console.log('Headers present:', Object.keys(headers))
     
     // Try webhook verification
     try {
