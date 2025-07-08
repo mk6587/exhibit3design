@@ -4,7 +4,7 @@ import { Resend } from 'npm:resend@4.0.0'
 import { renderAsync } from 'npm:@react-email/components@0.0.22'
 import { SignupConfirmationEmail } from './_templates/signup-confirmation.tsx'
 
-const resend = new Resend(Deno.env.get('RESEND_EMAIL_SENDER') as string)
+const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') as string
 
 const corsHeaders = {
@@ -26,9 +26,9 @@ Deno.serve(async (req) => {
     console.log('Received webhook request')
     
     // Check if secrets are configured
-    if (!Deno.env.get('RESEND_EMAIL_SENDER')) {
-      console.error('RESEND_EMAIL_SENDER not configured')
-      throw new Error('RESEND_EMAIL_SENDER not configured')
+    if (!Deno.env.get('RESEND_API_KEY')) {
+      console.error('RESEND_API_KEY not configured')
+      throw new Error('RESEND_API_KEY not configured')
     }
     if (!hookSecret) {
       console.error('SEND_EMAIL_HOOK_SECRET not configured')
