@@ -1,7 +1,17 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@4.0.0";
+import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const smtp = new SMTPClient({
+  connection: {
+    hostname: Deno.env.get("SMTP_HOST") || "mail.exhibit3design.com",
+    port: parseInt(Deno.env.get("SMTP_PORT") || "465"),
+    tls: true,
+    auth: {
+      username: Deno.env.get("SMTP_USER") || "noreply@exhibit3design.com",
+      password: Deno.env.get("SMTP_PASS") || "",
+    },
+  },
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -16,9 +26,9 @@ serve(async (req) => {
   try {
     const { email, confirmationUrl } = await req.json();
 
-    const { error } = await resend.emails.send({
-      from: "Exhibit3Design <noreply@registration.exhibit3design.com>",
-      to: [email],
+    await smtp.send({
+      from: "Exhibit3Design <noreply@exhibit3design.com>",
+      to: email,
       subject: "Welcome to Exhibit3Design - Confirm Your Account",
       html: `
         <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -66,10 +76,6 @@ serve(async (req) => {
         </div>
       `,
     });
-
-    if (error) {
-      throw error;
-    }
 
     return new Response(
       JSON.stringify({ message: "Confirmation email sent successfully" }),

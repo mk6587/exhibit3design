@@ -1,10 +1,20 @@
 import React from 'npm:react@18.3.1'
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
-import { Resend } from 'npm:resend@4.0.0'
+import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 import { renderAsync } from 'npm:@react-email/components@0.0.22'
 import { SignupConfirmationEmail } from './_templates/signup-confirmation.tsx'
 
-const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
+const smtp = new SMTPClient({
+  connection: {
+    hostname: Deno.env.get("SMTP_HOST") || "mail.exhibit3design.com",
+    port: parseInt(Deno.env.get("SMTP_PORT") || "465"),
+    tls: true,
+    auth: {
+      username: Deno.env.get("SMTP_USER") || "noreply@exhibit3design.com",
+      password: Deno.env.get("SMTP_PASS") || "",
+    },
+  },
+});
 const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') as string
 
 const corsHeaders = {
@@ -26,16 +36,16 @@ Deno.serve(async (req) => {
     console.log('=== Function started ===')
     
     // Check if secrets are configured
-    const resendApiKey = Deno.env.get('RESEND_API_KEY')
+    const smtpPass = Deno.env.get('SMTP_PASS')
     const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET')
     
-    console.log('RESEND_API_KEY configured:', !!resendApiKey)
+    console.log('SMTP_PASS configured:', !!smtpPass)
     console.log('SEND_EMAIL_HOOK_SECRET configured:', !!hookSecret)
     
-    if (!resendApiKey) {
-      console.error('RESEND_API_KEY not configured')
+    if (!smtpPass) {
+      console.error('SMTP_PASS not configured')
       return new Response(
-        JSON.stringify({ error: 'RESEND_API_KEY not configured' }),
+        JSON.stringify({ error: 'SMTP_PASS not configured' }),
         { status: 500, headers: corsHeaders }
       )
     }
@@ -98,21 +108,13 @@ Deno.serve(async (req) => {
         })
       )
 
-      console.log('=== Sending email via Resend ===')
-      const { error } = await resend.emails.send({
-        from: 'Exhibit3Design <noreply@registration.exhibit3design.com>',
-        to: [user.email],
+      console.log('=== Sending email via SMTP ===')
+      await smtp.send({
+        from: 'Exhibit3Design <noreply@exhibit3design.com>',
+        to: user.email,
         subject: 'Welcome to Exhibit3Design - Confirm Your Account',
         html,
       })
-
-      if (error) {
-        console.error('Resend error:', error)
-        return new Response(
-          JSON.stringify({ error: `Resend error: ${error.message || 'Unknown Resend error'}` }),
-          { status: 500, headers: corsHeaders }
-        )
-      }
 
       console.log(`=== Success! Email sent to ${user.email} ===`)
       return new Response(
