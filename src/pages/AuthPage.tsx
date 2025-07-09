@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,9 +17,23 @@ const AuthPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [confirmationSuccess, setConfirmationSuccess] = useState(false);
   
   const { signIn, signUp, resetPassword } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Handle email confirmation
+  useEffect(() => {
+    const isConfirmation = searchParams.get('confirm') === 'true';
+    if (isConfirmation) {
+      setConfirmationSuccess(true);
+      toast({
+        title: "Email confirmed!",
+        description: "Your account has been activated. You can now sign in.",
+      });
+    }
+  }, [searchParams]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,7 +109,31 @@ const AuthPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {registrationSuccess ? (
+              {confirmationSuccess ? (
+                <div className="text-center space-y-4">
+                  <div className="mb-6">
+                    <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                      <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Email Confirmed!</h3>
+                    <p className="text-muted-foreground">
+                      Your account has been activated successfully. You can now sign in.
+                    </p>
+                  </div>
+                  
+                  <Button 
+                    variant="default" 
+                    onClick={() => {
+                      setConfirmationSuccess(false);
+                    }}
+                    className="w-full"
+                  >
+                    Continue to Login
+                  </Button>
+                </div>
+              ) : registrationSuccess ? (
                 <div className="text-center space-y-4">
                   <div className="mb-6">
                     <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
