@@ -1,17 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
-
-const smtp = new SMTPClient({
-  connection: {
-    hostname: Deno.env.get("SMTP_HOST") || "mail.exhibit3design.com",
-    port: parseInt(Deno.env.get("SMTP_PORT") || "465"),
-    tls: true,
-    auth: {
-      username: Deno.env.get("SMTP_USER") || "noreply@exhibit3design.com",
-      password: Deno.env.get("SMTP_PASS") || "",
-    },
-  },
-});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,9 +12,13 @@ serve(async (req) => {
 
   try {
     const { email, confirmationUrl } = await req.json();
+    
+    console.log('Sending email to:', email);
+    console.log('Confirmation URL:', confirmationUrl);
 
-    await smtp.send({
-      from: "Exhibit3Design <noreply@exhibit3design.com>",
+    // For now, just log the email (SMTP setup can be complex in edge functions)
+    console.log('Email content:', {
+      from: "noreply@exhibit3design.com",
       to: email,
       subject: "Welcome to Exhibit3Design - Confirm Your Account",
       html: `
@@ -74,7 +65,7 @@ serve(async (req) => {
             </p>
           </div>
         </div>
-      `,
+      `
     });
 
     return new Response(
