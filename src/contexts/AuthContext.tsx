@@ -167,7 +167,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -177,6 +177,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (error) {
         return { error };
+      }
+
+      // Send custom confirmation email
+      if (data.user && !data.user.email_confirmed_at) {
+        try {
+          const confirmationUrl = `${window.location.origin}/auth?confirm=true&token=${data.user.id}`;
+          
+          await supabase.functions.invoke('send-welcome-email', {
+            body: {
+              email: email,
+              confirmationUrl: confirmationUrl
+            }
+          });
+        } catch (emailError) {
+          console.error('Failed to send confirmation email:', emailError);
+          // Don't fail the registration if email sending fails
+        }
       }
 
       toast({
