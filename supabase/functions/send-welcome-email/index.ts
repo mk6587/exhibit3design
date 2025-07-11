@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { SmtpClient } from "https://deno.land/x/smtp@v0.7.0/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -16,12 +17,22 @@ serve(async (req) => {
     console.log('Sending email to:', email);
     console.log('Confirmation URL:', confirmationUrl);
 
-    // For now, just log the email (SMTP setup can be complex in edge functions)
-    console.log('Email content:', {
+    // Create SMTP client
+    const client = new SmtpClient();
+    
+    await client.connectTLS({
+      hostname: "mail.exhibit3design.com",
+      port: 465,
+      username: "noreply@exhibit3design.com",
+      password: "hMYDp2uQAO8x",
+    });
+
+    // Send email
+    await client.send({
       from: "noreply@exhibit3design.com",
       to: email,
       subject: "Welcome to Exhibit3Design - Confirm Your Account",
-      html: `
+      content: `
         <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h1 style="color: #333; font-size: 24px; margin-bottom: 20px;">Welcome to Exhibit3Design!</h1>
           
@@ -65,8 +76,13 @@ serve(async (req) => {
             </p>
           </div>
         </div>
-      `
+      `,
+      html: true,
     });
+
+    await client.close();
+
+    console.log('Email sent successfully!');
 
     return new Response(
       JSON.stringify({ message: "Confirmation email sent successfully" }),
