@@ -150,12 +150,12 @@ async function sendEmailViaCustomSMTP(email: string, confirmationUrl: string): P
     await sendCommand('AUTH LOGIN');
     
     // Send username (base64 encoded)
-    const username = btoa('noreply@exhibit3design.com');
-    await sendCommand(username);
+    const usernameB64 = btoa('noreply@exhibit3design.com').replace(/[^A-Za-z0-9+/=]/g, '');
+    await sendCommand(usernameB64);
     
-    // Send password (base64 encoded)
-    const password = btoa('y*[-T%fglcTi');
-    await sendCommand(password);
+    // Send password (base64 encoded)  
+    const passwordB64 = btoa('y*[-T%fglcTi').replace(/[^A-Za-z0-9+/=]/g, '');
+    await sendCommand(passwordB64);
     
     await sendCommand('MAIL FROM:<noreply@exhibit3design.com>');
     await sendCommand(`RCPT TO:<${email}>`);
