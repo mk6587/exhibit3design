@@ -5,20 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
-
-interface AuthError {
-  message: string;
-  status?: number;
-}
-
-interface AuthResult {
-  error: AuthError | null;
-  data?: any;
-}
 
 const AuthPage = () => {
   const [email, setEmail] = useState("");
@@ -28,157 +18,83 @@ const AuthPage = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [confirmationSuccess, setConfirmationSuccess] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSignUpMode, setIsSignUpMode] = useState(false);
   
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Enhanced email confirmation handling
+  // Handle email confirmation
   useEffect(() => {
-    const handleEmailConfirmation = async () => {
-      const token = searchParams.get('token');
-      const type = searchParams.get('type');
-      const isConfirmation = searchParams.get('confirm') === 'true';
-      
-      // Handle Supabase auth tokens
-      if (token && type === 'signup') {
-        try {
-          const { data, error } = await supabase.auth.verifyOtp({
-            token_hash: token,
-            type: 'signup'
-          });
-          
-          if (error) {
-            console.error('Token verification failed:', error);
-            setError('Email confirmation failed. Please try registering again.');
-          } else {
-            setConfirmationSuccess(true);
-            toast({
-              title: "Email confirmed!",
-              description: "Your account has been activated. You can now sign in.",
-            });
-          }
-        } catch (err) {
-          console.error('Token verification error:', err);
-          setError('Email confirmation failed. Please try registering again.');
-        }
-      } else if (isConfirmation) {
-        // Handle simple confirmation flag
-        setConfirmationSuccess(true);
-        toast({
-          title: "Email confirmed!",
-          description: "Your account has been activated. You can now sign in.",
-        });
-      }
-    };
-
-    handleEmailConfirmation();
+    const isConfirmation = searchParams.get('confirm') === 'true';
+    if (isConfirmation) {
+      setConfirmationSuccess(true);
+      toast({
+        title: "Email confirmed!",
+        description: "Your account has been activated. You can now sign in.",
+      });
+    }
   }, [searchParams]);
 
-  // Email validation
-  const isValidEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  const handleSignIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { error };
   };
 
-  // Password validation
-  const isValidPassword = (password: string): boolean => {
-    return password.length >= 6;
-  };
-
-  const handleSignIn = async (email: string, password: string): Promise<AuthResult> => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (error) {
-        return { error: { message: error.message, status: error.status } };
+  const handleSignUp = async (email: string, password: string) => {
+    const redirectUrl = `${window.location.origin}/`;
+    
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: redirectUrl,
       }
-      
-      return { error: null, data };
-    } catch (err) {
-      return { error: { message: 'Network error. Please check your connection.' } };
-    }
-  };
+    });
 
-  const handleSignUp = async (email: string, password: string): Promise<AuthResult> => {
-    try {
-      // Build proper redirect URL
-      const baseUrl = window.location.origin;
-      const redirectUrl = `${baseUrl}/auth?confirm=true`;
-      
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-        }
-      });
-
-      if (error) {
-        return { error: { message: error.message, status: error.status } };
-      }
-
-      // Enhanced welcome email sending with better error handling
-      if (data.user && !data.user.email_confirmed_at) {
-        try {
-          console.log('Sending welcome email to:', email);
-          
-          // Build confirmation URL with proper token
-          const confirmationUrl = data.user.confirmation_sent_at 
-            ? `${baseUrl}/auth?confirm=true&user_id=${data.user.id}`
-            : redirectUrl;
-          
-          const { data: emailData, error: emailError } = await supabase.functions.invoke('send-welcome-email', {
-            body: {
-              email: email,
-              confirmationUrl: confirmationUrl
-            }
-          });
-
-          if (emailError) {
-            console.error('Email function error:', emailError);
-            // Don't fail registration if email fails, just log it
-            toast({
-              title: "Registration successful",
-              description: "Account created but confirmation email may be delayed. Check your email in a few minutes.",
-              variant: "default"
-            });
-          } else {
-            console.log('Welcome email sent successfully:', emailData);
-          }
-        } catch (emailError: any) {
-          console.error('Failed to send welcome email:', emailError);
-          // Don't fail registration if email fails
-        }
-      }
-
-      return { error: null, data };
-    } catch (err) {
-      return { error: { message: 'Network error. Please check your connection.' } };
-    }
-  };
-
-  const handleResetPassword = async (email: string): Promise<AuthResult> => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
-      if (!error) {
-        toast({
-          title: "Password reset email sent",
-          description: "Check your email for password reset instructions.",
-        });
-      }
-
+    if (error) {
       return { error };
-    } catch (err) {
-      return { error: { message: 'Network error. Please check your connection.' } };
     }
+
+    // Send welcome email using the working edge function
+    if (data.user && !data.user.email_confirmed_at) {
+      try {
+        const confirmationUrl = `${window.location.origin}/auth?confirm=true&token=${data.user.id}`;
+        
+        const { data: emailData, error: emailError } = await supabase.functions.invoke('send-welcome-email', {
+          body: {
+            email: email,
+            confirmationUrl: confirmationUrl
+          }
+        });
+
+        if (emailError) {
+          console.error('Email function error:', emailError);
+        } else {
+          console.log('Welcome email sent successfully:', emailData);
+        }
+      } catch (emailError) {
+        console.error('Failed to send welcome email:', emailError);
+      }
+    }
+
+    return { error: null };
+  };
+
+  const handleResetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    if (!error) {
+      toast({
+        title: "Password reset email sent",
+        description: "Check your email for password reset instructions.",
+      });
+    }
+
+    return { error };
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -187,75 +103,40 @@ const AuthPage = () => {
     setError(null);
     setShowForgotPassword(false);
 
-    // Client-side validation
-    if (!isValidEmail(email)) {
-      setError("Please enter a valid email address");
-      setLoading(false);
-      return;
-    }
-
-    if (!isValidPassword(password)) {
-      setError("Password must be at least 6 characters long");
-      setLoading(false);
-      return;
-    }
-
     try {
-      if (isSignUpMode) {
-        // Explicit sign up mode
-        const { error: signUpError } = await handleSignUp(email, password);
-        
-        if (signUpError) {
-          if (signUpError.message.includes('User already registered') || 
-              signUpError.message.includes('already been registered')) {
-            setError("An account with this email already exists. Try signing in instead.");
-            setIsSignUpMode(false);
+      // First try to sign in
+      const { error: signInError } = await handleSignIn(email, password);
+      
+      if (signInError) {
+        if (signInError.message.includes('Invalid login credentials')) {
+          // Could be either email doesn't exist OR wrong password
+          // Try to register - if user exists, it will fail with specific message
+          const { error: signUpError } = await handleSignUp(email, password);
+          
+          if (signUpError) {
+            if (signUpError.message.includes('User already registered') || 
+                signUpError.message.includes('already been registered')) {
+              // User exists, so the original sign in failure was due to wrong password
+              setError("Incorrect password");
+              setShowForgotPassword(true);
+            } else if (signUpError.message.includes('weak_password') || 
+                       signUpError.message.includes('Password should be at least')) {
+              setError("For new accounts, password must be at least 6 characters long");
+            } else {
+              setError(signUpError.message);
+            }
           } else {
-            setError(signUpError.message);
+            // Registration successful - new user
+            setRegistrationSuccess(true);
           }
         } else {
-          setRegistrationSuccess(true);
+          setError(signInError.message);
         }
       } else {
-        // Try sign in first (default mode)
-        const { error: signInError } = await handleSignIn(email, password);
-        
-        if (signInError) {
-          if (signInError.message.includes('Invalid login credentials')) {
-            // Check if it's a new user or wrong password
-            const { error: signUpError } = await handleSignUp(email, password);
-            
-            if (signUpError) {
-              if (signUpError.message.includes('User already registered') || 
-                  signUpError.message.includes('already been registered')) {
-                // User exists, wrong password
-                setError("Incorrect password for this account");
-                setShowForgotPassword(true);
-              } else {
-                setError(signUpError.message);
-              }
-            } else {
-              // New user registered successfully
-              setRegistrationSuccess(true);
-            }
-          } else if (signInError.message.includes('Email not confirmed')) {
-            setError("Please check your email and click the confirmation link before signing in");
-          } else if (signInError.message.includes('Too many requests')) {
-            setError("Too many login attempts. Please wait a few minutes before trying again");
-          } else {
-            setError(signInError.message);
-          }
-        } else {
-          // Sign in successful
-          toast({
-            title: "Welcome back!",
-            description: "You have successfully signed in.",
-          });
-          navigate("/profile");
-        }
+        // Sign in successful
+        navigate("/profile");
       }
     } catch (err) {
-      console.error('Authentication error:', err);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
@@ -268,25 +149,12 @@ const AuthPage = () => {
       return;
     }
     
-    if (!isValidEmail(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
-    
     setLoading(true);
     const { error } = await handleResetPassword(email);
     if (error) {
       setError(error.message);
-    } else {
-      setShowForgotPassword(false);
     }
     setLoading(false);
-  };
-
-  const toggleMode = () => {
-    setIsSignUpMode(!isSignUpMode);
-    setError(null);
-    setShowForgotPassword(false);
   };
    
   return (
@@ -296,13 +164,10 @@ const AuthPage = () => {
           <Card className="w-full">
             <CardHeader>
               <CardTitle>
-                {isSignUpMode ? "Create Your Account" : "Sign In to Your Account"}
+                Login / Register to Your Account
               </CardTitle>
               <CardDescription>
-                {isSignUpMode 
-                  ? "Join Exhibit3Design to access affordable exhibition stand files"
-                  : "Access your purchased designs and buy affordable exhibition stand files"
-                }
+                Access your purchased designs or buy affordable exhibition stand files
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -324,11 +189,10 @@ const AuthPage = () => {
                     variant="default" 
                     onClick={() => {
                       setConfirmationSuccess(false);
-                      setIsSignUpMode(false);
                     }}
                     className="w-full"
                   >
-                    Continue to Sign In
+                    Continue to Login
                   </Button>
                 </div>
               ) : registrationSuccess ? (
@@ -348,86 +212,57 @@ const AuthPage = () => {
                   <Alert>
                     <AlertDescription>
                       Please check your email and click the confirmation link to activate your account. 
-                      The email may take a few minutes to arrive. Don't forget to check your spam folder.
+                      Don't forget to check your spam folder if you don't see the email.
                     </AlertDescription>
                   </Alert>
                   
-                  <div className="space-y-2">
-                    <Button 
-                      variant="outline" 
-                      onClick={() => {
-                        setRegistrationSuccess(false);
-                        setEmail("");
-                        setPassword("");
-                        setError(null);
-                        setIsSignUpMode(false);
-                      }}
-                      className="w-full"
-                    >
-                      Back to Sign In
-                    </Button>
-                    
-                    <p className="text-sm text-muted-foreground">
-                      Didn't receive the email? Check your spam folder or contact support.
-                    </p>
-                  </div>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setRegistrationSuccess(false);
+                      setEmail("");
+                      setPassword("");
+                      setError(null);
+                    }}
+                    className="w-full"
+                  >
+                    Back to Login
+                  </Button>
                 </div>
               ) : (
                 <>
                   {error && (
-                    <Alert className="mb-4" variant="destructive">
+                    <Alert className="mb-4">
                       <AlertDescription>{error}</AlertDescription>
                     </Alert>
                   )}
                   
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email Address</Label>
+                      <Label htmlFor="email">Email</Label>
                       <Input 
                         id="email" 
                         type="email" 
                         value={email} 
                         onChange={(e) => setEmail(e.target.value)} 
-                        placeholder="your@email.com"
                         required 
                         disabled={loading}
-                        autoComplete="email"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="password">
-                        Password {isSignUpMode && <span className="text-sm text-muted-foreground">(minimum 6 characters)</span>}
-                      </Label>
-                      <div className="relative">
-                        <Input 
-                          id="password" 
-                          type={showPassword ? "text" : "password"}
-                          value={password} 
-                          onChange={(e) => setPassword(e.target.value)} 
-                          placeholder={isSignUpMode ? "Create a secure password" : "Enter your password"}
-                          required 
-                          disabled={loading}
-                          autoComplete={isSignUpMode ? "new-password" : "current-password"}
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                          onClick={() => setShowPassword(!showPassword)}
-                          disabled={loading}
-                        >
-                          {showPassword ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
+                      <Label htmlFor="password">Password</Label>
+                      <Input 
+                        id="password" 
+                        type="password" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)} 
+                        required 
+                        disabled={loading}
+                      />
                     </div>
                     
-                    {showForgotPassword && !isSignUpMode && (
+                    {showForgotPassword && (
                       <div className="text-sm">
                         <Button 
                           type="button" 
@@ -436,28 +271,16 @@ const AuthPage = () => {
                           onClick={handleForgotPassword}
                           disabled={loading}
                         >
-                          Forgot your password? Reset it here
+                          Forgot password?
                         </Button>
                       </div>
                     )}
                      
                     <Button type="submit" className="w-full" disabled={loading}>
                       {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      {loading ? "Processing..." : (isSignUpMode ? "Create Account" : "Sign In")}
+                      {loading ? "Processing..." : "Login / Register"}
                     </Button>
                   </form>
-                  
-                  <div className="mt-4 text-center">
-                    <Button 
-                      type="button" 
-                      variant="link" 
-                      className="text-sm"
-                      onClick={toggleMode}
-                      disabled={loading}
-                    >
-                      {isSignUpMode ? "Already have an account? Sign in" : "New to Exhibit3Design? Create account"}
-                    </Button>
-                  </div>
                 </>
               )}
             </CardContent>
