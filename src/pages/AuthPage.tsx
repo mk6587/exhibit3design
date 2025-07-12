@@ -18,15 +18,30 @@ const AuthPage = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [confirmationSuccess, setConfirmationSuccess] = useState(false);
+  const [emailSendError, setEmailSendError] = useState<string | null>(null);
   
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/profile");
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
   // Handle email confirmation
   useEffect(() => {
     const isConfirmation = searchParams.get('confirmed') === 'true';
     if (isConfirmation) {
       setConfirmationSuccess(true);
+      // Clear the URL parameter
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
       toast({
         title: "Email confirmed!",
         description: "Your account has been activated. You can now sign in.",
@@ -55,6 +70,7 @@ const AuthPage = () => {
     // Send welcome email using the working edge function
     if (data.user && !data.user.email_confirmed_at) {
       try {
+        setEmailSendError(null);
         const confirmationUrl = `${window.location.origin}/auth?confirmed=true`;
         
         const { data: emailData, error: emailError } = await supabase.functions.invoke('send-welcome-email', {
@@ -66,11 +82,13 @@ const AuthPage = () => {
 
         if (emailError) {
           console.error('Email function error:', emailError);
+          setEmailSendError('Failed to send confirmation email. Please contact support if needed.');
         } else {
           console.log('Welcome email sent successfully:', emailData);
         }
       } catch (emailError) {
         console.error('Failed to send welcome email:', emailError);
+        setEmailSendError('Failed to send confirmation email. Please contact support if needed.');
       }
     }
 
@@ -184,6 +202,11 @@ const AuthPage = () => {
                     variant="default" 
                     onClick={() => {
                       setConfirmationSuccess(false);
+                      setError(null);
+                      setEmailSendError(null);
+                      // Clear form to encourage fresh login
+                      setEmail("");
+                      setPassword("");
                     }}
                     className="w-full"
                   >
@@ -202,14 +225,22 @@ const AuthPage = () => {
                     <p className="text-muted-foreground">
                       We've sent a confirmation email to <strong>{email}</strong>
                     </p>
-                  </div>
-                  
-                  <Alert>
-                    <AlertDescription>
-                      Please check your email and click the confirmation link to activate your account. 
-                      Don't forget to check your spam folder if you don't see the email.
-                    </AlertDescription>
-                  </Alert>
+                   </div>
+                   
+                   <Alert>
+                     <AlertDescription>
+                       Please check your email and click the confirmation link to activate your account. 
+                       Don't forget to check your spam folder if you don't see the email.
+                     </AlertDescription>
+                   </Alert>
+
+                   {emailSendError && (
+                     <Alert className="mt-4">
+                       <AlertDescription className="text-yellow-700">
+                         ⚠️ {emailSendError}
+                       </AlertDescription>
+                     </Alert>
+                   )}
                   
                   <Button 
                     variant="outline" 
