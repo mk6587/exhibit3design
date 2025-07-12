@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
         hostname: "mail.exhibit3design.com",
         port: 465,
         username: "noreply@exhibit3design.com",
-        password: "hMYDp2uQAO8x",
+        password: "y*[-T%fglcTi",
       });
 
       // Send email
