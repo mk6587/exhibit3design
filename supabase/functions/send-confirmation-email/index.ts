@@ -66,11 +66,19 @@ serve(async (req) => {
     
     Logger.info('Parsed webhook data', webhookData);
     
-    // Extract user email from the webhook data
-    const userEmail = webhookData?.record?.email || webhookData?.user?.email;
+    // Extract user email from the webhook data with multiple fallback paths
+    const userEmail = webhookData?.record?.email || 
+                     webhookData?.user?.email || 
+                     webhookData?.email ||
+                     webhookData?.data?.email ||
+                     webhookData?.data?.user?.email;
+    
+    Logger.info('Extracted user email:', userEmail);
+    Logger.info('Full webhook structure:', JSON.stringify(webhookData, null, 2));
     
     if (!userEmail) {
       Logger.error('No user email found in webhook payload');
+      Logger.error('Available keys in payload:', Object.keys(webhookData || {}));
       return new Response(
         JSON.stringify({ error: 'No user email found' }),
         { status: 400, headers: corsHeaders }
