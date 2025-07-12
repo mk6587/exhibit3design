@@ -37,13 +37,12 @@ class Logger {
 }
 
 /**
- * Sends email using custom SMTP logic
+ * Sends email using custom SMTP implementation
  */
 async function sendEmailViaCustomSMTP(email: string, confirmationUrl: string): Promise<any> {
   try {
     Logger.info('Starting custom SMTP email send', { recipientEmail: email });
     
-    // For now, let's simulate sending the email and log the details
     const emailContent = `
       <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h1 style="color: #333; font-size: 24px; margin-bottom: 20px;">Welcome to Exhibit3Design!</h1>
@@ -90,32 +89,101 @@ async function sendEmailViaCustomSMTP(email: string, confirmationUrl: string): P
       </div>
     `;
 
-    // Use Deno's built-in fetch to send email via a different SMTP service
-    // Let's try using a basic HTTP request to test the connection
-    Logger.info('Attempting to connect to SMTP server via HTTP...');
+    // Create the email message
+    const boundary = "----=_NextPart_" + Math.random().toString(36).substr(2, 9);
+    const emailMessage = [
+      `From: "Exhibit3Design" <noreply@exhibit3design.com>`,
+      `To: ${email}`,
+      `Subject: Welcome to Exhibit3Design - Confirm Your Account`,
+      `MIME-Version: 1.0`,
+      `Content-Type: multipart/alternative; boundary="${boundary}"`,
+      ``,
+      `--${boundary}`,
+      `Content-Type: text/plain; charset=UTF-8`,
+      ``,
+      `Welcome to Exhibit3Design!`,
+      ``,
+      `Thank you for registering! Please confirm your email by visiting: ${confirmationUrl}`,
+      ``,
+      `--${boundary}`,
+      `Content-Type: text/html; charset=UTF-8`,
+      ``,
+      emailContent,
+      ``,
+      `--${boundary}--`,
+      ``
+    ].join('\r\n');
+
+    Logger.info('Connecting to SMTP server...');
     
-    // For testing, let's just log the email details and return success
-    Logger.info('EMAIL CONTENT TO SEND:');
-    Logger.info('='.repeat(50));
-    Logger.info(`To: ${email}`);
-    Logger.info(`From: noreply@exhibit3design.com`);
-    Logger.info(`Subject: Welcome to Exhibit3Design - Confirm Your Account`);
-    Logger.info(`Confirmation URL: ${confirmationUrl}`);
-    Logger.info('HTML Content:', emailContent.substring(0, 200) + '...');
-    Logger.info('='.repeat(50));
+    // Connect to SMTP server using TLS
+    const conn = await Deno.connectTls({
+      hostname: "mail.exhibit3design.com",
+      port: 465
+    });
 
-    // Simulate successful email send
-    const messageId = `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    Logger.info('Email simulation completed successfully', { messageId });
+    Logger.info('Connected to SMTP server, starting SMTP session...');
 
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+
+    // Helper function to send command and read response
+    async function sendCommand(command: string): Promise<string> {
+      Logger.debug(`SMTP Command: ${command.substring(0, command.indexOf(' ') + 10)}...`);
+      await conn.write(encoder.encode(command + '\r\n'));
+      
+      const buffer = new Uint8Array(1024);
+      const bytesRead = await conn.read(buffer);
+      const response = decoder.decode(buffer.subarray(0, bytesRead || 0));
+      Logger.debug(`SMTP Response: ${response.trim()}`);
+      return response;
+    }
+
+    // Read initial greeting
+    const buffer = new Uint8Array(1024);
+    const bytesRead = await conn.read(buffer);
+    const greeting = decoder.decode(buffer.subarray(0, bytesRead || 0));
+    Logger.debug(`SMTP Greeting: ${greeting.trim()}`);
+
+    // SMTP commands
+    await sendCommand('EHLO exhibit3design.com');
+    await sendCommand('AUTH LOGIN');
+    
+    // Send username (base64 encoded)
+    const username = btoa('noreply@exhibit3design.com');
+    await sendCommand(username);
+    
+    // Send password (base64 encoded)
+    const password = btoa('y*[-T%fglcTi');
+    await sendCommand(password);
+    
+    await sendCommand('MAIL FROM:<noreply@exhibit3design.com>');
+    await sendCommand(`RCPT TO:<${email}>`);
+    await sendCommand('DATA');
+    
+    // Send the email content
+    await conn.write(encoder.encode(emailMessage + '\r\n.\r\n'));
+    
+    // Read final response
+    const finalBuffer = new Uint8Array(1024);
+    const finalBytesRead = await conn.read(finalBuffer);
+    const finalResponse = decoder.decode(finalBuffer.subarray(0, finalBytesRead || 0));
+    Logger.debug(`SMTP Final Response: ${finalResponse.trim()}`);
+    
+    await sendCommand('QUIT');
+    conn.close();
+
+    Logger.info('Email sent successfully via custom SMTP');
+
+    const messageId = `smtp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     return {
       success: true,
       messageId: messageId,
-      note: 'Email simulated - SMTP connection will be implemented next'
+      note: 'Email sent via custom SMTP implementation'
     };
 
   } catch (error) {
-    Logger.error('Email send failed', error);
+    Logger.error('Custom SMTP email send failed', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error occurred'
