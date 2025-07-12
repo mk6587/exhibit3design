@@ -3,5 +3,5 @@ project_id = "fipebdkvzdrljwwxccrj"
 [functions.send-confirmation-email]
 verify_jwt = false
 
-[functions.send-welcome-email]
+[functions.send-welcome-email] 
 verify_jwt = false
