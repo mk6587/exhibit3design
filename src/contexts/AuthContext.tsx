@@ -179,19 +179,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return { error };
       }
 
-      // Send custom confirmation email
+      // Send welcome email
       if (data.user && !data.user.email_confirmed_at) {
         try {
           const confirmationUrl = `${window.location.origin}/auth?confirm=true&token=${data.user.id}`;
           
-          await supabase.functions.invoke('send-welcome-email', {
+          const { data: emailData, error: emailError } = await supabase.functions.invoke('send-welcome-email', {
             body: {
               email: email,
               confirmationUrl: confirmationUrl
             }
           });
+
+          if (emailError) {
+            console.error('Email function error:', emailError);
+          } else {
+            console.log('Welcome email sent successfully:', emailData);
+          }
         } catch (emailError) {
-          console.error('Failed to send confirmation email:', emailError);
+          console.error('Failed to send welcome email:', emailError);
           // Don't fail the registration if email sending fails
         }
       }
