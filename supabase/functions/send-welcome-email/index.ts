@@ -41,153 +41,124 @@ class Logger {
  */
 async function sendEmailViaCustomSMTP(email: string, confirmationUrl: string): Promise<any> {
   try {
-    Logger.info('Starting custom SMTP email send', { recipientEmail: email });
+    Logger.info('=== STARTING EMAIL SEND PROCESS ===');
+    Logger.info('Recipient:', email);
+    Logger.info('Confirmation URL:', confirmationUrl);
     
-    const emailContent = `
-      <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1 style="color: #333; font-size: 24px; margin-bottom: 20px;">Welcome to Exhibit3Design!</h1>
-        
-        <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-          Thank you for registering with Exhibit3Design! We're excited to help you access affordable exhibition stand design files that save you time and money.
-        </p>
-        
-        <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
-          Please confirm your email address by clicking the button below:
-        </p>
-        
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${confirmationUrl}" 
-             style="background-color: #007bff; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
-            Confirm Your Email Address
-          </a>
-        </div>
-        
-        <p style="color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-          Or copy and paste this link in your browser:
-        </p>
-        <p style="color: #007bff; font-size: 14px; word-break: break-all; margin-bottom: 30px;">
-          ${confirmationUrl}
-        </p>
-        
-        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 6px; margin: 30px 0;">
-          <h3 style="color: #333; font-size: 18px; margin-bottom: 10px;">About Exhibit3Design</h3>
-          <p style="color: #666; font-size: 14px; line-height: 1.6; margin: 0;">
-            We provide professional exhibition stand design files at affordable prices, helping businesses create stunning displays without breaking the budget.
-          </p>
-        </div>
-        
-        <p style="color: #999; font-size: 12px; line-height: 1.6; margin-top: 30px;">
-          If you didn't create an account with us, you can safely ignore this email.
-        </p>
-        
-        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
-          <p style="color: #999; font-size: 12px; margin: 0;">
-            <strong>Exhibit3Design</strong><br>
-            Professional Exhibition Stand Design Files
-          </p>
-        </div>
-      </div>
-    `;
-
-    // Create the email message
-    const boundary = "----=_NextPart_" + Math.random().toString(36).substr(2, 9);
-    const emailMessage = [
-      `From: "Exhibit3Design" <noreply@exhibit3design.com>`,
-      `To: ${email}`,
-      `Subject: Welcome to Exhibit3Design - Confirm Your Account`,
-      `MIME-Version: 1.0`,
-      `Content-Type: multipart/alternative; boundary="${boundary}"`,
-      ``,
-      `--${boundary}`,
-      `Content-Type: text/plain; charset=UTF-8`,
-      ``,
-      `Welcome to Exhibit3Design!`,
-      ``,
-      `Thank you for registering! Please confirm your email by visiting: ${confirmationUrl}`,
-      ``,
-      `--${boundary}`,
-      `Content-Type: text/html; charset=UTF-8`,
-      ``,
-      emailContent,
-      ``,
-      `--${boundary}--`,
-      ``
-    ].join('\r\n');
-
-    Logger.info('Connecting to SMTP server...');
+    // Test basic connectivity first
+    Logger.info('Testing connection to mail.exhibit3design.com:465...');
     
-    // Connect to SMTP server using TLS
     const conn = await Deno.connectTls({
       hostname: "mail.exhibit3design.com",
       port: 465
     });
-
-    Logger.info('Connected to SMTP server, starting SMTP session...');
-
+    
+    Logger.info('✅ TLS connection established successfully');
+    
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
-
-    // Helper function to send command and read response
-    async function sendCommand(command: string): Promise<string> {
-      Logger.debug(`SMTP Command: ${command.substring(0, command.indexOf(' ') + 10)}...`);
-      await conn.write(encoder.encode(command + '\r\n'));
-      
-      const buffer = new Uint8Array(1024);
-      const bytesRead = await conn.read(buffer);
-      const response = decoder.decode(buffer.subarray(0, bytesRead || 0));
-      Logger.debug(`SMTP Response: ${response.trim()}`);
-      return response;
-    }
-
+    
     // Read initial greeting
-    const buffer = new Uint8Array(1024);
+    const buffer = new Uint8Array(4096);
     const bytesRead = await conn.read(buffer);
     const greeting = decoder.decode(buffer.subarray(0, bytesRead || 0));
-    Logger.debug(`SMTP Greeting: ${greeting.trim()}`);
-
-    // SMTP commands
+    Logger.info('SMTP Greeting:', greeting.trim());
+    
+    if (!greeting.includes('220')) {
+      throw new Error(`Invalid SMTP greeting: ${greeting}`);
+    }
+    
+    // Helper function to send command and read response
+    async function sendCommand(command: string): Promise<string> {
+      Logger.info(`→ SMTP: ${command.replace(/AUTH LOGIN|[A-Za-z0-9+/=]{20,}/, '[REDACTED]')}`);
+      await conn.write(encoder.encode(command + '\r\n'));
+      
+      const respBuffer = new Uint8Array(4096);
+      const respBytes = await conn.read(respBuffer);
+      const response = decoder.decode(respBuffer.subarray(0, respBytes || 0));
+      Logger.info(`← SMTP: ${response.trim()}`);
+      
+      if (response.startsWith('5') || response.startsWith('4')) {
+        throw new Error(`SMTP Error: ${response.trim()}`);
+      }
+      
+      return response;
+    }
+    
+    // SMTP handshake
     await sendCommand('EHLO exhibit3design.com');
     await sendCommand('AUTH LOGIN');
     
-    // Send username (base64 encoded)
-    const usernameB64 = btoa('noreply@exhibit3design.com').replace(/[^A-Za-z0-9+/=]/g, '');
-    await sendCommand(usernameB64);
+    // Send credentials
+    const usernameB64 = btoa('noreply@exhibit3design.com');
+    const passwordB64 = btoa('y*[-T%fglcTi');
     
-    // Send password (base64 encoded)  
-    const passwordB64 = btoa('y*[-T%fglcTi').replace(/[^A-Za-z0-9+/=]/g, '');
+    await sendCommand(usernameB64);
     await sendCommand(passwordB64);
+    
+    Logger.info('✅ SMTP Authentication successful');
     
     await sendCommand('MAIL FROM:<noreply@exhibit3design.com>');
     await sendCommand(`RCPT TO:<${email}>`);
     await sendCommand('DATA');
     
-    // Send the email content
-    await conn.write(encoder.encode(emailMessage + '\r\n.\r\n'));
+    // Email content
+    const emailContent = `From: "Exhibit3Design" <noreply@exhibit3design.com>
+To: ${email}
+Subject: Welcome to Exhibit3Design - Confirm Your Account
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+
+<div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <h1 style="color: #333; font-size: 24px; margin-bottom: 20px;">Welcome to Exhibit3Design!</h1>
+  
+  <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+    Thank you for registering with Exhibit3Design! We're excited to help you access affordable exhibition stand design files.
+  </p>
+  
+  <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+    Please confirm your email address by clicking the link below:
+  </p>
+  
+  <div style="text-align: center; margin: 30px 0;">
+    <a href="${confirmationUrl}" 
+       style="background-color: #007bff; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+      Confirm Your Email Address
+    </a>
+  </div>
+  
+  <p style="color: #666; font-size: 14px; line-height: 1.6;">
+    Or copy and paste this link: ${confirmationUrl}
+  </p>
+</div>`;
+    
+    Logger.info('Sending email content...');
+    await conn.write(encoder.encode(emailContent + '\r\n.\r\n'));
     
     // Read final response
-    const finalBuffer = new Uint8Array(1024);
-    const finalBytesRead = await conn.read(finalBuffer);
-    const finalResponse = decoder.decode(finalBuffer.subarray(0, finalBytesRead || 0));
-    Logger.debug(`SMTP Final Response: ${finalResponse.trim()}`);
+    const finalBuffer = new Uint8Array(4096);
+    const finalBytes = await conn.read(finalBuffer);
+    const finalResponse = decoder.decode(finalBuffer.subarray(0, finalBytes || 0));
+    Logger.info(`Final SMTP Response: ${finalResponse.trim()}`);
+    
+    if (!finalResponse.includes('250')) {
+      throw new Error(`Email send failed: ${finalResponse}`);
+    }
     
     await sendCommand('QUIT');
     conn.close();
-
-    Logger.info('Email sent successfully via custom SMTP');
-
-    const messageId = `smtp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    Logger.info('✅ EMAIL SENT SUCCESSFULLY!');
+    
     return {
       success: true,
-      messageId: messageId,
+      messageId: `smtp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       note: 'Email sent via custom SMTP implementation'
     };
-
+    
   } catch (error) {
-    Logger.error('Custom SMTP email send failed', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
-    };
+    Logger.error('❌ EMAIL SEND FAILED:', error);
+    throw error;
   }
 }
 
