@@ -67,31 +67,8 @@ const AuthPage = () => {
       return { error };
     }
 
-    // Send welcome email using the working edge function
-    if (data.user && !data.user.email_confirmed_at) {
-      try {
-        setEmailSendError(null);
-        const confirmationUrl = `${window.location.origin}/auth?confirmed=true`;
-        
-        const { data: emailData, error: emailError } = await supabase.functions.invoke('send-welcome-email', {
-          body: {
-            email: email,
-            confirmationUrl: confirmationUrl
-          }
-        });
-
-        if (emailError) {
-          console.error('Email function error:', emailError);
-          setEmailSendError('Failed to send confirmation email. Please contact support if needed.');
-        } else {
-          console.log('Welcome email sent successfully:', emailData);
-        }
-      } catch (emailError) {
-        console.error('Failed to send welcome email:', emailError);
-        setEmailSendError('Failed to send confirmation email. Please contact support if needed.');
-      }
-    }
-
+    // Supabase will handle confirmation emails via the auth hook
+    // No need to manually send emails here since the hook is working
     return { error: null };
   };
 
