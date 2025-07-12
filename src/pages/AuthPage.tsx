@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
 
@@ -19,7 +19,6 @@ const AuthPage = () => {
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [confirmationSuccess, setConfirmationSuccess] = useState(false);
   
-  const { signIn, signUp, resetPassword } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -34,6 +33,69 @@ const AuthPage = () => {
       });
     }
   }, [searchParams]);
+
+  const handleSignIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { error };
+  };
+
+  const handleSignUp = async (email: string, password: string) => {
+    const redirectUrl = `${window.location.origin}/`;
+    
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: redirectUrl,
+      }
+    });
+
+    if (error) {
+      return { error };
+    }
+
+    // Send welcome email using the working edge function
+    if (data.user && !data.user.email_confirmed_at) {
+      try {
+        const confirmationUrl = `${window.location.origin}/auth?confirm=true&token=${data.user.id}`;
+        
+        const { data: emailData, error: emailError } = await supabase.functions.invoke('send-welcome-email', {
+          body: {
+            email: email,
+            confirmationUrl: confirmationUrl
+          }
+        });
+
+        if (emailError) {
+          console.error('Email function error:', emailError);
+        } else {
+          console.log('Welcome email sent successfully:', emailData);
+        }
+      } catch (emailError) {
+        console.error('Failed to send welcome email:', emailError);
+      }
+    }
+
+    return { error: null };
+  };
+
+  const handleResetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    if (!error) {
+      toast({
+        title: "Password reset email sent",
+        description: "Check your email for password reset instructions.",
+      });
+    }
+
+    return { error };
+  };
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,13 +105,13 @@ const AuthPage = () => {
 
     try {
       // First try to sign in
-      const { error: signInError } = await signIn(email, password);
+      const { error: signInError } = await handleSignIn(email, password);
       
       if (signInError) {
         if (signInError.message.includes('Invalid login credentials')) {
           // Could be either email doesn't exist OR wrong password
           // Try to register - if user exists, it will fail with specific message
-          const { error: signUpError } = await signUp(email, password);
+          const { error: signUpError } = await handleSignUp(email, password);
           
           if (signUpError) {
             if (signUpError.message.includes('User already registered') || 
@@ -88,7 +150,7 @@ const AuthPage = () => {
     }
     
     setLoading(true);
-    const { error } = await resetPassword(email);
+    const { error } = await handleResetPassword(email);
     if (error) {
       setError(error.message);
     }
