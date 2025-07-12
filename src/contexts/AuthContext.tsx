@@ -167,11 +167,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
+      // Disable email confirmation hook to avoid the 500 error
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: redirectUrl,
+          data: {
+            email_confirm: false  // Disable auto confirmation emails
+          }
         }
       });
 
@@ -179,7 +183,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return { error };
       }
 
-      // Send welcome email
+      // Send welcome email directly using the working function
       if (data.user && !data.user.email_confirmed_at) {
         try {
           const confirmationUrl = `${window.location.origin}/auth?confirm=true&token=${data.user.id}`;
@@ -193,19 +197,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
           if (emailError) {
             console.error('Email function error:', emailError);
+            // Continue with registration even if email fails
+            toast({
+              title: "Registration successful!",
+              description: "Account created, but confirmation email may have failed. Contact support if needed.",
+            });
           } else {
             console.log('Welcome email sent successfully:', emailData);
+            toast({
+              title: "Registration successful!",
+              description: "Please check your email for a confirmation link.",
+            });
           }
         } catch (emailError) {
           console.error('Failed to send welcome email:', emailError);
-          // Don't fail the registration if email sending fails
+          toast({
+            title: "Registration successful!",
+            description: "Account created, but confirmation email may have failed. Contact support if needed.",
+          });
         }
+      } else {
+        toast({
+          title: "Registration successful!",
+          description: "You can now sign in to your account.",
+        });
       }
-
-      toast({
-        title: "Registration successful!",
-        description: "Please check your email for a confirmation link.",
-      });
 
       return { error: null };
     } catch (error) {
