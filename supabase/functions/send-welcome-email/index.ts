@@ -46,14 +46,14 @@ async function sendEmailViaCustomSMTP(email: string, confirmationUrl: string): P
     Logger.info('Confirmation URL:', confirmationUrl);
     
     // Test basic connectivity first
-    Logger.info('Testing connection to mail.exhibit3design.com:465...');
+    Logger.info('Testing connection to mail.exhibit3design.com:587...');
     
-    const conn = await Deno.connectTls({
+    const conn = await Deno.connect({
       hostname: "mail.exhibit3design.com",
-      port: 465
+      port: 587
     });
     
-    Logger.info('✅ TLS connection established successfully');
+    Logger.info('✅ TCP connection established successfully');
     
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
