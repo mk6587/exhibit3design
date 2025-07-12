@@ -57,15 +57,15 @@ const AuthPage = () => {
       return { error };
     }
 
-    // Send welcome email using the working edge function
+    // Send welcome email using the exact same approach as EmailTestPage
     if (data.user && !data.user.email_confirmed_at) {
       try {
-        const confirmationUrl = `${window.location.origin}/auth?confirm=true&token=${data.user.id}`;
+        console.log('Sending welcome email to:', email);
         
         const { data: emailData, error: emailError } = await supabase.functions.invoke('send-welcome-email', {
           body: {
             email: email,
-            confirmationUrl: confirmationUrl
+            confirmationUrl: `${window.location.origin}/auth?confirm=true&token=${data.user.id}`
           }
         });
 
@@ -74,7 +74,7 @@ const AuthPage = () => {
         } else {
           console.log('Welcome email sent successfully:', emailData);
         }
-      } catch (emailError) {
+      } catch (emailError: any) {
         console.error('Failed to send welcome email:', emailError);
       }
     }
