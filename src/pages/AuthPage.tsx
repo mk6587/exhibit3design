@@ -60,7 +60,7 @@ const AuthPage = () => {
     // Send welcome email using the working edge function
     if (data.user && !data.user.email_confirmed_at) {
       try {
-        const confirmationUrl = `${window.location.origin}/auth?confirm=true&token=${data.user.id}`;
+        const confirmationUrl = `${window.location.origin}/auth?confirmed=true`;
         
         const { data: emailData, error: emailError } = await supabase.functions.invoke('send-welcome-email', {
           body: {
