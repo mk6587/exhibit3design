@@ -24,7 +24,7 @@ const AuthPage = () => {
 
   // Handle email confirmation
   useEffect(() => {
-    const isConfirmation = searchParams.get('confirm') === 'true';
+    const isConfirmation = searchParams.get('confirmed') === 'true';
     if (isConfirmation) {
       setConfirmationSuccess(true);
       toast({
