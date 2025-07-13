@@ -66,7 +66,26 @@ const AuthPage = () => {
       }
     });
 
-    return { error };
+    if (error) {
+      return { error };
+    }
+
+    // Send confirmation email via our custom SMTP function
+    try {
+      const { error: emailError } = await supabase.functions.invoke('send-confirmation-email', {
+        body: { email }
+      });
+      
+      if (emailError) {
+        console.error('Email sending error:', emailError);
+        setEmailSendError('Account created but confirmation email failed to send. Please contact support.');
+      }
+    } catch (emailErr) {
+      console.error('Email function error:', emailErr);
+      setEmailSendError('Account created but confirmation email failed to send. Please contact support.');
+    }
+
+    return { error: null };
   };
 
   const handleResetPassword = async (email: string) => {
