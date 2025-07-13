@@ -200,58 +200,28 @@ serve(async (req: Request): Promise<Response> => {
   }
 
   try {
-    Logger.info('=== Confirmation Email Hook Started ===');
+    Logger.info('=== Confirmation Email Function Started ===');
     Logger.info(`Request: ${req.method} ${req.url}`);
     
-    // Parse the webhook payload with error handling
-    let payload: string;
+    // Parse the request body for direct function call
+    let requestData: any;
     try {
-      payload = await req.text();
-    } catch (readError) {
-      Logger.error('Failed to read request payload', readError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to read request payload' }),
-        { status: 400, headers: corsHeaders }
-      );
-    }
-    
-    Logger.info('Received webhook payload', { payloadLength: payload.length });
-    
-    // Validate payload is not empty
-    if (!payload || payload.trim().length === 0) {
-      Logger.error('Empty payload received');
-      return new Response(
-        JSON.stringify({ error: 'Empty payload' }),
-        { status: 400, headers: corsHeaders }
-      );
-    }
-    
-    let webhookData: any;
-    try {
-      webhookData = JSON.parse(payload);
+      requestData = await req.json();
     } catch (parseError) {
-      Logger.error('Failed to parse webhook payload as JSON', parseError);
+      Logger.error('Failed to parse request body as JSON', parseError);
       return new Response(
-        JSON.stringify({ error: 'Invalid JSON payload' }),
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
         { status: 400, headers: corsHeaders }
       );
     }
     
-    Logger.debug('Parsed webhook data structure', {
-      keys: Object.keys(webhookData || {}),
-      hasRecord: !!webhookData?.record,
-      hasUser: !!webhookData?.user,
-      hasData: !!webhookData?.data
+    Logger.debug('Received request data', {
+      keys: Object.keys(requestData || {}),
+      hasEmail: !!requestData?.email
     });
     
-    // Extract user email from the webhook data with comprehensive fallback paths
-    const userEmail = webhookData?.record?.email || 
-                     webhookData?.user?.email || 
-                     webhookData?.email ||
-                     webhookData?.data?.email ||
-                     webhookData?.data?.user?.email ||
-                     webhookData?.new_record?.email ||
-                     webhookData?.table?.email;
+    // Extract user email from the request body
+    const userEmail = requestData?.email;
     
     Logger.info('Email extraction result', {
       found: !!userEmail,
@@ -259,13 +229,13 @@ serve(async (req: Request): Promise<Response> => {
     });
     
     if (!userEmail) {
-      Logger.error('No user email found in webhook payload');
-      Logger.error('Available payload structure:', JSON.stringify(webhookData, null, 2));
+      Logger.error('No user email found in request body');
+      Logger.error('Available request data:', JSON.stringify(requestData, null, 2));
       return new Response(
         JSON.stringify({ 
-          error: 'No user email found in webhook payload',
-          availableKeys: Object.keys(webhookData || {}),
-          hint: 'Expected email in: record.email, user.email, email, data.email, data.user.email'
+          error: 'No user email found in request body',
+          availableKeys: Object.keys(requestData || {}),
+          hint: 'Expected email field in request body'
         }),
         { status: 400, headers: corsHeaders }
       );

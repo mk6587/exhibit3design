@@ -167,15 +167,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
-      // Disable email confirmation hook to avoid the 500 error
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            email_confirm: false  // Disable auto confirmation emails
-          }
+          emailRedirectTo: redirectUrl
         }
       });
 
@@ -183,15 +179,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return { error };
       }
 
-      // Send welcome email directly using the working function
-      if (data.user && !data.user.email_confirmed_at) {
+      // Send confirmation email manually via edge function
+      if (data.user) {
         try {
-          const confirmationUrl = `${window.location.origin}/auth?confirm=true&token=${data.user.id}`;
-          
-          const { data: emailData, error: emailError } = await supabase.functions.invoke('send-welcome-email', {
+          const { data: emailData, error: emailError } = await supabase.functions.invoke('send-confirmation-email', {
             body: {
-              email: email,
-              confirmationUrl: confirmationUrl
+              email: email
             }
           });
 
