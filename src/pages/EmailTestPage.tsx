@@ -18,10 +18,9 @@ const EmailTestPage = () => {
     try {
       console.log('Sending test email to:', email);
       
-      const { data, error } = await supabase.functions.invoke('send-welcome-email', {
+      const { data, error } = await supabase.functions.invoke('send-confirmation-email', {
         body: {
-          email: email,
-          confirmationUrl: `${window.location.origin}/auth?confirmed=true`
+          email: email
         }
       });
 
