@@ -61,15 +61,12 @@ const AuthPage = () => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: undefined,
+      }
     });
 
-    if (error) {
-      return { error };
-    }
-
-    // Supabase will handle confirmation emails via the auth hook
-    // No need to manually send emails here since the hook is working
-    return { error: null };
+    return { error };
   };
 
   const handleResetPassword = async (email: string) => {
