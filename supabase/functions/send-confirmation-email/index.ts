@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
 // CORS headers to allow requests from any origin
 const corsHeaders = {
@@ -9,13 +8,12 @@ const corsHeaders = {
 }
 
 // SMTP Configuration - Replace with your actual SMTP server details
+// Note: Port 587 typically uses STARTTLS, which is handled manually below.
 const smtpConfig = {
   hostname: 'mail.exhibit3design.com',
-  port: 465, // Standard port for SMTPS (SMTP over SSL/TLS)
+  port: 587, // Standard port for SMTP with STARTTLS
   username: 'noreply@exhibit3design.com',
   password: 'y*[-T%fglcTi', // IMPORTANT: Use environment variables for sensitive data in production!
-  tls: true, // Enable TLS encryption
-  ssl: true, // Explicitly enable SSL for port 465
 };
 
 /**
@@ -42,7 +40,7 @@ class Logger {
   }
 
   static debug(message: string, data?: any): void {
-    // Only log debug messages in a development environment if needed
+    // Uncomment the lines below to enable debug logging
     // console.log(`[DEBUG] ${new Date().toISOString()} - ${message}`);
     // if (data) {
     //   console.log('[DEBUG] Data:', JSON.stringify(data, null, 2));
@@ -61,137 +59,186 @@ function isValidEmail(email: string): boolean {
 }
 
 /**
- * Sends a confirmation email using direct SMTP.
- * This function encapsulates the core email sending logic.
+ * Sends email using a custom, low-level SMTP implementation over TCP.
+ * This function manually handles the SMTP handshake, TLS upgrade (STARTTLS),
+ * authentication, and email data transfer.
  * @param userEmail The recipient's email address.
+ * @param confirmationUrl The URL for email confirmation.
  * @returns An object indicating success or failure with an error message.
  */
-async function sendConfirmationEmail(userEmail: string): Promise<{success: boolean, error?: string}> {
-  let client: SMTPClient | null = null;
-  
+async function sendEmailViaCustomSMTP(userEmail: string, confirmationUrl: string): Promise<{success: boolean, error?: string}> {
+  let conn: Deno.Conn | null = null;
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+
   try {
-    Logger.info('Attempting to send email. Initializing SMTP client with config:', {
+    Logger.info('=== STARTING MANUAL SMTP EMAIL SEND PROCESS ===');
+    Logger.info('Recipient:', userEmail);
+    Logger.info('Confirmation URL:', confirmationUrl);
+    
+    Logger.info(`Attempting to connect to ${smtpConfig.hostname}:${smtpConfig.port}...`);
+    
+    // Establish a raw TCP connection
+    conn = await Deno.connect({
       hostname: smtpConfig.hostname,
-      port: smtpConfig.port,
-      username: smtpConfig.username,
-      ssl: smtpConfig.ssl,
-      tls: smtpConfig.tls
+      port: smtpConfig.port
     });
     
-    // Create SMTP client instance
-    client = new SMTPClient(smtpConfig);
+    Logger.info('✅ TCP connection established successfully');
     
-    // Connect to the SMTP server with a timeout to prevent indefinite hangs
-    const connectTimeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('SMTP connection timed out after 10 seconds')), 10000)
-    );
+    // Helper function to send command and read response
+    async function sendCommand(command: string): Promise<string> {
+      Logger.debug(`→ SMTP: ${command.replace(/AUTH LOGIN|[A-Za-z0-9+/=]{20,}/, '[REDACTED]')}`);
+      await conn!.write(encoder.encode(command + '\r\n')); // conn is guaranteed to be non-null here
 
-    try {
-      await Promise.race([client.connect(), connectTimeoutPromise]);
-      Logger.info('SMTP connection established successfully');
-    } catch (connectionError: any) {
-      // Ensure client is closed if connection failed
-      if (client) {
-        client.close().catch(() => {});
+      const respBuffer = new Uint8Array(4096);
+      const respBytes = await conn!.read(respBuffer); // conn is guaranteed to be non-null here
+      const response = decoder.decode(respBuffer.subarray(0, respBytes || 0));
+      Logger.debug(`← SMTP: ${response.trim()}`);
+      
+      // Check for error responses (4xx or 5xx)
+      if (response.startsWith('5') || response.startsWith('4')) {
+        throw new Error(`SMTP Error: ${response.trim()}`);
       }
-      throw new Error(`SMTP connection failed: ${connectionError.message || connectionError}`);
+      
+      return response;
     }
+    
+    // Read initial greeting from the SMTP server
+    const initialBuffer = new Uint8Array(4096);
+    const initialBytesRead = await conn.read(initialBuffer);
+    const greeting = decoder.decode(initialBuffer.subarray(0, initialBytesRead || 0));
+    Logger.info('SMTP Greeting:', greeting.trim());
+    
+    if (!greeting.includes('220')) {
+      throw new Error(`Invalid SMTP greeting: ${greeting}`);
+    }
+    
+    // SMTP handshake: EHLO
+    await sendCommand(`EHLO ${smtpConfig.hostname}`);
 
-    // Generate a unique message ID for the email
-    const messageId = `exhibit3d-confirm-${Date.now()}-${Math.random().toString(36).substr(2, 9)}@exhibit3design.com`;
+    // --- IMPORTANT: Initiate STARTTLS for secure communication on port 587 ---
+    // This upgrades the plain TCP connection to a TLS-encrypted one.
+    await sendCommand('STARTTLS');
+    Logger.info('Initiating TLS handshake...');
     
-    Logger.info('Composing and sending confirmation email to:', userEmail);
+    // Upgrade the connection to TLS
+    conn = await Deno.startTls(conn);
+    Logger.info('✅ TLS handshake completed.');
+
+    // Now, perform authentication over the secure channel
+    await sendCommand('AUTH LOGIN');
     
-    // Send the email
-    await client.send({
-      from: "noreply@exhibit3design.com", // Sender's email address
-      to: userEmail, // Recipient's email address
-      subject: "Welcome to Exhibit3Design - Your Account is Ready!", // Email subject
-      content: `
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Welcome to Exhibit3Design</title>
-          </head>
-          <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
-            <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-              <div style="text-align: center; margin-bottom: 30px;">
-                <h1 style="color: #333; margin-bottom: 10px; font-size: 28px;">Welcome to Exhibit3Design!</h1>
-                <p style="color: #666; font-size: 16px; margin: 0;">Thank you for creating your account.</p>
-              </div>
-              
-              <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #007bff;">
-                <p style="color: #333; margin: 0 0 15px 0; font-size: 16px; line-height: 1.6;">
-                  We're excited to have you join our community! Your account has been successfully created.
-                </p>
-                <p style="color: #333; margin: 0; font-size: 16px; line-height: 1.6;">
-                  You can now log in to your account and start exploring our design services.
-                </p>
-              </div>
-              
-              <div style="background-color: #e8f4fd; padding: 15px; border-radius: 6px; margin-bottom: 25px;">
-                <p style="color: #0066cc; margin: 0; font-size: 14px; font-weight: bold;">
-                  🎨 Ready to explore affordable exhibition stand designs?
-                </p>
-              </div>
-              
-              <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
-                <p style="color: #666; font-size: 14px; margin: 0 0 10px 0;">
-                  If you have any questions, feel free to contact our support team.
-                </p>
-                <p style="color: #666; font-size: 14px; margin: 0;">
-                  Best regards,<br>
-                  <strong>The Exhibit3Design Team</strong>
-                </p>
-              </div>
-              
-              <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #f0f0f0;">
-                <p style="color: #999; font-size: 12px; margin: 0;">
-                  This is an automated message. Please do not reply to this email.
-                </p>
-              </div>
-            </div>
-          </body>
-        </html>
-      `,
-      html: true, // Specify that the content is HTML
-      headers: {
-        'Message-ID': messageId,
-        'Date': new Date().toUTCString(),
-        'X-Mailer': 'Deno Email Service v1.0.0', // Custom mailer header
-        'X-Priority': '3', // Normal priority
-        'Reply-To': 'noreply@exhibit3design.com' // Reply-to address
-      }
-    });
+    // Send base64-encoded credentials
+    const usernameB64 = btoa(smtpConfig.username);
+    const passwordB64 = btoa(smtpConfig.password);
     
-    Logger.info('✅ Email sent successfully', {
-      recipient: userEmail,
-      messageId: messageId
-    });
+    await sendCommand(usernameB64);
+    await sendCommand(passwordB64);
     
-    return { success: true };
+    Logger.info('✅ SMTP Authentication successful');
+    
+    // Specify sender and recipient
+    await sendCommand(`MAIL FROM:<${smtpConfig.username}>`);
+    await sendCommand(`RCPT TO:<${userEmail}>`);
+    
+    // Start sending email data
+    await sendCommand('DATA');
+    
+    // Email content (HTML format)
+    const emailContent = `From: "Exhibit3Design" <${smtpConfig.username}>
+To: ${userEmail}
+Subject: Welcome to Exhibit3Design - Confirm Your Account
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+
+<div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+  <h1 style="color: #333; font-size: 28px; text-align: center; margin-bottom: 25px;">Welcome to Exhibit3Design!</h1>
+  
+  <p style="color: #555; font-size: 16px; line-height: 1.7; margin-bottom: 20px;">
+    Thank you for registering with Exhibit3Design! We're thrilled to have you join our community.
+    You're just one step away from accessing affordable exhibition stand design files and resources.
+  </p>
+  
+  <p style="color: #555; font-size: 16px; line-height: 1.7; margin-bottom: 30px;">
+    To activate your account and get started, please confirm your email address by clicking the button below:
+  </p>
+  
+  <div style="text-align: center; margin: 35px 0;">
+    <a href="${confirmationUrl}" 
+       style="background-color: #007bff; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 17px; box-shadow: 0 4px 10px rgba(0,123,255,0.3);">
+      Confirm Your Email Address
+    </a>
+  </div>
+  
+  <p style="color: #777; font-size: 14px; line-height: 1.6; text-align: center; margin-top: 30px;">
+    If the button above doesn't work, please copy and paste the following link into your web browser:
+    <br>
+    <a href="${confirmationUrl}" style="color: #007bff; word-break: break-all;">${confirmationUrl}</a>
+  </p>
+
+  <div style="border-top: 1px solid #eee; padding-top: 25px; margin-top: 40px; text-align: center;">
+    <p style="color: #888; font-size: 13px; margin-bottom: 10px;">
+      If you have any questions or need assistance, please don't hesitate to contact our support team.
+    </p>
+    <p style="color: #888; font-size: 13px; margin: 0;">
+      Best regards,<br>
+      <strong>The Exhibit3Design Team</strong>
+    </p>
+  </div>
+  
+  <div style="text-align: center; margin-top: 20px;">
+    <p style="color: #aaa; font-size: 11px; margin: 0;">
+      This is an automated message. Please do not reply directly to this email.
+    </p>
+  </div>
+</div>`;
+    
+    Logger.info('Sending email content...');
+    // Send the email content followed by a dot on a new line to signify end of DATA
+    await conn.write(encoder.encode(emailContent + '\r\n.\r\n'));
+    
+    // Read final response from the server after sending data
+    const finalBuffer = new Uint8Array(4096);
+    const finalBytes = await conn.read(finalBuffer);
+    const finalResponse = decoder.decode(finalBuffer.subarray(0, finalBytes || 0));
+    Logger.info(`Final SMTP Response: ${finalResponse.trim()}`);
+    
+    if (!finalResponse.includes('250')) {
+      throw new Error(`Email send failed: ${finalResponse}`);
+    }
+    
+    // Quit the SMTP session
+    await sendCommand('QUIT');
+    
+    Logger.info('✅ EMAIL SENT SUCCESSFULLY!');
+    
+    return {
+      success: true,
+      messageId: `manual-smtp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      note: 'Email sent via custom TCP SMTP implementation'
+    };
     
   } catch (error: any) {
-    Logger.error('Failed to send email', error);
+    Logger.error('❌ EMAIL SEND FAILED:', error);
     return { 
       success: false, 
-      error: error instanceof Error ? error.message : 'Unknown SMTP error'
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   } finally {
-    // Ensure SMTP connection is properly closed in all cases
-    if (client) {
+    // Ensure the TCP connection is closed
+    if (conn) {
       try {
-        await client.close();
-        Logger.debug('SMTP connection closed successfully');
+        conn.close();
+        Logger.debug('TCP connection closed successfully');
       } catch (closeError) {
-        Logger.error('Error closing SMTP connection:', closeError);
+        Logger.error('Error closing TCP connection:', closeError);
       }
     }
   }
 }
 
-// Main HTTP server function
+// Main HTTP server function to handle incoming requests
 serve(async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests (OPTIONS method)
   if (req.method === 'OPTIONS') {
@@ -249,29 +296,34 @@ serve(async (req: Request): Promise<Response> => {
       keys: Object.keys(requestData || {}),
     });
     
-    // Extract user email from the request data. This logic is flexible
-    // to handle various common JSON structures where the email might be found.
+    // Extract user email and confirmation URL from the request data.
+    // This logic is flexible to handle various common JSON structures.
     const userEmail = requestData?.record?.email || 
                       requestData?.user?.email || 
                       requestData?.email ||
                       requestData?.data?.email ||
                       requestData?.data?.user?.email ||
                       requestData?.new_record?.email ||
-                      requestData?.table?.email; // Example for specific table events
+                      requestData?.table?.email;
     
-    Logger.info('Email extraction result', {
-      found: !!userEmail,
+    const confirmationUrl = requestData?.confirmationUrl ||
+                            requestData?.data?.confirmationUrl ||
+                            requestData?.record?.confirmationUrl; // Assuming a confirmation URL is passed
+    
+    Logger.info('Email and URL extraction result', {
+      emailFound: !!userEmail,
+      urlFound: !!confirmationUrl,
       email: userEmail ? 'FOUND' : 'NOT_FOUND'
     });
     
-    if (!userEmail) {
-      Logger.error('No user email found in request payload');
+    if (!userEmail || !confirmationUrl) {
+      Logger.error('Missing required parameters in request payload', { userEmail: !!userEmail, confirmationUrl: !!confirmationUrl });
       Logger.error('Available payload structure:', JSON.stringify(requestData, null, 2));
       return new Response(
         JSON.stringify({ 
-          error: 'No user email found in request payload',
+          error: 'Missing required parameters: email and confirmationUrl',
           availableKeys: Object.keys(requestData || {}),
-          hint: 'Expected email in: record.email, user.email, email, data.email, data.user.email, new_record.email, table.email'
+          hint: 'Expected email in: record.email, user.email, email, data.email, data.user.email, new_record.email, table.email. Expected confirmationUrl in: confirmationUrl, data.confirmationUrl, record.confirmationUrl'
         }),
         { status: 400, headers: corsHeaders }
       );
@@ -288,8 +340,8 @@ serve(async (req: Request): Promise<Response> => {
     
     Logger.info('Initiating email sending for:', userEmail);
     
-    // Send email via direct SMTP
-    const emailResult = await sendConfirmationEmail(userEmail);
+    // Send email via custom SMTP implementation
+    const emailResult = await sendEmailViaCustomSMTP(userEmail, confirmationUrl);
     
     if (emailResult.success) {
       Logger.info('✅ Email sending service completed successfully');
@@ -297,6 +349,8 @@ serve(async (req: Request): Promise<Response> => {
         JSON.stringify({ 
           message: 'Email sent successfully',
           email: userEmail,
+          messageId: emailResult.messageId,
+          note: emailResult.note,
           timestamp: new Date().toISOString()
         }),
         { 
@@ -334,10 +388,9 @@ serve(async (req: Request): Promise<Response> => {
   }
 });
 
-Logger.info('🚀 Deno Email Sending Service started');
+Logger.info('🚀 Deno Email Sending Service started (Manual TCP Implementation)');
 Logger.info('📧 SMTP Configuration:', {
   host: smtpConfig.hostname,
   port: smtpConfig.port,
   username: smtpConfig.username,
-  ssl: smtpConfig.ssl
 });
