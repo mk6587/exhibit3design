@@ -163,8 +163,43 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Email validation function
+  const validateEmail = (email: string): { isValid: boolean; error?: string } => {
+    // Basic format check
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return { isValid: false, error: "Please enter a valid email address" };
+    }
+
+    // Check for common fake email patterns
+    const fakeDomains = [
+      'tempmail.org', 'temp-mail.org', '10minutemail.com', 'guerrillamail.com',
+      'mailinator.com', 'throwaway.email', 'temp.email', 'disposable.email',
+      'maildrop.cc', 'yopmail.com', 'mailnesia.com', 'trashmail.com'
+    ];
+    
+    const domain = email.split('@')[1]?.toLowerCase();
+    if (fakeDomains.includes(domain)) {
+      return { isValid: false, error: "Please use a permanent email address" };
+    }
+
+    // Check for suspicious patterns
+    if (email.length < 5 || email.includes('..') || email.startsWith('.') || email.endsWith('.')) {
+      return { isValid: false, error: "Please enter a valid email address" };
+    }
+
+    return { isValid: true };
+  };
+
   const signUp = async (email: string, password: string) => {
     console.log(`[${new Date().toISOString()}] 🚀 AUTH: Starting signup process for ${email}`);
+    
+    // Validate email before proceeding
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
+      console.error(`[${new Date().toISOString()}] ❌ AUTH: Email validation failed: ${emailValidation.error}`);
+      return { error: { message: emailValidation.error } };
+    }
     
     try {
       const { data, error } = await supabase.auth.signUp({

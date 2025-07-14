@@ -170,7 +170,10 @@ export default function AuthPage() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="w-full"
                 required
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                title="Please enter a valid email address"
               />
             </div>
             
@@ -179,10 +182,13 @@ export default function AuthPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Create a password (6+ characters)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="w-full"
                 required
+                minLength={6}
+                title="Password must be at least 6 characters long"
               />
             </div>
 
