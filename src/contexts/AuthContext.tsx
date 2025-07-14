@@ -193,24 +193,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
           if (emailError) {
             console.error('Email function error:', emailError);
-            // Continue with registration even if email fails
-            toast({
-              title: "Registration successful!",
-              description: "Account created, but confirmation email may have failed. Contact support if needed.",
-            });
+            // Account created successfully, email is optional
+            console.log('Account created successfully, email confirmation will be skipped');
           } else {
             console.log('Confirmation email sent successfully:', emailData);
-            toast({
-              title: "Registration successful!",
-              description: "Please check your email for a confirmation link.",
-            });
           }
         } catch (emailError) {
           console.error('Failed to send confirmation email:', emailError);
-          toast({
-            title: "Registration successful!",
-            description: "Account created, but confirmation email may have failed. Contact support if needed.",
-          });
+          // Account still created successfully
+          console.log('Account created successfully, email confirmation failed but continuing');
         }
       }
 

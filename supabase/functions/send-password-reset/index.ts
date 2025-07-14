@@ -11,12 +11,13 @@ interface PasswordResetRequest {
   token?: string;
 }
 
-// SMTP configuration
+// SMTP configuration - using more reliable settings
 const SMTP_CONFIG = {
   hostname: "mail.exhibit3design.com",
-  port: 25,
+  port: 587, // Use 587 for STARTTLS
   username: "noreply@exhibit3design.com",
   password: "y*[-T%fglcTi",
+  requireTLS: true,
 };
 
 const supabase = createClient(
@@ -25,10 +26,11 @@ const supabase = createClient(
 );
 
 async function sendSMTPEmail(to: string, subject: string, htmlContent: string) {
-  console.log(`Sending password reset email to ${to} with subject: ${subject}`);
+  console.log(`Attempting to send password reset email to ${to}`);
   
   try {
-    const conn = await Deno.connect({
+    // Try to connect with STARTTLS support
+    const conn = await Deno.connectTls({
       hostname: SMTP_CONFIG.hostname,
       port: SMTP_CONFIG.port,
     });
@@ -38,26 +40,44 @@ async function sendSMTPEmail(to: string, subject: string, htmlContent: string) {
 
     // Helper function to read response
     const readResponse = async () => {
-      const buffer = new Uint8Array(1024);
+      const buffer = new Uint8Array(2048);
       const n = await conn.read(buffer);
-      return decoder.decode(buffer.subarray(0, n || 0));
-    };
-
-    // Helper function to send command
-    const sendCommand = async (command: string) => {
-      console.log(`SMTP Command: ${command}`);
-      await conn.write(encoder.encode(command + "\r\n"));
-      const response = await readResponse();
-      console.log(`SMTP Response: ${response}`);
+      const response = decoder.decode(buffer.subarray(0, n || 0));
+      console.log(`SMTP Response: ${response.trim()}`);
       return response;
     };
 
-    // SMTP conversation
+    // Helper function to send command
+    const sendCommand = async (command: string, hideInLog = false) => {
+      if (!hideInLog) {
+        console.log(`SMTP Command: ${command}`);
+      } else {
+        console.log(`SMTP Command: [HIDDEN]`);
+      }
+      await conn.write(encoder.encode(command + "\r\n"));
+      const response = await readResponse();
+      
+      // Check for error responses
+      if (response.startsWith('5') || response.startsWith('4')) {
+        throw new Error(`SMTP Error: ${response.trim()}`);
+      }
+      
+      return response;
+    };
+
+    // SMTP conversation with better error handling
+    console.log("Reading server greeting...");
     await readResponse(); // Read greeting
+    
+    console.log("Sending EHLO...");
     await sendCommand(`EHLO ${SMTP_CONFIG.hostname}`);
+    
+    console.log("Starting authentication...");
     await sendCommand("AUTH LOGIN");
-    await sendCommand(btoa(SMTP_CONFIG.username));
-    await sendCommand(btoa(SMTP_CONFIG.password));
+    await sendCommand(btoa(SMTP_CONFIG.username), true);
+    await sendCommand(btoa(SMTP_CONFIG.password), true);
+    
+    console.log("Setting sender and recipient...");
     await sendCommand(`MAIL FROM:<${SMTP_CONFIG.username}>`);
     await sendCommand(`RCPT TO:<${to}>`);
     await sendCommand("DATA");
@@ -67,10 +87,12 @@ async function sendSMTPEmail(to: string, subject: string, htmlContent: string) {
 To: ${to}
 Subject: ${subject}
 Content-Type: text/html; charset=UTF-8
+MIME-Version: 1.0
 
 ${htmlContent}
 .`;
     
+    console.log("Sending email content...");
     await conn.write(encoder.encode(emailContent + "\r\n"));
     await sendCommand("QUIT");
     
@@ -78,9 +100,63 @@ ${htmlContent}
     console.log("Password reset email sent successfully");
     return { success: true };
   } catch (error) {
-    console.error("SMTP Error:", error);
-    throw error;
+    console.error("SMTP Error Details:", error);
+    
+    // Try fallback with plain connection if TLS fails
+    try {
+      console.log("Attempting fallback with plain connection...");
+      return await sendEmailPlainConnection(to, subject, htmlContent);
+    } catch (fallbackError) {
+      console.error("Fallback also failed:", fallbackError);
+      throw new Error(`Email delivery failed: ${error.message}`);
+    }
   }
+}
+
+// Fallback function for plain SMTP connection
+async function sendEmailPlainConnection(to: string, subject: string, htmlContent: string) {
+  const conn = await Deno.connect({
+    hostname: SMTP_CONFIG.hostname,
+    port: 25, // Try port 25 as fallback
+  });
+
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+
+  const readResponse = async () => {
+    const buffer = new Uint8Array(1024);
+    const n = await conn.read(buffer);
+    return decoder.decode(buffer.subarray(0, n || 0));
+  };
+
+  const sendCommand = async (command: string) => {
+    await conn.write(encoder.encode(command + "\r\n"));
+    const response = await readResponse();
+    if (response.startsWith('5') || response.startsWith('4')) {
+      throw new Error(`SMTP Error: ${response}`);
+    }
+    return response;
+  };
+
+  await readResponse(); // Read greeting
+  await sendCommand(`HELO ${SMTP_CONFIG.hostname}`);
+  await sendCommand(`MAIL FROM:<${SMTP_CONFIG.username}>`);
+  await sendCommand(`RCPT TO:<${to}>`);
+  await sendCommand("DATA");
+  
+  const emailContent = `From: Exhibit3Design <${SMTP_CONFIG.username}>
+To: ${to}
+Subject: ${subject}
+Content-Type: text/html; charset=UTF-8
+
+${htmlContent}
+.`;
+  
+  await conn.write(encoder.encode(emailContent + "\r\n"));
+  await sendCommand("QUIT");
+  conn.close();
+  
+  return { success: true };
 }
 
 const handler = async (req: Request): Promise<Response> => {
