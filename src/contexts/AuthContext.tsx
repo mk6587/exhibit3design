@@ -165,13 +165,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signUp = async (email: string, password: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/`;
-      
+      // Create user account but don't send Supabase confirmation email
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: redirectUrl
+          emailRedirectTo: `${window.location.origin}/`,
+          // Disable Supabase email confirmation
+          data: {
+            email_confirm: false
+          }
         }
       });
 
@@ -179,7 +182,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return { error };
       }
 
-      // Send confirmation email manually via edge function
+      // Send confirmation email using custom SMTP
       if (data.user) {
         try {
           const { data: emailData, error: emailError } = await supabase.functions.invoke('send-confirmation-email', {
@@ -196,24 +199,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               description: "Account created, but confirmation email may have failed. Contact support if needed.",
             });
           } else {
-            console.log('Welcome email sent successfully:', emailData);
+            console.log('Confirmation email sent successfully:', emailData);
             toast({
               title: "Registration successful!",
               description: "Please check your email for a confirmation link.",
             });
           }
         } catch (emailError) {
-          console.error('Failed to send welcome email:', emailError);
+          console.error('Failed to send confirmation email:', emailError);
           toast({
             title: "Registration successful!",
             description: "Account created, but confirmation email may have failed. Contact support if needed.",
           });
         }
-      } else {
-        toast({
-          title: "Registration successful!",
-          description: "You can now sign in to your account.",
-        });
       }
 
       return { error: null };
@@ -248,8 +246,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const resetPassword = async (email: string) => {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+      // Use custom SMTP for password reset instead of Supabase
+      const { data, error } = await supabase.functions.invoke('send-password-reset', {
+        body: { email }
       });
 
       if (error) {
