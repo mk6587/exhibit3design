@@ -11,7 +11,6 @@ import { toast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -35,44 +34,43 @@ export default function AuthPage() {
     setLoading(true);
 
     try {
-      if (isLogin) {
-        // Try to sign in
-        const { error } = await signIn(email, password);
-        
-        if (error) {
-          // Check if it's a credentials error
-          if (error.message.includes('Invalid login credentials') || 
-              error.message.includes('Email not confirmed')) {
-            setError('Invalid email or password. Would you like to reset your password?');
-            setShowForgotPassword(true);
+      // First, try to sign in
+      const { error: loginError } = await signIn(email, password);
+      
+      if (loginError) {
+        // Check if it's a credentials error
+        if (loginError.message.includes('Invalid login credentials')) {
+          // Try to register the user since they might not exist
+          const { error: signUpError } = await signUp(email, password);
+          
+          if (signUpError) {
+            if (signUpError.message.includes('User already registered')) {
+              // User exists but password is wrong - show forgot password
+              setError('Invalid password. Would you like to reset your password?');
+              setShowForgotPassword(true);
+            } else {
+              setError(signUpError.message);
+            }
           } else {
-            setError(error.message);
+            // Registration successful
+            setEmailSent(true);
+            toast({
+              title: "Registration successful!",
+              description: "Please check your email for a confirmation link.",
+            });
           }
+        } else if (loginError.message.includes('Email not confirmed')) {
+          setError('Please check your email and click the confirmation link before signing in.');
         } else {
-          toast({
-            title: "Welcome back!",
-            description: "You have successfully logged in.",
-          });
-          navigate('/');
+          setError(loginError.message);
         }
       } else {
-        // Try to sign up
-        const { error } = await signUp(email, password);
-        
-        if (error) {
-          if (error.message.includes('User already registered')) {
-            setError('This email is already registered. Please sign in instead.');
-            setIsLogin(true);
-          } else {
-            setError(error.message);
-          }
-        } else {
-          setEmailSent(true);
-          toast({
-            title: "Registration successful!",
-            description: "Please check your email for a confirmation link.",
-          });
-        }
+        // Login successful
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully logged in.",
+        });
+        navigate('/');
       }
     } catch (error: any) {
       setError(error.message || 'An unexpected error occurred');
@@ -147,13 +145,10 @@ export default function AuthPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">
-            {isLogin ? 'Welcome Back' : 'Create Account'}
+            Welcome
           </CardTitle>
           <CardDescription>
-            {isLogin 
-              ? 'Sign in to your account to continue' 
-              : 'Sign up for a new account to get started'
-            }
+            Sign in to your account or register a new one
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -190,7 +185,7 @@ export default function AuthPage() {
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isLogin ? 'Sign In' : 'Sign Up'}
+              Login / Register
             </Button>
 
             {showForgotPassword && (
@@ -205,23 +200,6 @@ export default function AuthPage() {
               </Button>
             )}
           </form>
-
-          <div className="mt-6 text-center">
-            <Button
-              variant="link"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setError(null);
-                setShowForgotPassword(false);
-              }}
-              className="text-sm"
-            >
-              {isLogin 
-                ? "Don't have an account? Sign up" 
-                : "Already have an account? Sign in"
-              }
-            </Button>
-          </div>
         </CardContent>
       </Card>
     </div>
