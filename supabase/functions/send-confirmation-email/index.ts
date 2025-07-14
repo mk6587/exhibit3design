@@ -21,7 +21,7 @@ const SMTP_CONFIG = {
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL") ?? "",
-  Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
 );
 
 async function sendSMTPEmail(to: string, subject: string, htmlContent: string) {
@@ -86,17 +86,24 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, token }: ConfirmationEmailRequest = await req.json();
+    const { email }: ConfirmationEmailRequest = await req.json();
     console.log(`Processing confirmation email for: ${email}`);
 
-    // Generate confirmation token if not provided
-    let confirmationToken = token;
-    if (!confirmationToken) {
-      confirmationToken = crypto.randomUUID();
+    // Get the confirmation token from Supabase auth
+    const { data: authData, error: authError } = await supabase.auth.admin.generateLink({
+      type: 'signup',
+      email: email,
+      options: {
+        redirectTo: 'https://fipebdkvzdrljwwxccrj.supabase.co'
+      }
+    });
+
+    if (authError) {
+      console.error("Auth error:", authError);
+      throw new Error(`Failed to generate confirmation link: ${authError.message}`);
     }
 
-    // Generate confirmation link
-    const confirmationLink = `${Deno.env.get("SUPABASE_URL")}/auth/v1/verify?token=${confirmationToken}&type=signup&redirect_to=${encodeURIComponent(window.location?.origin || "http://localhost:5173")}`;
+    const confirmationLink = authData.properties.action_link;
 
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">

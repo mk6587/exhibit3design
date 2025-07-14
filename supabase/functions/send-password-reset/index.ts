@@ -21,7 +21,7 @@ const SMTP_CONFIG = {
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL") ?? "",
-  Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
 );
 
 async function sendSMTPEmail(to: string, subject: string, htmlContent: string) {
@@ -86,17 +86,24 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, token }: PasswordResetRequest = await req.json();
+    const { email }: PasswordResetRequest = await req.json();
     console.log(`Processing password reset email for: ${email}`);
 
-    // Generate reset token if not provided
-    let resetToken = token;
-    if (!resetToken) {
-      resetToken = crypto.randomUUID();
+    // Get the reset token from Supabase auth
+    const { data: authData, error: authError } = await supabase.auth.admin.generateLink({
+      type: 'recovery',
+      email: email,
+      options: {
+        redirectTo: 'https://fipebdkvzdrljwwxccrj.supabase.co/reset-password'
+      }
+    });
+
+    if (authError) {
+      console.error("Auth error:", authError);
+      throw new Error(`Failed to generate reset link: ${authError.message}`);
     }
 
-    // Generate reset link
-    const resetLink = `${Deno.env.get("SUPABASE_URL")}/auth/v1/verify?token=${resetToken}&type=recovery&redirect_to=${encodeURIComponent(window.location?.origin || "http://localhost:5173")}/reset-password`;
+    const resetLink = authData.properties.action_link;
 
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
