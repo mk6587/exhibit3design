@@ -95,7 +95,12 @@ export default function AuthPage() {
       });
 
       if (error) {
-        setError('Failed to send password reset email. Please try again.');
+        // Handle rate limiting specifically
+        if (error.message?.includes('rate limit') || error.rateLimited) {
+          setError('Too many password reset attempts. Please wait 15 minutes before trying again.');
+        } else {
+          setError('Failed to send password reset email. Please try again.');
+        }
       } else {
         setEmailSent(true);
         toast({
@@ -104,7 +109,11 @@ export default function AuthPage() {
         });
       }
     } catch (error: any) {
-      setError('Failed to send password reset email. Please try again.');
+      if (error.message?.includes('rate limit')) {
+        setError('Too many attempts. Please wait before trying again.');
+      } else {
+        setError('Failed to send password reset email. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

@@ -159,6 +159,40 @@ ${htmlContent}
   return { success: true };
 }
 
+// Rate limiting storage (in-memory for simplicity)
+const emailAttempts = new Map<string, { count: number; lastAttempt: number }>();
+
+const RATE_LIMIT = {
+  maxAttempts: 3,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+};
+
+function checkRateLimit(email: string): boolean {
+  const now = Date.now();
+  const attempts = emailAttempts.get(email);
+  
+  if (!attempts) {
+    emailAttempts.set(email, { count: 1, lastAttempt: now });
+    return true;
+  }
+  
+  // Reset if window has passed
+  if (now - attempts.lastAttempt > RATE_LIMIT.windowMs) {
+    emailAttempts.set(email, { count: 1, lastAttempt: now });
+    return true;
+  }
+  
+  // Check if within limit
+  if (attempts.count >= RATE_LIMIT.maxAttempts) {
+    return false;
+  }
+  
+  // Increment counter
+  attempts.count++;
+  attempts.lastAttempt = now;
+  return true;
+}
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -167,6 +201,24 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { email }: ConfirmationEmailRequest = await req.json();
     console.log(`Processing confirmation email for: ${email}`);
+
+    // Check rate limit
+    if (!checkRateLimit(email)) {
+      console.log(`Rate limit exceeded for email: ${email}`);
+      return new Response(
+        JSON.stringify({ 
+          error: "Rate limit exceeded. Please wait 15 minutes before requesting another email.",
+          rateLimited: true 
+        }),
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        }
+      );
+    }
 
     // Get the confirmation token from Supabase auth
     const { data: authData, error: authError } = await supabase.auth.admin.generateLink({
@@ -207,9 +259,30 @@ const handler = async (req: Request): Promise<Response> => {
       </div>
     `;
 
-    await sendSMTPEmail(email, "Confirm Your Email - Exhibit3Design", htmlContent);
+    // Use background task for email sending to avoid blocking
+    const emailTask = async () => {
+      try {
+        await sendSMTPEmail(email, "Confirm Your Email - Exhibit3Design", htmlContent);
+        console.log(`Confirmation email sent successfully to ${email}`);
+      } catch (emailError) {
+        console.error(`Failed to send confirmation email to ${email}:`, emailError);
+        // Log the failure but don't crash the function
+      }
+    };
 
-    return new Response(JSON.stringify({ success: true }), {
+    // Start background task
+    if (typeof EdgeRuntime !== 'undefined' && EdgeRuntime.waitUntil) {
+      EdgeRuntime.waitUntil(emailTask());
+    } else {
+      // Fallback for environments without EdgeRuntime
+      emailTask().catch(console.error);
+    }
+
+    // Return immediate success response
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: "Confirmation email is being sent" 
+    }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
@@ -218,10 +291,28 @@ const handler = async (req: Request): Promise<Response> => {
     });
   } catch (error: any) {
     console.error("Error in send-confirmation-email function:", error);
+    
+    // Handle specific rate limit errors
+    if (error.message?.includes('rate limit') || error.message?.includes('429')) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Email service rate limit exceeded. Please try again later.",
+          rateLimited: true 
+        }),
+        {
+          status: 429,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+    
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: "Email service temporarily unavailable. Please try again later.",
+        temporary: true 
+      }),
       {
-        status: 500,
+        status: 503,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       }
     );

@@ -193,8 +193,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
           if (emailError) {
             console.error('Email function error:', emailError);
-            // Account created successfully, email is optional
-            console.log('Account created successfully, email confirmation will be skipped');
+            
+            // Handle rate limiting gracefully
+            if (emailError.message?.includes('rate limit') || emailError.status === 429) {
+              toast({
+                title: "Account created successfully!",
+                description: "Email rate limit reached. You can still log in, but confirmation email will be delayed.",
+                variant: "default",
+              });
+            } else {
+              console.log('Account created successfully, email confirmation will be skipped');
+            }
           } else {
             console.log('Confirmation email sent successfully:', emailData);
           }
@@ -243,6 +252,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
+        // Handle rate limiting specifically
+        if (error.message?.includes('rate limit') || error.status === 429) {
+          return { 
+            error: { 
+              message: "Too many password reset attempts. Please wait 15 minutes before trying again.",
+              rateLimited: true 
+            } 
+          };
+        }
         return { error };
       }
 
