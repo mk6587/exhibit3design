@@ -17,7 +17,6 @@ const SMTP_CONFIG = {
   port: 587, // Use 587 for STARTTLS
   username: "noreply@exhibit3design.com",
   password: "y*[-T%fglcTi",
-  requireTLS: true,
 };
 
 const supabase = createClient(
