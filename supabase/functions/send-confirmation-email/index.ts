@@ -26,33 +26,46 @@ const supabase = createClient(
 );
 
 async function sendSMTPEmail(to: string, subject: string, htmlContent: string) {
-  console.log(`Attempting to send email to ${to} with subject: ${subject}`);
+  console.log(`🔄 Attempting to send email to ${to} with subject: ${subject}`);
   
   try {
-    // Try to connect with STARTTLS support
-    const conn = await Deno.connectTls({
+    // Simplified SMTP approach - try basic connection first
+    console.log(`📡 Connecting to SMTP server: ${SMTP_CONFIG.hostname}:${SMTP_CONFIG.port}`);
+    
+    const conn = await Deno.connect({
       hostname: SMTP_CONFIG.hostname,
-      port: SMTP_CONFIG.port,
+      port: 25, // Use basic port 25 first
     });
 
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
 
-    // Helper function to read response
-    const readResponse = async () => {
-      const buffer = new Uint8Array(2048);
-      const n = await conn.read(buffer);
-      const response = decoder.decode(buffer.subarray(0, n || 0));
-      console.log(`SMTP Response: ${response.trim()}`);
-      return response;
+    // Helper function to read response with timeout
+    const readResponse = async (timeoutMs = 10000) => {
+      const timeout = setTimeout(() => {
+        console.log("⚠️ SMTP read timeout");
+        conn.close();
+      }, timeoutMs);
+      
+      try {
+        const buffer = new Uint8Array(2048);
+        const n = await conn.read(buffer);
+        clearTimeout(timeout);
+        const response = decoder.decode(buffer.subarray(0, n || 0));
+        console.log(`📨 SMTP Response: ${response.trim()}`);
+        return response;
+      } catch (error) {
+        clearTimeout(timeout);
+        throw error;
+      }
     };
 
     // Helper function to send command
     const sendCommand = async (command: string, hideInLog = false) => {
       if (!hideInLog) {
-        console.log(`SMTP Command: ${command}`);
+        console.log(`📤 SMTP Command: ${command}`);
       } else {
-        console.log(`SMTP Command: [HIDDEN]`);
+        console.log(`📤 SMTP Command: [HIDDEN AUTH]`);
       }
       await conn.write(encoder.encode(command + "\r\n"));
       const response = await readResponse();
@@ -65,98 +78,110 @@ async function sendSMTPEmail(to: string, subject: string, htmlContent: string) {
       return response;
     };
 
-    // SMTP conversation with better error handling
-    console.log("Reading server greeting...");
-    await readResponse(); // Read greeting
+    try {
+      // Simple SMTP conversation
+      console.log("🔍 Reading server greeting...");
+      await readResponse(5000); // 5 second timeout for greeting
+      
+      console.log("👋 Sending HELO...");
+      await sendCommand(`HELO ${SMTP_CONFIG.hostname}`);
+      
+      console.log("📧 Setting sender and recipient...");
+      await sendCommand(`MAIL FROM:<${SMTP_CONFIG.username}>`);
+      await sendCommand(`RCPT TO:<${to}>`);
+      await sendCommand("DATA");
+      
+      // Simplified email content
+      const emailContent = `From: Exhibit3Design <${SMTP_CONFIG.username}>
+To: ${to}
+Subject: ${subject}
+Content-Type: text/html; charset=UTF-8
+
+${htmlContent}
+.`;
+      
+      console.log("📝 Sending email content...");
+      await conn.write(encoder.encode(emailContent + "\r\n"));
+      await sendCommand("QUIT");
+      
+      conn.close();
+      console.log("✅ Email sent successfully (basic SMTP)");
+      return { success: true, method: 'basic' };
+      
+    } catch (basicError) {
+      console.log(`❌ Basic SMTP failed: ${basicError.message}`);
+      conn.close();
+      
+      // Try with authentication as fallback
+      console.log("🔄 Trying authenticated SMTP...");
+      return await sendAuthenticatedEmail(to, subject, htmlContent);
+    }
     
-    console.log("Sending EHLO...");
+  } catch (error) {
+    console.error("💥 SMTP Connection Error:", error);
+    throw new Error(`Email delivery failed: ${error.message}`);
+  }
+}
+
+// Fallback authenticated email function
+async function sendAuthenticatedEmail(to: string, subject: string, htmlContent: string) {
+  try {
+    const conn = await Deno.connect({
+      hostname: SMTP_CONFIG.hostname,
+      port: 587,
+    });
+
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+
+    const readResponse = async () => {
+      const buffer = new Uint8Array(1024);
+      const n = await conn.read(buffer);
+      const response = decoder.decode(buffer.subarray(0, n || 0));
+      console.log(`🔐 Auth SMTP Response: ${response.trim()}`);
+      return response;
+    };
+
+    const sendCommand = async (command: string, hideInLog = false) => {
+      if (!hideInLog) {
+        console.log(`🔐 Auth SMTP Command: ${command}`);
+      }
+      await conn.write(encoder.encode(command + "\r\n"));
+      const response = await readResponse();
+      if (response.startsWith('5') || response.startsWith('4')) {
+        throw new Error(`Auth SMTP Error: ${response}`);
+      }
+      return response;
+    };
+
+    await readResponse(); // greeting
     await sendCommand(`EHLO ${SMTP_CONFIG.hostname}`);
-    
-    console.log("Starting authentication...");
     await sendCommand("AUTH LOGIN");
     await sendCommand(btoa(SMTP_CONFIG.username), true);
     await sendCommand(btoa(SMTP_CONFIG.password), true);
-    
-    console.log("Setting sender and recipient...");
     await sendCommand(`MAIL FROM:<${SMTP_CONFIG.username}>`);
     await sendCommand(`RCPT TO:<${to}>`);
     await sendCommand("DATA");
     
-    // Email content
     const emailContent = `From: Exhibit3Design <${SMTP_CONFIG.username}>
 To: ${to}
 Subject: ${subject}
 Content-Type: text/html; charset=UTF-8
-MIME-Version: 1.0
 
 ${htmlContent}
 .`;
     
-    console.log("Sending email content...");
     await conn.write(encoder.encode(emailContent + "\r\n"));
     await sendCommand("QUIT");
-    
     conn.close();
-    console.log("Email sent successfully");
-    return { success: true };
-  } catch (error) {
-    console.error("SMTP Error Details:", error);
     
-    // Try fallback with plain connection if TLS fails
-    try {
-      console.log("Attempting fallback with plain connection...");
-      return await sendEmailPlainConnection(to, subject, htmlContent);
-    } catch (fallbackError) {
-      console.error("Fallback also failed:", fallbackError);
-      throw new Error(`Email delivery failed: ${error.message}`);
-    }
+    console.log("✅ Email sent successfully (authenticated SMTP)");
+    return { success: true, method: 'authenticated' };
+    
+  } catch (authError) {
+    console.error("💥 Authenticated SMTP also failed:", authError);
+    throw authError;
   }
-}
-
-// Fallback function for plain SMTP connection
-async function sendEmailPlainConnection(to: string, subject: string, htmlContent: string) {
-  const conn = await Deno.connect({
-    hostname: SMTP_CONFIG.hostname,
-    port: 25, // Try port 25 as fallback
-  });
-
-  const encoder = new TextEncoder();
-  const decoder = new TextDecoder();
-
-  const readResponse = async () => {
-    const buffer = new Uint8Array(1024);
-    const n = await conn.read(buffer);
-    return decoder.decode(buffer.subarray(0, n || 0));
-  };
-
-  const sendCommand = async (command: string) => {
-    await conn.write(encoder.encode(command + "\r\n"));
-    const response = await readResponse();
-    if (response.startsWith('5') || response.startsWith('4')) {
-      throw new Error(`SMTP Error: ${response}`);
-    }
-    return response;
-  };
-
-  await readResponse(); // Read greeting
-  await sendCommand(`HELO ${SMTP_CONFIG.hostname}`);
-  await sendCommand(`MAIL FROM:<${SMTP_CONFIG.username}>`);
-  await sendCommand(`RCPT TO:<${to}>`);
-  await sendCommand("DATA");
-  
-  const emailContent = `From: Exhibit3Design <${SMTP_CONFIG.username}>
-To: ${to}
-Subject: ${subject}
-Content-Type: text/html; charset=UTF-8
-
-${htmlContent}
-.`;
-  
-  await conn.write(encoder.encode(emailContent + "\r\n"));
-  await sendCommand("QUIT");
-  conn.close();
-  
-  return { success: true };
 }
 
 // Rate limiting storage (in-memory for simplicity)
@@ -200,11 +225,11 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const { email }: ConfirmationEmailRequest = await req.json();
-    console.log(`Processing confirmation email for: ${email}`);
+    console.log(`📧 Processing confirmation email request for: ${email}`);
 
-    // Check rate limit
+    // Check rate limit first
     if (!checkRateLimit(email)) {
-      console.log(`Rate limit exceeded for email: ${email}`);
+      console.log(`⚠️ Rate limit exceeded for email: ${email}`);
       return new Response(
         JSON.stringify({ 
           error: "Rate limit exceeded. Please wait 15 minutes before requesting another email.",
@@ -220,6 +245,8 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    console.log(`🔐 Generating confirmation link for: ${email}`);
+    
     // Get the confirmation token from Supabase auth
     const { data: authData, error: authError } = await supabase.auth.admin.generateLink({
       type: 'signup',
@@ -230,11 +257,14 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     if (authError) {
-      console.error("Auth error:", authError);
+      console.error("💥 Supabase auth error:", authError);
       throw new Error(`Failed to generate confirmation link: ${authError.message}`);
     }
 
+    console.log(`✅ Confirmation link generated successfully`);
     const confirmationLink = authData.properties.action_link;
+
+    console.log(`📝 Preparing email content for: ${email}`);
 
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -262,26 +292,35 @@ const handler = async (req: Request): Promise<Response> => {
     // Use background task for email sending to avoid blocking
     const emailTask = async () => {
       try {
-        await sendSMTPEmail(email, "Confirm Your Email - Exhibit3Design", htmlContent);
-        console.log(`Confirmation email sent successfully to ${email}`);
+        console.log(`🚀 Starting email delivery task for: ${email}`);
+        const result = await sendSMTPEmail(email, "Confirm Your Email - Exhibit3Design", htmlContent);
+        console.log(`✅ Email delivery completed for ${email}:`, result);
       } catch (emailError) {
-        console.error(`Failed to send confirmation email to ${email}:`, emailError);
+        console.error(`💥 Email delivery failed for ${email}:`, emailError);
         // Log the failure but don't crash the function
       }
     };
 
     // Start background task
+    console.log(`⏰ Scheduling background email task for: ${email}`);
     if (typeof EdgeRuntime !== 'undefined' && EdgeRuntime.waitUntil) {
       EdgeRuntime.waitUntil(emailTask());
+      console.log(`✅ Background task scheduled via EdgeRuntime`);
     } else {
       // Fallback for environments without EdgeRuntime
-      emailTask().catch(console.error);
+      console.log(`⚠️ EdgeRuntime not available, using fallback`);
+      emailTask().catch(error => {
+        console.error(`Background task fallback error:`, error);
+      });
     }
 
     // Return immediate success response
+    console.log(`📤 Returning success response for: ${email}`);
     return new Response(JSON.stringify({ 
       success: true, 
-      message: "Confirmation email is being sent" 
+      message: "Confirmation email is being sent",
+      email: email,
+      timestamp: new Date().toISOString()
     }), {
       status: 200,
       headers: {

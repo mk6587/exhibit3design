@@ -185,32 +185,46 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // Send confirmation email using custom SMTP
       if (data.user) {
         try {
+          console.log(`🔄 Attempting to send confirmation email to: ${email}`);
+          
           const { data: emailData, error: emailError } = await supabase.functions.invoke('send-confirmation-email', {
-            body: {
-              email: email
-            }
+            body: { email: email }
           });
 
           if (emailError) {
-            console.error('Email function error:', emailError);
+            console.error('📧 Email function error:', emailError);
             
             // Handle rate limiting gracefully
             if (emailError.message?.includes('rate limit') || emailError.status === 429) {
+              console.log('⚠️ Email rate limited, but account created successfully');
               toast({
                 title: "Account created successfully!",
-                description: "Email rate limit reached. You can still log in, but confirmation email will be delayed.",
+                description: "Email rate limit reached. You can log in normally, confirmation email will be sent later.",
                 variant: "default",
               });
             } else {
-              console.log('Account created successfully, email confirmation will be skipped');
+              console.log('⚠️ Email failed but account created successfully');
+              toast({
+                title: "Account created successfully!",
+                description: "You can log in normally. If you need help, contact support.",
+                variant: "default",
+              });
             }
           } else {
-            console.log('Confirmation email sent successfully:', emailData);
+            console.log('✅ Confirmation email request sent successfully:', emailData);
+            toast({
+              title: "Account created successfully!",
+              description: "Please check your email for a confirmation link.",
+              variant: "default",
+            });
           }
         } catch (emailError) {
-          console.error('Failed to send confirmation email:', emailError);
-          // Account still created successfully
-          console.log('Account created successfully, email confirmation failed but continuing');
+          console.error('💥 Email function call failed:', emailError);
+          toast({
+            title: "Account created successfully!",
+            description: "You can log in normally. Email confirmation is optional.",
+            variant: "default",
+          });
         }
       }
 
