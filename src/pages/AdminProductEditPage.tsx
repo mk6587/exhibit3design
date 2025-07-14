@@ -65,6 +65,11 @@ const AdminProductEditPage = () => {
       console.log('Saving product:', updatedProduct);
     } catch (error) {
       console.error('Error saving product:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update product. Please check your permissions.",
+        variant: "destructive",
+      });
     } finally {
       setSaving(false);
     }
