@@ -14,9 +14,10 @@ interface ConfirmationEmailRequest {
 // SMTP configuration - using more reliable settings
 const SMTP_CONFIG = {
   hostname: "mail.exhibit3design.com",
-  port: 587, // Use 587 for STARTTLS
+  port: 465, // Use 465 for SSL
   username: "noreply@exhibit3design.com",
   password: "y*[-T%fglcTi",
+  security: 'ssl',
 };
 
 const supabase = createClient(
