@@ -164,7 +164,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   const signUp = async (email: string, password: string) => {
+    const signupStartTime = Date.now();
+    console.log(`[${new Date().toISOString()}] 🚀 AUTH: Starting signup process for ${email}`);
+    
     try {
+      console.log(`[${new Date().toISOString()}] 📝 AUTH: Creating Supabase user account`);
       // Create user account but don't send Supabase confirmation email
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -179,31 +183,36 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
+        console.error(`[${new Date().toISOString()}] ❌ AUTH: Supabase signup failed:`, error);
         return { error };
       }
+
+      console.log(`[${new Date().toISOString()}] ✅ AUTH: Supabase user created successfully`);
 
       // Send confirmation email using custom SMTP
       if (data.user) {
         try {
-          console.log(`🔄 Attempting to send confirmation email to: ${email}`);
+          console.log(`[${new Date().toISOString()}] 📧 AUTH: Initiating confirmation email send to ${email}`);
           
+          const emailStartTime = Date.now();
           const { data: emailData, error: emailError } = await supabase.functions.invoke('send-confirmation-email', {
             body: { email: email }
           });
+          const emailDuration = Date.now() - emailStartTime;
 
           if (emailError) {
-            console.error('📧 Email function error:', emailError);
+            console.error(`[${new Date().toISOString()}] ❌ AUTH: Email function failed after ${emailDuration}ms:`, emailError);
             
             // Handle rate limiting gracefully
             if (emailError.message?.includes('rate limit') || emailError.status === 429) {
-              console.log('⚠️ Email rate limited, but account created successfully');
+              console.log(`[${new Date().toISOString()}] ⚠️ AUTH: Email rate limited but account created`);
               toast({
                 title: "Account created successfully!",
                 description: "Email rate limit reached. You can log in normally, confirmation email will be sent later.",
                 variant: "default",
               });
             } else {
-              console.log('⚠️ Email failed but account created successfully');
+              console.log(`[${new Date().toISOString()}] ⚠️ AUTH: Email failed but account created`);
               toast({
                 title: "Account created successfully!",
                 description: "You can log in normally. If you need help, contact support.",
@@ -211,7 +220,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               });
             }
           } else {
-            console.log('✅ Confirmation email request sent successfully:', emailData);
+            console.log(`[${new Date().toISOString()}] ✅ AUTH: Email function completed successfully in ${emailDuration}ms:`, emailData);
             toast({
               title: "Account created successfully!",
               description: "Please check your email for a confirmation link.",
@@ -219,7 +228,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             });
           }
         } catch (emailError) {
-          console.error('💥 Email function call failed:', emailError);
+          console.error(`[${new Date().toISOString()}] 💥 AUTH: Email function call exception:`, emailError);
           toast({
             title: "Account created successfully!",
             description: "You can log in normally. Email confirmation is optional.",
@@ -228,25 +237,39 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
       }
 
+      const totalDuration = Date.now() - signupStartTime;
+      console.log(`[${new Date().toISOString()}] 🎉 AUTH: Signup process completed in ${totalDuration}ms`);
       return { error: null };
     } catch (error) {
+      const totalDuration = Date.now() - signupStartTime;
+      console.error(`[${new Date().toISOString()}] ❌ AUTH: Signup process failed after ${totalDuration}ms:`, error);
       return { error };
     }
   };
 
   const signIn = async (email: string, password: string) => {
+    const signinStartTime = Date.now();
+    console.log(`[${new Date().toISOString()}] 🔑 AUTH: Starting signin process for ${email}`);
+    
     try {
+      console.log(`[${new Date().toISOString()}] 🔐 AUTH: Attempting Supabase authentication`);
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        const duration = Date.now() - signinStartTime;
+        console.error(`[${new Date().toISOString()}] ❌ AUTH: Signin failed after ${duration}ms:`, error.message);
         return { error };
       }
 
+      const duration = Date.now() - signinStartTime;
+      console.log(`[${new Date().toISOString()}] ✅ AUTH: Signin successful in ${duration}ms`);
       return { error: null };
     } catch (error) {
+      const duration = Date.now() - signinStartTime;
+      console.error(`[${new Date().toISOString()}] ❌ AUTH: Signin exception after ${duration}ms:`, error);
       return { error };
     }
   };
@@ -259,15 +282,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const resetPassword = async (email: string) => {
+    const resetStartTime = Date.now();
+    console.log(`[${new Date().toISOString()}] 🔄 AUTH: Starting password reset for ${email}`);
+    
     try {
+      console.log(`[${new Date().toISOString()}] 📧 AUTH: Invoking password reset function`);
       // Use custom SMTP for password reset instead of Supabase
       const { data, error } = await supabase.functions.invoke('send-password-reset', {
         body: { email }
       });
 
       if (error) {
+        const duration = Date.now() - resetStartTime;
+        console.error(`[${new Date().toISOString()}] ❌ AUTH: Password reset failed after ${duration}ms:`, error);
+        
         // Handle rate limiting specifically
         if (error.message?.includes('rate limit') || error.status === 429) {
+          console.warn(`[${new Date().toISOString()}] 🚫 AUTH: Password reset rate limited`);
           return { 
             error: { 
               message: "Too many password reset attempts. Please wait 15 minutes before trying again.",
@@ -278,6 +309,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return { error };
       }
 
+      const duration = Date.now() - resetStartTime;
+      console.log(`[${new Date().toISOString()}] ✅ AUTH: Password reset email sent successfully in ${duration}ms`);
+      
       toast({
         title: "Password reset email sent",
         description: "Check your email for password reset instructions.",
@@ -285,6 +319,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       return { error: null };
     } catch (error) {
+      const duration = Date.now() - resetStartTime;
+      console.error(`[${new Date().toISOString()}] ❌ AUTH: Password reset exception after ${duration}ms:`, error);
       return { error };
     }
   };
