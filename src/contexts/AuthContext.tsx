@@ -172,6 +172,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            email_confirm: false  // Disable email confirmation temporarily
+          }
         }
       });
 
