@@ -21,7 +21,7 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminPage from "./pages/AdminPage";
 import AdminProductEditPage from "./pages/AdminProductEditPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
-import EmailTestPage from "./pages/EmailTestPage";
+
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,7 +57,7 @@ const App = () => (
                       <AdminProductEditPage />
                     </ProtectedAdminRoute>
                   } />
-                  <Route path="/email-test" element={<EmailTestPage />} />
+                  
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </TooltipProvider>
