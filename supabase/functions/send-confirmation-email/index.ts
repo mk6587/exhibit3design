@@ -54,7 +54,10 @@ async function sendSMTPEmail(to: string, subject: string, htmlContent: string) {
 
     // SMTP conversation
     await readResponse(); // Read greeting
-    await sendCommand(`HELO ${SMTP_CONFIG.hostname}`);
+    await sendCommand(`EHLO ${SMTP_CONFIG.hostname}`);
+    await sendCommand("AUTH LOGIN");
+    await sendCommand(btoa(SMTP_CONFIG.username));
+    await sendCommand(btoa(SMTP_CONFIG.password));
     await sendCommand(`MAIL FROM:<${SMTP_CONFIG.username}>`);
     await sendCommand(`RCPT TO:<${to}>`);
     await sendCommand("DATA");
