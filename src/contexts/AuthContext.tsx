@@ -205,12 +205,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            email_confirm: false  // Disable email confirmation temporarily
-          }
-        }
+        // Remove email confirmation options to prevent email sending
       });
 
       if (error) {
@@ -222,7 +217,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       toast({
         title: "Account created successfully!",
-        description: "Please check your email for a confirmation link.",
+        description: "You can now sign in with your credentials.",
         variant: "default",
       });
 
