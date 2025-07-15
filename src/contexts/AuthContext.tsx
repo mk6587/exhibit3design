@@ -24,6 +24,8 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<{ error: any }>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
   refreshProfile: () => Promise<void>;
+  registerWithOTP: (email: string, password: string) => Promise<{ error: any }>;
+  verifyOTP: (email: string, otp: string) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -316,6 +318,77 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const registerWithOTP = async (email: string, password: string) => {
+    console.log(`[${new Date().toISOString()}] 🚀 AUTH: Starting OTP registration for ${email}`);
+    
+    // Validate email before proceeding
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
+      console.error(`[${new Date().toISOString()}] ❌ AUTH: Email validation failed: ${emailValidation.error}`);
+      return { error: { message: emailValidation.error } };
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('send-otp', {
+        body: {
+          email,
+          password,
+          type: 'register'
+        }
+      });
+
+      if (error) {
+        console.error(`[${new Date().toISOString()}] ❌ AUTH: OTP registration failed:`, error);
+        return { error };
+      }
+
+      console.log(`[${new Date().toISOString()}] ✅ AUTH: OTP sent successfully`);
+      
+      toast({
+        title: "OTP sent!",
+        description: "Please check your email for the verification code.",
+        variant: "default",
+      });
+
+      return { error: null };
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] ❌ AUTH: OTP registration exception:`, error);
+      return { error };
+    }
+  };
+
+  const verifyOTP = async (email: string, otp: string) => {
+    console.log(`[${new Date().toISOString()}] 🔐 AUTH: Verifying OTP for ${email}`);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('send-otp', {
+        body: {
+          email,
+          otp,
+          type: 'verify'
+        }
+      });
+
+      if (error) {
+        console.error(`[${new Date().toISOString()}] ❌ AUTH: OTP verification failed:`, error);
+        return { error };
+      }
+
+      console.log(`[${new Date().toISOString()}] ✅ AUTH: OTP verified successfully`);
+      
+      toast({
+        title: "Registration completed!",
+        description: "Your account has been created successfully. Please sign in.",
+        variant: "default",
+      });
+
+      return { error: null };
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] ❌ AUTH: OTP verification exception:`, error);
+      return { error };
+    }
+  };
+
   const value = {
     user,
     session,
@@ -327,6 +400,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     resetPassword,
     updateProfile,
     refreshProfile,
+    registerWithOTP,
+    verifyOTP,
   };
 
   return (

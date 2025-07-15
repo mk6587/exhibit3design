@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
 export default function AuthPage() {
   const [email, setEmail] = useState('');
@@ -17,8 +18,12 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [showOTPRegistration, setShowOTPRegistration] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [registrationEmail, setRegistrationEmail] = useState('');
   
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, user, registerWithOTP, verifyOTP } = useAuth();
   const navigate = useNavigate();
 
   // Redirect authenticated users
@@ -74,6 +79,58 @@ export default function AuthPage() {
       }
     } catch (error: any) {
       setError(error.message || 'An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOTPRegistration = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const { error } = await registerWithOTP(email, password);
+      
+      if (error) {
+        setError(error.message);
+      } else {
+        setRegistrationEmail(email);
+        setShowOTPVerification(true);
+        setShowOTPRegistration(false);
+      }
+    } catch (error: any) {
+      setError(error.message || 'Failed to send OTP');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOTPVerification = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const { error } = await verifyOTP(registrationEmail, otp);
+      
+      if (error) {
+        setError(error.message);
+      } else {
+        // Registration completed, redirect to login
+        setShowOTPVerification(false);
+        setShowOTPRegistration(false);
+        setEmail('');
+        setPassword('');
+        setOtp('');
+        setRegistrationEmail('');
+        toast({
+          title: "Registration completed!",
+          description: "You can now sign in with your credentials.",
+        });
+      }
+    } catch (error: any) {
+      setError(error.message || 'Invalid OTP');
     } finally {
       setLoading(false);
     }
@@ -149,6 +206,144 @@ export default function AuthPage() {
     );
   }
 
+  // OTP Verification Screen
+  if (showOTPVerification) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Verify Your Email</CardTitle>
+            <CardDescription>
+              Enter the 6-digit code sent to {registrationEmail}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleOTPVerification} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="otp">Verification Code</Label>
+                <div className="flex justify-center">
+                  <InputOTP
+                    value={otp}
+                    onChange={setOtp}
+                    maxLength={6}
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+              </div>
+
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <Button type="submit" className="w-full" disabled={loading || otp.length !== 6}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Verify & Complete Registration
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setShowOTPVerification(false);
+                  setShowOTPRegistration(false);
+                  setOtp('');
+                  setRegistrationEmail('');
+                  setError(null);
+                }}
+                className="w-full"
+              >
+                Back to Login
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // OTP Registration Screen
+  if (showOTPRegistration) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Register with OTP</CardTitle>
+            <CardDescription>
+              Create a new account with email verification
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleOTPRegistration} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full"
+                  required
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                  title="Please enter a valid email address"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Create a password (6+ characters)"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full"
+                  required
+                  minLength={6}
+                  title="Password must be at least 6 characters long"
+                />
+              </div>
+
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Send OTP
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setShowOTPRegistration(false);
+                  setError(null);
+                }}
+                className="w-full"
+              >
+                Back to Login
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Main Login/Register Screen
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted">
       <Card className="w-full max-w-md">
@@ -201,6 +396,20 @@ export default function AuthPage() {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Login / Register
+            </Button>
+
+            <div className="text-center text-sm text-muted-foreground">
+              or
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowOTPRegistration(true)}
+              className="w-full"
+              disabled={loading}
+            >
+              Register with OTP Verification
             </Button>
 
             {showForgotPassword && (
