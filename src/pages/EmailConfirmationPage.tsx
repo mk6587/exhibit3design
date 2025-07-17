@@ -18,33 +18,52 @@ export default function EmailConfirmationPage() {
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
-        // Check if we have URL fragment (hash) parameters
+        // Check if we have URL fragment (hash) parameters first
         const hash = window.location.hash;
         
         if (hash && hash.includes('access_token')) {
-          // Hash-based confirmation (new format)
-          // The access_token is already handled by Supabase client automatically
-          // Just need to check if user is authenticated
+          // Parse hash parameters
+          const hashParams = new URLSearchParams(hash.substring(1)); // Remove the #
+          const accessToken = hashParams.get('access_token');
+          const refreshToken = hashParams.get('refresh_token');
+          const expiresAt = hashParams.get('expires_at');
+          const tokenType = hashParams.get('token_type');
+          const type = hashParams.get('type');
           
-          const { data: sessionData } = await supabase.auth.getSession();
-          
-          if (sessionData && sessionData.session) {
-            setSuccess(true);
-            toast({
-              title: "Email confirmed successfully!",
-              description: "Welcome to Exhibit3Design. You are now logged in.",
+          if (accessToken && type === 'signup') {
+            // Set the session manually using the tokens from the hash
+            const { data, error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken || '',
             });
             
-            // Redirect to home page after a short delay
-            setTimeout(() => {
-              navigate('/');
-            }, 2000);
+            if (error) {
+              console.error('Session setup error:', error);
+              setError('Failed to confirm your email. Please try again.');
+              return;
+            }
             
-            return;
+            if (data?.session) {
+              setSuccess(true);
+              toast({
+                title: "Email confirmed successfully!",
+                description: "Welcome to Exhibit3Design. You are now logged in.",
+              });
+              
+              // Clear the hash from URL
+              window.history.replaceState(null, '', window.location.pathname);
+              
+              // Redirect to home page after a short delay
+              setTimeout(() => {
+                navigate('/');
+              }, 2000);
+              
+              return;
+            }
           }
         }
         
-        // Legacy confirmation flow with token_hash
+        // Fallback to legacy confirmation flow with token_hash
         const token_hash = searchParams.get('token_hash');
         const type = searchParams.get('type');
 

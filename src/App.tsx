@@ -24,6 +24,7 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminPage from "./pages/AdminPage";
 import AdminProductEditPage from "./pages/AdminProductEditPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
+import HashConfirmationHandler from "./components/HashConfirmationHandler";
 
 import NotFound from "./pages/NotFound";
 
@@ -40,7 +41,12 @@ const App = () => (
                 <Toaster />
                 <Sonner />
                 <Routes>
-                  <Route path="/" element={<Index />} />
+                  <Route path="/" element={
+                    <>
+                      <HashConfirmationHandler />
+                      <Index />
+                    </>
+                  } />
                   <Route path="/products" element={<ProductsPage />} />
                   <Route path="/product/:id" element={<ProductDetailPage />} />
                   <Route path="/about" element={<AboutPage />} />
