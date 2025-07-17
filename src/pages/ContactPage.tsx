@@ -68,12 +68,8 @@ const ContactPage = () => {
                   <p className="text-muted-foreground">+44 7508 879096</p>
                 </div>
                 <div>
-                  <h3 className="font-medium">Address</h3>
-                  <address className="text-muted-foreground not-italic">
-                    123 Design Avenue<br />
-                    Creative District<br />
-                    New York, NY 10001
-                  </address>
+                  
+                  
                 </div>
               </div>
             </div>
