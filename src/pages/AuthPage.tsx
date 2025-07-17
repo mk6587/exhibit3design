@@ -18,7 +18,6 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const [showOTPRegistration, setShowOTPRegistration] = useState(false);
   const [showOTPVerification, setShowOTPVerification] = useState(false);
   const [otp, setOtp] = useState('');
   const [registrationEmail, setRegistrationEmail] = useState('');
@@ -45,23 +44,18 @@ export default function AuthPage() {
       if (loginError) {
         // Check if it's a credentials error
         if (loginError.message.includes('Invalid login credentials')) {
-          // Try to register the user since they might not exist
-          const { error: signUpError } = await signUp(email, password);
+          // User doesn't exist - start OTP registration flow
+          const { error: otpError } = await registerWithOTP(email, password);
           
-          if (signUpError) {
-            if (signUpError.message.includes('User already registered')) {
-              // User exists but password is wrong - show forgot password
-              setError('Invalid password. Would you like to reset your password?');
-              setShowForgotPassword(true);
-            } else {
-              setError(signUpError.message);
-            }
+          if (otpError) {
+            setError(otpError.message);
           } else {
-            // Registration successful
-            setEmailSent(true);
+            // OTP sent - show verification screen
+            setRegistrationEmail(email);
+            setShowOTPVerification(true);
             toast({
-              title: "Registration successful!",
-              description: "Please check your email for a confirmation link.",
+              title: "Verification code sent!",
+              description: "Check the console for your OTP (development mode).",
             });
           }
         } else if (loginError.message.includes('Email not confirmed')) {
@@ -84,28 +78,6 @@ export default function AuthPage() {
     }
   };
 
-  const handleOTPRegistration = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    try {
-      const { error } = await registerWithOTP(email, password);
-      
-      if (error) {
-        setError(error.message);
-      } else {
-        setRegistrationEmail(email);
-        setShowOTPVerification(true);
-        setShowOTPRegistration(false);
-      }
-    } catch (error: any) {
-      setError(error.message || 'Failed to send OTP');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleOTPVerification = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -117,9 +89,8 @@ export default function AuthPage() {
       if (error) {
         setError(error.message);
       } else {
-        // Registration completed, redirect to login
+        // Registration completed, reset form
         setShowOTPVerification(false);
-        setShowOTPRegistration(false);
         setEmail('');
         setPassword('');
         setOtp('');
@@ -255,81 +226,8 @@ export default function AuthPage() {
                 variant="outline"
                 onClick={() => {
                   setShowOTPVerification(false);
-                  setShowOTPRegistration(false);
                   setOtp('');
                   setRegistrationEmail('');
-                  setError(null);
-                }}
-                className="w-full"
-              >
-                Back to Login
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // OTP Registration Screen
-  if (showOTPRegistration) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Register with OTP</CardTitle>
-            <CardDescription>
-              Create a new account with email verification
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleOTPRegistration} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full"
-                  required
-                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                  title="Please enter a valid email address"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Create a password (6+ characters)"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full"
-                  required
-                  minLength={6}
-                  title="Password must be at least 6 characters long"
-                />
-              </div>
-
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Send OTP
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setShowOTPRegistration(false);
                   setError(null);
                 }}
                 className="w-full"
@@ -348,11 +246,9 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">
-            Welcome
-          </CardTitle>
+          <CardTitle className="text-2xl">Welcome</CardTitle>
           <CardDescription>
-            Sign in to your account or register a new one
+            Enter your email and password to sign in or register
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -377,7 +273,7 @@ export default function AuthPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="Create a password (6+ characters)"
+                placeholder="Enter your password (6+ characters)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full"
@@ -395,21 +291,7 @@ export default function AuthPage() {
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Login / Register
-            </Button>
-
-            <div className="text-center text-sm text-muted-foreground">
-              or
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowOTPRegistration(true)}
-              className="w-full"
-              disabled={loading}
-            >
-              Register with OTP Verification
+              Continue
             </Button>
 
             {showForgotPassword && (
@@ -423,6 +305,10 @@ export default function AuthPage() {
                 Send Password Reset Email
               </Button>
             )}
+            
+            <div className="text-center text-xs text-muted-foreground">
+              If you don't have an account, we'll create one for you with email verification
+            </div>
           </form>
         </CardContent>
       </Card>
