@@ -65,36 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
         );
       }
 
-      // Use Supabase's built-in email functionality by creating a temporary user
-      // and sending a custom confirmation email with our OTP
-      try {
-        // Create a temporary signup to trigger email sending
-        const { data: signupData, error: signupError } = await supabase.auth.admin.createUser({
-          email,
-          password: 'temp-password-' + Date.now(), // Temporary password
-          email_confirm: false, // Don't auto-confirm
-          user_metadata: {
-            otp_code: generatedOTP,
-            registration_type: 'otp'
-          }
-        });
-
-        if (signupError) {
-          console.error('Error creating temp user:', signupError);
-          // Fall back to console logging if email fails
-          console.log(`OTP for ${email}: ${generatedOTP}`);
-        } else {
-          // Delete the temporary user immediately
-          if (signupData.user) {
-            await supabase.auth.admin.deleteUser(signupData.user.id);
-          }
-        }
-      } catch (emailError) {
-        console.error('Email sending failed, logging OTP:', emailError);
-        console.log(`OTP for ${email}: ${generatedOTP}`);
-      }
-
-      // For development, also log the OTP to console
+      // For development, log the OTP to console (since Supabase email isn't configured)
       console.log(`Generated OTP for ${email}: ${generatedOTP}`);
 
       return new Response(
