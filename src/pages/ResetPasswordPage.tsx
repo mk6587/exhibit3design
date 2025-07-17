@@ -24,7 +24,13 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     // Verify this is a password reset request
-    if (!token || type !== 'recovery') {
+    if (type === 'recovery' && token) {
+      // Valid reset request - stay on page
+      return;
+    }
+    
+    // If no valid reset parameters, redirect to auth
+    if (!token || (type && type !== 'recovery')) {
       navigate('/auth');
     }
   }, [token, type, navigate]);

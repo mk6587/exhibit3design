@@ -51,6 +51,10 @@ export default function AuthPage() {
           }
         } else if (loginError.message.includes('Email not confirmed')) {
           setError('Please check your email and click the confirmation link before signing in.');
+        } else if (loginError.message.includes('Invalid email')) {
+          setError('Please enter a valid email address.');
+        } else if (loginError.message.includes('too many requests')) {
+          setError('Too many login attempts. Please wait a few minutes before trying again.');
         } else {
           setError(loginError.message);
         }
@@ -193,6 +197,17 @@ export default function AuthPage() {
                 Send Password Reset Email
               </Button>
             )}
+
+            <div className="flex justify-between items-center mt-4">
+              <Button
+                type="button"
+                variant="link"
+                onClick={() => setShowForgotPassword(!showForgotPassword)}
+                className="text-sm"
+              >
+                {showForgotPassword ? 'Back to Login' : 'Forgot Password?'}
+              </Button>
+            </div>
             
             <div className="text-center text-xs text-muted-foreground">
               If you don't have an account, we'll create one for you with email verification
