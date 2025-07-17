@@ -9,7 +9,7 @@ CREATE OR REPLACE FUNCTION public.cleanup_expired_otps()
 AS $function$
 BEGIN
   DELETE FROM public.otp_registrations 
-  WHERE expires_at < now() - interval '1 hour';
+  WHERE expires_at < now();
 END;
 $function$;
 
