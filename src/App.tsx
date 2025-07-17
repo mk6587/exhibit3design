@@ -27,6 +27,7 @@ import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
 
 import NotFound from "./pages/NotFound";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
                   <Route path="/auth" element={<AuthPage />} />
                   <Route path="/reset-password" element={<ResetPasswordPage />} />
                   <Route path="/confirm-email" element={<EmailConfirmationPage />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                   <Route path="/admin/login" element={<AdminLoginPage />} />
                   <Route path="/admin/dashboard" element={
                     <ProtectedAdminRoute>

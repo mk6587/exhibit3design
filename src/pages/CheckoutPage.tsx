@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { initiatePayment } from "@/services/paymentService";
+import PrivacyPolicyCheckbox from "@/components/common/PrivacyPolicyCheckbox";
 
 // Mock cart items - in a real app, you'd get these from state management or an API
 const cartItems = [
@@ -28,6 +28,7 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [userEmail, setUserEmail] = useState("user@example.com"); // In a real app, get from auth state
+  const [policyAgreed, setPolicyAgreed] = useState(false);
   
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -43,6 +44,11 @@ const CheckoutPage = () => {
   }, [navigate]);
   
   const handlePayment = async () => {
+    if (!policyAgreed) {
+      toast.error("You must agree to our Privacy Policy to proceed with the payment");
+      return;
+    }
+    
     setIsProcessing(true);
     
     try {
@@ -121,6 +127,13 @@ const CheckoutPage = () => {
               After successful payment, you will receive access to download your purchased designs.
             </p>
             
+            <PrivacyPolicyCheckbox
+              checked={policyAgreed}
+              onCheckedChange={setPolicyAgreed}
+              id="checkout-privacy-policy"
+              className="mb-4"
+            />
+            
             <Button
               onClick={handlePayment}
               disabled={isProcessing}
@@ -136,7 +149,7 @@ const CheckoutPage = () => {
           
           <div className="text-sm text-muted-foreground">
             <p>
-              By proceeding with the payment, you agree to our <a href="#" className="text-primary hover:underline">Terms of Service</a> and <a href="#" className="text-primary hover:underline">Privacy Policy</a>.
+              By proceeding with the payment, you agree to our Terms of Service and <Link to="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link>.
             </p>
           </div>
         </div>

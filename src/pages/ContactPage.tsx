@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import PrivacyPolicyCheckbox from "@/components/common/PrivacyPolicyCheckbox";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ const ContactPage = () => {
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [policyAgreed, setPolicyAgreed] = useState(false);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -26,6 +28,12 @@ const ContactPage = () => {
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!policyAgreed) {
+      toast.error("You must agree to our Privacy Policy to submit the form");
+      return;
+    }
+    
     setIsSubmitting(true);
     
     // Simulate form submission
@@ -128,6 +136,14 @@ const ContactPage = () => {
                       onChange={handleChange}
                       rows={5}
                       required
+                    />
+                  </div>
+                  
+                  <div className="mt-2">
+                    <PrivacyPolicyCheckbox
+                      checked={policyAgreed}
+                      onCheckedChange={setPolicyAgreed}
+                      id="contact-privacy-policy"
                     />
                   </div>
                   
