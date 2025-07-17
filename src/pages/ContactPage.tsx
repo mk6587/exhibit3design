@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
-
 const ContactPage = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -15,26 +14,27 @@ const ContactPage = () => {
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const {
+      name,
+      value
+    } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
   };
-  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate form submission
     setTimeout(() => {
       console.log("Form submitted:", formData);
       toast.success("Message sent successfully", {
         description: "We'll get back to you as soon as possible."
       });
-      
+
       // Reset form
       setFormData({
         name: "",
@@ -42,13 +42,10 @@ const ContactPage = () => {
         subject: "",
         message: ""
       });
-      
       setIsSubmitting(false);
     }, 1500);
   };
-  
-  return (
-    <Layout>
+  return <Layout>
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold mb-8">Contact Us</h1>
@@ -87,59 +84,27 @@ const ContactPage = () => {
                 <div className="grid grid-cols-1 gap-4">
                   <div>
                     <Label htmlFor="name">Your Name</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
+                    <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
                   </div>
                   
                   <div>
                     <Label htmlFor="email">Email Address</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
+                    <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required />
                   </div>
                   
                   <div>
                     <Label htmlFor="subject">Subject</Label>
-                    <Input
-                      id="subject"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                    />
+                    <Input id="subject" name="subject" value={formData.subject} onChange={handleChange} required />
                   </div>
                   
                   <div>
                     <Label htmlFor="message">Message</Label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      rows={5}
-                      required
-                    />
+                    <Textarea id="message" name="message" value={formData.message} onChange={handleChange} rows={5} required />
                   </div>
                   
-                  <div className="text-sm text-muted-foreground mb-2">
-                    By submitting this form, you agree to our <Link to="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link>.
-                  </div>
                   
-                  <Button 
-                    type="submit" 
-                    disabled={isSubmitting}
-                    className="w-full"
-                  >
+                  
+                  <Button type="submit" disabled={isSubmitting} className="w-full">
                     {isSubmitting ? "Sending..." : "Send Message"}
                   </Button>
                 </div>
@@ -148,8 +113,6 @@ const ContactPage = () => {
           </div>
         </div>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default ContactPage;
