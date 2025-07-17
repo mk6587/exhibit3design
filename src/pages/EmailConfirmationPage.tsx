@@ -18,10 +18,37 @@ export default function EmailConfirmationPage() {
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
+        // Check if we have URL fragment (hash) parameters
+        const hash = window.location.hash;
+        
+        if (hash && hash.includes('access_token')) {
+          // Hash-based confirmation (new format)
+          // The access_token is already handled by Supabase client automatically
+          // Just need to check if user is authenticated
+          
+          const { data: sessionData } = await supabase.auth.getSession();
+          
+          if (sessionData && sessionData.session) {
+            setSuccess(true);
+            toast({
+              title: "Email confirmed successfully!",
+              description: "Welcome to Exhibit3Design. You are now logged in.",
+            });
+            
+            // Redirect to home page after a short delay
+            setTimeout(() => {
+              navigate('/');
+            }, 2000);
+            
+            return;
+          }
+        }
+        
+        // Legacy confirmation flow with token_hash
         const token_hash = searchParams.get('token_hash');
         const type = searchParams.get('type');
 
-        if (!token_hash || type !== 'signup') {
+        if (!token_hash) {
           setError('Invalid confirmation link');
           return;
         }
@@ -29,7 +56,7 @@ export default function EmailConfirmationPage() {
         // Verify the token hash with Supabase
         const { data, error: confirmError } = await supabase.auth.verifyOtp({
           token_hash,
-          type: 'signup'
+          type: type as any || 'signup'
         });
 
         if (confirmError) {
@@ -60,7 +87,9 @@ export default function EmailConfirmationPage() {
         console.error('Confirmation process error:', error);
         setError('An unexpected error occurred. Please try again.');
       } finally {
-        setLoading(false);
+        if (!success) {
+          setLoading(false);
+        }
       }
     };
 
