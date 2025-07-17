@@ -4,7 +4,7 @@ import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { initiatePayment } from "@/services/paymentService";
-import PrivacyPolicyCheckbox from "@/components/common/PrivacyPolicyCheckbox";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Mock cart items - in a real app, you'd get these from state management or an API
 const cartItems = [
@@ -127,12 +127,19 @@ const CheckoutPage = () => {
               After successful payment, you will receive access to download your purchased designs.
             </p>
             
-            <PrivacyPolicyCheckbox
-              checked={policyAgreed}
-              onCheckedChange={setPolicyAgreed}
-              id="checkout-privacy-policy"
-              className="mb-4"
-            />
+            <div className="flex items-start space-x-3 mb-4">
+              <Checkbox 
+                id="privacy-policy" 
+                checked={policyAgreed} 
+                onCheckedChange={(checked) => setPolicyAgreed(checked as boolean)}
+              />
+              <label 
+                htmlFor="privacy-policy" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                I have read and agree to the <Link to="/privacy-policy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
+              </label>
+            </div>
             
             <Button
               onClick={handlePayment}
@@ -145,12 +152,6 @@ const CheckoutPage = () => {
             <div className="mt-4 text-center text-sm text-muted-foreground">
               <p>Your payment is secure and encrypted</p>
             </div>
-          </div>
-          
-          <div className="text-sm text-muted-foreground">
-            <p>
-              By proceeding with the payment, you agree to our Terms of Service and <Link to="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link>.
-            </p>
           </div>
         </div>
       </div>

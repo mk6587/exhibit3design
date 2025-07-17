@@ -1,22 +1,7 @@
 import Layout from "@/components/layout/Layout";
 import { Separator } from "@/components/ui/separator";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 
 const PrivacyPolicyPage = () => {
-  const [acknowledged, setAcknowledged] = useState(false);
-
-  const handleAcknowledge = () => {
-    if (acknowledged) {
-      localStorage.setItem("privacy_policy_acknowledged", "true");
-      toast.success("Privacy policy acknowledged!");
-    }
-  };
-
-  const isAlreadyAcknowledged = localStorage.getItem("privacy_policy_acknowledged") === "true";
-
   return (
     <Layout>
       <div className="container max-w-4xl py-10 px-4 md:px-6">
@@ -147,30 +132,6 @@ const PrivacyPolicyPage = () => {
             </p>
           </section>
         </div>
-
-        {!isAlreadyAcknowledged && (
-          <div className="mt-8 p-4 border rounded-md bg-secondary/30">
-            <div className="flex items-start space-x-3 mb-4">
-              <Checkbox 
-                id="privacy-acknowledge" 
-                checked={acknowledged} 
-                onCheckedChange={(checked) => setAcknowledged(checked as boolean)}
-              />
-              <label 
-                htmlFor="privacy-acknowledge" 
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-              >
-                I have read and agree to the Privacy Policy
-              </label>
-            </div>
-            <Button 
-              onClick={handleAcknowledge} 
-              disabled={!acknowledged}
-            >
-              Acknowledge
-            </Button>
-          </div>
-        )}
       </div>
     </Layout>
   );

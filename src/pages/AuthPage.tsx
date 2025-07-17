@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,9 +9,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Loader2, Mail, CheckCircle, ArrowLeft } from 'lucide-react';
-import PrivacyPolicyCheckbox from '@/components/common/PrivacyPolicyCheckbox';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+
 // AuthPage component with unified login/register flow
 export default function AuthPage() {
   const [email, setEmail] = useState('');
@@ -20,7 +20,6 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const [policyAgreed, setPolicyAgreed] = useState(false);
   
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
@@ -44,14 +43,7 @@ export default function AuthPage() {
       if (loginError) {
         // Check if it's a credentials error
         if (loginError.message.includes('Invalid login credentials')) {
-          // User doesn't exist - check privacy policy agreement for registration
-          if (!policyAgreed) {
-            setError('You must agree to the Privacy Policy to create an account');
-            setLoading(false);
-            return;
-          }
-          
-          // Start registration flow
+          // User doesn't exist - start registration flow
           const { error: signUpError } = await signUp(email, password);
           
           if (signUpError) {
@@ -59,8 +51,6 @@ export default function AuthPage() {
           } else {
             // Registration email sent - show message
             setEmailSent(true);
-            // Store privacy policy agreement in localStorage
-            localStorage.setItem("privacy_policy_acknowledged", "true");
           }
         } else if (loginError.message.includes('Email not confirmed')) {
           setError('Please check your email and click the confirmation link before signing in.');
@@ -245,17 +235,10 @@ export default function AuthPage() {
                   {showForgotPassword ? 'Back to Login' : 'Forgot Password?'}
                 </Button>
               </div>
-              
-              <div className="mt-4">
-                <PrivacyPolicyCheckbox
-                  checked={policyAgreed}
-                  onCheckedChange={setPolicyAgreed}
-                  className="mb-3"
-                />
-              </div>
 
               <div className="text-center text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg">
-                If you don't have an account, we'll create one for you with email verification
+                By registering, you agree to our <Link to="/privacy-policy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>.
+                If you don't have an account, we'll create one for you with email verification.
               </div>
             </form>
           </CardContent>
