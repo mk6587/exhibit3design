@@ -67,7 +67,7 @@ export const SignupConfirmationEmail = ({
           {/* CTA Button */}
           <Section style={buttonContainer}>
             <Link
-              href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
+              href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=https://exhibit3design.com`}
               target="_blank"
               style={gradientButton}
             >
@@ -79,7 +79,7 @@ export const SignupConfirmationEmail = ({
             If the button doesn't work, copy and paste this link in your browser:
           </Text>
           <Text style={linkText}>
-            {`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
+            {`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=https://exhibit3design.com`}
           </Text>
         </Section>
         
