@@ -39,7 +39,7 @@ export const SignupConfirmationEmail = ({
         <Section style={headerGradient}>
           <Section style={header}>
             <Img
-              src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/exhibit3design-logo.png"
+              src="/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png"
               width="220"
               height="65"
               alt="Exhibit3Design"
