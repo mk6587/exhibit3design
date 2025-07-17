@@ -205,9 +205,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-        }
+        // Remove email confirmation for now to avoid email sending errors
+        // options: {
+        //   emailRedirectTo: `${window.location.origin}/`,
+        // }
       });
 
       if (error) {
@@ -218,8 +219,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log(`[${new Date().toISOString()}] ✅ AUTH: Account created successfully`);
       
       toast({
-        title: "Please check your email",
-        description: "We've sent you a confirmation link to verify your account.",
+        title: "Account created successfully!",
+        description: "You can now sign in with your credentials.",
         variant: "default",
       });
 
