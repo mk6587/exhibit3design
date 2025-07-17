@@ -200,7 +200,7 @@
       <!-- CTA Button -->
       <div class="button-container">
         <a
-          href="{{ .SiteURL }}/auth/v1/verify?token={{ .TokenHash }}&type=signup&redirect_to=https://exhibit3design.com"
+          href="{{ .ConfirmationURL }}"
           target="_blank"
           class="gradient-button"
         >
@@ -212,7 +212,7 @@
         If the button doesn't work, copy and paste this link in your browser:
       </p>
       <p class="link-text">
-        {{ .SiteURL }}/auth/v1/verify?token={{ .TokenHash }}&type=signup&redirect_to=https://exhibit3design.com
+        {{ .ConfirmationURL }}
       </p>
     </div>
     
