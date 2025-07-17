@@ -19,6 +19,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import ProfilePage from "./pages/ProfilePage";
 import AuthPage from "./pages/AuthPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import EmailConfirmationPage from "./pages/EmailConfirmationPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminPage from "./pages/AdminPage";
 import AdminProductEditPage from "./pages/AdminProductEditPage";
@@ -50,6 +51,7 @@ const App = () => (
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/auth" element={<AuthPage />} />
                   <Route path="/reset-password" element={<ResetPasswordPage />} />
+                  <Route path="/confirm-email" element={<EmailConfirmationPage />} />
                   <Route path="/admin/login" element={<AdminLoginPage />} />
                   <Route path="/admin/dashboard" element={
                     <ProtectedAdminRoute>
