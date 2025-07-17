@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
+import exhibit3Logo from '@/assets/exhibit3design-logo.png';
 
 export default function EmailConfirmationPage() {
   const [loading, setLoading] = useState(true);
@@ -67,55 +68,100 @@ export default function EmailConfirmationPage() {
   }, [searchParams, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            {loading && <Loader2 className="h-12 w-12 animate-spin text-primary" />}
-            {success && <CheckCircle className="h-12 w-12 text-green-500" />}
-            {error && <XCircle className="h-12 w-12 text-destructive" />}
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/20 to-accent/10 p-4">
+      <div className="w-full max-w-lg">
+        <Card className="border-0 shadow-2xl bg-card/95 backdrop-blur-sm">
+          <CardHeader className="text-center pb-8">
+            {/* Logo */}
+            <div className="flex justify-center mb-6">
+              <img 
+                src={exhibit3Logo} 
+                alt="Exhibit3Design" 
+                className="h-16 w-auto opacity-90"
+              />
+            </div>
+            
+            {/* Status Icon */}
+            <div className="flex justify-center mb-6">
+              {loading && (
+                <div className="relative">
+                  <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping"></div>
+                  <Loader2 className="h-16 w-16 animate-spin text-primary relative z-10" />
+                </div>
+              )}
+              {success && (
+                <div className="relative">
+                  <div className="absolute inset-0 bg-green-500/20 rounded-full animate-pulse"></div>
+                  <CheckCircle className="h-16 w-16 text-green-500 relative z-10" />
+                  <Sparkles className="h-6 w-6 text-accent absolute -top-1 -right-1 animate-bounce" />
+                </div>
+              )}
+              {error && (
+                <div className="relative">
+                  <div className="absolute inset-0 bg-destructive/20 rounded-full"></div>
+                  <XCircle className="h-16 w-16 text-destructive relative z-10" />
+                </div>
+              )}
+            </div>
+            
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              {loading && "Confirming your email..."}
+              {success && "Welcome to Exhibit3Design!"}
+              {error && "Confirmation Failed"}
+            </CardTitle>
+            
+            <CardDescription className="text-base text-muted-foreground mt-4 leading-relaxed">
+              {loading && "Please wait while we verify your email address and complete your registration."}
+              {success && "Your email has been confirmed successfully! You're now logged in and will be redirected shortly."}
+              {error && error}
+            </CardDescription>
+          </CardHeader>
           
-          <CardTitle className="text-2xl">
-            {loading && "Confirming your email..."}
-            {success && "Welcome to Exhibit3Design!"}
-            {error && "Confirmation Failed"}
-          </CardTitle>
-          
-          <CardDescription>
-            {loading && "Please wait while we verify your email address."}
-            {success && "Your email has been confirmed successfully. You will be redirected to the homepage shortly."}
-            {error && error}
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent className="text-center">
-          {success && (
-            <div className="space-y-4">
-              <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
-                <p className="text-sm text-green-800 dark:text-green-200">
-                  🎉 You now have access to professional exhibition stand design files at affordable prices!
-                </p>
+          <CardContent className="text-center pb-8">
+            {success && (
+              <div className="space-y-6">
+                <div className="relative overflow-hidden p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50 rounded-xl border border-green-200/50 dark:border-green-800/50">
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-400/10 to-emerald-400/10"></div>
+                  <div className="relative z-10">
+                    <Sparkles className="h-8 w-8 text-green-600 mx-auto mb-3" />
+                    <p className="text-green-800 dark:text-green-200 font-medium">
+                      🎉 Congratulations! You now have access to professional exhibition stand design files at affordable prices!
+                    </p>
+                    <p className="text-sm text-green-700 dark:text-green-300 mt-2">
+                      Professional designs • Instant downloads • 80% cost savings
+                    </p>
+                  </div>
+                </div>
+                
+                <Button 
+                  onClick={() => navigate('/')} 
+                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg transition-all duration-300 group"
+                >
+                  Continue to Exhibit3Design
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
               </div>
-              <Button onClick={() => navigate('/')} className="w-full">
-                Continue to Exhibit3Design
-              </Button>
-            </div>
-          )}
-          
-          {error && (
-            <div className="space-y-4">
-              <Button 
-                onClick={() => navigate('/auth')} 
-                className="w-full"
-                variant="outline"
-              >
-                Back to Sign Up
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            )}
+            
+            {error && (
+              <div className="space-y-4">
+                <div className="p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                  <p className="text-sm text-destructive">
+                    We couldn't confirm your email. This might be because the link has expired or has already been used.
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => navigate('/auth')} 
+                  className="w-full h-12"
+                  variant="outline"
+                >
+                  Back to Sign Up
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

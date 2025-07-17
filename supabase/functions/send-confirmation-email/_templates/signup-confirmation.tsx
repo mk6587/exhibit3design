@@ -36,22 +36,24 @@ export const SignupConfirmationEmail = ({
     <Body style={main}>
       <Container style={container}>
         {/* Header with Logo */}
-        <Section style={header}>
-          <Img
-            src="https://exhibit3design.com/logo.png"
-            width="200"
-            height="60"
-            alt="Exhibit3Design"
-            style={logo}
-          />
+        <Section style={headerGradient}>
+          <Section style={header}>
+            <Img
+              src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/exhibit3design-logo.png"
+              width="220"
+              height="65"
+              alt="Exhibit3Design"
+              style={logo}
+            />
+          </Section>
         </Section>
         
         {/* Main Content */}
         <Section style={content}>
-          <Heading style={h1}>Welcome to Exhibit3Design!</Heading>
+          <Heading style={h1}>✨ Welcome to Exhibit3Design! ✨</Heading>
           
           <Text style={subtitle}>
-            Professional Exhibition Stand Design Files at Affordable Prices
+            🏆 Professional Exhibition Stand Design Files at Affordable Prices
           </Text>
           
           <Text style={text}>
@@ -67,9 +69,9 @@ export const SignupConfirmationEmail = ({
             <Link
               href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
               target="_blank"
-              style={button}
+              style={gradientButton}
             >
-              Confirm Your Email Address
+              🚀 Confirm Your Email & Get Started
             </Link>
           </Section>
           
@@ -121,53 +123,58 @@ export const SignupConfirmationEmail = ({
 export default SignupConfirmationEmail
 
 const main = {
-  backgroundColor: '#f8fafc',
-  fontFamily: 'system-ui, -apple-system, sans-serif',
-  padding: '20px 0',
+  backgroundColor: '#f1f5f9',
+  fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+  padding: '40px 20px',
 }
 
 const container = {
   backgroundColor: '#ffffff',
-  paddingLeft: '20px',
-  paddingRight: '20px',
+  paddingLeft: '0px',
+  paddingRight: '0px',
   margin: '0 auto',
   maxWidth: '600px',
-  borderRadius: '8px',
-  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+  borderRadius: '16px',
+  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+  overflow: 'hidden',
+}
+
+const headerGradient = {
+  background: 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #9333ea 100%)',
+  padding: '0',
 }
 
 const header = {
-  backgroundColor: '#1e40af',
-  padding: '30px 20px',
+  padding: '40px 20px',
   textAlign: 'center' as const,
-  borderRadius: '8px 8px 0 0',
 }
 
 const logo = {
   margin: '0 auto',
+  filter: 'brightness(0) invert(1)',
 }
 
 const content = {
-  padding: '40px 30px',
+  padding: '50px 40px',
 }
 
 const h1 = {
-  color: '#1f2937',
-  fontFamily: 'system-ui, -apple-system, sans-serif',
-  fontSize: '28px',
-  fontWeight: 'bold',
-  margin: '0 0 16px',
+  color: '#1e293b',
+  fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+  fontSize: '32px',
+  fontWeight: '800',
+  margin: '0 0 20px',
   textAlign: 'center' as const,
-  lineHeight: '1.3',
+  lineHeight: '1.2',
 }
 
 const subtitle = {
-  color: '#6b7280',
-  fontFamily: 'system-ui, -apple-system, sans-serif',
-  fontSize: '16px',
-  fontWeight: '500',
+  color: '#8b5cf6',
+  fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+  fontSize: '18px',
+  fontWeight: '600',
   textAlign: 'center' as const,
-  margin: '0 0 32px',
+  margin: '0 0 40px',
 }
 
 const text = {
@@ -183,18 +190,19 @@ const buttonContainer = {
   margin: '32px 0',
 }
 
-const button = {
-  backgroundColor: '#1e40af',
-  borderRadius: '8px',
+const gradientButton = {
+  background: 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #9333ea 100%)',
+  borderRadius: '12px',
   color: '#ffffff',
-  fontFamily: 'system-ui, -apple-system, sans-serif',
-  fontSize: '16px',
-  fontWeight: 'bold',
+  fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+  fontSize: '18px',
+  fontWeight: '700',
   textDecoration: 'none',
   textAlign: 'center' as const,
   display: 'inline-block',
-  padding: '16px 32px',
-  boxShadow: '0 2px 4px rgba(30, 64, 175, 0.3)',
+  padding: '18px 36px',
+  boxShadow: '0 10px 25px rgba(139, 92, 246, 0.4)',
+  transition: 'all 0.3s ease',
 }
 
 const alternativeText = {
@@ -221,27 +229,29 @@ const divider = {
 }
 
 const valueSection = {
-  backgroundColor: '#f3f4f6',
-  padding: '24px',
-  borderRadius: '6px',
-  margin: '20px 0',
+  background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+  padding: '32px',
+  borderRadius: '12px',
+  margin: '30px 0',
+  border: '1px solid #e2e8f0',
 }
 
 const valueTitle = {
-  color: '#1f2937',
-  fontFamily: 'system-ui, -apple-system, sans-serif',
-  fontSize: '18px',
-  fontWeight: 'bold',
-  margin: '0 0 12px',
+  color: '#1e293b',
+  fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+  fontSize: '22px',
+  fontWeight: '700',
+  margin: '0 0 20px',
   textAlign: 'center' as const,
 }
 
 const valueText = {
-  color: '#374151',
-  fontFamily: 'system-ui, -apple-system, sans-serif',
-  fontSize: '15px',
-  lineHeight: '1.6',
+  color: '#475569',
+  fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+  fontSize: '16px',
+  lineHeight: '1.8',
   margin: '0',
+  fontWeight: '500',
 }
 
 const footer = {
