@@ -18,6 +18,11 @@ export default function EmailConfirmationPage() {
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
+        console.log('🔍 Starting email confirmation process');
+        console.log('🔗 Full URL:', window.location.href);
+        console.log('🔗 Hash:', window.location.hash);
+        console.log('🔗 Search params:', window.location.search);
+        
         // Check if we have URL fragment (hash) parameters first
         const hash = window.location.hash;
         
@@ -63,11 +68,32 @@ export default function EmailConfirmationPage() {
           }
         }
         
+        // Check if user is already authenticated (might have been confirmed already)
+        console.log('🔍 Checking existing session...');
+        const { data: sessionData } = await supabase.auth.getSession();
+        console.log('📝 Session data:', sessionData);
+        
+        if (sessionData?.session?.user) {
+          console.log('✅ User already authenticated!');
+          setSuccess(true);
+          toast({
+            title: "Email confirmed successfully!",
+            description: "Welcome to Exhibit3Design. You are now logged in.",
+          });
+          
+          setTimeout(() => {
+            navigate('/');
+          }, 2000);
+          return;
+        }
+        
         // Fallback to legacy confirmation flow with token_hash
         const token_hash = searchParams.get('token_hash');
         const type = searchParams.get('type');
+        console.log('🔍 Token hash:', token_hash, 'Type:', type);
 
-        if (!token_hash) {
+        if (!token_hash && !hash) {
+          console.log('❌ No confirmation parameters found');
           setError('Invalid confirmation link');
           return;
         }
