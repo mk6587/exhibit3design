@@ -8,7 +8,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Mail, CheckCircle, ArrowLeft } from 'lucide-react';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 // AuthPage component with unified login/register flow
 export default function AuthPage() {
   const [email, setEmail] = useState('');
@@ -105,116 +107,142 @@ export default function AuthPage() {
 
   if (emailSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Check Your Email</CardTitle>
-            <CardDescription>
-              We've sent an email to {email} with further instructions.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setEmailSent(false);
-                setEmail('');
-                setPassword('');
-                setError(null);
-                setShowForgotPassword(false);
-              }}
-              className="w-full"
-            >
-              Back to Login
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center py-12 bg-gradient-to-br from-background via-background to-muted">
+          <Card className="w-full max-w-md shadow-lg border-2">
+            <CardHeader className="text-center pb-4">
+              <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                <Mail className="h-8 w-8 text-primary" />
+              </div>
+              <CardTitle className="text-2xl font-bold">Check Your Email</CardTitle>
+              <CardDescription className="text-base">
+                We've sent a confirmation email to<br />
+                <span className="font-semibold text-foreground">{email}</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-center p-4 bg-muted/50 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-green-600 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">
+                  Click the confirmation link in your email to activate your account
+                </p>
+              </div>
+              
+              <div className="space-y-3">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setEmailSent(false);
+                    setEmail('');
+                    setPassword('');
+                    setError(null);
+                    setShowForgotPassword(false);
+                  }}
+                  className="w-full"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to Login
+                </Button>
+                
+                <p className="text-xs text-center text-muted-foreground">
+                  Didn't receive the email? Check your spam folder or try again
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+        <Footer />
       </div>
     );
   }
 
   // Main Login/Register Screen
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome</CardTitle>
-          <CardDescription>
-            Enter your email and password to sign in or register
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full"
-                required
-                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                title="Please enter a valid email address"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password (6+ characters)"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full"
-                required
-                minLength={6}
-                title="Password must be at least 6 characters long"
-              />
-            </div>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-1 flex items-center justify-center py-12 bg-gradient-to-br from-background via-background to-muted">
+        <Card className="w-full max-w-md shadow-lg border-2">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold">Welcome to Exhibit3Design</CardTitle>
+            <CardDescription className="text-base">
+              Enter your email and password to sign in or register
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full"
+                  required
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                  title="Please enter a valid email address"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password (6+ characters)"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full"
+                  required
+                  minLength={6}
+                  title="Password must be at least 6 characters long"
+                />
+              </div>
 
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Continue
-            </Button>
-
-            {showForgotPassword && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleForgotPassword}
-                className="w-full"
-                disabled={loading}
-              >
-                Send Password Reset Email
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Continue
               </Button>
-            )}
 
-            <div className="flex justify-between items-center mt-4">
-              <Button
-                type="button"
-                variant="link"
-                onClick={() => setShowForgotPassword(!showForgotPassword)}
-                className="text-sm"
-              >
-                {showForgotPassword ? 'Back to Login' : 'Forgot Password?'}
-              </Button>
-            </div>
-            
-            <div className="text-center text-xs text-muted-foreground">
-              If you don't have an account, we'll create one for you with email verification
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              {showForgotPassword && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleForgotPassword}
+                  className="w-full"
+                  disabled={loading}
+                >
+                  Send Password Reset Email
+                </Button>
+              )}
+
+              <div className="flex justify-between items-center mt-4">
+                <Button
+                  type="button"
+                  variant="link"
+                  onClick={() => setShowForgotPassword(!showForgotPassword)}
+                  className="text-sm"
+                >
+                  {showForgotPassword ? 'Back to Login' : 'Forgot Password?'}
+                </Button>
+              </div>
+              
+              <div className="text-center text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg">
+                If you don't have an account, we'll create one for you with email verification
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </main>
+      <Footer />
     </div>
   );
 }
