@@ -24,7 +24,7 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<{ error: any }>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
   refreshProfile: () => Promise<void>;
-  registerWithOTP: (email: string, password: string) => Promise<{ error: any }>;
+  registerWithOTP: (email: string, password: string) => Promise<{ error: any; otp?: string }>;
   verifyOTP: (email: string, otp: string) => Promise<{ error: any }>;
 }
 
@@ -345,12 +345,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log(`[${new Date().toISOString()}] ✅ AUTH: OTP sent successfully`);
       
       toast({
-        title: "OTP sent!",
-        description: "Please check your email for the verification code.",
+        title: "OTP Generated!",
+        description: data?.otp ? `Your OTP is: ${data.otp}` : "Please check your email for the verification code.",
         variant: "default",
       });
 
-      return { error: null };
+      return { error: null, otp: data?.otp };
     } catch (error) {
       console.error(`[${new Date().toISOString()}] ❌ AUTH: OTP registration exception:`, error);
       return { error };

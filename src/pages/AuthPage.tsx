@@ -46,7 +46,7 @@ export default function AuthPage() {
         // Check if it's a credentials error
         if (loginError.message.includes('Invalid login credentials')) {
           // User doesn't exist - start OTP registration flow
-          const { error: otpError } = await registerWithOTP(email, password);
+          const { error: otpError, otp: generatedOTP } = await registerWithOTP(email, password);
           
           if (otpError) {
             setError(otpError.message);
@@ -54,10 +54,13 @@ export default function AuthPage() {
             // OTP sent - show verification screen
             setRegistrationEmail(email);
             setShowOTPVerification(true);
-            toast({
-              title: "Verification code sent!",
-              description: "Check the console for your OTP (development mode).",
-            });
+            if (generatedOTP) {
+              toast({
+                title: "OTP Generated!",
+                description: `Your verification code is: ${generatedOTP}`,
+                duration: 10000, // Show for 10 seconds
+              });
+            }
           }
         } else if (loginError.message.includes('Email not confirmed')) {
           setError('Please check your email and click the confirmation link before signing in.');

@@ -72,8 +72,8 @@ const handler = async (req: Request): Promise<Response> => {
       return new Response(
         JSON.stringify({ 
           message: 'OTP sent successfully',
-          // In development, include OTP in response for testing
-          ...(Deno.env.get('ENVIRONMENT') === 'development' && { otp: generatedOTP })
+          // For development - include OTP in response since we're not sending actual emails
+          otp: generatedOTP
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
