@@ -44,10 +44,16 @@ Deno.serve(async (req) => {
       })
     )
 
+    // Determine email content based on action type
+    const isPasswordReset = email_action_type === 'recovery'
+    const subject = isPasswordReset 
+      ? 'Reset Your Password - Exhibit3Design'
+      : 'Welcome to Exhibit3Design - Confirm your account'
+
     const { error } = await resend.emails.send({
       from: 'Exhibit3Design <noreply@exhibit3design.com>',
       to: [user.email],
-      subject: 'Welcome to Exhibit3Design - Confirm your account',
+      subject,
       html,
     })
     
