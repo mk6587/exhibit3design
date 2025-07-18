@@ -13,7 +13,7 @@ import {
 } from 'npm:@react-email/components@0.0.22'
 import * as React from 'npm:react@18.3.1'
 
-interface SignupConfirmationEmailProps {
+interface PasswordResetEmailProps {
   supabase_url: string
   email_action_type: string
   redirect_to: string
@@ -22,17 +22,17 @@ interface SignupConfirmationEmailProps {
   user_email: string
 }
 
-export const SignupConfirmationEmail = ({
+export const PasswordResetEmail = ({
   token,
   supabase_url,
   email_action_type,
   redirect_to,
   token_hash,
   user_email,
-}: SignupConfirmationEmailProps) => (
+}: PasswordResetEmailProps) => (
   <Html>
     <Head />
-    <Preview>Welcome to Exhibit3Design - Confirm your account</Preview>
+    <Preview>Reset your password - Exhibit3Design</Preview>
     <Body style={main}>
       <Container style={container}>
         {/* Header with Logo */}
@@ -50,18 +50,18 @@ export const SignupConfirmationEmail = ({
         
         {/* Main Content */}
         <Section style={content}>
-          <Heading style={h1}>✨ Welcome to Exhibit3Design! ✨</Heading>
+          <Heading style={h1}>🔑 Reset Your Password</Heading>
           
           <Text style={subtitle}>
-            🏆 Professional Exhibition Stand Design Files at Affordable Prices
+            Reset your password to regain access to your account
           </Text>
           
           <Text style={text}>
-            Thank you for joining Exhibit3Design! We're excited to help you create stunning exhibition displays that save you time and money.
+            We received a request to reset your password for your Exhibit3Design account.
           </Text>
           
           <Text style={text}>
-            Please confirm your email address to complete your registration:
+            Click the button below to reset your password:
           </Text>
           
           {/* CTA Button */}
@@ -71,7 +71,7 @@ export const SignupConfirmationEmail = ({
               target="_blank"
               style={gradientButton}
             >
-              🚀 Confirm Your Email & Get Started
+              🔑 Reset Your Password
             </Link>
           </Section>
           
@@ -81,19 +81,12 @@ export const SignupConfirmationEmail = ({
           <Text style={linkText}>
             {`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
           </Text>
-        </Section>
-        
-        <Hr style={divider} />
-        
-        {/* Value Proposition */}
-        <Section style={valueSection}>
-          <Text style={valueTitle}>Why Choose Exhibit3Design?</Text>
-          <Text style={valueText}>
-            ✓ Professional quality designs from industry experts<br/>
-            ✓ Affordable prices - up to 80% less than custom design<br/>
-            ✓ Instant download after purchase<br/>
-            ✓ Ready-to-use files for immediate implementation
-          </Text>
+
+          <Section style={warningSection}>
+            <Text style={warningText}>
+              ⚠️ This link will expire in 24 hours. If you didn't request a password reset, you can safely ignore this email.
+            </Text>
+          </Section>
         </Section>
         
         <Hr style={divider} />
@@ -101,7 +94,7 @@ export const SignupConfirmationEmail = ({
         {/* Footer */}
         <Section style={footer}>
           <Text style={footerText}>
-            If you didn't create an account with us, you can safely ignore this email.
+            If you didn't request this password reset, you can safely ignore this email.
           </Text>
           <Text style={footerBrand}>
             <Link
@@ -120,7 +113,7 @@ export const SignupConfirmationEmail = ({
   </Html>
 )
 
-export default SignupConfirmationEmail
+export default PasswordResetEmail
 
 const main = {
   backgroundColor: '#f1f5f9',
@@ -223,35 +216,25 @@ const linkText = {
   margin: '0 0 32px',
 }
 
-const divider = {
-  borderColor: '#e5e7eb',
+const warningSection = {
   margin: '32px 0',
 }
 
-const valueSection = {
-  background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-  padding: '32px',
-  borderRadius: '12px',
-  margin: '30px 0',
-  border: '1px solid #e2e8f0',
-}
-
-const valueTitle = {
-  color: '#1e293b',
-  fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
-  fontSize: '22px',
-  fontWeight: '700',
-  margin: '0 0 20px',
+const warningText = {
+  color: '#dc2626',
+  fontFamily: 'system-ui, -apple-system, sans-serif',
+  fontSize: '14px',
   textAlign: 'center' as const,
+  margin: '0',
+  padding: '16px',
+  backgroundColor: '#fef2f2',
+  borderRadius: '8px',
+  border: '1px solid #fecaca',
 }
 
-const valueText = {
-  color: '#475569',
-  fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
-  fontSize: '16px',
-  lineHeight: '1.8',
-  margin: '0',
-  fontWeight: '500',
+const divider = {
+  borderColor: '#e5e7eb',
+  margin: '32px 0',
 }
 
 const footer = {
