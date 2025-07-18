@@ -16,55 +16,61 @@ const smtpConfig = {
 
 async function sendEmail(to: string, subject: string, html: string) {
   console.log('📧 Sending email via SMTP to:', to)
+  console.log('📧 SMTP Config:', { 
+    host: smtpConfig.host, 
+    port: smtpConfig.port, 
+    username: smtpConfig.username,
+    fromEmail: smtpConfig.fromEmail 
+  })
   
   try {
-    // Create SMTP connection
-    const conn = await Deno.connect({
-      hostname: smtpConfig.host,
-      port: smtpConfig.port,
-    })
-
-    const encoder = new TextEncoder()
-    const decoder = new TextDecoder()
-
-    // Helper to send command and read response
-    async function sendCommand(command: string): Promise<string> {
-      await conn.write(encoder.encode(command + '\r\n'))
-      const buffer = new Uint8Array(1024)
-      const n = await conn.read(buffer)
-      return decoder.decode(buffer.subarray(0, n || 0))
+    // Use fetch to send email via an SMTP API approach
+    const emailPayload = {
+      to,
+      from: smtpConfig.fromEmail,
+      subject,
+      html,
+      smtp: {
+        host: smtpConfig.host,
+        port: smtpConfig.port,
+        username: smtpConfig.username,
+        password: smtpConfig.password,
+      }
     }
 
-    // SMTP conversation
-    await sendCommand(`EHLO ${smtpConfig.host}`)
-    await sendCommand('STARTTLS')
+    console.log('📧 Sending email with payload:', { to, subject, from: smtpConfig.fromEmail })
+
+    // For now, let's use a simple email service approach
+    // You might need to integrate with your specific SMTP provider's API
     
-    // Simple AUTH LOGIN (base64 encoded)
-    await sendCommand('AUTH LOGIN')
-    await sendCommand(btoa(smtpConfig.username))
-    await sendCommand(btoa(smtpConfig.password))
+    // Alternative: Use nodemailer-like approach via npm
+    const { SMTPClient } = await import('https://deno.land/x/denomailer@1.6.0/mod.ts')
     
-    // Send email
-    await sendCommand(`MAIL FROM:<${smtpConfig.fromEmail}>`)
-    await sendCommand(`RCPT TO:<${to}>`)
-    await sendCommand('DATA')
+    const client = new SMTPClient({
+      connection: {
+        hostname: smtpConfig.host,
+        port: smtpConfig.port,
+        tls: true,
+        auth: {
+          username: smtpConfig.username,
+          password: smtpConfig.password,
+        },
+      },
+    })
+
+    console.log('📧 Connecting to SMTP server...')
     
-    const emailContent = [
-      `From: Exhibit3Design <${smtpConfig.fromEmail}>`,
-      `To: ${to}`,
-      `Subject: ${subject}`,
-      'MIME-Version: 1.0',
-      'Content-Type: text/html; charset=UTF-8',
-      '',
+    await client.send({
+      from: smtpConfig.fromEmail,
+      to,
+      subject,
+      content: html,
       html,
-      '.',
-    ].join('\r\n')
-    
-    await conn.write(encoder.encode(emailContent + '\r\n'))
-    await sendCommand('QUIT')
-    
-    conn.close()
+    })
+
     console.log('✅ Email sent successfully via SMTP')
+    await client.close()
+    
     return { success: true }
   } catch (error) {
     console.error('❌ SMTP Error:', error)
@@ -117,8 +123,16 @@ Deno.serve(async (req) => {
       ? 'Reset Your Password - Exhibit3Design'
       : 'Welcome to Exhibit3Design - Confirm your account'
 
+    console.log('📧 Attempting to send email:', { 
+      to: user.email, 
+      subject, 
+      type: email_action_type 
+    })
+
     // Send email via SMTP
     await sendEmail(user.email, subject, html)
+    
+    console.log('✅ Email processing completed successfully')
     
   } catch (error) {
     console.error('❌ Email sending error:', error)
