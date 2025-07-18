@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProducts } from "@/contexts/ProductsContext";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -11,8 +12,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, User, ShoppingBag, LogOut, Download } from "lucide-react";
+import { Loader2, User, ShoppingBag, LogOut, Download, ShoppingCart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { toast as sonnerToast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
 interface Order {
@@ -32,6 +34,7 @@ interface Order {
 
 const ProfilePage = () => {
   const { user, profile, loading: authLoading, updateProfile, signOut } = useAuth();
+  const { addToCart, products } = useProducts();
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -142,6 +145,25 @@ const ProfilePage = () => {
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
+  };
+
+  const handleRepurchase = (order: Order) => {
+    const product = products.find(p => p.id === order.product_id);
+    if (product) {
+      addToCart(product);
+      navigate('/cart');
+      sonnerToast.success('Product added to cart for repurchase');
+    } else {
+      sonnerToast.error('Product not found');
+    }
+  };
+
+  const handleDownload = (order: Order) => {
+    if (order.status === 'completed') {
+      navigate('/downloads');
+    } else {
+      sonnerToast.error('Payment must be completed before downloading');
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -391,10 +413,27 @@ const ProfilePage = () => {
                               </TableCell>
                               <TableCell>{formatDate(order.created_at)}</TableCell>
                               <TableCell>
-                                <Button size="sm" variant="outline">
-                                  <Download className="h-4 w-4 mr-2" />
-                                  Download
-                                </Button>
+                                <div className="flex space-x-2">
+                                  {order.status === 'completed' ? (
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => handleDownload(order)}
+                                    >
+                                      <Download className="h-4 w-4 mr-2" />
+                                      Download
+                                    </Button>
+                                  ) : (
+                                    <Button 
+                                      size="sm" 
+                                      variant="default"
+                                      onClick={() => handleRepurchase(order)}
+                                    >
+                                      <ShoppingCart className="h-4 w-4 mr-2" />
+                                      Repurchase
+                                    </Button>
+                                  )}
+                                </div>
                               </TableCell>
                             </TableRow>
                           ))}

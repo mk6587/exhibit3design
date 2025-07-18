@@ -35,7 +35,7 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
       code: 200,
       message: "Payment request created",
       authority: "mock-authority-12345",
-      gatewayUrl: "https://gate.yekpay.com/api/payment/mock-authority-12345" // This is just a mock URL
+      gatewayUrl: `${window.location.origin}/payment/success?authority=mock-authority-12345&amount=${paymentData.amount}`
     };
     
     // In production, you would redirect to the actual gatewayUrl returned by YekPay

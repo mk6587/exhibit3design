@@ -10,6 +10,7 @@ import { initiatePayment } from "@/services/paymentService";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/contexts/ProductsContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -144,16 +145,28 @@ const CheckoutPage = () => {
         // Save user profile information if logged in
         await saveUserProfile();
         
+        // Create pending orders in database
+        if (user) {
+          for (const item of cartItems) {
+            await supabase.from('orders').insert({
+              user_id: user.id,
+              product_id: item.id,
+              amount: item.price * item.quantity,
+              status: 'pending',
+              payment_method: 'yekpay',
+              transaction_id: response.authority
+            });
+          }
+        }
+        
         toast.info("Redirecting to payment gateway...");
         
-        // Simulate redirect
+        // In production, redirect to actual gateway
+        // window.location.href = response.gatewayUrl;
+        
+        // For demo purposes, simulate redirect
         setTimeout(() => {
-          // This would be a real redirect in production:
-          // window.location.href = response.gatewayUrl;
-          
-          // For demo purposes, we'll just show a success message
-          toast.success("Payment simulation successful!");
-          navigate("/account/downloads");
+          window.location.href = response.gatewayUrl;
         }, 2000);
       } else {
         throw new Error("Payment initiation failed");
