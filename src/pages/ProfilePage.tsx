@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import RichTextEditor from "@/components/ui/rich-text-editor";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -257,16 +258,25 @@ const ProfilePage = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="addressLine1">Address Line 1</Label>
-                      <Input
-                        id="addressLine1"
+                      <Label htmlFor="addressLine1">Address Line</Label>
+                      <RichTextEditor
                         value={addressLine1}
-                        onChange={(e) => setAddressLine1(e.target.value)}
-                        disabled={updating}
+                        onChange={(value) => setAddressLine1(value)}
+                        placeholder="Enter your address"
+                        className={updating ? "opacity-50 pointer-events-none" : ""}
                       />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="country">Country</Label>
+                        <Input
+                          id="country"
+                          value={country}
+                          onChange={(e) => setCountry(e.target.value)}
+                          disabled={updating}
+                        />
+                      </div>
                       <div className="space-y-2">
                         <Label htmlFor="city">City</Label>
                         <Input
@@ -276,6 +286,9 @@ const ProfilePage = () => {
                           disabled={updating}
                         />
                       </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="stateRegion">State/Region</Label>
                         <Input
@@ -285,24 +298,12 @@ const ProfilePage = () => {
                           disabled={updating}
                         />
                       </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="postcode">Postcode</Label>
                         <Input
                           id="postcode"
                           value={postcode}
                           onChange={(e) => setPostcode(e.target.value)}
-                          disabled={updating}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="country">Country</Label>
-                        <Input
-                          id="country"
-                          value={country}
-                          onChange={(e) => setCountry(e.target.value)}
                           disabled={updating}
                         />
                       </div>
