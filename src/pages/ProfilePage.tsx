@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import RichTextEditor from "@/components/ui/rich-text-editor";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -259,11 +259,13 @@ const ProfilePage = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="addressLine1">Address Line</Label>
-                      <RichTextEditor
+                      <Textarea
+                        id="addressLine1"
                         value={addressLine1}
-                        onChange={(value) => setAddressLine1(value)}
+                        onChange={(e) => setAddressLine1(e.target.value)}
                         placeholder="Enter your address"
-                        className={updating ? "opacity-50 pointer-events-none" : ""}
+                        disabled={updating}
+                        rows={3}
                       />
                     </div>
 
