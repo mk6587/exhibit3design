@@ -34,9 +34,9 @@ const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-semibold text-lg mb-4">Contact Us</h3>
+            <h3 className="font-semibold text-lg mb-4">Phone: +44 7508 879096</h3>
             <address className="text-sm text-muted-foreground not-italic">
-              <p>Email: info@exhibitdesigns.com</p>
+              
               <p>Phone: +1 (555) 123-4567</p>
             </address>
             <div className="mt-4 flex space-x-4">
