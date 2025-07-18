@@ -38,6 +38,10 @@ const ProfilePage = () => {
   const [lastName, setLastName] = useState("");
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [addressLine1, setAddressLine1] = useState("");
+  const [stateRegion, setStateRegion] = useState("");
+  const [postcode, setPostcode] = useState("");
   const navigate = useNavigate();
 
   // Redirect if not logged in
@@ -54,6 +58,10 @@ const ProfilePage = () => {
       setLastName(profile.last_name || "");
       setCountry(profile.country || "");
       setCity(profile.city || "");
+      setPhoneNumber(profile.phone_number || "");
+      setAddressLine1(profile.address_line_1 || "");
+      setStateRegion(profile.state_region || "");
+      setPostcode(profile.postcode || "");
     }
   }, [profile]);
 
@@ -106,6 +114,10 @@ const ProfilePage = () => {
         last_name: lastName,
         country: country,
         city: city,
+        phone_number: phoneNumber,
+        address_line_1: addressLine1,
+        state_region: stateRegion,
+        postcode: postcode,
       });
 
       if (error) {
@@ -234,22 +246,63 @@ const ProfilePage = () => {
                       </div>
                     </div>
 
+                    <div className="space-y-2">
+                      <Label htmlFor="phoneNumber">Phone Number</Label>
+                      <Input
+                        id="phoneNumber"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        disabled={updating}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="addressLine1">Address Line 1</Label>
+                      <Input
+                        id="addressLine1"
+                        value={addressLine1}
+                        onChange={(e) => setAddressLine1(e.target.value)}
+                        disabled={updating}
+                      />
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="country">Country</Label>
-                        <Input
-                          id="country"
-                          value={country}
-                          onChange={(e) => setCountry(e.target.value)}
-                          disabled={updating}
-                        />
-                      </div>
                       <div className="space-y-2">
                         <Label htmlFor="city">City</Label>
                         <Input
                           id="city"
                           value={city}
                           onChange={(e) => setCity(e.target.value)}
+                          disabled={updating}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="stateRegion">State/Region</Label>
+                        <Input
+                          id="stateRegion"
+                          value={stateRegion}
+                          onChange={(e) => setStateRegion(e.target.value)}
+                          disabled={updating}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="postcode">Postcode</Label>
+                        <Input
+                          id="postcode"
+                          value={postcode}
+                          onChange={(e) => setPostcode(e.target.value)}
+                          disabled={updating}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="country">Country</Label>
+                        <Input
+                          id="country"
+                          value={country}
+                          onChange={(e) => setCountry(e.target.value)}
                           disabled={updating}
                         />
                       </div>
