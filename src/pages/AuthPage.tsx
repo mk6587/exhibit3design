@@ -86,13 +86,18 @@ export default function AuthPage() {
     setError(null);
 
     try {
+      console.log('🔄 Starting password reset for:', email);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 
+      console.log('📧 Password reset response:', { error });
+
       if (error) {
-        setError('Failed to send password reset email. Please try again.');
+        console.error('❌ Password reset error:', error);
+        setError(`Failed to send password reset email: ${error.message}`);
       } else {
+        console.log('✅ Password reset email sent successfully');
         setEmailSent(true);
         toast({
           title: "Password reset email sent",
@@ -100,7 +105,8 @@ export default function AuthPage() {
         });
       }
     } catch (error: any) {
-      setError('Failed to send password reset email. Please try again.');
+      console.error('❌ Password reset exception:', error);
+      setError(`Failed to send password reset email: ${error.message}`);
     } finally {
       setLoading(false);
     }
