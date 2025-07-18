@@ -4,12 +4,13 @@ import Layout from "@/components/layout/Layout";
 import CartItem from "@/components/cart/CartItem";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ErrorBoundary from "@/components/ui/error-boundary";
 
 const CartPage = () => {
   const { cartItems, removeFromCart, updateCartQuantity, cartTotal } = useProducts();  
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const navigate = useNavigate();
   
   const handleRemoveItem = (id: number) => {
     removeFromCart(id);
@@ -24,11 +25,9 @@ const CartPage = () => {
     
     // Simulate checkout process
     setTimeout(() => {
-      // In a real app, you would redirect to YekPay here
       console.log("Starting checkout process with the following items:", cartItems);
-      
-      // Simulate redirect to payment gateway
-      window.location.href = "/checkout";
+      navigate("/checkout");
+      setIsCheckingOut(false);
     }, 1500);
   };
   
