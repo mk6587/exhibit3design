@@ -187,20 +187,22 @@ export default function AuthPage() {
                 />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password (6+ characters)"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full"
-                  required
-                  minLength={6}
-                  title="Password must be at least 6 characters long"
-                />
-              </div>
+              {!showForgotPassword && (
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password (6+ characters)"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full"
+                    required
+                    minLength={6}
+                    title="Password must be at least 6 characters long"
+                  />
+                </div>
+              )}
 
               {error && (
                 <Alert variant="destructive">
