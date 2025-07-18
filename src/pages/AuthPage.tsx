@@ -86,55 +86,18 @@ export default function AuthPage() {
     setError(null);
 
     try {
-      // Check if user exists by attempting a sign-in with a dummy password
-      const { error: checkError } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: 'dummy-password-check-123456789' // This will fail but tell us if user exists
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
       });
 
-      // If the error message indicates invalid credentials, user exists
-      // If it indicates user not found or similar, user doesn't exist
-      if (checkError && checkError.message.includes('Invalid login credentials')) {
-        // User exists, proceed with password reset
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/reset-password`,
-        });
-
-        if (error) {
-          setError('Failed to send password reset email. Please try again.');
-        } else {
-          setEmailSent(true);
-          toast({
-            title: "Password reset email sent",
-            description: "Check your email for password reset instructions.",
-          });
-        }
-      } else if (checkError && (
-        checkError.message.includes('User not found') || 
-        checkError.message.includes('Invalid email') ||
-        checkError.message.includes('Email not confirmed')
-      )) {
-        // Handle email not confirmed case - still send reset email
-        if (checkError.message.includes('Email not confirmed')) {
-          const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${window.location.origin}/reset-password`,
-          });
-
-          if (error) {
-            setError('Failed to send password reset email. Please try again.');
-          } else {
-            setEmailSent(true);
-            toast({
-              title: "Password reset email sent",
-              description: "Check your email for password reset instructions.",
-            });
-          }
-        } else {
-          setError('No account found with this email address. Please check your email or sign up for a new account.');
-        }
+      if (error) {
+        setError('Failed to send password reset email. Please try again.');
       } else {
-        // Unexpected error or user exists but different error
-        setError('Failed to verify email. Please try again.');
+        setEmailSent(true);
+        toast({
+          title: "Password reset email sent",
+          description: "Check your email for password reset instructions.",
+        });
       }
     } catch (error: any) {
       setError('Failed to send password reset email. Please try again.');
