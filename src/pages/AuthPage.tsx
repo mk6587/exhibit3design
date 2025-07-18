@@ -210,19 +210,21 @@ export default function AuthPage() {
                 </Alert>
               )}
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Continue
-              </Button>
+              {!showForgotPassword && (
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Continue
+                </Button>
+              )}
 
               {showForgotPassword && (
                 <Button
                   type="button"
-                  variant="outline"
                   onClick={handleForgotPassword}
                   className="w-full"
                   disabled={loading}
                 >
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Send Password Reset Email
                 </Button>
               )}
