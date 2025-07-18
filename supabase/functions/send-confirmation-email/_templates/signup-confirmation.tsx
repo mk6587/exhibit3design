@@ -29,59 +29,104 @@ export const SignupConfirmationEmail = ({
   redirect_to,
   token_hash,
   user_email,
-}: SignupConfirmationEmailProps) => (
-  <Html>
-    <Head />
-    <Preview>Welcome to Exhibit3Design - Confirm your account</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        {/* Header with Logo */}
-        <Section style={headerGradient}>
-          <Section style={header}>
-            <Img
-              src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/c64f9532-61fc-4214-88d8-ecfd68194905.png"
-              width="220"
-              height="65"
-              alt="Exhibit3Design"
-              style={logo}
-            />
-          </Section>
-        </Section>
-        
-        {/* Main Content */}
-        <Section style={content}>
-          <Heading style={h1}>✨ Welcome to Exhibit3Design! ✨</Heading>
-          
-          <Text style={subtitle}>
-            🏆 Professional Exhibition Stand Design Files at Affordable Prices
-          </Text>
-          
-          <Text style={text}>
-            Thank you for joining Exhibit3Design! We're excited to help you create stunning exhibition displays that save you time and money.
-          </Text>
-          
-          <Text style={text}>
-            Please confirm your email address to complete your registration:
-          </Text>
-          
-          {/* CTA Button */}
-          <Section style={buttonContainer}>
-            <Link
-              href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
-              target="_blank"
-              style={gradientButton}
-            >
-              🚀 Confirm Your Email & Get Started
-            </Link>
+}: SignupConfirmationEmailProps) => {
+  const isPasswordReset = email_action_type === 'recovery'
+  
+  return (
+    <Html>
+      <Head />
+      <Preview>{isPasswordReset ? 'Reset your password - Exhibit3Design' : 'Welcome to Exhibit3Design - Confirm your account'}</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          {/* Header with Logo */}
+          <Section style={headerGradient}>
+            <Section style={header}>
+              <Img
+                src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/c64f9532-61fc-4214-88d8-ecfd68194905.png"
+                width="220"
+                height="65"
+                alt="Exhibit3Design"
+                style={logo}
+              />
+            </Section>
           </Section>
           
-          <Text style={alternativeText}>
-            If the button doesn't work, copy and paste this link in your browser:
-          </Text>
-          <Text style={linkText}>
-            {`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
-          </Text>
-        </Section>
+          {/* Main Content */}
+          <Section style={content}>
+            {isPasswordReset ? (
+              <>
+                <Heading style={h1}>🔑 Reset Your Password</Heading>
+                
+                <Text style={subtitle}>
+                  Reset your password to regain access to your account
+                </Text>
+                
+                <Text style={text}>
+                  We received a request to reset your password for your Exhibit3Design account.
+                </Text>
+                
+                <Text style={text}>
+                  Click the button below to reset your password:
+                </Text>
+                
+                {/* CTA Button */}
+                <Section style={buttonContainer}>
+                  <Link
+                    href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
+                    target="_blank"
+                    style={gradientButton}
+                  >
+                    🔑 Reset Your Password
+                  </Link>
+                </Section>
+                
+                <Text style={alternativeText}>
+                  If the button doesn't work, copy and paste this link in your browser:
+                </Text>
+                <Text style={linkText}>
+                  {`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
+                </Text>
+
+                <Text style={warningText}>
+                  ⚠️ This link will expire in 24 hours. If you didn't request a password reset, you can safely ignore this email.
+                </Text>
+              </>
+            ) : (
+              <>
+                <Heading style={h1}>✨ Welcome to Exhibit3Design! ✨</Heading>
+                
+                <Text style={subtitle}>
+                  🏆 Professional Exhibition Stand Design Files at Affordable Prices
+                </Text>
+                
+                <Text style={text}>
+                  Thank you for joining Exhibit3Design! We're excited to help you create stunning exhibition displays that save you time and money.
+                </Text>
+                
+                <Text style={text}>
+                  Please confirm your email address to complete your registration:
+                </Text>
+                
+                {/* CTA Button */}
+                <Section style={buttonContainer}>
+                  <Link
+                    href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
+                    target="_blank"
+                    style={gradientButton}
+                  >
+                    🚀 Confirm Your Email & Get Started
+                  </Link>
+                </Section>
+                
+                <Text style={alternativeText}>
+                  If the button doesn't work, copy and paste this link in your browser:
+                </Text>
+                <Text style={linkText}>
+                  {`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
+                </Text>
+              </>
+            )}
+          </Section>
         
         <Hr style={divider} />
         
@@ -278,4 +323,16 @@ const footerLink = {
   color: '#1e40af',
   textDecoration: 'none',
   fontWeight: '500',
+}
+
+const warningText = {
+  color: '#dc2626',
+  fontFamily: 'system-ui, -apple-system, sans-serif',
+  fontSize: '14px',
+  textAlign: 'center' as const,
+  margin: '24px 0',
+  padding: '16px',
+  backgroundColor: '#fef2f2',
+  borderRadius: '8px',
+  border: '1px solid #fecaca',
 }
