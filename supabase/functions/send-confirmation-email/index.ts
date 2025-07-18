@@ -1,11 +1,76 @@
 import React from 'npm:react@18.3.1'
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
-import { Resend } from 'npm:resend@4.0.0'
 import { renderAsync } from 'npm:@react-email/components@0.0.22'
 import { SignupConfirmationEmail } from './_templates/signup-confirmation.tsx'
 
-const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') as string
+
+// SMTP configuration from Supabase secrets
+const smtpConfig = {
+  host: Deno.env.get('SMTP_HOST') as string,
+  port: parseInt(Deno.env.get('SMTP_PORT') || '587'),
+  username: Deno.env.get('SMTP_USER') as string,
+  password: Deno.env.get('SMTP_PASSWORD') as string,
+  fromEmail: Deno.env.get('SMTP_FROM_EMAIL') as string,
+}
+
+async function sendEmail(to: string, subject: string, html: string) {
+  console.log('📧 Sending email via SMTP to:', to)
+  
+  try {
+    // Create SMTP connection
+    const conn = await Deno.connect({
+      hostname: smtpConfig.host,
+      port: smtpConfig.port,
+    })
+
+    const encoder = new TextEncoder()
+    const decoder = new TextDecoder()
+
+    // Helper to send command and read response
+    async function sendCommand(command: string): Promise<string> {
+      await conn.write(encoder.encode(command + '\r\n'))
+      const buffer = new Uint8Array(1024)
+      const n = await conn.read(buffer)
+      return decoder.decode(buffer.subarray(0, n || 0))
+    }
+
+    // SMTP conversation
+    await sendCommand(`EHLO ${smtpConfig.host}`)
+    await sendCommand('STARTTLS')
+    
+    // Simple AUTH LOGIN (base64 encoded)
+    await sendCommand('AUTH LOGIN')
+    await sendCommand(btoa(smtpConfig.username))
+    await sendCommand(btoa(smtpConfig.password))
+    
+    // Send email
+    await sendCommand(`MAIL FROM:<${smtpConfig.fromEmail}>`)
+    await sendCommand(`RCPT TO:<${to}>`)
+    await sendCommand('DATA')
+    
+    const emailContent = [
+      `From: Exhibit3Design <${smtpConfig.fromEmail}>`,
+      `To: ${to}`,
+      `Subject: ${subject}`,
+      'MIME-Version: 1.0',
+      'Content-Type: text/html; charset=UTF-8',
+      '',
+      html,
+      '.',
+    ].join('\r\n')
+    
+    await conn.write(encoder.encode(emailContent + '\r\n'))
+    await sendCommand('QUIT')
+    
+    conn.close()
+    console.log('✅ Email sent successfully via SMTP')
+    return { success: true }
+  } catch (error) {
+    console.error('❌ SMTP Error:', error)
+    throw error
+  }
+}
 
 Deno.serve(async (req) => {
   if (req.method !== 'POST') {
@@ -33,6 +98,8 @@ Deno.serve(async (req) => {
       }
     }
 
+    console.log('📨 Processing email for:', user.email, 'Type:', email_action_type)
+
     const html = await renderAsync(
       React.createElement(SignupConfirmationEmail, {
         supabase_url: Deno.env.get('SUPABASE_URL') ?? '',
@@ -50,33 +117,26 @@ Deno.serve(async (req) => {
       ? 'Reset Your Password - Exhibit3Design'
       : 'Welcome to Exhibit3Design - Confirm your account'
 
-    const { error } = await resend.emails.send({
-      from: 'Exhibit3Design <noreply@exhibit3design.com>',
-      to: [user.email],
-      subject,
-      html,
-    })
+    // Send email via SMTP
+    await sendEmail(user.email, subject, html)
     
-    if (error) {
-      throw error
-    }
   } catch (error) {
-    console.log(error)
+    console.error('❌ Email sending error:', error)
     return new Response(
       JSON.stringify({
         error: {
-          http_code: error.code,
+          http_code: error.code || 500,
           message: error.message,
         },
       }),
       {
-        status: 401,
+        status: 500,
         headers: { 'Content-Type': 'application/json' },
       }
     )
   }
 
-  return new Response(JSON.stringify({}), {
+  return new Response(JSON.stringify({ success: true }), {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
   })
