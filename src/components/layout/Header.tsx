@@ -6,11 +6,13 @@ import { ShoppingCart, Search, User, Menu, X, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProducts } from "@/contexts/ProductsContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { cartItems } = useProducts();
   const navigate = useNavigate();
   
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -73,9 +75,14 @@ const Header = () => {
           )}
 
           {/* Cart */}
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild className="relative">
             <Link to="/cart">
               <ShoppingCart className="h-5 w-5" />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                  {cartItems.length > 99 ? '99+' : cartItems.length}
+                </span>
+              )}
             </Link>
           </Button>
 
