@@ -9,28 +9,12 @@ import { toast } from "sonner";
 import { initiatePayment } from "@/services/paymentService";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
-
-// Mock cart items - in a real app, you'd get these from state management or an API
-const cartItems = [
-  {
-    id: 1,
-    title: "Modern Exhibition Stand",
-    price: 149,
-    quantity: 1,
-    image: "/placeholder.svg",
-  },
-  {
-    id: 3,
-    title: "Island Exhibition Design",
-    price: 249,
-    quantity: 1,
-    image: "/placeholder.svg",
-  },
-];
+import { useProducts } from "@/contexts/ProductsContext";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { user, profile, updateProfile } = useAuth();
+  const { cartItems, cartTotal } = useProducts();
   const [isProcessing, setIsProcessing] = useState(false);
   const [policyAgreed, setPolicyAgreed] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -46,18 +30,13 @@ const CheckoutPage = () => {
     postcode: ""
   });
   
-  const subtotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-  
   useEffect(() => {
-    // In a real app, redirect if cart is empty
+    // Redirect if cart is empty
     if (cartItems.length === 0) {
       navigate("/cart");
       toast.error("Your cart is empty");
     }
-  }, [navigate]);
+  }, [cartItems.length, navigate]);
 
   // Initialize contact info with user data if logged in
   useEffect(() => {
@@ -135,7 +114,7 @@ const CheckoutPage = () => {
     try {
       // Prepare payment data for YekPay
       const paymentData = {
-        amount: subtotal,
+        amount: cartTotal,
         description: "Purchase from ExhibitDesigns",
         callbackUrl: `${window.location.origin}/payment/callback`,
         customerInfo: {
@@ -208,7 +187,7 @@ const CheckoutPage = () => {
             
             <div className="pt-4 mt-4 flex justify-between font-semibold text-lg">
               <span>Total</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>${cartTotal.toFixed(2)}</span>
             </div>
           </div>
 
