@@ -200,7 +200,7 @@ const CheckoutPage = () => {
           {/* Contact & Shipping Information Section */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Your Contact & Download Information</CardTitle>
+              <CardTitle>Your Contact Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Returning Customer Info Display */}
