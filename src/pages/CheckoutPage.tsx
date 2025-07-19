@@ -230,10 +230,20 @@ const CheckoutPage = () => {
                 
                 <div>
                   <Label htmlFor="email">Email Address *</Label>
-                  <Input id="email" type="email" value={contactInfo.email} onChange={e => setContactInfo(prev => ({
-                  ...prev,
-                  email: e.target.value
-                }))} placeholder="Enter your email" className={validationErrors.email ? "border-destructive" : ""} />
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    value={contactInfo.email} 
+                    onChange={e => setContactInfo(prev => ({
+                      ...prev,
+                      email: e.target.value
+                    }))} 
+                    placeholder="Enter your email" 
+                    className={validationErrors.email ? "border-destructive" : ""} 
+                    readOnly={!!user}
+                    disabled={!!user}
+                  />
+                  {user && <p className="text-xs text-muted-foreground mt-1">Email cannot be changed (from your account)</p>}
                   {validationErrors.email && <p className="text-sm text-destructive mt-1">{validationErrors.email}</p>}
                 </div>
               </div>
