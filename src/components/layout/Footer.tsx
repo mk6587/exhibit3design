@@ -39,11 +39,7 @@ const Footer = () => {
               
               <p>Phone: +44 7508 879096</p>
             </address>
-            <div className="mt-4 flex space-x-4">
-              <a href="#" aria-label="Facebook" className="hover:text-primary">FB</a>
-              <a href="#" aria-label="Twitter" className="hover:text-primary">TW</a>
-              <a href="#" aria-label="Instagram" className="hover:text-primary">IG</a>
-            </div>
+            
           </div>
         </div>
         
