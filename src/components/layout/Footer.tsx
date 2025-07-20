@@ -37,7 +37,7 @@ const Footer = () => {
             <h3 className="font-semibold text-lg mb-4">Contact</h3>
             <address className="text-sm text-muted-foreground not-italic">
               
-              <p>Phone: +1 (555) 123-4567</p>
+              <p>Phone: +44 7508 879096</p>
             </address>
             <div className="mt-4 flex space-x-4">
               <a href="#" aria-label="Facebook" className="hover:text-primary">FB</a>
