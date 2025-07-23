@@ -26,6 +26,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import EmailConfirmationPage from "./pages/EmailConfirmationPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminPage from "./pages/AdminPage";
+import AdminProductCreatePage from "./pages/AdminProductCreatePage";
 import AdminProductEditPage from "./pages/AdminProductEditPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
@@ -72,6 +73,11 @@ const App = () => (
                   <Route path="/admin/dashboard" element={
                     <ProtectedAdminRoute>
                       <AdminPage />
+                    </ProtectedAdminRoute>
+                  } />
+                  <Route path="/admin/product/new" element={
+                    <ProtectedAdminRoute>
+                      <AdminProductCreatePage />
                     </ProtectedAdminRoute>
                   } />
                   <Route path="/admin/product/:id/edit" element={

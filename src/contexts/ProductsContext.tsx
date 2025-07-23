@@ -15,6 +15,7 @@ interface ProductsContextType {
   products: Product[];
   loading: boolean;
   updateProduct: (updatedProduct: Product) => Promise<void>;
+  createProduct: (newProduct: Omit<Product, 'id' | 'created_at' | 'updated_at'>) => Promise<Product>;
   getProductById: (id: number) => Product | undefined;
   refetch: () => Promise<void>;
   // Cart functionality

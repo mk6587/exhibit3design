@@ -162,6 +162,45 @@ export const useSupabaseProducts = () => {
     }
   };
 
+  const createProduct = async (newProduct: Omit<Product, 'id' | 'created_at' | 'updated_at'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .insert({
+          title: newProduct.title,
+          price: newProduct.price,
+          description: newProduct.description,
+          long_description: newProduct.long_description,
+          specifications: newProduct.specifications,
+          images: newProduct.images,
+          tags: newProduct.tags,
+          file_size: newProduct.file_size,
+          featured: newProduct.featured
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setProducts(prev => [...prev, data]);
+
+      toast({
+        title: "Success",
+        description: "Product created successfully",
+      });
+
+      return data;
+    } catch (error) {
+      console.error('Error creating product:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create product",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   const getProductById = (id: number) => {
     return products.find(product => product.id === id);
   };
@@ -175,6 +214,7 @@ export const useSupabaseProducts = () => {
     products,
     loading,
     updateProduct,
+    createProduct,
     getProductById,
     refetch: fetchProducts
   };

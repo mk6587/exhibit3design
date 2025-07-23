@@ -54,8 +54,17 @@ const AdminPage = () => {
 
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Product Management</h2>
-          <p className="text-gray-600">Manage your exhibition stand designs and content ({products.length} products total)</p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Product Management</h2>
+              <p className="text-gray-600">Manage your exhibition stand designs and content ({products.length} products total)</p>
+            </div>
+            <Button asChild>
+              <Link to="/admin/product/new">
+                Add New Product
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
