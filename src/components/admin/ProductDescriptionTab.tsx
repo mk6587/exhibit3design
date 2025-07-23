@@ -20,7 +20,7 @@ const ProductDescriptionTab: React.FC<ProductDescriptionTabProps> = ({
     <div className="space-y-4">
       <AIContentGenerator
         contentType="description"
-        onContentGenerated={(content) => onAIContentGenerated(content, 'longDescription')}
+        onContentGenerated={(content) => onAIContentGenerated(content, 'long_description')}
         currentContent={product.long_description}
       />
       
