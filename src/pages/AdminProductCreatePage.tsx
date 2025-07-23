@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
-import { useSupabaseProducts, Product } from '@/hooks/useSupabaseProducts';
+import { useProducts } from '@/contexts/ProductsContext';
+import { Product } from '@/hooks/useSupabaseProducts';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,7 +15,7 @@ import { toast } from 'sonner';
 
 const AdminProductCreatePage = () => {
   const { isAuthenticated } = useAdmin();
-  const { createProduct } = useSupabaseProducts();
+  const { createProduct, refetch } = useProducts();
   const navigate = useNavigate();
   
   const [product, setProduct] = useState<Omit<Product, 'id' | 'created_at' | 'updated_at'>>({
@@ -61,6 +62,8 @@ const AdminProductCreatePage = () => {
       const createdProduct = await createProduct(productToSave);
       
       if (createdProduct) {
+        // Refetch products to ensure all views are updated
+        await refetch();
         toast.success('Product created successfully!');
         navigate('/admin/dashboard');
       }
