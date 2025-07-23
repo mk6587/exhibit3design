@@ -212,6 +212,41 @@ export const useSupabaseProducts = () => {
     }
   };
 
+  const deleteProduct = async (productId: number) => {
+    try {
+      console.log('🗑️ Deleting product with ID:', productId);
+      
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', productId);
+
+      if (error) {
+        console.error('❌ Supabase error:', error);
+        throw error;
+      }
+
+      console.log('✅ Product deleted successfully');
+      
+      setProducts(prev => prev.filter(product => product.id !== productId));
+
+      toast({
+        title: "Success",
+        description: "Product deleted successfully",
+      });
+
+      return true;
+    } catch (error) {
+      console.error('💥 Error deleting product:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete product",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   const getProductById = (id: number) => {
     return products.find(product => product.id === id);
   };
@@ -226,6 +261,7 @@ export const useSupabaseProducts = () => {
     loading,
     updateProduct,
     createProduct,
+    deleteProduct,
     getProductById,
     refetch: fetchProducts
   };

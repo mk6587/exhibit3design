@@ -1,16 +1,18 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useProducts } from '@/contexts/ProductsContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogOut, Edit, Eye } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { LogOut, Edit, Eye, Trash2 } from 'lucide-react';
 
 const AdminPage = () => {
   const { isAuthenticated, logout } = useAdmin();
-  const { products, loading } = useProducts();
+  const { products, loading, deleteProduct } = useProducts();
   const navigate = useNavigate();
+  const [deletingProductId, setDeletingProductId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -21,6 +23,17 @@ const AdminPage = () => {
   const handleLogout = () => {
     logout();
     navigate('/admin/login');
+  };
+
+  const handleDeleteProduct = async (productId: number) => {
+    try {
+      setDeletingProductId(productId);
+      await deleteProduct(productId);
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+    } finally {
+      setDeletingProductId(null);
+    }
   };
 
   if (!isAuthenticated) {
@@ -92,6 +105,35 @@ const AdminPage = () => {
                     Edit Content
                   </Link>
                 </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="destructive" 
+                      className="w-full"
+                      disabled={deletingProductId === product.id}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {deletingProductId === product.id ? 'Deleting...' : 'Delete Product'}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete the product "{product.title}" and remove all its data.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={() => handleDeleteProduct(product.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete Product
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </CardContent>
             </Card>
           ))}
