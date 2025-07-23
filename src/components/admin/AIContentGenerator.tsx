@@ -84,7 +84,7 @@ const AIContentGenerator: React.FC<AIContentGeneratorProps> = ({
           break;
           
         case 'basic-info':
-          generatedContent = `Professional ${context.toLowerCase()} designed for maximum impact and visitor engagement at trade shows and exhibitions.`;
+          generatedContent = `Professional ${context.toLowerCase()} designed for maximum impact and visitor engagement at trade shows and exhibitions. This innovative solution combines cutting-edge design with practical functionality to create memorable brand experiences that drive business results.`;
           break;
       }
       
