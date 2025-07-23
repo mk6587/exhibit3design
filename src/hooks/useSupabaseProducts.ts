@@ -164,6 +164,8 @@ export const useSupabaseProducts = () => {
 
   const createProduct = async (newProduct: Omit<Product, 'id' | 'created_at' | 'updated_at'>) => {
     try {
+      console.log('🔄 Creating product with data:', newProduct);
+      
       const { data, error } = await supabase
         .from('products')
         .insert({
@@ -177,21 +179,30 @@ export const useSupabaseProducts = () => {
           file_size: newProduct.file_size,
           featured: newProduct.featured
         })
-        .select()
-        .single();
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Supabase error:', error);
+        throw error;
+      }
 
-      setProducts(prev => [...prev, data]);
+      if (!data || data.length === 0) {
+        throw new Error('No data returned from insert');
+      }
+
+      const createdProduct = data[0];
+      console.log('✅ Product created successfully:', createdProduct);
+      
+      setProducts(prev => [...prev, createdProduct]);
 
       toast({
         title: "Success",
         description: "Product created successfully",
       });
 
-      return data;
+      return createdProduct;
     } catch (error) {
-      console.error('Error creating product:', error);
+      console.error('💥 Error creating product:', error);
       toast({
         title: "Error",
         description: "Failed to create product",
