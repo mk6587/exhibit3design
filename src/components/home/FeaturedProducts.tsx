@@ -88,46 +88,46 @@ const FeaturedProducts = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
             {featuredProducts.map((product) => (
-              <Card key={product.id} className="overflow-hidden transition-shadow hover:shadow-lg">
-                <Link to={`/product/${product.id}`}>
-                  <div className="aspect-[4/3] overflow-hidden bg-secondary clickable-image-container">
-                    <img
-                      src={
-                        product.images[0] && !product.images[0].startsWith('blob:') 
-                          ? product.images[0] 
-                          : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop"
-                      }
-                      alt={product.title}
-                      className="w-full h-full object-cover transition-transform hover:scale-105 cursor-pointer"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
-                      }}
-                      onClick={(e) => handleImageClick(product, e)}
-                    />
-                  </div>
-                </Link>
-                <CardContent className="pt-4">
-                  <Link to={`/product/${product.id}`} className="hover:underline">
-                    <h3 className="font-semibold text-lg mb-2">{product.title}</h3>
-                  </Link>
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {product.tags.map((tag) => (
-                      <Badge key={tag} variant="outline">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between border-t pt-4">
-                  <span className="font-semibold">${product.price}</span>
-                  <Link 
-                    to={`/product/${product.id}`} 
-                    className="text-primary hover:underline"
-                  >
-                    View Details
-                  </Link>
-                </CardFooter>
-              </Card>
+               <Card key={product.id} className="overflow-hidden transition-shadow hover:shadow-lg flex flex-col h-full">
+                 <Link to={`/product/${product.id}`}>
+                   <div className="aspect-[4/3] overflow-hidden bg-secondary clickable-image-container">
+                     <img
+                       src={
+                         product.images[0] && !product.images[0].startsWith('blob:') 
+                           ? product.images[0] 
+                           : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop"
+                       }
+                       alt={product.title}
+                       className="w-full h-full object-cover transition-transform hover:scale-105 cursor-pointer"
+                       onError={(e) => {
+                         (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
+                       }}
+                       onClick={(e) => handleImageClick(product, e)}
+                     />
+                   </div>
+                 </Link>
+                 <CardContent className="pt-4 flex-grow">
+                   <Link to={`/product/${product.id}`} className="hover:underline">
+                     <h3 className="font-semibold text-lg mb-2">{product.title}</h3>
+                   </Link>
+                   <div className="flex flex-wrap gap-1 mb-2">
+                     {product.tags.map((tag) => (
+                       <Badge key={tag} variant="outline">
+                         {tag}
+                       </Badge>
+                     ))}
+                   </div>
+                 </CardContent>
+                 <CardFooter className="flex justify-between border-t pt-4 mt-auto">
+                   <span className="font-semibold">${product.price}</span>
+                   <Link 
+                     to={`/product/${product.id}`} 
+                     className="text-primary hover:underline"
+                   >
+                     View Details
+                   </Link>
+                 </CardFooter>
+               </Card>
             ))}
           </div>
         )}
