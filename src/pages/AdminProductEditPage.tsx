@@ -82,7 +82,7 @@ const AdminProductEditPage = () => {
   const handleAIContentGenerated = (content: string, field: string) => {
     if (field === 'description') {
       setProduct({...product, description: content});
-    } else if (field === 'longDescription') {
+    } else if (field === 'long_description') {
       setProduct({...product, long_description: content});
     } else if (field === 'specifications') {
       setProduct({...product, specifications: content});
