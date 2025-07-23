@@ -50,13 +50,15 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <Link to={`/product/${product.id}`} className="hover:underline">
           <h3 className="font-semibold text-lg mb-2">{product.title}</h3>
         </Link>
-        <div className="flex flex-wrap gap-1 mb-2">
-          {product.tags.map((tag) => (
-            <Badge key={tag} variant="outline">
-              {tag}
-            </Badge>
-          ))}
-        </div>
+        {product.tags && product.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-2">
+            {product.tags.map((tag) => (
+              <Badge key={tag} variant="outline">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
       </CardContent>
       <CardFooter className="flex justify-between border-t pt-4">
         <span className="font-semibold">${product.price}</span>
