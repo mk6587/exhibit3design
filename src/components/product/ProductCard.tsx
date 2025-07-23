@@ -60,7 +60,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex items-center gap-4 border-t pt-4">
+      <CardFooter className="flex justify-end items-center gap-4 border-t pt-4">
         <span className="font-semibold">${product.price}</span>
         <Link 
           to={`/product/${product.id}`} 
