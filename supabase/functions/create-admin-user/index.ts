@@ -33,73 +33,33 @@ serve(async (req) => {
       )
     }
 
-    // Check if user already exists in auth
-    let authUser;
-    let isNewUser = false;
-    
-    // First try to get existing user by email
-    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-    const existingUser = existingUsers.users?.find(user => user.email === email);
-    
-    if (existingUser) {
-      // User already exists, use existing user
-      authUser = existingUser;
-      console.log('Using existing auth user:', existingUser.id);
-    } else {
-      // Create new user in auth.users
-      isNewUser = true;
-      const { data: newAuthUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true, // Auto-confirm email for admin users
-      });
+    // Create user in auth.users
+    const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true, // Auto-confirm email for admin users
+    })
 
-      if (authError) {
-        console.error('Auth error:', authError);
-        return new Response(
-          JSON.stringify({ error: 'Failed to create user', details: authError.message }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      if (!newAuthUser.user) {
-        return new Response(
-          JSON.stringify({ error: 'Failed to create user' }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      authUser = newAuthUser.user;
-      console.log('Created new auth user:', authUser.id);
+    if (authError) {
+      console.error('Auth error:', authError)
+      return new Response(
+        JSON.stringify({ error: 'Failed to create user', details: authError.message }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
-    // Check if admin record already exists
-    const { data: existingAdmin } = await supabaseAdmin
-      .from('admins')
-      .select('id, username')
-      .eq('user_id', authUser.id)
-      .maybeSingle();
-
-    if (existingAdmin) {
+    if (!authUser.user) {
       return new Response(
-        JSON.stringify({ 
-          success: true, 
-          message: 'Admin user already exists',
-          admin: {
-            id: existingAdmin.id,
-            username: existingAdmin.username,
-            email
-          }
-        }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+        JSON.stringify({ error: 'Failed to create user' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
     // Add user to admins table
     const { data: adminData, error: adminError } = await supabaseAdmin
       .from('admins')
       .insert({
-        user_id: authUser.id,
+        user_id: authUser.user.id,
         username,
         email,
         is_active: true
@@ -109,11 +69,8 @@ serve(async (req) => {
 
     if (adminError) {
       console.error('Admin table error:', adminError)
-      
-      // Only cleanup if we created a new user in this request
-      if (isNewUser) {
-        await supabaseAdmin.auth.admin.deleteUser(authUser.id)
-      }
+      // Cleanup: delete the auth user if admin creation failed
+      await supabaseAdmin.auth.admin.deleteUser(authUser.user.id)
       
       return new Response(
         JSON.stringify({ error: 'Failed to create admin record', details: adminError.message }),
