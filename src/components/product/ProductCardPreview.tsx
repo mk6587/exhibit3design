@@ -28,9 +28,9 @@ const ProductCardPreview = ({ product }: ProductCardPreviewProps) => {
   };
 
   return (
-    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg">
+    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg aspect-square flex flex-col">
       {/* Square Image Section */}
-      <div className="relative aspect-square overflow-hidden">
+      <div className="relative flex-1 overflow-hidden">
         <Link to={`/product/${product.id}`}>
           <img
             src={product.image}
