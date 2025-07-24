@@ -6,10 +6,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, Sparkles, X } from 'lucide-react';
+import { Star, Sparkles, X, Loader2 } from 'lucide-react';
 import AIContentGenerator from './AIContentGenerator';
 import { Product } from '@/types/product';
-import { generateTagsFromDescription, getTagSuggestions } from '@/utils/autoTags';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProductBasicInfoTabProps {
   product: Product;
@@ -24,12 +24,63 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
 }) => {
   const [tagInput, setTagInput] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isGeneratingTags, setIsGeneratingTags] = useState(false);
+  const { toast } = useToast();
 
-  const handleAutoGenerateTags = () => {
-    const autoTags = generateTagsFromDescription(product.description, product.long_description);
-    // Merge with existing tags, avoiding duplicates
-    const combinedTags = [...new Set([...product.tags, ...autoTags])];
-    onProductChange({...product, tags: combinedTags});
+  const handleAutoGenerateTags = async () => {
+    setIsGeneratingTags(true);
+    
+    try {
+      const response = await fetch('https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/generate-filter-tags', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGViZGt2emRybGp3d3hjY3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjczMTAsImV4cCI6MjA2NzMwMzMxMH0.N_48R70OWvLsf5INnGiswao__kjUW6ybYdnPIRm0owk`
+        },
+        body: JSON.stringify({
+          title: product.title,
+          description: product.description,
+          longDescription: product.long_description,
+          specifications: product.specifications,
+          price: product.price
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const { generatedTags } = await response.json();
+      
+      // Extract readable tag names from filter tags for display
+      const readableTags = generatedTags.map((tag: string) => {
+        if (tag.startsWith('filter:')) {
+          return tag.split(':').pop() || tag;
+        }
+        return tag;
+      });
+      
+      // Merge with existing non-filter tags, avoiding duplicates
+      const existingTags = product.tags.filter(tag => !tag.startsWith('filter:'));
+      const combinedTags = [...new Set([...existingTags, ...readableTags])];
+      
+      onProductChange({...product, tags: combinedTags});
+      
+      toast({
+        title: "Tags Generated",
+        description: `Generated ${readableTags.length} new tags using Claude Sonnet.`,
+      });
+      
+    } catch (error) {
+      console.error('Tag generation error:', error);
+      toast({
+        title: "Generation Failed",
+        description: "Failed to generate tags. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGeneratingTags(false);
+    }
   };
 
   const addTag = (tag: string) => {
@@ -51,7 +102,7 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
     }
   };
 
-  const suggestions = getTagSuggestions(tagInput);
+  // No suggestions needed - using AI generation
 
   return (
     <div className="space-y-4">
@@ -96,10 +147,15 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
               variant="outline"
               size="sm"
               onClick={handleAutoGenerateTags}
+              disabled={isGeneratingTags}
               className="flex items-center gap-2"
             >
-              <Sparkles className="h-4 w-4" />
-              Auto-Generate Tags
+              {isGeneratingTags ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
+              {isGeneratingTags ? 'Generating...' : 'Auto-Generate Tags'}
             </Button>
           </div>
           
@@ -122,32 +178,11 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
           <div className="relative">
             <Input
               id="tags"
-              placeholder="Type to add tags or search suggestions..."
+              placeholder="Type to add tags manually..."
               value={tagInput}
-              onChange={(e) => {
-                setTagInput(e.target.value);
-                setShowSuggestions(e.target.value.length > 0);
-              }}
+              onChange={(e) => setTagInput(e.target.value)}
               onKeyPress={handleTagInputKeyPress}
-              onFocus={() => setShowSuggestions(tagInput.length > 0)}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
             />
-            
-            {/* Tag Suggestions */}
-            {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 z-10 bg-background border rounded-md shadow-lg max-h-48 overflow-y-auto">
-                {suggestions.map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    type="button"
-                    className="w-full text-left px-3 py-2 hover:bg-muted text-sm"
-                    onClick={() => addTag(suggestion)}
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
           
           <p className="text-sm text-muted-foreground">
