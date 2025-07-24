@@ -23,6 +23,10 @@ serve(async (req) => {
     console.log('Request data:', { title, description: description?.substring(0, 50) + '...', price });
     
     console.log('Anthropic API key available:', !!anthropicApiKey);
+    
+    if (!anthropicApiKey) {
+      throw new Error('ANTHROPIC_API_KEY environment variable is not set');
+    }
 
     const prompt = `CRITICAL: You must ONLY select tags from the predefined categories below. DO NOT create new tags or variations. Only match the product to existing tags from these exact lists:
 
@@ -55,6 +59,7 @@ Return ONLY this JSON structure:
   "standStyle": []
 }`;
 
+    console.log('Making request to Anthropic API...');
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -76,8 +81,12 @@ Return ONLY this JSON structure:
       }),
     });
 
+    console.log('Anthropic API response status:', response.status);
+    
     if (!response.ok) {
-      throw new Error(`Anthropic API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Anthropic API error details:', errorText);
+      throw new Error(`Anthropic API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
