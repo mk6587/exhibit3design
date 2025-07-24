@@ -29,8 +29,8 @@ const ProductCardPreview = ({ product }: ProductCardPreviewProps) => {
 
   return (
     <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg h-80">
-      {/* Image Section - Takes most of the card */}
-      <div className="relative h-60 overflow-hidden">
+      {/* Image Section - Takes almost all of the card */}
+      <div className="relative h-72 overflow-hidden">
         <Link to={`/product/${product.id}`}>
           <img
             src={product.image}
@@ -54,33 +54,19 @@ const ProductCardPreview = ({ product }: ProductCardPreviewProps) => {
         {/* Price Badge */}
         <div className="absolute top-2 left-2">
           <Badge variant="secondary" className="bg-white/90 text-foreground">
-            ${product.price}
+            €{product.price}
           </Badge>
         </div>
       </div>
 
       {/* Compact Bottom Section */}
-      <div className="p-3 space-y-2">
-        {/* Small Title */}
+      <div className="p-2">
+        {/* Small Title Only */}
         <Link to={`/product/${product.id}`}>
           <h3 className="text-sm font-medium line-clamp-2 hover:text-primary transition-colors">
             {product.title}
           </h3>
         </Link>
-
-        {/* Compact Tags */}
-        <div className="flex flex-wrap gap-1">
-          {product.tags.slice(0, 2).map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs px-1.5 py-0.5">
-              {tag}
-            </Badge>
-          ))}
-          {product.tags.length > 2 && (
-            <Badge variant="outline" className="text-xs px-1.5 py-0.5">
-              +{product.tags.length - 2}
-            </Badge>
-          )}
-        </div>
       </div>
 
       <ImageViewer
