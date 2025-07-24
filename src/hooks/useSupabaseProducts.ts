@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { recognizeFiltersFromProduct, generateFilterTags } from '@/utils/filterRecognition';
 
 export interface Product {
   id: number;
@@ -124,27 +125,46 @@ export const useSupabaseProducts = () => {
 
   const updateProduct = async (updatedProduct: Product) => {
     try {
+      // Auto-generate filter tags
+      const filterTags = recognizeFiltersFromProduct(
+        updatedProduct.title,
+        updatedProduct.description || '',
+        updatedProduct.specifications || '',
+        updatedProduct.price
+      );
+      
+      const autoFilterTags = generateFilterTags(filterTags);
+      
+      // Combine existing non-filter tags with new filter tags
+      const existingTags = updatedProduct.tags.filter(tag => !tag.startsWith('filter:'));
+      const finalTags = [...existingTags, ...autoFilterTags];
+      
+      const productWithFilters = {
+        ...updatedProduct,
+        tags: finalTags
+      };
+
       const { error } = await supabase
         .from('products')
         .update({
-          title: updatedProduct.title,
-          price: updatedProduct.price,
-          description: updatedProduct.description,
-          long_description: updatedProduct.long_description,
-          specifications: updatedProduct.specifications,
-          images: updatedProduct.images,
-          tags: updatedProduct.tags,
-          file_size: updatedProduct.file_size,
-          featured: updatedProduct.featured,
+          title: productWithFilters.title,
+          price: productWithFilters.price,
+          description: productWithFilters.description,
+          long_description: productWithFilters.long_description,
+          specifications: productWithFilters.specifications,
+          images: productWithFilters.images,
+          tags: productWithFilters.tags,
+          file_size: productWithFilters.file_size,
+          featured: productWithFilters.featured,
           updated_at: new Date().toISOString()
         })
-        .eq('id', updatedProduct.id);
+        .eq('id', productWithFilters.id);
 
       if (error) throw error;
 
       setProducts(prev => 
         prev.map(product => 
-          product.id === updatedProduct.id ? updatedProduct : product
+          product.id === productWithFilters.id ? productWithFilters : product
         )
       );
 
@@ -166,18 +186,37 @@ export const useSupabaseProducts = () => {
     try {
       console.log('🔄 Creating product with data:', newProduct);
       
+      // Auto-generate filter tags
+      const filterTags = recognizeFiltersFromProduct(
+        newProduct.title,
+        newProduct.description || '',
+        newProduct.specifications || '',
+        newProduct.price
+      );
+      
+      const autoFilterTags = generateFilterTags(filterTags);
+      
+      // Combine existing non-filter tags with new filter tags
+      const existingTags = newProduct.tags.filter(tag => !tag.startsWith('filter:'));
+      const finalTags = [...existingTags, ...autoFilterTags];
+      
+      const productWithFilters = {
+        ...newProduct,
+        tags: finalTags
+      };
+      
       const { data, error } = await supabase
         .from('products')
         .insert({
-          title: newProduct.title,
-          price: newProduct.price,
-          description: newProduct.description,
-          long_description: newProduct.long_description,
-          specifications: newProduct.specifications,
-          images: newProduct.images,
-          tags: newProduct.tags,
-          file_size: newProduct.file_size,
-          featured: newProduct.featured
+          title: productWithFilters.title,
+          price: productWithFilters.price,
+          description: productWithFilters.description,
+          long_description: productWithFilters.long_description,
+          specifications: productWithFilters.specifications,
+          images: productWithFilters.images,
+          tags: productWithFilters.tags,
+          file_size: productWithFilters.file_size,
+          featured: productWithFilters.featured
         })
         .select();
 

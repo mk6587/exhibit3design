@@ -9,6 +9,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ProductFilters, FilterConfig, ActiveFilters, defaultFilterConfig } from '@/components/admin/ProductFilters';
 import { LogOut, Edit, Eye, Trash2 } from 'lucide-react';
 import { Product } from '@/types/product';
+import { extractFiltersFromTags } from '@/utils/filterRecognition';
 
 const AdminPage = () => {
   const { isAuthenticated, logout } = useAdmin();
@@ -55,77 +56,37 @@ const AdminPage = () => {
           return false;
         }
 
+        // Extract filters from product tags
+        const productFilters = extractFiltersFromTags(product.tags);
+
         // Stand size filter
         if (activeFilters.standSizes.length > 0) {
-          let specs = {};
-          try {
-            specs = product.specifications ? JSON.parse(product.specifications) : {};
-          } catch (e) {
-            console.warn('Invalid JSON in product specifications:', product.id);
-            specs = {};
-          }
-          const dimensions = (specs as any).dimensions || '';
-          const hasMatchingSize = activeFilters.standSizes.some(size => {
-            const dimensionsLower = dimensions.toLowerCase();
-            if (size.includes('Small') && (dimensionsLower.includes('3x3') || dimensionsLower.includes('3m'))) return true;
-            if (size.includes('Medium') && (dimensionsLower.includes('6x3') || dimensionsLower.includes('6x6'))) return true;
-            if (size.includes('Large') && (dimensionsLower.includes('9x6') || dimensionsLower.includes('9m'))) return true;
-            if (size.includes('Custom')) return true;
-            return false;
-          });
+          const hasMatchingSize = activeFilters.standSizes.some(size => 
+            productFilters.standSize.includes(size)
+          );
           if (!hasMatchingSize) return false;
         }
 
         // Stand type filter
         if (activeFilters.standTypes.length > 0) {
-          let specs = {};
-          try {
-            specs = product.specifications ? JSON.parse(product.specifications) : {};
-          } catch (e) {
-            console.warn('Invalid JSON in product specifications:', product.id);
-            specs = {};
-          }
-          const layout = ((specs as any).layout || '').toLowerCase();
-          const hasMatchingType = activeFilters.standTypes.some(type => {
-            if (type.includes('Row') && layout.includes('row')) return true;
-            if (type.includes('Corner') && layout.includes('corner')) return true;
-            if (type.includes('Peninsula') && layout.includes('peninsula')) return true;
-            if (type.includes('Island') && layout.includes('island')) return true;
-            return false;
-          });
+          const hasMatchingType = activeFilters.standTypes.some(type => 
+            productFilters.standType.includes(type)
+          );
           if (!hasMatchingType) return false;
         }
 
         // Key features filter
         if (activeFilters.keyFeatures.length > 0) {
-          let specs = {};
-          try {
-            specs = product.specifications ? JSON.parse(product.specifications) : {};
-          } catch (e) {
-            console.warn('Invalid JSON in product specifications:', product.id);
-            specs = {};
-          }
-          const features = (specs as any).specifications || {};
-          const hasMatchingFeature = activeFilters.keyFeatures.some(feature => {
-            if (feature.includes('Hanging Banner') && features.hangingBanner) return true;
-            if (feature.includes('Double-Decker') && features.doubleDecker) return true;
-            if (feature.includes('Meeting Area') && features.meetingRoom) return true;
-            if (feature.includes('Product Display') && features.productDisplay) return true;
-            if (feature.includes('Wall screen') && features.screen) return true;
-            if (feature.includes('Info Desk') && features.infoDesk) return true;
-            if (feature.includes('Storage') && features.storage) return true;
-            if (feature.includes('Seating Area') && features.seatingArea) return true;
-            return false;
-          });
+          const hasMatchingFeature = activeFilters.keyFeatures.some(feature => 
+            productFilters.keyFeatures.includes(feature)
+          );
           if (!hasMatchingFeature) return false;
         }
 
-        // Stand style filter (based on tags)
+        // Stand style filter
         if (activeFilters.standStyles.length > 0) {
           const hasMatchingStyle = activeFilters.standStyles.some(style => 
-            product.tags?.some(tag => 
-              tag && typeof tag === 'string' && tag.toLowerCase().includes(style.toLowerCase())
-            )
+            productFilters.standStyle.includes(style)
           );
           if (!hasMatchingStyle) return false;
         }
