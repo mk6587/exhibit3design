@@ -44,6 +44,8 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const checkIfUserIsAdmin = async (authUser: User) => {
     try {
       console.log('Checking admin status for user:', authUser.id);
+      console.log('Query: SELECT * FROM admins WHERE user_id =', authUser.id, 'AND is_active = true');
+      
       const { data: admin, error } = await supabase
         .from('admins')
         .select('*')
@@ -53,18 +55,24 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
 
       console.log('Admin check result:', { admin, error });
 
-      if (!error && admin) {
-        console.log('User is admin, setting authenticated');
+      if (error) {
+        console.error('Error in admin check:', error);
+        setIsAuthenticated(false);
+        setUser(null);
+        return;
+      }
+
+      if (admin) {
+        console.log('User is admin, setting authenticated to true');
         setIsAuthenticated(true);
         setUser(authUser);
       } else {
-        console.log('User is not an admin or admin check failed:', error);
+        console.log('No admin record found for user');
         setIsAuthenticated(false);
         setUser(null);
-        // Don't automatically sign out - let admin login handle authentication
       }
     } catch (error) {
-      console.error('Error checking admin status:', error);
+      console.error('Exception in checkIfUserIsAdmin:', error);
       setIsAuthenticated(false);
       setUser(null);
     }
