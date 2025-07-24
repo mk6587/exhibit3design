@@ -6,7 +6,7 @@ import { useProducts } from '@/contexts/ProductsContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { MigrateFiltersButton } from '@/components/admin/MigrateFiltersButton';
+
 import { LogOut, Edit, Eye, Trash2 } from 'lucide-react';
 import { Product } from '@/types/product';
 
@@ -80,7 +80,6 @@ const AdminPage = () => {
               </p>
             </div>
             <div className="flex gap-2">
-              <MigrateFiltersButton />
               <Button asChild>
                 <Link to="/admin/product/new">
                   Add New Product
