@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { ProductFilters, FilterConfig, ActiveFilters, defaultFilterConfig } from '@/components/admin/ProductFilters';
+import { MigrateFiltersButton } from '@/components/admin/MigrateFiltersButton';
 import { LogOut, Edit, Eye, Trash2 } from 'lucide-react';
 import { Product } from '@/types/product';
 import { extractFiltersFromTags } from '@/utils/filterRecognition';
@@ -140,11 +141,14 @@ const AdminPage = () => {
                 ({filteredProducts.length} of {products.length} products shown)
               </p>
             </div>
-            <Button asChild>
-              <Link to="/admin/product/new">
-                Add New Product
-              </Link>
-            </Button>
+            <div className="flex gap-2">
+              <MigrateFiltersButton />
+              <Button asChild>
+                <Link to="/admin/product/new">
+                  Add New Product
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
 
