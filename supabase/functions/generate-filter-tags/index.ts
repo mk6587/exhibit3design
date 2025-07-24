@@ -1,6 +1,8 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+console.log('Generate filter tags function started');
+
 const anthropicApiKey = Deno.env.get('ANTHROPIC_API_KEY');
 
 const corsHeaders = {
@@ -9,12 +11,18 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log('Function called with method:', req.method);
+  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log('Parsing request body...');
     const { title, description, longDescription, specifications, price } = await req.json();
+    console.log('Request data:', { title, description: description?.substring(0, 50) + '...', price });
+    
+    console.log('Anthropic API key available:', !!anthropicApiKey);
 
     const prompt = `CRITICAL: You must ONLY select tags from the predefined categories below. DO NOT create new tags or variations. Only match the product to existing tags from these exact lists:
 

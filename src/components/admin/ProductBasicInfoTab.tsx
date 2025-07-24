@@ -23,7 +23,6 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
   onAIContentGenerated
 }) => {
   const [tagInput, setTagInput] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [isGeneratingTags, setIsGeneratingTags] = useState(false);
   const { toast } = useToast();
 
@@ -88,7 +87,6 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
       onProductChange({...product, tags: [...product.tags, tag.trim()]});
     }
     setTagInput('');
-    setShowSuggestions(false);
   };
 
   const removeTag = (tagToRemove: string) => {
