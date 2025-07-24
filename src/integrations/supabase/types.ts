@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admins: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          last_login: string | null
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          last_login?: string | null
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          last_login?: string | null
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           amount: number
@@ -211,11 +244,19 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      current_user_is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
         }
+        Returns: boolean
+      }
+      is_admin: {
+        Args: { user_id: string }
         Returns: boolean
       }
     }
