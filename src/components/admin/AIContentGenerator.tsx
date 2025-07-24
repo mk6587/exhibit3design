@@ -48,56 +48,40 @@ const AIContentGenerator: React.FC<AIContentGeneratorProps> = ({
     setIsGenerating(true);
     
     try {
-      // Simulate AI content generation
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const response = await fetch('https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/generate-content', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGViZGt2emRybGp3d3hjY3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjczMTAsImV4cCI6MjA2NzMwMzMxMH0.N_48R70OWvLsf5INnGiswao__kjUW6ybYdnPIRm0owk`
+        },
+        body: JSON.stringify({
+          context: context.trim(),
+          contentType,
+          currentContent
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const { generatedContent } = await response.json();
       
-      let generatedContent = '';
-      
-      switch (contentType) {
-        case 'description':
-          generatedContent = `
-            <p>This innovative ${context.toLowerCase()} represents the perfect blend of functionality and aesthetic appeal for modern businesses.</p>
-            
-            <p>Key features include:</p>
-            <ul>
-              <li>Contemporary design that attracts and engages visitors</li>
-              <li>Flexible layout accommodating various display requirements</li>
-              <li>Professional presentation space for product demonstrations</li>
-              <li>Integrated storage solutions for marketing materials</li>
-              <li>Customizable branding areas to showcase your company identity</li>
-            </ul>
-          `;
-          break;
-          
-        case 'specification':
-          generatedContent = `
-            <h4>Technical Specifications</h4>
-            <ul>
-              <li>Structure: ${context.includes('aluminum') ? 'Premium aluminum framework' : 'High-quality structural framework'}</li>
-              <li>Dimensions: Customizable based on requirements (standard configurations available)</li>
-              <li>Height: ${context.includes('height') ? context.match(/\d+\.?\d*m/)?.[0] || '3.5m' : '3.5m'} maximum</li>
-              <li>Materials: Professional-grade materials ensuring durability and aesthetics</li>
-              <li>Setup time: Efficient assembly process with clear instructions</li>
-              <li>Power requirements: ${context.includes('LED') || context.includes('power') ? '220V standard connection with integrated cable management' : 'Standard electrical requirements'}</li>
-            </ul>
-          `;
-          break;
-          
-        case 'basic-info':
-          generatedContent = `Professional ${context.toLowerCase()} designed for maximum impact and visitor engagement at trade shows and exhibitions. This innovative solution combines cutting-edge design with practical functionality to create memorable brand experiences that drive business results.`;
-          break;
+      if (generatedContent) {
+        onContentGenerated(generatedContent);
+        
+        toast({
+          title: "Content Generated",
+          description: "Claude Sonnet has successfully generated content based on your context.",
+        });
+        
+        setContext('');
+      } else {
+        throw new Error('No content generated');
       }
       
-      onContentGenerated(generatedContent);
-      
-      toast({
-        title: "Content Generated",
-        description: "AI has successfully generated content based on your context.",
-      });
-      
-      setContext('');
-      
     } catch (error) {
+      console.error('Content generation error:', error);
       toast({
         title: "Generation Failed",
         description: "Failed to generate content. Please try again.",
