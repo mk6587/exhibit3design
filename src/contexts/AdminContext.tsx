@@ -48,12 +48,13 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
         .select('*')
         .eq('user_id', authUser.id)
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
       if (!error && admin) {
         setIsAuthenticated(true);
         setUser(authUser);
       } else {
+        console.log('User is not an admin or admin check failed:', error);
         setIsAuthenticated(false);
         setUser(null);
         // Sign out if user is not an admin
