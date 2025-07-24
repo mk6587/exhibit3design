@@ -6,10 +6,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, Sparkles, X } from 'lucide-react';
+import { Star, X } from 'lucide-react';
 import AIContentGenerator from './AIContentGenerator';
 import { Product } from '@/types/product';
-import { generateTagsFromDescription, getTagSuggestions } from '@/utils/autoTags';
+import { getTagSuggestions } from '@/utils/autoTags';
 
 interface ProductBasicInfoTabProps {
   product: Product;
@@ -25,12 +25,6 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
   const [tagInput, setTagInput] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const handleAutoGenerateTags = () => {
-    const autoTags = generateTagsFromDescription(product.description, product.long_description);
-    // Merge with existing tags, avoiding duplicates
-    const combinedTags = [...new Set([...product.tags, ...autoTags])];
-    onProductChange({...product, tags: combinedTags});
-  };
 
   const addTag = (tag: string) => {
     if (tag.trim() && !product.tags.includes(tag.trim())) {
@@ -89,19 +83,7 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
           />
         </div>
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="tags">Tags</Label>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleAutoGenerateTags}
-              className="flex items-center gap-2"
-            >
-              <Sparkles className="h-4 w-4" />
-              Auto-Generate Tags
-            </Button>
-          </div>
+          <Label htmlFor="tags">Tags</Label>
           
           {/* Current Tags Display */}
           {product.tags.length > 0 && (
@@ -151,7 +133,7 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
           </div>
           
           <p className="text-sm text-muted-foreground">
-            Tags help users find your product. Use the auto-generate button to create tags based on your description.
+            Tags help users find your product.
           </p>
         </div>
         <div>
