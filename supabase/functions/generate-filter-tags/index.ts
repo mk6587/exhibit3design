@@ -16,12 +16,14 @@ serve(async (req) => {
   try {
     const { title, description, longDescription, specifications, price } = await req.json();
 
-    const prompt = `Analyze this exhibition stand product and generate appropriate filter tags. Based on the product details, determine the most accurate tags from these categories:
+    const prompt = `CRITICAL: You must ONLY select tags from the predefined categories below. DO NOT create new tags or variations. Only match the product to existing tags from these exact lists:
 
-STAND SIZE: Small, Medium, Large, Custom Size
-STAND TYPE: 1 side open, 2-sided open, 3-sided open, Island, L-shaped  
-KEY FEATURES: Hanging Banner, Double-Decker, Meeting Area, Product Display, Wall Screen, Info Desk, Storage, Seating Area
-STAND STYLE: Futuristic, Economy, Luxury, Minimal, Welcoming (open space), Curve style
+STAND SIZE (choose ONLY from these): Small, Medium, Large, Custom Size
+STAND TYPE (choose ONLY from these): 1 side open, 2-sided open, 3-sided open, Island, L-shaped  
+KEY FEATURES (choose ONLY from these): Hanging Banner, Double-Decker, Meeting Area, Product Display, Wall Screen, Info Desk, Storage, Seating Area
+STAND STYLE (choose ONLY from these): Futuristic, Economy, Luxury, Minimal, Welcoming (open space), Curve style
+
+Analyze this exhibition stand product and determine which of the above predefined tags apply. You must ONLY use the exact tag names listed above - no variations, no new tags, no modifications.
 
 Product Details:
 Title: ${title}
@@ -30,15 +32,20 @@ Long Description: ${longDescription || 'N/A'}
 Specifications: ${specifications || 'N/A'}
 Price: $${price}
 
-Return ONLY a JSON object with this exact structure:
+IMPORTANT RULES:
+1. ONLY select tags from the exact lists provided above
+2. Use the EXACT spelling and capitalization shown
+3. If a product doesn't clearly match a tag, don't include it
+4. Be conservative - only include tags you're confident about
+5. Return ONLY the JSON object with no additional text
+
+Return ONLY this JSON structure:
 {
   "standSize": [],
   "standType": [],
   "keyFeatures": [],
   "standStyle": []
-}
-
-Fill arrays with applicable tags from the categories above. Be precise and only include tags that clearly apply based on the product details.`;
+}`;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
