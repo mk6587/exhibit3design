@@ -90,7 +90,7 @@ const AdminPage = () => {
                   className="w-full h-48 object-cover rounded-md mb-4"
                 />
                 <CardTitle className="text-lg">{product.title}</CardTitle>
-                <CardDescription>${product.price}</CardDescription>
+                <CardDescription>€{product.price}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <Button asChild className="w-full" variant="outline">

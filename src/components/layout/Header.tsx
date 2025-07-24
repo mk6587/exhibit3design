@@ -34,7 +34,7 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
           <Link to="/products" className="text-sm font-medium hover:text-primary">
-            $10 Designs
+            €10 Designs
           </Link>
           <Link to="/contact" className="text-sm font-medium hover:text-primary">
             Custom Services
@@ -105,7 +105,7 @@ const Header = () => {
       )}>
         <nav className="container mx-auto px-4 py-4 flex flex-col space-y-3">
           <Link to="/products" className="p-2 hover:bg-muted rounded-md">
-            $10 Designs
+            €10 Designs
           </Link>
           <Link to="/contact" className="p-2 hover:bg-muted rounded-md">
             Custom Services

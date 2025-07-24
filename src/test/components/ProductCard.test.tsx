@@ -26,7 +26,7 @@ describe('ProductCard', () => {
     )
 
     expect(getByText('Test Product')).toBeInTheDocument()
-    expect(getByText('$99.99')).toBeInTheDocument()
+    expect(getByText('€99.99')).toBeInTheDocument()
     expect(getByText('tag1')).toBeInTheDocument()
     expect(getByText('tag2')).toBeInTheDocument()
   })

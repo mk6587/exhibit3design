@@ -36,7 +36,7 @@ const CartItem = ({ item, onRemove, onUpdateQuantity }: CartItemProps) => {
                 {item.title}
               </Link>
             </h3>
-            <p className="ml-4">${item.price}</p>
+            <p className="ml-4">€{item.price}</p>
           </div>
         </div>
         <div className="flex flex-1 items-end justify-between text-sm">

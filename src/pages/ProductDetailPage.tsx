@@ -111,7 +111,7 @@ const ProductDetailPage = () => {
               ))}
             </div>
             
-            <div className="text-2xl font-semibold mb-4">${product.price}</div>
+            <div className="text-2xl font-semibold mb-4">€{product.price}</div>
             
             <p className="text-muted-foreground mb-6">
               {product.description}

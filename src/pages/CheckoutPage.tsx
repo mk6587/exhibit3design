@@ -188,12 +188,12 @@ const CheckoutPage = () => {
                   <h3 className="font-medium">{item.title}</h3>
                   <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                 </div>
-                <div className="font-medium">${item.price}</div>
+                <div className="font-medium">€{item.price}</div>
               </div>)}
             
             <div className="pt-4 mt-4 flex justify-between font-semibold text-lg">
               <span>Total</span>
-              <span>${cartTotal.toFixed(2)}</span>
+              <span>€{cartTotal.toFixed(2)}</span>
             </div>
           </div>
 
