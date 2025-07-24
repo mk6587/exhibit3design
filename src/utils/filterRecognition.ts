@@ -24,9 +24,9 @@ export interface StandSpecifications {
 // Default filter definitions that can be customized by admins
 export const defaultFilterConfig = {
   standSize: ["Small", "Medium", "Large", "Custom Size"],
-  standType: ["Row Stand", "Corner Stand", "Peninsula Stand", "Island Stand"],
+  standType: ["1 side open", "2-sided open", "3-sided open", "Island", "L-shaped"],
   keyFeatures: ["Hanging Banner", "Double-Decker", "Meeting Area", "Product Display", "Wall Screen", "Info Desk", "Storage", "Seating Area"],
-  standStyle: ["Futuristic", "Modern", "Minimalist", "Eco-friendly", "Luxury", "Budget-Friendly"]
+  standStyle: ["Futuristic", "Economy", "Luxury", "Minimal", "Welcoming (open space)", "Curve style"]
 };
 
 export function recognizeFiltersFromProduct(
@@ -66,14 +66,16 @@ export function recognizeFiltersFromProduct(
   }
 
   // Recognize Stand Type
-  if (lowerTitle.includes('row') || lowerDesc.includes('row') || lowerTitle.includes('1-sided')) {
-    filterTags.standType.push('Row Stand');
-  } else if (lowerTitle.includes('corner') || lowerDesc.includes('corner') || lowerTitle.includes('2-sided')) {
-    filterTags.standType.push('Corner Stand');
-  } else if (lowerTitle.includes('peninsula') || lowerDesc.includes('peninsula') || lowerTitle.includes('3-sided')) {
-    filterTags.standType.push('Peninsula Stand');
-  } else if (lowerTitle.includes('island') || lowerDesc.includes('island') || lowerTitle.includes('4-sided')) {
-    filterTags.standType.push('Island Stand');
+  if (lowerTitle.includes('row') || lowerDesc.includes('row') || lowerTitle.includes('1-sided') || lowerTitle.includes('1 side')) {
+    filterTags.standType.push('1 side open');
+  } else if (lowerTitle.includes('corner') || lowerDesc.includes('corner') || lowerTitle.includes('2-sided') || lowerTitle.includes('2 sided')) {
+    filterTags.standType.push('2-sided open');
+  } else if (lowerTitle.includes('peninsula') || lowerDesc.includes('peninsula') || lowerTitle.includes('3-sided') || lowerTitle.includes('3 sided')) {
+    filterTags.standType.push('3-sided open');
+  } else if (lowerTitle.includes('island') || lowerDesc.includes('island')) {
+    filterTags.standType.push('Island');
+  } else if (lowerTitle.includes('l-shaped') || lowerDesc.includes('l-shaped') || lowerTitle.includes('l shaped')) {
+    filterTags.standType.push('L-shaped');
   }
 
   // Recognize Key Features from specifications
@@ -106,20 +108,20 @@ export function recognizeFiltersFromProduct(
   if (lowerTitle.includes('futuristic') || lowerDesc.includes('futuristic') || lowerDesc.includes('high-tech')) {
     filterTags.standStyle.push('Futuristic');
   }
-  if (lowerTitle.includes('modern') || lowerDesc.includes('modern') || lowerDesc.includes('contemporary')) {
-    filterTags.standStyle.push('Modern');
-  }
-  if (lowerTitle.includes('minimal') || lowerDesc.includes('minimal') || lowerDesc.includes('clean')) {
-    filterTags.standStyle.push('Minimalist');
-  }
-  if (lowerTitle.includes('eco') || lowerDesc.includes('eco') || lowerDesc.includes('sustainable')) {
-    filterTags.standStyle.push('Eco-friendly');
+  if (price < 50 || lowerTitle.includes('budget') || lowerDesc.includes('affordable') || lowerTitle.includes('economy') || lowerDesc.includes('economy')) {
+    filterTags.standStyle.push('Economy');
   }
   if (lowerTitle.includes('luxury') || lowerDesc.includes('luxury') || lowerDesc.includes('premium')) {
     filterTags.standStyle.push('Luxury');
   }
-  if (price < 50 || lowerTitle.includes('budget') || lowerDesc.includes('affordable')) {
-    filterTags.standStyle.push('Budget-Friendly');
+  if (lowerTitle.includes('minimal') || lowerDesc.includes('minimal') || lowerDesc.includes('clean')) {
+    filterTags.standStyle.push('Minimal');
+  }
+  if (lowerTitle.includes('welcoming') || lowerDesc.includes('welcoming') || lowerTitle.includes('open space') || lowerDesc.includes('open space')) {
+    filterTags.standStyle.push('Welcoming (open space)');
+  }
+  if (lowerTitle.includes('curve') || lowerDesc.includes('curve') || lowerTitle.includes('curved') || lowerDesc.includes('curved')) {
+    filterTags.standStyle.push('Curve style');
   }
 
   return filterTags;
