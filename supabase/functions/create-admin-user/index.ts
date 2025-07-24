@@ -35,6 +35,7 @@ serve(async (req) => {
 
     // Check if user already exists in auth
     let authUser;
+    let isNewUser = false;
     
     // First try to get existing user by email
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
@@ -46,6 +47,7 @@ serve(async (req) => {
       console.log('Using existing auth user:', existingUser.id);
     } else {
       // Create new user in auth.users
+      isNewUser = true;
       const { data: newAuthUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
         email,
         password,
@@ -68,14 +70,15 @@ serve(async (req) => {
       }
 
       authUser = newAuthUser.user;
+      console.log('Created new auth user:', authUser.id);
     }
 
     // Check if admin record already exists
     const { data: existingAdmin } = await supabaseAdmin
       .from('admins')
-      .select('id')
+      .select('id, username')
       .eq('user_id', authUser.id)
-      .single();
+      .maybeSingle();
 
     if (existingAdmin) {
       return new Response(
@@ -84,7 +87,7 @@ serve(async (req) => {
           message: 'Admin user already exists',
           admin: {
             id: existingAdmin.id,
-            username,
+            username: existingAdmin.username,
             email
           }
         }),
@@ -107,8 +110,8 @@ serve(async (req) => {
     if (adminError) {
       console.error('Admin table error:', adminError)
       
-      // Only cleanup if we created a new user
-      if (!existingUsers.users?.find(user => user.email === email)) {
+      // Only cleanup if we created a new user in this request
+      if (isNewUser) {
         await supabaseAdmin.auth.admin.deleteUser(authUser.id)
       }
       
