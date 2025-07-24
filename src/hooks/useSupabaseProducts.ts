@@ -125,19 +125,27 @@ export const useSupabaseProducts = () => {
 
   const updateProduct = async (updatedProduct: Product) => {
     try {
-      // Auto-generate filter tags
-      const filterTags = recognizeFiltersFromProduct(
-        updatedProduct.title,
-        updatedProduct.description || '',
-        updatedProduct.specifications || '',
-        updatedProduct.price
-      );
+      // Auto-generate filter tags using AI
+      const aiResponse = await fetch('https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/generate-filter-tags', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGViZGt2emRybGp3d3hjY3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjczMTAsImV4cCI6MjA2NzMwMzMxMH0.N_48R70OWvLsf5INnGiswao__kjUW6ybYdnPIRm0owk`
+        },
+        body: JSON.stringify({
+          title: updatedProduct.title,
+          description: updatedProduct.description,
+          longDescription: updatedProduct.long_description,
+          specifications: updatedProduct.specifications,
+          price: updatedProduct.price
+        })
+      });
       
-      const autoFilterTags = generateFilterTags(filterTags);
+      const { generatedTags } = await aiResponse.json();
       
-      // Combine existing non-filter tags with new filter tags
+      // Combine existing non-filter tags with new AI-generated filter tags
       const existingTags = updatedProduct.tags.filter(tag => !tag.startsWith('filter:'));
-      const finalTags = [...existingTags, ...autoFilterTags];
+      const finalTags = [...existingTags, ...generatedTags];
       
       const productWithFilters = {
         ...updatedProduct,
@@ -186,19 +194,27 @@ export const useSupabaseProducts = () => {
     try {
       console.log('🔄 Creating product with data:', newProduct);
       
-      // Auto-generate filter tags
-      const filterTags = recognizeFiltersFromProduct(
-        newProduct.title,
-        newProduct.description || '',
-        newProduct.specifications || '',
-        newProduct.price
-      );
+      // Auto-generate filter tags using AI
+      const aiResponse = await fetch('https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/generate-filter-tags', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGViZGt2emRybGp3d3hjY3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjczMTAsImV4cCI6MjA2NzMwMzMxMH0.N_48R70OWvLsf5INnGiswao__kjUW6ybYdnPIRm0owk`
+        },
+        body: JSON.stringify({
+          title: newProduct.title,
+          description: newProduct.description,
+          longDescription: newProduct.long_description,
+          specifications: newProduct.specifications,
+          price: newProduct.price
+        })
+      });
       
-      const autoFilterTags = generateFilterTags(filterTags);
+      const { generatedTags } = await aiResponse.json();
       
-      // Combine existing non-filter tags with new filter tags
+      // Combine existing non-filter tags with new AI-generated filter tags
       const existingTags = newProduct.tags.filter(tag => !tag.startsWith('filter:'));
-      const finalTags = [...existingTags, ...autoFilterTags];
+      const finalTags = [...existingTags, ...generatedTags];
       
       const productWithFilters = {
         ...newProduct,

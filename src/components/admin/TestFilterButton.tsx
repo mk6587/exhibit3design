@@ -31,31 +31,39 @@ export function TestFilterButton() {
 
       const product = products[0];
       
-      // Generate filter tags
-      const filterTags = recognizeFiltersFromProduct(
-        product.title,
-        product.description || '',
-        product.specifications || '',
-        product.price
-      );
+      // Generate filter tags using AI
+      const aiResponse = await fetch('https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/generate-filter-tags', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGViZGt2emRybGp3d3hjY3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjczMTAsImV4cCI6MjA2NzMwMzMxMH0.N_48R70OWvLsf5INnGiswao__kjUW6ybYdnPIRm0owk`
+        },
+        body: JSON.stringify({
+          title: product.title,
+          description: product.description,
+          longDescription: product.long_description,
+          specifications: product.specifications,
+          price: product.price
+        })
+      });
       
-      const autoFilterTags = generateFilterTags(filterTags);
+      const { filterTags, generatedTags } = await aiResponse.json();
       
       console.log('🧪 Test Results:');
       console.log('Product:', product.title);
       console.log('Original tags:', product.tags);
-      console.log('Recognized filters:', filterTags);
-      console.log('Generated filter tags:', autoFilterTags);
+      console.log('AI Filter Analysis:', filterTags);
+      console.log('Generated filter tags:', generatedTags);
       
       // Combine existing non-filter tags with new filter tags
       const existingTags = product.tags.filter((tag: string) => !tag.startsWith('filter:'));
-      const finalTags = [...existingTags, ...autoFilterTags];
+      const finalTags = [...existingTags, ...generatedTags];
       
       console.log('Final tags would be:', finalTags);
       
       toast({
         title: "Test completed",
-        description: `Generated ${autoFilterTags.length} filter tags. Check console for details.`,
+        description: `Generated ${generatedTags.length} filter tags. Check console for details.`,
       });
       
     } catch (error) {
