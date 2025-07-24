@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,24 +11,47 @@ import { useToast } from '@/hooks/use-toast';
 const AdminLoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAdmin();
+  const { login, isAuthenticated } = useAdmin();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (login(username, password)) {
-      toast({
-        title: "Login Successful",
-        description: "Welcome to the admin panel!",
-      });
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
       navigate('/admin/dashboard');
-    } else {
+    }
+  }, [isAuthenticated, navigate]);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const result = await login(username, password);
+      
+      if (result.success) {
+        toast({
+          title: "Login Successful",
+          description: "Welcome to the admin panel!",
+        });
+        navigate('/admin/dashboard');
+      } else {
+        toast({
+          title: "Login Failed",
+          description: result.error || "Invalid username or password",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
       toast({
         title: "Login Failed",
-        description: "Invalid username or password",
+        description: "An unexpected error occurred",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -61,8 +84,8 @@ const AdminLoginPage = () => {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Logging in..." : "Login"}
             </Button>
           </form>
         </CardContent>

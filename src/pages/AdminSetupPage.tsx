@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { createMkAdmin } from '@/utils/createAdminUser';
+import { createAdminUser } from '@/utils/createAdminUser';
 
 const AdminSetupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +12,7 @@ const AdminSetupPage = () => {
     setIsLoading(true);
     
     try {
-      const result = await createMkAdmin();
+      const result = await createAdminUser('mkadmin', 'mkadmin@example.com', '1qaz!QAZ');
       
       if (result.success) {
         toast({

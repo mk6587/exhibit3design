@@ -21,8 +21,3 @@ export const createAdminUser = async (username: string, email: string, password:
     return { success: false, error: 'Failed to create admin user' };
   }
 };
-
-// Helper function to create the specific mkadmin user
-export const createMkAdmin = async () => {
-  return await createAdminUser('mkadmin', 'mkadmin@example.com', '1qaz!QAZ');
-};
