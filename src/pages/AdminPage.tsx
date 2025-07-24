@@ -6,25 +6,15 @@ import { useProducts } from '@/contexts/ProductsContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ProductFilters, FilterConfig, ActiveFilters, defaultFilterConfig } from '@/components/admin/ProductFilters';
 import { MigrateFiltersButton } from '@/components/admin/MigrateFiltersButton';
 import { LogOut, Edit, Eye, Trash2 } from 'lucide-react';
 import { Product } from '@/types/product';
-import { extractFiltersFromTags } from '@/utils/filterRecognition';
 
 const AdminPage = () => {
   const { isAuthenticated, logout } = useAdmin();
   const { products, loading, deleteProduct } = useProducts();
   const navigate = useNavigate();
   const [deletingProductId, setDeletingProductId] = useState<number | null>(null);
-  const [filterConfig, setFilterConfig] = useState<FilterConfig>(defaultFilterConfig);
-  const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
-    standSizes: [],
-    standTypes: [],
-    keyFeatures: [],
-    standStyles: [],
-    priceRange: defaultFilterConfig.priceRange
-  });
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -48,59 +38,7 @@ const AdminPage = () => {
     }
   };
 
-  const filterProducts = (products: Product[]): Product[] => {
-    return products.filter(product => {
-      try {
-        // Price filter
-        const price = Number(product.price);
-        if (isNaN(price) || price < activeFilters.priceRange[0] || price > activeFilters.priceRange[1]) {
-          return false;
-        }
-
-        // Extract filters from product tags
-        const productFilters = extractFiltersFromTags(product.tags);
-
-        // Stand size filter
-        if (activeFilters.standSizes.length > 0) {
-          const hasMatchingSize = activeFilters.standSizes.some(size => 
-            productFilters.standSize.includes(size)
-          );
-          if (!hasMatchingSize) return false;
-        }
-
-        // Stand type filter
-        if (activeFilters.standTypes.length > 0) {
-          const hasMatchingType = activeFilters.standTypes.some(type => 
-            productFilters.standType.includes(type)
-          );
-          if (!hasMatchingType) return false;
-        }
-
-        // Key features filter
-        if (activeFilters.keyFeatures.length > 0) {
-          const hasMatchingFeature = activeFilters.keyFeatures.some(feature => 
-            productFilters.keyFeatures.includes(feature)
-          );
-          if (!hasMatchingFeature) return false;
-        }
-
-        // Stand style filter
-        if (activeFilters.standStyles.length > 0) {
-          const hasMatchingStyle = activeFilters.standStyles.some(style => 
-            productFilters.standStyle.includes(style)
-          );
-          if (!hasMatchingStyle) return false;
-        }
-
-        return true;
-      } catch (error) {
-        console.error('Error filtering product:', product.id, error);
-        return false; // Exclude products that cause errors
-      }
-    });
-  };
-
-  const filteredProducts = filterProducts(products);
+  const filteredProducts = products;
 
   if (!isAuthenticated) {
     return null;
@@ -138,7 +76,7 @@ const AdminPage = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Product Management</h2>
               <p className="text-gray-600">
                 Manage your exhibition stand designs and content 
-                ({filteredProducts.length} of {products.length} products shown)
+                ({products.length} products)
               </p>
             </div>
             <div className="flex gap-2">
@@ -152,17 +90,9 @@ const AdminPage = () => {
           </div>
         </div>
 
-        <div className="mb-8">
-          <ProductFilters
-            filterConfig={filterConfig}
-            activeFilters={activeFilters}
-            onFiltersChange={setActiveFilters}
-            onConfigChange={setFilterConfig}
-          />
-        </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredProducts.map((product) => (
+          {products.map((product) => (
             <Card key={product.id}>
               <CardHeader>
                 <img 
