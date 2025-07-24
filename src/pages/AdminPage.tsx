@@ -6,10 +6,7 @@ import { useProducts } from '@/contexts/ProductsContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-
-import { TestFilterButton } from '@/components/admin/TestFilterButton';
 import { LogOut, Edit, Eye, Trash2 } from 'lucide-react';
-import { Product } from '@/types/product';
 
 const AdminPage = () => {
   const { isAuthenticated, logout } = useAdmin();
@@ -38,8 +35,6 @@ const AdminPage = () => {
       setDeletingProductId(null);
     }
   };
-
-  const filteredProducts = products;
 
   if (!isAuthenticated) {
     return null;
@@ -75,22 +70,15 @@ const AdminPage = () => {
           <div className="flex justify-between items-start">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Product Management</h2>
-              <p className="text-gray-600">
-                Manage your exhibition stand designs and content 
-                ({products.length} products)
-              </p>
+              <p className="text-gray-600">Manage your exhibition stand designs and content ({products.length} products total)</p>
             </div>
-            <div className="flex gap-2">
-              <TestFilterButton />
-              <Button asChild>
-                <Link to="/admin/product/new">
-                  Add New Product
-                </Link>
-              </Button>
-            </div>
+            <Button asChild>
+              <Link to="/admin/product/new">
+                Add New Product
+              </Link>
+            </Button>
           </div>
         </div>
-
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (
