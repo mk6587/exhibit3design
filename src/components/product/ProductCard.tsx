@@ -1,9 +1,10 @@
 
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import ImageViewer from "@/components/ui/image-viewer";
+import { Eye, MousePointer2 } from "lucide-react";
 import "@/components/ui/rich-text-editor.css";
 
 export interface Product {
@@ -19,62 +20,66 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
 
   const handleImageClick = (e: React.MouseEvent) => {
-    // Only show image viewer if clicked with modifier key (Ctrl/Cmd) or right-click
     if (e.ctrlKey || e.metaKey || e.button === 2) {
       e.preventDefault();
-      e.stopPropagation();
-      setIsViewerOpen(true);
+      setIsImageViewerOpen(true);
     }
-    // Otherwise, let the Link handle navigation to product detail page
   };
 
   return (
-    <Card className="overflow-hidden transition-shadow hover:shadow-lg">
-      <Link to={`/product/${product.id}`}>
-        <div className="aspect-[4/3] overflow-hidden bg-secondary clickable-image-container">
-      <img
-        src={product.image}
-        alt={product.title}
-        className="w-full h-full object-cover transition-transform hover:scale-105 cursor-pointer"
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
-        }}
-        onClick={handleImageClick}
-      />
-        </div>
-      </Link>
-      <CardContent className="pt-4">
-        <Link to={`/product/${product.id}`} className="hover:underline">
-          <h3 className="font-semibold text-lg mb-2">{product.title}</h3>
+    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg aspect-square flex flex-col">
+      {/* Square Image Section */}
+      <div className="relative flex-1 overflow-hidden">
+        <Link to={`/product/${product.id}`}>
+          <img
+            src={product.image}
+            alt={product.title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            onContextMenu={handleImageClick}
+            onClick={handleImageClick}
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
+            }}
+          />
         </Link>
-        {product.tags && product.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-2">
-            {product.tags.map((tag) => (
-              <Badge key={tag} variant="outline">
-                {tag}
-              </Badge>
-            ))}
+        
+        {/* Clickable Indicators */}
+        <div className="absolute top-2 right-2 flex gap-1">
+          <div className="bg-black/60 text-white p-1.5 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <Eye className="h-3 w-3" />
           </div>
-        )}
-      </CardContent>
-      <CardFooter className="flex justify-end items-center gap-4 border-t pt-4">
-        <span className="font-semibold">${product.price}</span>
-        <Link 
-          to={`/product/${product.id}`} 
-          className="text-primary hover:underline"
-        >
-          View Details
+          <div className="bg-black/60 text-white p-1.5 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <MousePointer2 className="h-3 w-3" />
+          </div>
+        </div>
+
+        {/* Price Badge */}
+        <div className="absolute top-2 left-2">
+          <Badge variant="secondary" className="bg-white/90 text-foreground">
+            €{product.price}
+          </Badge>
+        </div>
+      </div>
+
+      {/* Compact Bottom Section */}
+      <div className="p-2">
+        {/* Small Title Only */}
+        <Link to={`/product/${product.id}`}>
+          <h3 className="text-sm font-medium line-clamp-2 hover:text-primary transition-colors">
+            {product.title}
+          </h3>
         </Link>
-      </CardFooter>
+      </div>
 
       <ImageViewer
-        isOpen={isViewerOpen}
-        onClose={() => setIsViewerOpen(false)}
+        isOpen={isImageViewerOpen}
+        onClose={() => setIsImageViewerOpen(false)}
         images={[product.image]}
         title={product.title}
+        initialIndex={0}
       />
     </Card>
   );
