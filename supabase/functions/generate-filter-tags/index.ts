@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const anthropicApiKey = Deno.env.get('ANTHROPIC_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -40,32 +40,33 @@ Return ONLY a JSON object with this exact structure:
 
 Fill arrays with applicable tags from the categories above. Be precise and only include tags that clearly apply based on the product details.`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'x-api-key': anthropicApiKey,
         'Content-Type': 'application/json',
+        'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { 
-            role: 'system', 
-            content: 'You are an expert in exhibition stands and trade show displays. Analyze product details and return accurate filter tags in the exact JSON format requested.' 
-          },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.1,
+        model: 'claude-3-5-sonnet-20241022',
         max_tokens: 500,
+        temperature: 0.1,
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        system: 'You are an expert in exhibition stands and trade show displays. Analyze product details and return accurate filter tags in the exact JSON format requested. Return ONLY valid JSON, no additional text or formatting.'
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
+      throw new Error(`Anthropic API error: ${response.status}`);
     }
 
     const data = await response.json();
-    const content = data.choices[0].message.content.trim();
+    const content = data.content[0].text.trim();
     
     // Parse the JSON response
     const filterTags = JSON.parse(content);
