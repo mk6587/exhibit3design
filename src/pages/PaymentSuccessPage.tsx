@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Download } from 'lucide-react';
+import { CheckCircle, Clock, Receipt } from 'lucide-react';
 import { useProducts } from '@/contexts/ProductsContext';
 import { toast } from 'sonner';
 
@@ -23,7 +23,7 @@ const PaymentSuccessPage = () => {
     toast.success('Payment completed successfully!');
   }, [clearCart]);
 
-  const handleGoToDownloads = () => {
+  const handleViewPurchases = () => {
     navigate('/downloads');
   };
 
@@ -46,29 +46,40 @@ const PaymentSuccessPage = () => {
             </CardHeader>
             <CardContent className="text-center space-y-6">
               <div>
-                <p className="text-muted-foreground mb-2">
-                  Thank you for your purchase. Your payment has been processed successfully.
+                <p className="text-muted-foreground mb-4">
+                  Thank you for your purchase! Your payment has been processed successfully.
                 </p>
                 {amount && (
-                  <p className="text-lg font-semibold">
+                  <p className="text-lg font-semibold mb-2">
                     Amount Paid: ${(parseFloat(amount) / 100).toFixed(2)}
                   </p>
                 )}
                 {authority && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground mb-4">
                     Transaction ID: {authority}
                   </p>
                 )}
               </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <Clock className="w-5 h-5 text-blue-600" />
+                  <h3 className="font-semibold text-blue-900">Design File Delivery</h3>
+                </div>
+                <p className="text-sm text-blue-800">
+                  Your design files will be sent to your email address within <strong>1 hour</strong>. 
+                  Please check your inbox (and spam folder) for the delivery confirmation.
+                </p>
+              </div>
               
               <div className="space-y-3">
                 <Button 
-                  onClick={handleGoToDownloads}
+                  onClick={handleViewPurchases}
                   className="w-full"
                   size="lg"
                 >
-                  <Download className="w-4 h-4 mr-2" />
-                  Go to Downloads
+                  <Receipt className="w-4 h-4 mr-2" />
+                  View Purchase History
                 </Button>
                 
                 <Button 
