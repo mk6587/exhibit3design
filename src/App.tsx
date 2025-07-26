@@ -67,6 +67,8 @@ const App = () => (
                   <Route path="/payment/failed" element={<PaymentFailedPage />} />
                   <Route path="/payment/callback" element={<PaymentCallbackPage />} />
                   <Route path="/auth" element={<AuthPage />} />
+                  <Route path="/login" element={<AuthPage />} />
+                  <Route path="/register" element={<AuthPage />} />
                   <Route path="/reset-password" element={<ResetPasswordPage />} />
                   <Route path="/confirm-email" element={<EmailConfirmationPage />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
