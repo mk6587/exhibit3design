@@ -7,7 +7,6 @@ export interface Product {
   specifications: string;
   images: string[];
   tags: string[];
-  file_size: string;
   featured: boolean;
   created_at?: string;
   updated_at?: string;

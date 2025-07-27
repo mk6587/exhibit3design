@@ -125,7 +125,6 @@ export type Database = {
         Row: {
           created_at: string | null
           featured: boolean | null
-          file_size: string | null
           id: number
           images: string[] | null
           long_description: string | null
@@ -138,7 +137,6 @@ export type Database = {
         Insert: {
           created_at?: string | null
           featured?: boolean | null
-          file_size?: string | null
           id?: number
           images?: string[] | null
           long_description?: string | null
@@ -151,7 +149,6 @@ export type Database = {
         Update: {
           created_at?: string | null
           featured?: boolean | null
-          file_size?: string | null
           id?: number
           images?: string[] | null
           long_description?: string | null

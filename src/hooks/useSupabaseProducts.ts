@@ -11,7 +11,6 @@ export interface Product {
   specifications: string;
   images: string[];
   tags: string[];
-  file_size: string;
   featured: boolean;
   created_at?: string;
   updated_at?: string;
@@ -27,7 +26,6 @@ const fallbackProducts: Product[] = [
     specifications: '{"dimensions": "6m x 3m", "height": "3m"}',
     images: ["https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"],
     tags: ["Modern", "Tech", "Minimalist"],
-    file_size: "45MB",
     featured: true
   },
   {
@@ -38,7 +36,6 @@ const fallbackProducts: Product[] = [
     specifications: '{"dimensions": "8m x 4m", "height": "3.5m"}',
     images: ["https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&h=600&fit=crop"],
     tags: ["Corporate", "Professional", "Conference"],
-    file_size: "52MB",
     featured: true
   },
   {
@@ -49,7 +46,6 @@ const fallbackProducts: Product[] = [
     specifications: '{"dimensions": "5m x 3m", "height": "2.8m"}',
     images: ["https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=600&fit=crop"],
     tags: ["Creative", "Design", "Colorful"],
-    file_size: "38MB",
     featured: false
   }
 ];
@@ -129,7 +125,6 @@ export const useSupabaseProducts = () => {
           specifications: updatedProduct.specifications,
           images: updatedProduct.images,
           tags: updatedProduct.tags,
-          file_size: updatedProduct.file_size,
           featured: updatedProduct.featured,
           updated_at: new Date().toISOString()
         })
@@ -170,7 +165,6 @@ export const useSupabaseProducts = () => {
           specifications: newProduct.specifications,
           images: newProduct.images,
           tags: newProduct.tags,
-          file_size: newProduct.file_size,
           featured: newProduct.featured
         })
         .select();

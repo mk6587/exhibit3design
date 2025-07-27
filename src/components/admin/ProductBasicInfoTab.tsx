@@ -122,14 +122,6 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
             Tags help users find your product.
           </p>
         </div>
-        <div>
-          <Label htmlFor="file-size">File Size</Label>
-          <Input
-            id="file-size"
-            value={product.file_size}
-            onChange={(e) => onProductChange({...product, file_size: e.target.value})}
-          />
-        </div>
         <div className="flex items-center space-x-2 p-4 border rounded-lg bg-amber-50">
           <Star className="h-5 w-5 text-amber-500" />
           <div className="flex-1">

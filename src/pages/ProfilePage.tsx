@@ -27,7 +27,6 @@ interface Order {
   created_at: string;
   products: {
     title: string;
-    file_size: string;
     images: string[];
   };
 }
@@ -81,7 +80,6 @@ const ProfilePage = () => {
             *,
             products (
               title,
-              file_size,
               images
             )
           `)
@@ -394,9 +392,6 @@ const ProfilePage = () => {
                                   <div>
                                     <div className="font-medium">
                                       {order.products.title}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                      {order.products.file_size}
                                     </div>
                                   </div>
                                 </div>

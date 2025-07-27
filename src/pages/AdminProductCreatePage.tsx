@@ -25,7 +25,6 @@ const AdminProductCreatePage = () => {
     specifications: '',
     images: [],
     tags: [],
-    file_size: '',
     featured: false
   });
   

@@ -30,7 +30,6 @@ const AdminProductEditPage = () => {
     specifications: '',
     images: [],
     tags: [],
-    file_size: '',
     featured: false
   });
   const [imageUrls, setImageUrls] = useState(product.images);
