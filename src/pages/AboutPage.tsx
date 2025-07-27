@@ -17,9 +17,7 @@ const AboutPage = () => {
             
             <h2 className="text-2xl font-semibold mt-8 mb-4">Our Story</h2>
             <p>
-              As an exhibition stand designer, I've created hundreds of detailed stand designs throughout my career.
-              Many of these designs were never used, despite the hours of work put into them. I realized these 
-              unused designs could help other professionals in the industry who need quality solutions quickly and affordably.
+              As an exhibition stand design team, we've created hundreds of detailed stand designs throughout our projects. Many of these designs were never used, despite the hours of work put into them. We realized these unused designs could help other professionals in the industry who need quality solutions quickly and affordably.
             </p>
             
             <h2 className="text-2xl font-semibold mt-8 mb-4">Our Approach</h2>
