@@ -37,7 +37,7 @@ const Footer = () => {
             <h3 className="font-semibold text-lg mb-4">Contact</h3>
             <address className="text-sm text-muted-foreground not-italic">
               
-              <p>Phone: +44 7508 879096</p>
+              <p>Phone: <a href="https://wa.me/447508879096" target="_blank" rel="noopener noreferrer" className="hover:text-primary">+44 7508 879096</a></p>
             </address>
             
           </div>
