@@ -6,7 +6,7 @@ const AboutPage = () => {
           <h1 className="text-4xl font-bold mb-8">About ExhibitDesigns</h1>
           
           <div className="aspect-video bg-secondary mb-8 rounded-lg overflow-hidden">
-            <img src="https://images.unsplash.com/photo-1473091534298-04dcbce3278c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=4896&q=80" alt="Exhibition stand design" className="w-full h-full object-cover" />
+            <img src="/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png" alt="Exhibition stand design" className="w-full h-full object-cover" />
           </div>
           
           <div className="prose max-w-none">
