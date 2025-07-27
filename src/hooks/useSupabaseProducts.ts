@@ -7,6 +7,7 @@ export interface Product {
   id: number;
   title: string;
   price: number;
+  memo?: string;
   long_description: string;
   specifications: string;
   images: string[];
@@ -121,6 +122,7 @@ export const useSupabaseProducts = () => {
         .update({
           title: updatedProduct.title,
           price: updatedProduct.price,
+          memo: updatedProduct.memo,
           long_description: updatedProduct.long_description,
           specifications: updatedProduct.specifications,
           images: updatedProduct.images,
@@ -161,6 +163,7 @@ export const useSupabaseProducts = () => {
         .insert({
           title: newProduct.title,
           price: newProduct.price,
+          memo: newProduct.memo,
           long_description: newProduct.long_description,
           specifications: newProduct.specifications,
           images: newProduct.images,
