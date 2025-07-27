@@ -68,6 +68,16 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
             onChange={(e) => onProductChange({...product, price: parseInt(e.target.value)})}
           />
         </div>
+        <div>
+          <Label htmlFor="memo">Short Description Memo</Label>
+          <Textarea
+            id="memo"
+            placeholder="Enter a brief description that appears under the price..."
+            value={product.memo || ''}
+            onChange={(e) => onProductChange({...product, memo: e.target.value})}
+            className="min-h-[60px]"
+          />
+        </div>
         <div className="space-y-3">
           <Label htmlFor="tags">Tags</Label>
           
