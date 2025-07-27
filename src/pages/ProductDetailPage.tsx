@@ -113,20 +113,6 @@ const ProductDetailPage = () => {
             
             <div className="text-2xl font-semibold mb-4">€{product.price}</div>
             
-            <p className="text-muted-foreground mb-6">
-              {product.description}
-            </p>
-            
-            <div className="mb-6">
-              <h3 className="font-medium mb-2">File Formats Included:</h3>
-              <div className="flex flex-wrap gap-2">
-                {product.tags.map((format) => (
-                  <Badge key={format} variant="secondary">
-                    {format}
-                  </Badge>
-                ))}
-              </div>
-            </div>
             
             <div className="mb-6">
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -216,55 +202,32 @@ const ProductDetailPage = () => {
 
                     <Card>
                       <CardHeader>
-                        <CardTitle>File Formats & Technical Details</CardTitle>
+                        <CardTitle>Technical Details</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-6">
-                          <div>
-                            <h4 className="font-semibold mb-3">File Formats Included</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {product.tags.map((format) => (
-                                <div key={format} className="flex items-center justify-between p-3 border rounded-lg">
-                                  <div className="flex items-center">
-                                    <FileText className="h-4 w-4 mr-2 text-blue-600" />
-                                    <span className="font-medium">{format}</span>
-                                  </div>
-                                  <div className="flex items-center text-green-600">
-                                    <Check className="h-4 w-4 mr-1" />
-                                    <span className="text-sm">Included</span>
-                                  </div>
-                                </div>
-                              ))}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center">
+                              <HardDrive className="h-4 w-4 mr-2 text-purple-600" />
+                              <span className="font-medium">File Size</span>
                             </div>
+                            <span className="text-sm text-muted-foreground">{product.file_size}</span>
                           </div>
                           
-                          <div>
-                            <h4 className="font-semibold mb-3">Technical Information</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="flex items-center justify-between p-3 border rounded-lg">
-                                <div className="flex items-center">
-                                  <HardDrive className="h-4 w-4 mr-2 text-purple-600" />
-                                  <span className="font-medium">File Size</span>
-                                </div>
-                                <span className="text-sm text-muted-foreground">{product.file_size}</span>
-                              </div>
-                              
-                              <div className="flex items-center justify-between p-3 border rounded-lg">
-                                <div className="flex items-center">
-                                  <Download className="h-4 w-4 mr-2 text-green-600" />
-                                  <span className="font-medium">SketchUp Compatibility</span>
-                                </div>
-                                <span className="text-sm text-muted-foreground">2020+</span>
-                              </div>
-                              
-                              <div className="flex items-center justify-between p-3 border rounded-lg">
-                                <div className="flex items-center">
-                                  <Download className="h-4 w-4 mr-2 text-red-600" />
-                                  <span className="font-medium">3DS Max Compatibility</span>
-                                </div>
-                                <span className="text-sm text-muted-foreground">2019+</span>
-                              </div>
+                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center">
+                              <Download className="h-4 w-4 mr-2 text-green-600" />
+                              <span className="font-medium">SketchUp Compatibility</span>
                             </div>
+                            <span className="text-sm text-muted-foreground">2020+</span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center">
+                              <Download className="h-4 w-4 mr-2 text-red-600" />
+                              <span className="font-medium">3DS Max Compatibility</span>
+                            </div>
+                            <span className="text-sm text-muted-foreground">2019+</span>
                           </div>
                         </div>
                       </CardContent>

@@ -10,7 +10,7 @@ import { ArrowLeft, Save, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Product } from '@/types/product';
 import ProductBasicInfoTab from '@/components/admin/ProductBasicInfoTab';
-import ProductDescriptionTab from '@/components/admin/ProductDescriptionTab';
+
 import ProductSpecificationsTab from '@/components/admin/ProductSpecificationsTab';
 import ProductImagesTab from '@/components/admin/ProductImagesTab';
 
@@ -80,9 +80,7 @@ const AdminProductEditPage = () => {
   };
 
   const handleAIContentGenerated = (content: string, field: string) => {
-    if (field === 'description') {
-      setProduct({...product, description: content});
-    } else if (field === 'long_description') {
+    if (field === 'long_description') {
       setProduct({...product, long_description: content});
     } else if (field === 'specifications') {
       setProduct({...product, specifications: content});
@@ -130,23 +128,14 @@ const AdminProductEditPage = () => {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="basic" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="basic">Basic Info</TabsTrigger>
-                <TabsTrigger value="description">Description</TabsTrigger>
                 <TabsTrigger value="specifications">Specifications</TabsTrigger>
                 <TabsTrigger value="images">Images</TabsTrigger>
               </TabsList>
 
               <TabsContent value="basic">
                 <ProductBasicInfoTab
-                  product={product}
-                  onProductChange={setProduct}
-                  onAIContentGenerated={handleAIContentGenerated}
-                />
-              </TabsContent>
-
-              <TabsContent value="description">
-                <ProductDescriptionTab
                   product={product}
                   onProductChange={setProduct}
                   onAIContentGenerated={handleAIContentGenerated}
