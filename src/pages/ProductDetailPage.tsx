@@ -192,6 +192,31 @@ const ProductDetailPage = () => {
                       </Card>
                     )}
 
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Technical Information</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center">
+                              <Download className="h-4 w-4 mr-2 text-green-600" />
+                              <span className="font-medium">SketchUp Compatibility</span>
+                            </div>
+                            <span className="text-sm text-muted-foreground">2020+</span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center">
+                              <Download className="h-4 w-4 mr-2 text-red-600" />
+                              <span className="font-medium">3DS Max Compatibility</span>
+                            </div>
+                            <span className="text-sm text-muted-foreground">2019+</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
                   </div>
                 )}
               </div>
