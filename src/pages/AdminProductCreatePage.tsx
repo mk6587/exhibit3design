@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
 import ProductBasicInfoTab from '@/components/admin/ProductBasicInfoTab';
-import ProductDescriptionTab from '@/components/admin/ProductDescriptionTab';
+
 import ProductSpecificationsTab from '@/components/admin/ProductSpecificationsTab';
 import ProductImagesTab from '@/components/admin/ProductImagesTab';
 import { toast } from 'sonner';
@@ -21,7 +21,6 @@ const AdminProductCreatePage = () => {
   const [product, setProduct] = useState<Omit<Product, 'id' | 'created_at' | 'updated_at'>>({
     title: '',
     price: 0,
-    description: '',
     long_description: '',
     specifications: '',
     images: [],
@@ -120,23 +119,14 @@ const AdminProductCreatePage = () => {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="basic">Basic Info</TabsTrigger>
-                <TabsTrigger value="description">Description</TabsTrigger>
                 <TabsTrigger value="specifications">Specifications</TabsTrigger>
                 <TabsTrigger value="images">Images</TabsTrigger>
               </TabsList>
               
               <TabsContent value="basic" className="space-y-4">
                 <ProductBasicInfoTab 
-                  product={product as any} 
-                  onProductChange={setProduct as any}
-                  onAIContentGenerated={handleAIContentGenerated}
-                />
-              </TabsContent>
-              
-              <TabsContent value="description" className="space-y-4">
-                <ProductDescriptionTab 
                   product={product as any} 
                   onProductChange={setProduct as any}
                   onAIContentGenerated={handleAIContentGenerated}

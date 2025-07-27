@@ -26,7 +26,6 @@ const AdminProductEditPage = () => {
     id: 1,
     title: '',
     price: 0,
-    description: '',
     long_description: '',
     specifications: '',
     images: [],

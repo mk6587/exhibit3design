@@ -49,11 +49,6 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
 
   return (
     <div className="space-y-4">
-      <AIContentGenerator
-        contentType="basic-info"
-        onContentGenerated={(content) => onAIContentGenerated(content, 'description')}
-        currentContent={product.description}
-      />
       
       <div className="grid gap-4">
         <div>
@@ -71,15 +66,6 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
             type="number"
             value={product.price}
             onChange={(e) => onProductChange({...product, price: parseInt(e.target.value)})}
-          />
-        </div>
-        <div>
-          <Label htmlFor="short-description">Short Description</Label>
-          <Textarea
-            id="short-description"
-            value={product.description}
-            onChange={(e) => onProductChange({...product, description: e.target.value})}
-            rows={3}
           />
         </div>
         <div className="space-y-3">

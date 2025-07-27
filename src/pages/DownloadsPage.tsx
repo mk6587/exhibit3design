@@ -18,7 +18,6 @@ interface Order {
   payment_method?: string;
   products: {
     title: string;
-    description: string;
     images: string[];
   };
 }
@@ -51,7 +50,6 @@ const DownloadsPage = () => {
           payment_method,
           products (
             title,
-            description,
             images
           )
         `)
@@ -160,9 +158,6 @@ const DownloadsPage = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        <p className="text-sm text-muted-foreground">
-                          {order.products.description}
-                        </p>
                         
                         <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
                           <Clock className="w-4 h-4 text-primary" />

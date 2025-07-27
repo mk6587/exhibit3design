@@ -124,7 +124,6 @@ export type Database = {
       products: {
         Row: {
           created_at: string | null
-          description: string | null
           featured: boolean | null
           file_size: string | null
           id: number
@@ -138,7 +137,6 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
-          description?: string | null
           featured?: boolean | null
           file_size?: string | null
           id?: number
@@ -152,7 +150,6 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
-          description?: string | null
           featured?: boolean | null
           file_size?: string | null
           id?: number
