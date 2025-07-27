@@ -1,19 +1,12 @@
-
 import Layout from "@/components/layout/Layout";
-
 const AboutPage = () => {
-  return (
-    <Layout>
+  return <Layout>
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold mb-8">About ExhibitDesigns</h1>
           
           <div className="aspect-video bg-secondary mb-8 rounded-lg overflow-hidden">
-            <img 
-              src="/placeholder.svg" 
-              alt="Exhibition stand design" 
-              className="w-full h-full object-cover" 
-            />
+            <img src="/placeholder.svg" alt="Exhibition stand design" className="w-full h-full object-cover" />
           </div>
           
           <div className="prose max-w-none">
@@ -55,16 +48,10 @@ const AboutPage = () => {
             </p>
             
             <h2 className="text-2xl font-semibold mt-8 mb-4">How It Works</h2>
-            <p>
-              Simply browse our collection of designs, purchase the one that best fits your needs, and download
-              the files immediately. You'll receive multiple file formats (SKP, 3DS, MAX, PDF) that you can 
-              customize to your specifications. It's that easy!
-            </p>
+            <p>Simply browse our collection of designs, purchase the one that best fits your needs, and get the files under one hour. You'll receive multiple file formats (SKP, 3DS) that you can customize to your specifications. It's that easy!</p>
           </div>
         </div>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default AboutPage;
