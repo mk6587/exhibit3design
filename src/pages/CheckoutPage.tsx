@@ -114,7 +114,7 @@ const CheckoutPage = () => {
       // Prepare payment data for YekPay
       const paymentData = {
         amount: cartTotal,
-        description: "Purchase from ExhibitDesigns",
+        description: "Purchase from Exhibit3Design",
         callbackUrl: `${window.location.origin}/payment/callback`,
         customerInfo: {
           email: contactInfo.email,

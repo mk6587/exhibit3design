@@ -14,7 +14,7 @@ const PrivacyPolicyPage = () => {
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">1. Introduction</h2>
             <p>
-              Welcome to ExhibitDesigns. We are committed to protecting your personal information and your right to privacy. 
+              Welcome to Exhibit3Design. We are committed to protecting your personal information and your right to privacy. 
               This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website 
               and use our services.
             </p>

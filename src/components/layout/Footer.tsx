@@ -44,7 +44,7 @@ const Footer = () => {
         </div>
         
         <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} ExhibitDesigns. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Exhibit3Design. All rights reserved.</p>
         </div>
       </div>
     </footer>;

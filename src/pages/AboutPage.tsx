@@ -3,7 +3,7 @@ const AboutPage = () => {
   return <Layout>
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8">About ExhibitDesigns</h1>
+          <h1 className="text-4xl font-bold mb-8">About Exhibit3Design</h1>
           
           <div className="aspect-video bg-secondary mb-8 rounded-lg overflow-hidden">
             <img src="/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png" alt="Exhibition stand design" className="w-full h-full object-cover" />
@@ -11,7 +11,7 @@ const AboutPage = () => {
           
           <div className="prose max-w-none">
             <p className="lead text-lg mb-6">
-              ExhibitDesigns offers affordable exhibition stand design files created by an experienced designer 
+              Exhibit3Design offers affordable exhibition stand design files created by an experienced designer 
               with years of industry expertise.
             </p>
             
