@@ -112,13 +112,12 @@ const ProductDetailPage = () => {
             </div>
             
             <div className="text-2xl font-semibold mb-4">€{product.price}</div>
-            {product.memo && (
-              <p className="text-muted-foreground mb-4">{product.memo}</p>
-            )}
             
-            <div className="mb-6">
-              <div className="rich-text-content" dangerouslySetInnerHTML={{ __html: product.long_description }} />
-            </div>
+            {product.memo && (
+              <div className="mb-6">
+                <p className="text-foreground">{product.memo}</p>
+              </div>
+            )}
             
             <AddToCartButton productId={product.id} productName={product.title} />
           </div>
