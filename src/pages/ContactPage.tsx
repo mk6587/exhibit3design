@@ -61,7 +61,7 @@ const ContactPage = () => {
               <div className="space-y-4">
                 <div>
                   <h3 className="font-medium">Email</h3>
-                  <p className="text-muted-foreground">info@exhibitdesigns.com</p>
+                  <p className="text-muted-foreground">info@exhibit3design.com</p>
                 </div>
                 <div>
                   <h3 className="font-medium">Phone</h3>
