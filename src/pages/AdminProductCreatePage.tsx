@@ -21,7 +21,7 @@ const AdminProductCreatePage = () => {
   const [product, setProduct] = useState<Omit<Product, 'id' | 'created_at' | 'updated_at'>>({
     title: '',
     price: 0,
-    long_description: '',
+    memo: '',
     specifications: '',
     images: [],
     tags: [],

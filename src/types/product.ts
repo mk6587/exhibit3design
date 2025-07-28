@@ -4,7 +4,6 @@ export interface Product {
   title: string;
   price: number;
   memo?: string;
-  long_description: string;
   specifications: string;
   images: string[];
   tags: string[];

@@ -8,7 +8,6 @@ export interface Product {
   title: string;
   price: number;
   memo?: string;
-  long_description: string;
   specifications: string;
   images: string[];
   tags: string[];
@@ -23,7 +22,7 @@ const fallbackProducts: Product[] = [
     id: 1,
     title: "Modern Exhibition Stand Design",
     price: 299,
-    long_description: "<p>This modern exhibition stand design features clean lines and contemporary aesthetics.</p>",
+    memo: "This modern exhibition stand design features clean lines and contemporary aesthetics.",
     specifications: '{"dimensions": "6m x 3m", "height": "3m"}',
     images: ["https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"],
     tags: ["Modern", "Tech", "Minimalist"],
@@ -33,7 +32,7 @@ const fallbackProducts: Product[] = [
     id: 2,
     title: "Corporate Conference Booth",
     price: 450,
-    long_description: "<p>This corporate conference booth offers a professional appearance with integrated presentation capabilities.</p>",
+    memo: "This corporate conference booth offers a professional appearance with integrated presentation capabilities.",
     specifications: '{"dimensions": "8m x 4m", "height": "3.5m"}',
     images: ["https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&h=600&fit=crop"],
     tags: ["Corporate", "Professional", "Conference"],
@@ -43,7 +42,7 @@ const fallbackProducts: Product[] = [
     id: 3,
     title: "Creative Industry Showcase",
     price: 350,
-    long_description: "<p>This creative showcase stand features bold colors and innovative design elements to attract attention.</p>",
+    memo: "This creative showcase stand features bold colors and innovative design elements to attract attention.",
     specifications: '{"dimensions": "5m x 3m", "height": "2.8m"}',
     images: ["https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=600&fit=crop"],
     tags: ["Creative", "Design", "Colorful"],
@@ -123,7 +122,6 @@ export const useSupabaseProducts = () => {
           title: updatedProduct.title,
           price: updatedProduct.price,
           memo: updatedProduct.memo,
-          long_description: updatedProduct.long_description,
           specifications: updatedProduct.specifications,
           images: updatedProduct.images,
           tags: updatedProduct.tags,
@@ -164,7 +162,6 @@ export const useSupabaseProducts = () => {
           title: newProduct.title,
           price: newProduct.price,
           memo: newProduct.memo,
-          long_description: newProduct.long_description,
           specifications: newProduct.specifications,
           images: newProduct.images,
           tags: newProduct.tags,
