@@ -17,10 +17,10 @@
     --primary: 260 84% 60%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 240 10% 94%;
+    --secondary: 250 15% 96%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 210 40% 96.1%;
+    --muted: 210 40% 98%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
     --accent: 262 83% 58%;
@@ -33,7 +33,12 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 260 84% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.125rem;
+    
+    /* Flat design specific variables */
+    --flat-surface: 0 0% 99%;
+    --flat-border: 214.3 31.8% 87%;
+    --flat-hover: 250 15% 93%;
   }
 
   .dark {
@@ -64,6 +69,11 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 260 84% 60%;
+    
+    /* Flat design specific variables for dark mode */
+    --flat-surface: 222.2 84% 6%;
+    --flat-border: 217.2 32.6% 20%;
+    --flat-hover: 217.2 32.6% 22%;
   }
 }
 
@@ -90,5 +100,5 @@
 }
 
 .featured-section {
-  background: linear-gradient(to right, rgba(139, 92, 246, 0.05), rgba(147, 51, 234, 0.1));
+  background: hsl(var(--flat-surface));
 }

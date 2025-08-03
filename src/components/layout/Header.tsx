@@ -24,8 +24,8 @@ const Header = () => {
     navigate("/");
     setIsMenuOpen(false);
   };
-  return <header className="border-b sticky top-0 bg-background z-40">
-      <div className="container mx-auto px-4 flex justify-between items-center h-16">
+  return <header className="border-b border-border bg-background z-40 sticky top-0">
+      <div className="container mx-auto px-6 flex justify-between items-center h-16">
         <Link to="/" className="font-bold text-xl text-primary">
           Exhibit3Design
         </Link>
@@ -85,32 +85,32 @@ const Header = () => {
       </div>
 
       {/* Mobile Menu */}
-      <div className={cn("md:hidden bg-background absolute w-full border-b", isMenuOpen ? "block" : "hidden")}>
-        <nav className="container mx-auto px-4 py-4 flex flex-col space-y-3">
-          <Link to="/products" className="p-2 hover:bg-muted rounded-md">
+      <div className={cn("md:hidden bg-background absolute w-full border-b border-border", isMenuOpen ? "block" : "hidden")}>
+        <nav className="container mx-auto px-6 py-6 flex flex-col space-y-2">
+          <Link to="/products" className="p-3 hover:bg-muted rounded-sm transition-colors">
             €10 Designs
           </Link>
-          <Link to="/contact" className="p-2 hover:bg-muted rounded-md">
+          <Link to="/contact" className="p-3 hover:bg-muted rounded-sm transition-colors">
             Custom Services
           </Link>
-          <Link to="/about" className="p-2 hover:bg-muted rounded-md">
+          <Link to="/about" className="p-3 hover:bg-muted rounded-sm transition-colors">
             About
           </Link>
-          <Link to="/faq" className="p-2 hover:bg-muted rounded-md" onClick={() => setIsMenuOpen(false)}>
+          <Link to="/faq" className="p-3 hover:bg-muted rounded-sm transition-colors" onClick={() => setIsMenuOpen(false)}>
             FAQ
           </Link>
           
           {user ? <>
-              <Link to="/profile" className="p-2 hover:bg-muted rounded-md flex items-center" onClick={() => setIsMenuOpen(false)}>
+              <Link to="/profile" className="p-3 hover:bg-muted rounded-sm flex items-center transition-colors" onClick={() => setIsMenuOpen(false)}>
                 <User className="h-4 w-4 mr-2" />
                 My Profile
               </Link>
-              <button onClick={handleSignOut} className="p-2 hover:bg-muted rounded-md text-left flex items-center w-full">
+              <button onClick={handleSignOut} className="p-3 hover:bg-muted rounded-sm text-left flex items-center w-full transition-colors">
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
               </button>
             </> : <>
-              <Link to="/auth" className="p-2 hover:bg-muted rounded-md" onClick={() => setIsMenuOpen(false)}>
+              <Link to="/auth" className="p-3 hover:bg-muted rounded-sm transition-colors" onClick={() => setIsMenuOpen(false)}>
                 Login / Register
               </Link>
             </>}
@@ -118,11 +118,11 @@ const Header = () => {
       </div>
 
       {/* Search Bar */}
-      <div className={cn("border-b bg-background absolute w-full transition-all duration-200 ease-in-out", isSearchOpen ? "top-16" : "-top-20")}>
-        <div className="container mx-auto px-4 py-4">
-          <form className="flex items-center">
+      <div className={cn("border-b border-border bg-background absolute w-full transition-all duration-200 ease-in-out", isSearchOpen ? "top-16" : "-top-20")}>
+        <div className="container mx-auto px-6 py-6">
+          <form className="flex items-center gap-3">
             <Input type="search" placeholder="Search designs..." className="flex-1" />
-            <Button type="submit" className="ml-2">
+            <Button type="submit" size="default">
               Search
             </Button>
           </form>

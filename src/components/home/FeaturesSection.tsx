@@ -41,17 +41,17 @@ const FeaturesSection = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="border bg-card">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-3">
-                  <div className="mt-1 bg-primary/10 p-1 rounded-full">
-                    <Check className="h-4 w-4 text-primary" />
+            <Card key={index} className="bg-background border-border">
+              <CardContent className="p-8">
+                <div className="flex items-start gap-4">
+                  <div className="mt-1 bg-primary p-2 rounded-sm">
+                    <Check className="h-4 w-4 text-primary-foreground" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    <h3 className="font-semibold mb-3 text-base">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
                   </div>
                 </div>
               </CardContent>
