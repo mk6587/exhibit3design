@@ -32,20 +32,19 @@ const CheckoutPage = () => {
   });
 
   useEffect(() => {
-    // Redirect if cart is empty
+    // Check authentication first, then cart
+    if (!user) {
+      toast.error("Please login to continue with checkout");
+      navigate('/auth');
+      return;
+    }
+    
+    // Only check cart if user is authenticated
     if (cartItems.length === 0) {
       navigate("/cart");
       toast.error("Your cart is empty");
     }
-  }, [cartItems.length, navigate]);
-
-  // Redirect to auth if not logged in
-  useEffect(() => {
-    if (!user) {
-      toast.error("Please login to continue with checkout");
-      navigate('/auth');
-    }
-  }, [user, navigate]);
+  }, [cartItems.length, navigate, user]);
 
   // Initialize customer info with user data if logged in
   useEffect(() => {
