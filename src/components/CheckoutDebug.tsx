@@ -67,20 +67,35 @@ const CheckoutDebug = () => {
       
       // Test payment initiation
       addDebugInfo("Initiating payment...");
-      const response = await initiatePayment(paymentData);
+      addDebugInfo("Creating order in database...");
       
-      if (response.success) {
-        addDebugInfo("✅ Payment initiated successfully!");
-        addDebugInfo(`Order Number: ${response.orderNumber}`);
-        addDebugInfo(`Message: ${response.message}`);
-        addDebugInfo("Form should have been submitted and redirect should occur");
-        toast.success("Payment test completed successfully!");
-      } else {
-        addDebugInfo("❌ Payment initiation failed");
+      try {
+        const response = await initiatePayment(paymentData);
+        
+        if (response.success) {
+          addDebugInfo("✅ Payment initiated successfully!");
+          addDebugInfo(`Order Number: ${response.orderNumber}`);
+          addDebugInfo(`Message: ${response.message}`);
+          if (response.redirectUrl) {
+            addDebugInfo(`Redirect URL: ${response.redirectUrl}`);
+          }
+          addDebugInfo("Payment flow completed successfully");
+          toast.success("Payment test completed successfully!");
+        } else {
+          addDebugInfo("❌ Payment initiation failed - no success response");
+        }
+      } catch (paymentError) {
+        addDebugInfo(`❌ Payment Error: ${paymentError instanceof Error ? paymentError.message : 'Unknown payment error'}`);
+        addDebugInfo(`Error details: ${JSON.stringify(paymentError)}`);
+        throw paymentError; // Re-throw to be caught by outer catch
       }
       
     } catch (error) {
-      addDebugInfo(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      addDebugInfo(`❌ Outer Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      addDebugInfo(`Error type: ${typeof error}`);
+      if (error instanceof Error) {
+        addDebugInfo(`Error stack: ${error.stack}`);
+      }
       console.error("Payment test error:", error);
     } finally {
       setIsProcessing(false);

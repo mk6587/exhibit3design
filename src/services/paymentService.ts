@@ -38,13 +38,15 @@ const generateOrderNumber = (): string => {
 // Create order in database before payment
 const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: string) => {
   try {
+    console.log("🔄 Creating pending order...");
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError) {
-      console.error("Authentication error:", authError);
+      console.error("❌ Authentication error:", authError);
       throw new Error(`Authentication failed: ${authError.message}`);
     }
     
     if (!user) {
+      console.error("❌ No authenticated user found");
       throw new Error("User must be authenticated to create an order");
     }
 
@@ -122,6 +124,7 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     formData.append('description', paymentData.description);
 
     // Send request to payment backend
+    console.log("🌐 Sending request to payment gateway...");
     const response = await fetch('https://pay.exhibit3design.com/yekpay.php', {
       method: 'POST',
       body: formData,
@@ -131,12 +134,18 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     });
 
     if (!response.ok) {
+      console.error(`❌ HTTP error! status: ${response.status}`);
+      console.error(`Response: ${await response.text()}`);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
+    console.log("✅ Response received, parsing JSON...");
     const result = await response.json();
     
+    console.log("📊 Payment gateway response:", result);
+    
     if (result.success && result.redirect_url) {
+      console.log("✅ Payment gateway returned success with redirect URL");
       // Programmatically redirect to payment gateway
       window.location.href = result.redirect_url;
       
@@ -147,6 +156,7 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
         redirectUrl: result.redirect_url
       };
     } else {
+      console.error("❌ Payment gateway returned failure:", result);
       throw new Error(result.message || 'Payment initiation failed');
     }
     
