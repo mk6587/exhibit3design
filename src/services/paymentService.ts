@@ -125,6 +125,9 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
 
     // Send request to payment backend
     console.log("🌐 Sending request to payment gateway...");
+    console.log("🔗 URL:", 'https://pay.exhibit3design.com/yekpay.php');
+    console.log("📝 FormData keys:", Array.from(formData.keys()));
+    
     const response = await fetch('https://pay.exhibit3design.com/yekpay.php', {
       method: 'POST',
       body: formData,
@@ -162,7 +165,11 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     }
     
   } catch (error) {
-    console.error("Payment initiation failed:", error);
+    console.error("❌ Payment initiation failed:", error);
+    console.error("❌ Error message:", error instanceof Error ? error.message : 'Unknown error');
+    console.error("❌ Error details:", JSON.stringify(error));
+    console.error("❌ Error type:", typeof error);
+    console.error("❌ Error constructor:", error?.constructor?.name);
     // Don't show toast here - let the calling component handle the error display
     throw error;
   }
