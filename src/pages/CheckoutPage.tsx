@@ -88,8 +88,26 @@ const CheckoutPage = () => {
   };
 
   const saveUserProfile = async () => {
-    if (!user || !updateProfile) return;
+    if (!user || !updateProfile || !profile) return;
+    
+    // Check if any profile data has actually changed
+    const hasChanges = 
+      customerInfo.firstName !== (profile.first_name || "") ||
+      customerInfo.lastName !== (profile.last_name || "") ||
+      customerInfo.mobile !== (profile.phone_number || "") ||
+      customerInfo.address !== (profile.address_line_1 || "") ||
+      customerInfo.city !== (profile.city || "") ||
+      customerInfo.postalCode !== (profile.postcode || "") ||
+      customerInfo.country !== (profile.country || "");
+    
+    // Only update if there are actual changes
+    if (!hasChanges) {
+      console.log("No profile changes detected, skipping update");
+      return;
+    }
+    
     try {
+      console.log("Updating profile with new information");
       await updateProfile({
         first_name: customerInfo.firstName,
         last_name: customerInfo.lastName,
