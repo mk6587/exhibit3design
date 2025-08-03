@@ -108,57 +108,57 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     // Create pending order in database
     await createPendingOrder(paymentData, orderNumber);
     
-    // Prepare form data for fetch request
-    const formData = new FormData();
-    formData.append('initiate_payment', '1');
-    formData.append('amount', paymentData.amount.toFixed(2));
-    formData.append('order_number', orderNumber);
-    formData.append('first_name', paymentData.customerInfo.firstName);
-    formData.append('last_name', paymentData.customerInfo.lastName);
-    formData.append('email', paymentData.customerInfo.email);
-    formData.append('mobile', paymentData.customerInfo.mobile);
-    formData.append('address', paymentData.customerInfo.address);
-    formData.append('postal_code', paymentData.customerInfo.postalCode);
-    formData.append('country', paymentData.customerInfo.country);
-    formData.append('city', paymentData.customerInfo.city);
-    formData.append('description', paymentData.description);
+    // Create form and submit to payment backend (CORS-free method)
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://pay.exhibit3design.com/yekpay.php';
+    form.style.display = 'none';
+    form.target = '_self';
 
-    // Send request to payment backend
-    console.log("🌐 Sending request to payment gateway...");
-    const response = await fetch('https://pay.exhibit3design.com/yekpay.php', {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'Accept': 'application/json'
-      }
+    // Add all required fields
+    const fields = {
+      initiate_payment: '1',
+      amount: paymentData.amount.toFixed(2),
+      order_number: orderNumber,
+      first_name: paymentData.customerInfo.firstName,
+      last_name: paymentData.customerInfo.lastName,
+      email: paymentData.customerInfo.email,
+      mobile: paymentData.customerInfo.mobile,
+      address: paymentData.customerInfo.address,
+      postal_code: paymentData.customerInfo.postalCode,
+      country: paymentData.customerInfo.country,
+      city: paymentData.customerInfo.city,
+      description: paymentData.description
+    };
+
+    // Create hidden input fields
+    Object.entries(fields).forEach(([name, value]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
     });
 
-    if (!response.ok) {
-      console.error(`❌ HTTP error! status: ${response.status}`);
-      console.error(`Response: ${await response.text()}`);
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    console.log("✅ Response received, parsing JSON...");
-    const result = await response.json();
+    // Append form to body and submit
+    document.body.appendChild(form);
+    console.log("✅ Form created, submitting to payment gateway...");
     
-    console.log("📊 Payment gateway response:", result);
+    // Submit the form immediately
+    form.submit();
     
-    if (result.success && result.redirect_url) {
-      console.log("✅ Payment gateway returned success with redirect URL");
-      // Programmatically redirect to payment gateway
-      window.location.href = result.redirect_url;
-      
-      return { 
-        success: true, 
-        orderNumber,
-        message: "Redirecting to Stripe payment gateway...",
-        redirectUrl: result.redirect_url
-      };
-    } else {
-      console.error("❌ Payment gateway returned failure:", result);
-      throw new Error(result.message || 'Payment initiation failed');
-    }
+    // Clean up after a brief delay
+    setTimeout(() => {
+      if (document.body.contains(form)) {
+        document.body.removeChild(form);
+      }
+    }, 1000);
+    
+    return { 
+      success: true, 
+      orderNumber,
+      message: "Redirecting to Stripe payment gateway..." 
+    };
     
   } catch (error) {
     console.error("Payment initiation failed:", error);
