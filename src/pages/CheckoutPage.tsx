@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { initiatePayment } from "@/services/paymentService";
+import { createStripeCheckout } from "@/services/stripePaymentService";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/contexts/ProductsContext";
@@ -20,7 +20,7 @@ const CheckoutPage = () => {
   const [policyAgreed, setPolicyAgreed] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-  // Customer Information for YekPay
+  // Customer Information for Stripe
   const [customerInfo, setCustomerInfo] = useState({
     firstName: "",
     lastName: "",
@@ -135,7 +135,7 @@ const CheckoutPage = () => {
 
     setIsProcessing(true);
     try {
-      // Prepare payment data for YekPay
+      // Prepare payment data for Stripe
       const paymentData = {
         amount: cartTotal,
         description: `Purchase of ${cartItems.length} design(s) from Exhibit3Design`,
@@ -160,16 +160,16 @@ const CheckoutPage = () => {
       // Save user profile information before payment
       await saveUserProfile();
 
-      // Initiate payment - this will submit form to YekPay
-      const response = await initiatePayment(paymentData);
+      // Create Stripe checkout session using AJAX
+      const response = await createStripeCheckout(paymentData);
 
-      if (response.success) {
-        toast.success(response.message);
-        // The form submission will redirect to YekPay automatically
+      if (response.success && response.checkoutUrl) {
+        // Redirect to Stripe Checkout immediately - no intermediate redirects
+        window.location.href = response.checkoutUrl;
       }
     } catch (error) {
       console.error("Payment error:", error);
-      toast.error("Payment processing failed. Please try again.");
+      toast.error("Payment setup failed. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -351,7 +351,7 @@ const CheckoutPage = () => {
           <div className="border rounded-lg p-6 mb-8">
             <h2 className="font-semibold text-xl mb-4">Payment Information</h2>
             <p className="mb-6">
-              You will be redirected to YekPay's secure payment gateway to complete your purchase.
+              You will be redirected to Stripe's secure payment gateway to complete your purchase.
               After successful payment, you will receive access to download your purchased designs.
             </p>
             
