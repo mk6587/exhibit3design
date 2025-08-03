@@ -149,7 +149,7 @@ const CheckoutPage = () => {
     setIsProcessing(true);
     try {
       // Track payment info event
-      trackAddPaymentInfo(cartItems, cartTotal, 'YekPay');
+      trackAddPaymentInfo(cartItems, cartTotal, 'Card');
 
       // Prepare payment data for Stripe
       const paymentData = {
@@ -369,7 +369,7 @@ const CheckoutPage = () => {
           <div className="border rounded-lg p-6 mb-8">
             <h2 className="font-semibold text-xl mb-4">Payment Information</h2>
             <p className="mb-6">
-              You will be redirected to YekPay's secure payment gateway to complete your purchase.
+              You will be redirected to our secure payment gateway to complete your purchase.
               After successful payment, you will receive access to download your purchased designs.
             </p>
             
@@ -392,8 +392,7 @@ const CheckoutPage = () => {
       </div>
       
       <PaymentRedirectModal 
-        isOpen={isProcessing} 
-        paymentGateway="YekPay"
+        isOpen={isProcessing}
       />
     </Layout>
   );

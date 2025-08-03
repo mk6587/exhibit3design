@@ -6,7 +6,7 @@ interface PaymentRedirectModalProps {
   paymentGateway?: string;
 }
 
-const PaymentRedirectModal = ({ isOpen, paymentGateway = "YekPay" }: PaymentRedirectModalProps) => {
+const PaymentRedirectModal = ({ isOpen, paymentGateway = "our secure payment gateway" }: PaymentRedirectModalProps) => {
   return (
     <Dialog open={isOpen}>
       <DialogContent className="sm:max-w-md [&>button]:hidden">
