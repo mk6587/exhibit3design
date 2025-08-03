@@ -37,6 +37,9 @@ const generateOrderNumber = (): string => {
 
 // Create order in database before payment
 const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: string) => {
+  console.log("🚀 IMMEDIATE: createPendingOrder function called");
+  console.log("🚀 IMMEDIATE: paymentData:", paymentData);
+  console.log("🚀 IMMEDIATE: orderNumber:", orderNumber);
   try {
     console.log("🔄 Starting order creation...");
     console.log("📊 Order number:", orderNumber);
@@ -109,6 +112,7 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
 
 // Submit payment to Stripe backend (fetch API with loading state)
 export const initiatePayment = async (paymentData: PaymentRequest) => {
+  console.log("🚀 IMMEDIATE: initiatePayment function called");
   try {
     // Check authentication first
     const { data: { user }, error: authError } = await supabase.auth.getUser();
