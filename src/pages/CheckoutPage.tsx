@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/contexts/ProductsContext";
 import { supabase } from "@/integrations/supabase/client";
+
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { user, profile, updateProfile } = useAuth();
