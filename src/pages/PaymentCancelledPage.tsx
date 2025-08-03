@@ -17,13 +17,21 @@ const PaymentCancelledPage = () => {
 
   useEffect(() => {
     const processCancellation = async () => {
+      console.log("PaymentCancelledPage - URL params:", { status, orderNumber, authority });
+      
       if (status === 'cancelled' && orderNumber) {
         try {
+          console.log("Attempting to update order status...");
           await updateOrderStatus(orderNumber, 'cancelled', authority || undefined);
           toast.info("Payment was cancelled.");
+          console.log("Order status updated successfully");
         } catch (error) {
           console.error("Failed to update order status:", error);
+          // Don't let this error break the page - just log it
+          toast.error("Failed to update order status, but payment was cancelled.");
         }
+      } else {
+        console.log("Not processing cancellation - missing status or order number");
       }
     };
 
