@@ -16,7 +16,8 @@ const Index = () => {
       
       {/* Temporary debug tool for QA testing */}
       <div className="container mx-auto px-4 py-12">
-        <CheckoutDebug />
+      {/* Debug tool temporarily removed for production */}
+      {/* <CheckoutDebug /> */}
       </div>
     </Layout>
   );
