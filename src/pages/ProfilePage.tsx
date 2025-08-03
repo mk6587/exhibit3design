@@ -148,7 +148,7 @@ const ProfilePage = () => {
   const handleRepurchase = (order: Order) => {
     const product = products.find(p => p.id === order.product_id);
     if (product) {
-      addToCart(product);
+      addToCart(product, 1, false); // Add 1 quantity, suppress the default toast
       navigate('/cart');
       sonnerToast.success('Product added to cart for repurchase');
     } else {

@@ -21,7 +21,7 @@ interface ProductsContextType {
   refetch: () => Promise<void>;
   // Cart functionality
   cartItems: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
+  addToCart: (product: Product, quantity?: number, showToast?: boolean) => void;
   removeFromCart: (productId: number) => void;
   updateCartQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
@@ -47,7 +47,7 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   // Cart functionality
-  const addToCart = useCallback((product: Product, quantity = 1) => {
+  const addToCart = useCallback((product: Product, quantity = 1, showToast = true) => {
     const image = Array.isArray(product.images) && product.images.length > 0 
       ? product.images[0] 
       : 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop';
@@ -70,7 +70,9 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) 
       }];
     });
     
-    toast.success(`${product.title} added to cart!`);
+    if (showToast) {
+      toast.success(`${product.title} added to cart!`);
+    }
   }, []);
 
   const removeFromCart = useCallback((productId: number) => {
