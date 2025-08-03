@@ -76,10 +76,7 @@ const CheckoutDebug = () => {
           addDebugInfo("✅ Payment initiated successfully!");
           addDebugInfo(`Order Number: ${response.orderNumber}`);
           addDebugInfo(`Message: ${response.message}`);
-          if (response.redirectUrl) {
-            addDebugInfo(`Redirect URL: ${response.redirectUrl}`);
-          }
-          addDebugInfo("Payment flow completed successfully");
+          addDebugInfo("Form submitted, redirect should occur automatically");
           toast.success("Payment test completed successfully!");
         } else {
           addDebugInfo("❌ Payment initiation failed - no success response");
