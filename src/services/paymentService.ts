@@ -38,12 +38,23 @@ const generateOrderNumber = (): string => {
 // Create order in database before payment
 const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: string) => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError) {
+      console.error("Authentication error:", authError);
+      throw new Error(`Authentication failed: ${authError.message}`);
+    }
+    
     if (!user) {
-      throw new Error("User must be authenticated");
+      throw new Error("User must be authenticated to create an order");
     }
 
     const totalAmount = paymentData.orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    console.log("Creating order:", {
+      user_id: user.id,
+      order_number: orderNumber,
+      amount: totalAmount
+    });
 
     const { data, error } = await supabase
       .from('orders')
@@ -67,7 +78,12 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error("Database error:", error);
+      throw new Error(`Failed to create order: ${error.message}`);
+    }
+    
+    console.log("Order created successfully:", data);
     return data;
   } catch (error) {
     console.error("Failed to create pending order:", error);
@@ -75,7 +91,7 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
   }
 };
 
-// Submit payment to Stripe backend using fetch API (faster than form submission)
+// Submit payment to Stripe backend (optimized form submission)
 export const initiatePayment = async (paymentData: PaymentRequest) => {
   try {
     // Generate unique order number
@@ -84,8 +100,15 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     // Create pending order in database
     await createPendingOrder(paymentData, orderNumber);
     
-    // Prepare payment data for Stripe backend
-    const paymentPayload = {
+    // Create form and submit to payment backend
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://pay.exhibit3design.com/yekpay.php';
+    form.style.display = 'none';
+    form.target = '_self'; // Ensure redirect happens in same window
+
+    // Add all required fields
+    const fields = {
       initiate_payment: '1',
       amount: paymentData.amount.toFixed(2),
       order_number: orderNumber,
@@ -100,33 +123,27 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
       description: paymentData.description
     };
 
-    // Use fetch API for faster processing
-    const response = await fetch('https://pay.exhibit3design.com/yekpay.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams(paymentPayload).toString()
+    // Create hidden input fields
+    Object.entries(fields).forEach(([name, value]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
     });
 
-    if (!response.ok) {
-      throw new Error(`Payment gateway error: ${response.status}`);
-    }
-
-    const responseText = await response.text();
+    // Append form to body and submit
+    document.body.appendChild(form);
     
-    // If response contains a redirect URL, return it
-    if (responseText.includes('http')) {
-      const urlMatch = responseText.match(/https?:\/\/[^\s"'<>]+/);
-      if (urlMatch) {
-        return {
-          success: true,
-          checkoutUrl: urlMatch[0],
-          orderNumber,
-          message: "Redirecting to Stripe payment gateway..."
-        };
+    // Submit the form immediately
+    form.submit();
+    
+    // Clean up after a brief delay
+    setTimeout(() => {
+      if (document.body.contains(form)) {
+        document.body.removeChild(form);
       }
-    }
+    }, 1000);
     
     return { 
       success: true, 

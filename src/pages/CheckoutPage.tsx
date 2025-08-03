@@ -179,13 +179,9 @@ const CheckoutPage = () => {
       const response = await initiatePayment(paymentData);
 
       if (response.success) {
-        if (response.checkoutUrl) {
-          // Redirect to Stripe payment gateway immediately
-          window.location.href = response.checkoutUrl;
-        } else {
-          // If no direct URL, show success message
-          toast.success(response.message || "Payment initiated successfully");
-        }
+        // Form submission handles the redirect automatically
+        toast.success(response.message || "Payment initiated successfully");
+        // The form.submit() will redirect the user to the payment gateway
       }
     } catch (error) {
       console.error("Payment error:", error);
