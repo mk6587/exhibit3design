@@ -21,14 +21,19 @@ const CheckoutDebug = () => {
       addDebugInfo("Starting payment flow test...");
       
       // Test user authentication
+      addDebugInfo("Checking authentication...");
       const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
       if (authError) {
-        addDebugInfo(`Auth Error: ${authError.message}`);
+        addDebugInfo(`❌ Auth Error: ${authError.message}`);
+        addDebugInfo("⚠️ Authentication is required for payments. Please log in first.");
         return;
       }
       
       if (!user) {
-        addDebugInfo("No authenticated user found");
+        addDebugInfo("❌ No authenticated user found");
+        addDebugInfo("⚠️ You need to be logged in to test the payment flow.");
+        addDebugInfo("💡 Suggestion: Go to /auth to sign up or log in first.");
         return;
       }
       
