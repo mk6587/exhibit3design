@@ -28,22 +28,42 @@ const ContactPage = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    setTimeout(() => {
-      console.log("Form submitted:", formData);
-      toast.success("Message sent successfully", {
-        description: "We'll get back to you as soon as possible."
-      });
+    // Call the edge function to send email
+    fetch("https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/send-contact-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to send message");
+        }
+        return response.json();
+      })
+      .then(() => {
+        toast.success("Message sent successfully", {
+          description: "We'll get back to you as soon as possible."
+        });
 
-      // Reset form
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: ""
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: ""
+        });
+      })
+      .catch((error) => {
+        console.error("Error sending message:", error);
+        toast.error("Failed to send message", {
+          description: "Please try again or contact us directly."
+        });
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
-      setIsSubmitting(false);
-    }, 1500);
   };
   return <Layout>
       <div className="container mx-auto px-4 py-12">
