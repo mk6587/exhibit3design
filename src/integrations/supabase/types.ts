@@ -50,36 +50,72 @@ export type Database = {
       orders: {
         Row: {
           amount: number
+          authority: string | null
           created_at: string
+          customer_address: string | null
+          customer_city: string | null
+          customer_country: string | null
+          customer_email: string | null
+          customer_first_name: string | null
+          customer_last_name: string | null
+          customer_mobile: string | null
+          customer_postal_code: string | null
           id: string
+          order_number: string | null
+          payment_description: string | null
           payment_method: string | null
           product_id: number
           status: string
           transaction_id: string | null
           updated_at: string
           user_id: string
+          yekpay_reference: string | null
         }
         Insert: {
           amount: number
+          authority?: string | null
           created_at?: string
+          customer_address?: string | null
+          customer_city?: string | null
+          customer_country?: string | null
+          customer_email?: string | null
+          customer_first_name?: string | null
+          customer_last_name?: string | null
+          customer_mobile?: string | null
+          customer_postal_code?: string | null
           id?: string
+          order_number?: string | null
+          payment_description?: string | null
           payment_method?: string | null
           product_id: number
           status?: string
           transaction_id?: string | null
           updated_at?: string
           user_id: string
+          yekpay_reference?: string | null
         }
         Update: {
           amount?: number
+          authority?: string | null
           created_at?: string
+          customer_address?: string | null
+          customer_city?: string | null
+          customer_country?: string | null
+          customer_email?: string | null
+          customer_first_name?: string | null
+          customer_last_name?: string | null
+          customer_mobile?: string | null
+          customer_postal_code?: string | null
           id?: string
+          order_number?: string | null
+          payment_description?: string | null
           payment_method?: string | null
           product_id?: number
           status?: string
           transaction_id?: string | null
           updated_at?: string
           user_id?: string
+          yekpay_reference?: string | null
         }
         Relationships: [
           {

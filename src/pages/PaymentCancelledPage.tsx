@@ -1,42 +1,37 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { XCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
 import { updateOrderStatus } from "@/services/paymentService";
 
-const PaymentFailedPage = () => {
+const PaymentCancelledPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   
   const status = searchParams.get('status');
   const orderNumber = searchParams.get('order_number');
   const authority = searchParams.get('authority');
-  const error = searchParams.get('error');
 
   useEffect(() => {
-    const processFailure = async () => {
-      if (status === 'failed' && orderNumber) {
+    const processCancellation = async () => {
+      if (status === 'cancelled' && orderNumber) {
         try {
-          await updateOrderStatus(orderNumber, 'failed', authority || undefined);
-          toast.error("Payment failed. Please try again.");
-        } catch (updateError) {
-          console.error("Failed to update order status:", updateError);
+          await updateOrderStatus(orderNumber, 'cancelled', authority || undefined);
+          toast.info("Payment was cancelled.");
+        } catch (error) {
+          console.error("Failed to update order status:", error);
         }
       }
     };
 
-    processFailure();
+    processCancellation();
   }, [status, orderNumber, authority]);
 
   const handleTryAgain = () => {
     navigate('/cart');
-  };
-
-  const handleViewOrders = () => {
-    navigate('/profile');
   };
 
   const handleContinueShopping = () => {
@@ -49,12 +44,12 @@ const PaymentFailedPage = () => {
         <div className="max-w-2xl mx-auto">
           <Card className="text-center">
             <CardHeader>
-              <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                <XCircle className="w-8 h-8 text-red-600" />
+              <div className="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                <AlertCircle className="w-8 h-8 text-yellow-600" />
               </div>
-              <CardTitle className="text-2xl text-red-600">Payment Failed</CardTitle>
+              <CardTitle className="text-2xl text-yellow-600">Payment Cancelled</CardTitle>
               <CardDescription>
-                Unfortunately, your payment could not be processed.
+                You have cancelled the payment process.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -73,26 +68,16 @@ const PaymentFailedPage = () => {
                 </div>
               )}
 
-              {error && (
-                <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
-                  <p className="text-sm text-red-800">
-                    <strong>Error Details:</strong> {decodeURIComponent(error)}
-                  </p>
-                </div>
-              )}
-
-              <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
-                <p className="text-sm text-yellow-800">
-                  <strong>What to do next:</strong> You can try the payment again or contact our support team if the issue persists.
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>What happened:</strong> The payment process was cancelled before completion. 
+                  Your order is still saved and you can complete the payment anytime.
                 </p>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button onClick={handleTryAgain} className="bg-primary hover:bg-primary/90">
-                  Try Again
-                </Button>
-                <Button onClick={handleViewOrders} variant="outline">
-                  View Order History
+                  Complete Payment
                 </Button>
                 <Button onClick={handleContinueShopping} variant="outline">
                   Continue Shopping
@@ -106,4 +91,4 @@ const PaymentFailedPage = () => {
   );
 };
 
-export default PaymentFailedPage;
+export default PaymentCancelledPage;

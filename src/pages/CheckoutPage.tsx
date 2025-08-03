@@ -13,29 +13,24 @@ import { useProducts } from "@/contexts/ProductsContext";
 import { supabase } from "@/integrations/supabase/client";
 const CheckoutPage = () => {
   const navigate = useNavigate();
-  const {
-    user,
-    profile,
-    updateProfile
-  } = useAuth();
-  const {
-    cartItems,
-    cartTotal
-  } = useProducts();
+  const { user, profile, updateProfile } = useAuth();
+  const { cartItems, cartTotal } = useProducts();
   const [isProcessing, setIsProcessing] = useState(false);
   const [policyAgreed, setPolicyAgreed] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-  // Contact & Shipping Information state
-  const [contactInfo, setContactInfo] = useState({
-    fullName: "",
+  // Customer Information for YekPay
+  const [customerInfo, setCustomerInfo] = useState({
+    firstName: "",
+    lastName: "",
     email: "",
-    phoneNumber: "",
-    addressLine1: "",
+    mobile: "",
+    address: "",
     city: "",
-    stateRegion: "",
-    postcode: ""
+    postalCode: "",
+    country: "",
   });
+
   useEffect(() => {
     // Redirect if cart is empty
     if (cartItems.length === 0) {
@@ -44,62 +39,72 @@ const CheckoutPage = () => {
     }
   }, [cartItems.length, navigate]);
 
-  // Initialize contact info with user data if logged in
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!user) {
+      toast.error("Please login to continue with checkout");
+      navigate('/auth');
+    }
+  }, [user, navigate]);
+
+  // Initialize customer info with user data if logged in
   useEffect(() => {
     if (user && profile) {
-      setContactInfo({
-        fullName: `${profile.first_name || ""} ${profile.last_name || ""}`.trim(),
+      setCustomerInfo({
+        firstName: profile.first_name || "",
+        lastName: profile.last_name || "",
         email: user.email || "",
-        phoneNumber: profile.phone_number || "",
-        addressLine1: profile.address_line_1 || "",
+        mobile: profile.phone_number || "",
+        address: profile.address_line_1 || "",
         city: profile.city || "",
-        stateRegion: profile.state_region || "",
-        postcode: profile.postcode || ""
+        postalCode: profile.postcode || "",
+        country: profile.country || "",
       });
     } else if (user) {
-      setContactInfo(prev => ({
+      setCustomerInfo(prev => ({
         ...prev,
         email: user.email || ""
       }));
     }
   }, [user, profile]);
+
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    if (!contactInfo.fullName.trim()) errors.fullName = "Full name is required";
-    if (!contactInfo.email.trim()) errors.email = "Email address is required";
-    if (!contactInfo.phoneNumber.trim()) errors.phoneNumber = "Phone number is required";
-    if (!contactInfo.addressLine1.trim()) errors.addressLine1 = "Address is required";
-    if (!contactInfo.city.trim()) errors.city = "City is required";
-    if (!contactInfo.stateRegion.trim()) errors.stateRegion = "State/Region is required";
-    if (!contactInfo.postcode.trim()) errors.postcode = "Postcode is required";
+    if (!customerInfo.firstName.trim()) errors.firstName = "First name is required";
+    if (!customerInfo.lastName.trim()) errors.lastName = "Last name is required";
+    if (!customerInfo.email.trim()) errors.email = "Email address is required";
+    if (!customerInfo.mobile.trim()) errors.mobile = "Mobile number is required";
+    if (!customerInfo.address.trim()) errors.address = "Address is required";
+    if (!customerInfo.city.trim()) errors.city = "City is required";
+    if (!customerInfo.postalCode.trim()) errors.postalCode = "Postal code is required";
+    if (!customerInfo.country.trim()) errors.country = "Country is required";
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (contactInfo.email && !emailRegex.test(contactInfo.email)) {
+    if (customerInfo.email && !emailRegex.test(customerInfo.email)) {
       errors.email = "Please enter a valid email address";
     }
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
+
   const saveUserProfile = async () => {
     if (!user || !updateProfile) return;
-    const names = contactInfo.fullName.trim().split(" ");
-    const firstName = names[0] || "";
-    const lastName = names.slice(1).join(" ") || "";
     try {
       await updateProfile({
-        first_name: firstName,
-        last_name: lastName,
-        phone_number: contactInfo.phoneNumber,
-        address_line_1: contactInfo.addressLine1,
-        city: contactInfo.city,
-        state_region: contactInfo.stateRegion,
-        postcode: contactInfo.postcode
+        first_name: customerInfo.firstName,
+        last_name: customerInfo.lastName,
+        phone_number: customerInfo.mobile,
+        address_line_1: customerInfo.address,
+        city: customerInfo.city,
+        postcode: customerInfo.postalCode,
+        country: customerInfo.country
       });
     } catch (error) {
       console.error("Failed to save profile:", error);
     }
   };
+
   const handlePayment = async () => {
     if (!validateForm()) {
       toast.error("Please fill in all required information");
@@ -109,23 +114,22 @@ const CheckoutPage = () => {
       toast.error("You must agree to our Privacy Policy to proceed with the payment");
       return;
     }
+
     setIsProcessing(true);
     try {
       // Prepare payment data for YekPay
       const paymentData = {
         amount: cartTotal,
-        description: "Purchase from Exhibit3Design",
-        callbackUrl: `${window.location.origin}/payment/callback`,
+        description: `Purchase of ${cartItems.length} design(s) from Exhibit3Design`,
         customerInfo: {
-          email: contactInfo.email,
-          fullName: contactInfo.fullName,
-          phoneNumber: contactInfo.phoneNumber,
-          address: {
-            line1: contactInfo.addressLine1,
-            city: contactInfo.city,
-            state: contactInfo.stateRegion,
-            postcode: contactInfo.postcode
-          }
+          firstName: customerInfo.firstName,
+          lastName: customerInfo.lastName,
+          email: customerInfo.email,
+          mobile: customerInfo.mobile,
+          address: customerInfo.address,
+          postalCode: customerInfo.postalCode,
+          country: customerInfo.country,
+          city: customerInfo.city,
         },
         orderItems: cartItems.map(item => ({
           id: item.id,
@@ -135,38 +139,15 @@ const CheckoutPage = () => {
         }))
       };
 
-      // Initiate payment
+      // Save user profile information before payment
+      await saveUserProfile();
+
+      // Initiate payment - this will submit form to YekPay
       const response = await initiatePayment(paymentData);
 
-      // In a real app, redirect to YekPay's gateway
       if (response.success) {
-        // Save user profile information if logged in
-        await saveUserProfile();
-
-        // Create pending orders in database
-        if (user) {
-          for (const item of cartItems) {
-            await supabase.from('orders').insert({
-              user_id: user.id,
-              product_id: item.id,
-              amount: item.price * item.quantity,
-              status: 'pending',
-              payment_method: 'yekpay',
-              transaction_id: response.authority
-            });
-          }
-        }
-        toast.info("Redirecting to payment gateway...");
-
-        // In production, redirect to actual gateway
-        // window.location.href = response.gatewayUrl;
-
-        // For demo purposes, simulate redirect
-        setTimeout(() => {
-          window.location.href = response.gatewayUrl;
-        }, 2000);
-      } else {
-        throw new Error("Payment initiation failed");
+        toast.success(response.message);
+        // The form submission will redirect to YekPay automatically
       }
     } catch (error) {
       console.error("Payment error:", error);
@@ -207,25 +188,46 @@ const CheckoutPage = () => {
               {user && profile && (profile.first_name || profile.phone_number || profile.address_line_1) ? <div className="p-4 bg-muted rounded-lg mb-4">
                   <p className="text-sm font-medium mb-2">Using your saved information:</p>
                   <div className="text-sm text-muted-foreground space-y-1">
-                    {contactInfo.fullName && <p>Name: {contactInfo.fullName}</p>}
-                    {contactInfo.email && <p>Email: {contactInfo.email}</p>}
-                    {contactInfo.phoneNumber && <p>Phone: {contactInfo.phoneNumber}</p>}
-                    {contactInfo.addressLine1 && <p>Address: {contactInfo.addressLine1}, {contactInfo.city}, {contactInfo.stateRegion} {contactInfo.postcode}</p>}
+                    {customerInfo.firstName && <p>Name: {customerInfo.firstName} {customerInfo.lastName}</p>}
+                    {customerInfo.email && <p>Email: {customerInfo.email}</p>}
+                    {customerInfo.mobile && <p>Phone: {customerInfo.mobile}</p>}
+                    {customerInfo.address && <p>Address: {customerInfo.address}, {customerInfo.city}, {customerInfo.postalCode} {customerInfo.country}</p>}
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
                     You can update this information in your <Link to="/profile" className="text-primary hover:underline">Profile Settings</Link>
                   </p>
                 </div> : null}
 
-              {/* Contact Information Form */}
+              {/* Customer Information Form */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="fullName">Full Name *</Label>
-                  <Input id="fullName" value={contactInfo.fullName} onChange={e => setContactInfo(prev => ({
-                  ...prev,
-                  fullName: e.target.value
-                }))} placeholder="Enter your full name" className={validationErrors.fullName ? "border-destructive" : ""} />
-                  {validationErrors.fullName && <p className="text-sm text-destructive mt-1">{validationErrors.fullName}</p>}
+                  <Label htmlFor="firstName">First Name *</Label>
+                  <Input 
+                    id="firstName" 
+                    value={customerInfo.firstName} 
+                    onChange={e => setCustomerInfo(prev => ({
+                      ...prev,
+                      firstName: e.target.value
+                    }))} 
+                    placeholder="Enter your first name" 
+                    className={validationErrors.firstName ? "border-destructive" : ""} 
+                  />
+                  {validationErrors.firstName && <p className="text-sm text-destructive mt-1">{validationErrors.firstName}</p>}
+                </div>
+                
+                <div>
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input 
+                    id="lastName" 
+                    value={customerInfo.lastName} 
+                    onChange={e => setCustomerInfo(prev => ({
+                      ...prev,
+                      lastName: e.target.value
+                    }))} 
+                    placeholder="Enter your last name" 
+                    className={validationErrors.lastName ? "border-destructive" : ""} 
+                  />
+                  {validationErrors.lastName && <p className="text-sm text-destructive mt-1">{validationErrors.lastName}</p>}
                 </div>
                 
                 <div>
@@ -233,8 +235,8 @@ const CheckoutPage = () => {
                   <Input 
                     id="email" 
                     type="email" 
-                    value={contactInfo.email} 
-                    onChange={e => setContactInfo(prev => ({
+                    value={customerInfo.email} 
+                    onChange={e => setCustomerInfo(prev => ({
                       ...prev,
                       email: e.target.value
                     }))} 
@@ -246,52 +248,82 @@ const CheckoutPage = () => {
                   {user && <p className="text-xs text-muted-foreground mt-1">Email cannot be changed (from your account)</p>}
                   {validationErrors.email && <p className="text-sm text-destructive mt-1">{validationErrors.email}</p>}
                 </div>
+
+                <div>
+                  <Label htmlFor="mobile">Mobile Number *</Label>
+                  <Input 
+                    id="mobile" 
+                    value={customerInfo.mobile} 
+                    onChange={e => setCustomerInfo(prev => ({
+                      ...prev,
+                      mobile: e.target.value
+                    }))} 
+                    placeholder="+44123456789" 
+                    className={validationErrors.mobile ? "border-destructive" : ""} 
+                  />
+                  {validationErrors.mobile && <p className="text-sm text-destructive mt-1">{validationErrors.mobile}</p>}
+                </div>
               </div>
 
               <div>
-                <Label htmlFor="phoneNumber">Phone Number *</Label>
-                <Input id="phoneNumber" value={contactInfo.phoneNumber} onChange={e => setContactInfo(prev => ({
-                ...prev,
-                phoneNumber: e.target.value
-              }))} placeholder="Enter your phone number" className={validationErrors.phoneNumber ? "border-destructive" : ""} />
-                {validationErrors.phoneNumber && <p className="text-sm text-destructive mt-1">{validationErrors.phoneNumber}</p>}
-              </div>
-
-              <div>
-                <Label htmlFor="addressLine1">Address Line 1 *</Label>
-                <Input id="addressLine1" value={contactInfo.addressLine1} onChange={e => setContactInfo(prev => ({
-                ...prev,
-                addressLine1: e.target.value
-              }))} placeholder="Enter your street address" className={validationErrors.addressLine1 ? "border-destructive" : ""} />
-                {validationErrors.addressLine1 && <p className="text-sm text-destructive mt-1">{validationErrors.addressLine1}</p>}
+                <Label htmlFor="address">Address *</Label>
+                <Input 
+                  id="address" 
+                  value={customerInfo.address} 
+                  onChange={e => setCustomerInfo(prev => ({
+                    ...prev,
+                    address: e.target.value
+                  }))} 
+                  placeholder="Enter your full address" 
+                  className={validationErrors.address ? "border-destructive" : ""} 
+                />
+                {validationErrors.address && <p className="text-sm text-destructive mt-1">{validationErrors.address}</p>}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="city">City *</Label>
-                  <Input id="city" value={contactInfo.city} onChange={e => setContactInfo(prev => ({
-                  ...prev,
-                  city: e.target.value
-                }))} placeholder="City" className={validationErrors.city ? "border-destructive" : ""} />
+                  <Input 
+                    id="city" 
+                    value={customerInfo.city} 
+                    onChange={e => setCustomerInfo(prev => ({
+                      ...prev,
+                      city: e.target.value
+                    }))} 
+                    placeholder="City" 
+                    className={validationErrors.city ? "border-destructive" : ""} 
+                  />
                   {validationErrors.city && <p className="text-sm text-destructive mt-1">{validationErrors.city}</p>}
                 </div>
                 
                 <div>
-                  <Label htmlFor="stateRegion">State/Region *</Label>
-                  <Input id="stateRegion" value={contactInfo.stateRegion} onChange={e => setContactInfo(prev => ({
-                  ...prev,
-                  stateRegion: e.target.value
-                }))} placeholder="State/Region" className={validationErrors.stateRegion ? "border-destructive" : ""} />
-                  {validationErrors.stateRegion && <p className="text-sm text-destructive mt-1">{validationErrors.stateRegion}</p>}
+                  <Label htmlFor="postalCode">Postal Code *</Label>
+                  <Input 
+                    id="postalCode" 
+                    value={customerInfo.postalCode} 
+                    onChange={e => setCustomerInfo(prev => ({
+                      ...prev,
+                      postalCode: e.target.value
+                    }))} 
+                    placeholder="Postal Code" 
+                    className={validationErrors.postalCode ? "border-destructive" : ""} 
+                  />
+                  {validationErrors.postalCode && <p className="text-sm text-destructive mt-1">{validationErrors.postalCode}</p>}
                 </div>
                 
                 <div>
-                  <Label htmlFor="postcode">Postcode *</Label>
-                  <Input id="postcode" value={contactInfo.postcode} onChange={e => setContactInfo(prev => ({
-                  ...prev,
-                  postcode: e.target.value
-                }))} placeholder="Postcode" className={validationErrors.postcode ? "border-destructive" : ""} />
-                  {validationErrors.postcode && <p className="text-sm text-destructive mt-1">{validationErrors.postcode}</p>}
+                  <Label htmlFor="country">Country *</Label>
+                  <Input 
+                    id="country" 
+                    value={customerInfo.country} 
+                    onChange={e => setCustomerInfo(prev => ({
+                      ...prev,
+                      country: e.target.value
+                    }))} 
+                    placeholder="US, UK, TR, etc." 
+                    className={validationErrors.country ? "border-destructive" : ""} 
+                  />
+                  {validationErrors.country && <p className="text-sm text-destructive mt-1">{validationErrors.country}</p>}
                 </div>
               </div>
             </CardContent>

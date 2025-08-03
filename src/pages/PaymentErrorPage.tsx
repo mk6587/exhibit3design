@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { XCircle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
 import { updateOrderStatus } from "@/services/paymentService";
 
-const PaymentFailedPage = () => {
+const PaymentErrorPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   
@@ -17,26 +17,26 @@ const PaymentFailedPage = () => {
   const error = searchParams.get('error');
 
   useEffect(() => {
-    const processFailure = async () => {
-      if (status === 'failed' && orderNumber) {
+    const processError = async () => {
+      if (status === 'error' && orderNumber) {
         try {
-          await updateOrderStatus(orderNumber, 'failed', authority || undefined);
-          toast.error("Payment failed. Please try again.");
+          await updateOrderStatus(orderNumber, 'error', authority || undefined);
+          toast.error("A payment error occurred.");
         } catch (updateError) {
           console.error("Failed to update order status:", updateError);
         }
       }
     };
 
-    processFailure();
+    processError();
   }, [status, orderNumber, authority]);
 
   const handleTryAgain = () => {
     navigate('/cart');
   };
 
-  const handleViewOrders = () => {
-    navigate('/profile');
+  const handleContactSupport = () => {
+    navigate('/contact');
   };
 
   const handleContinueShopping = () => {
@@ -49,12 +49,12 @@ const PaymentFailedPage = () => {
         <div className="max-w-2xl mx-auto">
           <Card className="text-center">
             <CardHeader>
-              <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                <XCircle className="w-8 h-8 text-red-600" />
+              <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                <AlertTriangle className="w-8 h-8 text-orange-600" />
               </div>
-              <CardTitle className="text-2xl text-red-600">Payment Failed</CardTitle>
+              <CardTitle className="text-2xl text-orange-600">Payment Error</CardTitle>
               <CardDescription>
-                Unfortunately, your payment could not be processed.
+                An unexpected error occurred during the payment process.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -74,16 +74,17 @@ const PaymentFailedPage = () => {
               )}
 
               {error && (
-                <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
-                  <p className="text-sm text-red-800">
+                <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+                  <p className="text-sm text-orange-800">
                     <strong>Error Details:</strong> {decodeURIComponent(error)}
                   </p>
                 </div>
               )}
 
-              <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
-                <p className="text-sm text-yellow-800">
-                  <strong>What to do next:</strong> You can try the payment again or contact our support team if the issue persists.
+              <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+                <p className="text-sm text-red-800">
+                  <strong>What to do:</strong> Please try again or contact our support team for assistance. 
+                  We apologize for the inconvenience.
                 </p>
               </div>
 
@@ -91,8 +92,8 @@ const PaymentFailedPage = () => {
                 <Button onClick={handleTryAgain} className="bg-primary hover:bg-primary/90">
                   Try Again
                 </Button>
-                <Button onClick={handleViewOrders} variant="outline">
-                  View Order History
+                <Button onClick={handleContactSupport} variant="outline">
+                  Contact Support
                 </Button>
                 <Button onClick={handleContinueShopping} variant="outline">
                   Continue Shopping
@@ -106,4 +107,4 @@ const PaymentFailedPage = () => {
   );
 };
 
-export default PaymentFailedPage;
+export default PaymentErrorPage;
