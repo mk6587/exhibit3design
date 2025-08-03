@@ -141,8 +141,12 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     formData.append('country', paymentData.customerInfo.country);
     formData.append('city', paymentData.customerInfo.city);
     formData.append('description', paymentData.description);
+    // Try multiple parameter name variations for success/cancel URLs
     formData.append('success_url', `${window.location.origin}/payment-success`);
     formData.append('cancel_url', `${window.location.origin}/payment-cancelled`);
+    formData.append('callback_url', `${window.location.origin}/payment-success`);
+    formData.append('return_url', `${window.location.origin}/payment-success`);
+    formData.append('cancel_return_url', `${window.location.origin}/payment-cancelled`);
 
     console.log("Sending request to payment gateway");
     const response = await fetch('https://pay.exhibit3design.com/yekpay.php', {
