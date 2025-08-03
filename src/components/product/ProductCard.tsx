@@ -30,14 +30,14 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   return (
-    <Card className="group overflow-hidden transition-all duration-200 hover:border-primary/50 aspect-square flex flex-col bg-background">
+    <Card className="group overflow-hidden transition-all duration-200 hover:border-primary/50 hover:shadow-sm hover:-translate-y-[2px] aspect-square flex flex-col bg-background animate-fade-in">
       {/* Square Image Section */}
       <div className="relative flex-1 overflow-hidden">
         <Link to={`/product/${product.id}`}>
           <img
             src={product.image}
             alt={product.title}
-            className="w-full h-full object-cover transition-all duration-200 group-hover:opacity-90"
+            className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-95 group-hover:scale-[1.02]"
             onContextMenu={handleImageClick}
             onClick={handleImageClick}
             onError={(e) => {
@@ -48,17 +48,17 @@ const ProductCard = ({ product }: ProductCardProps) => {
         
         {/* Clickable Indicators */}
         <div className="absolute top-3 right-3 flex gap-2">
-          <div className="bg-background border border-border p-2 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="bg-background border border-border p-2 rounded-sm opacity-0 group-hover:opacity-100 transition-all duration-200 animate-scale-in">
             <Eye className="h-3 w-3 text-foreground" />
           </div>
-          <div className="bg-background border border-border p-2 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="bg-background border border-border p-2 rounded-sm opacity-0 group-hover:opacity-100 transition-all duration-200 animate-scale-in">
             <MousePointer2 className="h-3 w-3 text-foreground" />
           </div>
         </div>
 
         {/* Price Badge */}
         <div className="absolute top-3 left-3">
-          <Badge variant="secondary" className="bg-background border border-border text-foreground rounded-sm">
+          <Badge variant="secondary" className="bg-background border border-border text-foreground rounded-sm transition-all duration-150 hover:shadow-sm">
             €{product.price}
           </Badge>
         </div>
@@ -68,7 +68,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <div className="p-4 border-t border-border">
         {/* Small Title Only */}
         <Link to={`/product/${product.id}`}>
-          <h3 className="text-sm font-medium line-clamp-2 hover:text-primary transition-colors">
+          <h3 className="text-sm font-medium line-clamp-2 hover:text-primary transition-all duration-150">
             {product.title}
           </h3>
         </Link>

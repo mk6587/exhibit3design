@@ -32,14 +32,14 @@ const Header = () => {
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
-          <Link to="/products" className="text-sm font-medium hover:text-primary">Browse Designs</Link>
-          <Link to="/contact" className="text-sm font-medium hover:text-primary">
+          <Link to="/products" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px]">Browse Designs</Link>
+          <Link to="/contact" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px]">
             Custom Services
           </Link>
-          <Link to="/about" className="text-sm font-medium hover:text-primary">
+          <Link to="/about" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px]">
             About
           </Link>
-          <Link to="/faq" className="text-sm font-medium hover:text-primary">
+          <Link to="/faq" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px]">
             FAQ
           </Link>
         </nav>

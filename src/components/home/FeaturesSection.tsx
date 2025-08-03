@@ -43,10 +43,10 @@ const FeaturesSection = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="bg-background border-border">
+            <Card key={index} className="bg-background border-border hover:border-primary/30 hover:shadow-sm hover:-translate-y-[1px] transition-all duration-200 animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
               <CardContent className="p-8">
                 <div className="flex items-start gap-4">
-                  <div className="mt-1 bg-primary p-2 rounded-sm">
+                  <div className="mt-1 bg-primary p-2 rounded-sm transition-all duration-150 group-hover:shadow-sm">
                     <Check className="h-4 w-4 text-primary-foreground" />
                   </div>
                   <div>
