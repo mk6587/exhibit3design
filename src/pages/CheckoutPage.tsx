@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/contexts/ProductsContext";
 import { supabase } from "@/integrations/supabase/client";
 import { trackBeginCheckout, trackAddShippingInfo, trackAddPaymentInfo } from "@/services/ga4Analytics";
+import PaymentRedirectModal from "@/components/checkout/PaymentRedirectModal";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -148,7 +149,7 @@ const CheckoutPage = () => {
     setIsProcessing(true);
     try {
       // Track payment info event
-      trackAddPaymentInfo(cartItems, cartTotal, 'Stripe');
+      trackAddPaymentInfo(cartItems, cartTotal, 'YekPay');
 
       // Prepare payment data for Stripe
       const paymentData = {
@@ -368,7 +369,7 @@ const CheckoutPage = () => {
           <div className="border rounded-lg p-6 mb-8">
             <h2 className="font-semibold text-xl mb-4">Payment Information</h2>
             <p className="mb-6">
-              You will be redirected to Stripe's secure payment gateway to complete your purchase.
+              You will be redirected to YekPay's secure payment gateway to complete your purchase.
               After successful payment, you will receive access to download your purchased designs.
             </p>
             
@@ -389,6 +390,11 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
+      
+      <PaymentRedirectModal 
+        isOpen={isProcessing} 
+        paymentGateway="YekPay"
+      />
     </Layout>
   );
 };
