@@ -37,26 +37,20 @@ const generateOrderNumber = (): string => {
 
 // Create order in database before payment
 const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: string) => {
-  console.log("🚀 IMMEDIATE: createPendingOrder function called");
-  console.log("🚀 IMMEDIATE: paymentData:", paymentData);
-  console.log("🚀 IMMEDIATE: orderNumber:", orderNumber);
   try {
-    console.log("🔄 Starting order creation...");
-    console.log("📊 Order number:", orderNumber);
-    
-    console.log("🔐 Checking authentication...");
+    console.log("Creating order - step 1");
     const { data: { user }, error: authError } = await supabase.auth.getUser();
+    console.log("Creating order - step 2");
     if (authError) {
-      console.error("❌ Authentication error:", authError);
+      console.error("Auth error in createOrder:", authError);
       throw new Error(`Authentication failed: ${authError.message}`);
     }
     
     if (!user) {
-      console.error("❌ No authenticated user found");
+      console.error("No user in createOrder");
       throw new Error("User must be authenticated to create an order");
     }
-
-    console.log("✅ User authenticated:", user.id);
+    console.log("Creating order - step 3");
 
     const totalAmount = paymentData.orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     console.log("💰 Calculated total amount:", totalAmount);
@@ -112,19 +106,26 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
 
 // Submit payment to Stripe backend (fetch API with loading state)
 export const initiatePayment = async (paymentData: PaymentRequest) => {
-  console.log("🚀 IMMEDIATE: initiatePayment function called");
   try {
+    console.log("Starting payment initiation");
+    
     // Check authentication first
+    console.log("Checking auth");
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
+      console.error("Auth failed:", authError);
       throw new Error("Please log in to complete your purchase");
     }
+    console.log("Auth OK");
 
     // Generate unique order number
     const orderNumber = generateOrderNumber();
+    console.log("Order number:", orderNumber);
     
     // Create pending order in database
+    console.log("About to create order");
     await createPendingOrder(paymentData, orderNumber);
+    console.log("Order created successfully");
     
     // Prepare form data for fetch request
     const formData = new FormData();
