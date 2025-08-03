@@ -185,7 +185,8 @@ const CheckoutPage = () => {
       }
     } catch (error) {
       console.error("Payment error:", error);
-      toast.error("Payment setup failed. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : "Payment setup failed. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setIsProcessing(false);
     }

@@ -94,6 +94,12 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
 // Submit payment to Stripe backend (fetch API with loading state)
 export const initiatePayment = async (paymentData: PaymentRequest) => {
   try {
+    // Check authentication first
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      throw new Error("Please log in to complete your purchase");
+    }
+
     // Generate unique order number
     const orderNumber = generateOrderNumber();
     
@@ -146,8 +152,7 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     
   } catch (error) {
     console.error("Payment initiation failed:", error);
-    const errorMessage = error instanceof Error ? error.message : "Payment initiation failed. Please try again.";
-    toast.error(errorMessage);
+    // Don't show toast here - let the calling component handle the error display
     throw error;
   }
 };
