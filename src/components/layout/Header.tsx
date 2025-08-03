@@ -85,7 +85,7 @@ const Header = () => {
       </div>
 
       {/* Mobile Menu */}
-      <div className={cn("md:hidden bg-background absolute w-full border-b border-border", isMenuOpen ? "block" : "hidden")}>
+      <div className={cn("md:hidden bg-background absolute w-full", isMenuOpen ? "block" : "hidden")}>
         <nav className="container mx-auto px-6 py-6 flex flex-col space-y-2">
           <Link to="/products" className="p-3 hover:bg-muted rounded-sm transition-colors">
             €10 Designs
@@ -118,7 +118,7 @@ const Header = () => {
       </div>
 
       {/* Search Bar */}
-      <div className={cn("border-b border-border bg-background absolute w-full transition-all duration-200 ease-in-out", isSearchOpen ? "top-16" : "-top-20")}>
+      <div className={cn("bg-background absolute w-full transition-all duration-200 ease-in-out", isSearchOpen ? "top-16" : "-top-20")}>
         <div className="container mx-auto px-6 py-6">
           <form className="flex items-center gap-3">
             <Input type="search" placeholder="Search designs..." className="flex-1" />
