@@ -38,7 +38,10 @@ const generateOrderNumber = (): string => {
 // Create order in database before payment
 const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: string) => {
   try {
-    console.log("🔄 Creating pending order...");
+    console.log("🔄 Starting order creation...");
+    console.log("📊 Order number:", orderNumber);
+    
+    console.log("🔐 Checking authentication...");
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError) {
       console.error("❌ Authentication error:", authError);
@@ -50,45 +53,56 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
       throw new Error("User must be authenticated to create an order");
     }
 
+    console.log("✅ User authenticated:", user.id);
+
     const totalAmount = paymentData.orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    console.log("💰 Calculated total amount:", totalAmount);
     
-    console.log("Creating order:", {
+    console.log("📝 Preparing order data...");
+    const orderData = {
       user_id: user.id,
+      product_id: paymentData.orderItems[0]?.id || 0,
+      amount: totalAmount,
+      status: 'pending',
+      payment_method: 'yekpay',
       order_number: orderNumber,
-      amount: totalAmount
-    });
+      customer_first_name: paymentData.customerInfo.firstName,
+      customer_last_name: paymentData.customerInfo.lastName,
+      customer_email: paymentData.customerInfo.email,
+      customer_mobile: paymentData.customerInfo.mobile,
+      customer_address: paymentData.customerInfo.address,
+      customer_postal_code: paymentData.customerInfo.postalCode,
+      customer_country: paymentData.customerInfo.country,
+      customer_city: paymentData.customerInfo.city,
+      payment_description: paymentData.description
+    };
+    
+    console.log("📤 Order data prepared:", JSON.stringify(orderData, null, 2));
+    console.log("🚀 Inserting into database...");
 
     const { data, error } = await supabase
       .from('orders')
-      .insert({
-        user_id: user.id,
-        product_id: paymentData.orderItems[0]?.id || 0, // For compatibility, use first item
-        amount: totalAmount,
-        status: 'pending',
-        payment_method: 'yekpay',
-        order_number: orderNumber,
-        customer_first_name: paymentData.customerInfo.firstName,
-        customer_last_name: paymentData.customerInfo.lastName,
-        customer_email: paymentData.customerInfo.email,
-        customer_mobile: paymentData.customerInfo.mobile,
-        customer_address: paymentData.customerInfo.address,
-        customer_postal_code: paymentData.customerInfo.postalCode,
-        customer_country: paymentData.customerInfo.country,
-        customer_city: paymentData.customerInfo.city,
-        payment_description: paymentData.description
-      })
+      .insert(orderData)
       .select()
       .single();
 
     if (error) {
-      console.error("Database error:", error);
+      console.error("❌ Database error:", error);
+      console.error("❌ Error message:", error.message);
+      console.error("❌ Error details:", JSON.stringify(error, null, 2));
       throw new Error(`Failed to create order: ${error.message}`);
     }
     
-    console.log("Order created successfully:", data);
+    console.log("✅ Order created successfully:", data);
     return data;
   } catch (error) {
-    console.error("Failed to create pending order:", error);
+    console.error("❌ Failed to create pending order:", error);
+    console.error("❌ Error type:", typeof error);
+    console.error("❌ Error constructor:", error?.constructor?.name);
+    if (error instanceof Error) {
+      console.error("❌ Error message:", error.message);
+      console.error("❌ Error stack:", error.stack);
+    }
     throw error;
   }
 };
