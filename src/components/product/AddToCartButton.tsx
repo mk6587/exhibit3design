@@ -5,6 +5,7 @@ import { ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { useProducts } from "@/contexts/ProductsContext";
 import ErrorBoundary from "@/components/ui/error-boundary";
+import { trackAddToCart } from "@/services/ga4Analytics";
 
 interface AddToCartButtonProps {
   productId: number;
@@ -27,6 +28,10 @@ const AddToCartButton = ({ productId, productName }: AddToCartButtonProps) => {
     // Simulate brief loading for UX
     setTimeout(() => {
       addToCart(product);
+      
+      // Track GA4 add_to_cart event
+      trackAddToCart(product, 1);
+      
       setIsLoading(false);
     }, 300);
   };

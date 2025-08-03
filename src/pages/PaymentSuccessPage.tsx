@@ -1,39 +1,80 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
-import { updateOrderStatus } from "@/services/paymentService";
+import { updateOrderStatus, getOrderByNumber } from "@/services/stripePaymentService";
 import { useProducts } from "@/contexts/ProductsContext";
+import { trackPurchase } from "@/services/ga4Analytics";
 
 const PaymentSuccessPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { clearCart } = useProducts();
+  const [orderProcessed, setOrderProcessed] = useState(false);
   
+  const sessionId = searchParams.get('session_id');
+  const orderNumber = searchParams.get('order');
   const status = searchParams.get('status');
-  const orderNumber = searchParams.get('order_number');
   const authority = searchParams.get('authority');
   const reference = searchParams.get('ref');
 
   useEffect(() => {
     const processSuccess = async () => {
-      if (status === 'success' && orderNumber) {
-        try {
-          await updateOrderStatus(orderNumber, 'completed', authority || undefined, reference || undefined);
+      // Prevent double processing
+      if (orderProcessed) return;
+
+      try {
+        // Handle Stripe success
+        if (sessionId && orderNumber) {
+          console.log('Processing Stripe payment success', { sessionId, orderNumber });
+          
+          // Get order details from database
+          const order = await getOrderByNumber(orderNumber);
+          if (!order) {
+            toast.error("Order not found");
+            return;
+          }
+
+          // Update order status
+          await updateOrderStatus(orderNumber, 'completed', sessionId);
+          
+          // Track GA4 purchase event with order items
+          if (order.payment_description && order.amount) {
+            // Convert order data to cart items format for GA4
+            const cartItems = [{
+              id: order.product_id,
+              title: order.payment_description,
+              price: order.amount,
+              quantity: 1
+            }];
+            
+            trackPurchase(orderNumber, cartItems, order.amount, 'Stripe');
+          }
+
           clearCart();
+          setOrderProcessed(true);
           toast.success("Payment completed successfully!");
-        } catch (error) {
-          console.error("Failed to update order status:", error);
-          toast.error("Payment completed but there was an issue updating the order. Please contact support.");
         }
+        // Handle legacy YekPay success (backward compatibility)
+        else if (status === 'success' && orderNumber) {
+          console.log('Processing YekPay payment success', { orderNumber, authority, reference });
+          
+          await updateOrderStatus(orderNumber, 'completed', authority, reference);
+          clearCart();
+          setOrderProcessed(true);
+          toast.success("Payment completed successfully!");
+        }
+      } catch (error) {
+        console.error("Failed to process payment success:", error);
+        toast.error("Payment completed but there was an issue updating the order. Please contact support.");
       }
     };
 
     processSuccess();
-  }, [status, orderNumber, authority, reference, clearCart]);
+  }, [sessionId, orderNumber, status, authority, reference, clearCart, orderProcessed]);
 
   const handleViewDownloads = () => {
     navigate('/downloads');

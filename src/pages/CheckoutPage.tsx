@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/contexts/ProductsContext";
 import { supabase } from "@/integrations/supabase/client";
+import { trackBeginCheckout, trackAddShippingInfo, trackAddPaymentInfo } from "@/services/ga4Analytics";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -44,8 +45,12 @@ const CheckoutPage = () => {
     if (cartItems.length === 0) {
       navigate("/cart");
       toast.error("Your cart is empty");
+      return;
     }
-  }, [cartItems.length, navigate, user]);
+
+    // Track begin_checkout when checkout page loads
+    trackBeginCheckout(cartItems, cartTotal);
+  }, [cartItems.length, navigate, user, cartItems, cartTotal]);
 
   // Initialize customer info with user data if logged in
   useEffect(() => {
@@ -67,6 +72,13 @@ const CheckoutPage = () => {
       }));
     }
   }, [user, profile]);
+
+  // Track shipping info when customer info is filled
+  useEffect(() => {
+    if (customerInfo.address && customerInfo.city && customerInfo.country) {
+      trackAddShippingInfo(cartItems, cartTotal, 'Digital');
+    }
+  }, [customerInfo.address, customerInfo.city, customerInfo.country, cartItems, cartTotal]);
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
@@ -135,6 +147,9 @@ const CheckoutPage = () => {
 
     setIsProcessing(true);
     try {
+      // Track payment info event
+      trackAddPaymentInfo(cartItems, cartTotal, 'Stripe');
+
       // Prepare payment data for Stripe
       const paymentData = {
         amount: cartTotal,

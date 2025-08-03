@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useProducts } from "@/contexts/ProductsContext";
 import Layout from "@/components/layout/Layout";
 import CartItem from "@/components/cart/CartItem";
@@ -6,10 +6,18 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import ErrorBoundary from "@/components/ui/error-boundary";
+import { trackViewCart } from "@/services/ga4Analytics";
 
 const CartPage = () => {
-  const { cartItems, removeFromCart, updateCartQuantity, cartTotal } = useProducts();  
+  const { cartItems, removeFromCart, updateCartQuantity, cartTotal } = useProducts();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  // Track view_cart when cart is viewed
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      trackViewCart(cartItems, cartTotal);
+    }
+  }, [cartItems, cartTotal]);
   const navigate = useNavigate();
   
   const handleRemoveItem = (id: number) => {

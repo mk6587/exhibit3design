@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Check, X, FileText, Calendar, HardDrive, Download } from "lucide-react";
 import "@/components/ui/rich-text-editor.css";
+import { trackViewItem } from "@/services/ga4Analytics";
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +32,13 @@ const ProductDetailPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
+
+  // Track view_item when product loads
+  useEffect(() => {
+    if (product && !loading) {
+      trackViewItem(product);
+    }
+  }, [product, loading]);
   
   // Parse specifications
   const parseSpecifications = (specs: string) => {

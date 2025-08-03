@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import ProductCard, { Product } from "@/components/product/ProductCard";
 import { useProducts } from "@/contexts/ProductsContext";
@@ -8,9 +8,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { trackViewItemList } from "@/services/ga4Analytics";
 
 const ProductsPage = () => {
   const { products } = useProducts();
+
+  // Track view_item_list when products load
+  useEffect(() => {
+    if (products && products.length > 0) {
+      trackViewItemList(products, 'All Exhibition Stands');
+    }
+  }, [products]);
   const [searchText, setSearchText] = useState("");
   const [sort, setSort] = useState("latest");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
