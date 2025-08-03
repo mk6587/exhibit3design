@@ -74,7 +74,7 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
   }
 };
 
-// Create Stripe checkout session via Supabase Edge Function
+// Create payment checkout via pay.exhibit3design.com using fetch API
 export const createStripeCheckout = async (paymentData: PaymentRequest) => {
   try {
     // Generate unique order number
@@ -83,29 +83,47 @@ export const createStripeCheckout = async (paymentData: PaymentRequest) => {
     // Create pending order in database first
     await createPendingOrder(paymentData, orderNumber);
     
-    // Call Supabase Edge Function to create Stripe checkout session
-    const { data, error } = await supabase.functions.invoke('create-stripe-checkout', {
-      body: {
-        amount: Math.round(paymentData.amount * 100), // Convert to cents
-        currency: 'eur',
-        orderNumber,
-        customerInfo: paymentData.customerInfo,
-        orderItems: paymentData.orderItems,
-        description: paymentData.description
-      }
+    // Prepare payment data for pay.exhibit3design.com
+    const paymentPayload = {
+      amount: paymentData.amount,
+      currency: 'EUR',
+      orderNumber,
+      customerInfo: paymentData.customerInfo,
+      orderItems: paymentData.orderItems,
+      description: paymentData.description,
+      callback_url: `${window.location.origin}/payment-success`,
+      cancel_url: `${window.location.origin}/payment-cancelled`
+    };
+
+    // Make direct API call to pay.exhibit3design.com using fetch
+    const response = await fetch('https://pay.exhibit3design.com/api/create-payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(paymentPayload)
     });
 
-    if (error) throw error;
+    if (!response.ok) {
+      throw new Error(`Payment API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.success || !data.checkout_url) {
+      throw new Error(data.message || 'Failed to create payment session');
+    }
     
     return {
       success: true,
-      checkoutUrl: data.url,
+      checkoutUrl: data.checkout_url,
       orderNumber,
-      sessionId: data.sessionId
+      sessionId: data.session_id || orderNumber
     };
     
   } catch (error) {
-    console.error("Stripe checkout creation failed:", error);
+    console.error("Payment checkout creation failed:", error);
     toast.error("Payment setup failed. Please try again.");
     throw error;
   }
