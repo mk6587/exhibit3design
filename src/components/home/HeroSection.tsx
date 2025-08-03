@@ -14,10 +14,10 @@ const HeroSection = () => {
           by using our pre-designed stands that you can easily customize to your needs.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-6">
-          <Button asChild size="lg">
+          <Button asChild size="lg" className="min-w-[160px]">
             <Link to="/products">Browse Designs</Link>
           </Button>
-          <Button asChild size="lg" variant="outline">
+          <Button asChild size="lg" variant="outline" className="min-w-[160px]">
             <Link to="/register">Create Account</Link>
           </Button>
         </div>
