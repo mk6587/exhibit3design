@@ -1,5 +1,5 @@
 
-// YekPay Payment Gateway Integration Service
+// Stripe Payment Gateway Integration Service
 // Integrates with pay.exhibit3design.com/yekpay.php backend endpoint
 
 import { toast } from "sonner";
@@ -75,7 +75,7 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
   }
 };
 
-// Submit payment to YekPay backend using fetch API (faster than form submission)
+// Submit payment to Stripe backend using fetch API (faster than form submission)
 export const initiatePayment = async (paymentData: PaymentRequest) => {
   try {
     // Generate unique order number
@@ -84,7 +84,7 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     // Create pending order in database
     await createPendingOrder(paymentData, orderNumber);
     
-    // Prepare payment data for YekPay backend
+    // Prepare payment data for Stripe backend
     const paymentPayload = {
       initiate_payment: '1',
       amount: paymentData.amount.toFixed(2),
@@ -123,7 +123,7 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
           success: true,
           checkoutUrl: urlMatch[0],
           orderNumber,
-          message: "Redirecting to YekPay payment gateway..."
+          message: "Redirecting to Stripe payment gateway..."
         };
       }
     }
@@ -131,7 +131,7 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     return { 
       success: true, 
       orderNumber,
-      message: "Redirecting to YekPay payment gateway..." 
+      message: "Redirecting to Stripe payment gateway..." 
     };
     
   } catch (error) {

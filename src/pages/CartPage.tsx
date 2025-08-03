@@ -85,7 +85,7 @@ const CartPage = () => {
                 </Button>
                 
                 <p className="text-xs text-center text-muted-foreground mt-4">
-                  Secure checkout powered by YekPay
+                  Secure checkout powered by Stripe
                 </p>
               </div>
               

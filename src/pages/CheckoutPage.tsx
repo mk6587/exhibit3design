@@ -148,9 +148,9 @@ const CheckoutPage = () => {
     setIsProcessing(true);
     try {
       // Track payment info event
-      trackAddPaymentInfo(cartItems, cartTotal, 'YekPay');
+      trackAddPaymentInfo(cartItems, cartTotal, 'Stripe');
 
-      // Prepare payment data for YekPay
+      // Prepare payment data for Stripe
       const paymentData = {
         amount: cartTotal,
         description: `Purchase of ${cartItems.length} design(s) from Exhibit3Design`,
@@ -175,12 +175,12 @@ const CheckoutPage = () => {
       // Save user profile information before payment
       await saveUserProfile();
 
-      // Create YekPay payment using fetch API
+      // Create Stripe payment using fetch API
       const response = await initiatePayment(paymentData);
 
       if (response.success) {
         if (response.checkoutUrl) {
-          // Redirect to YekPay payment gateway immediately
+          // Redirect to Stripe payment gateway immediately
           window.location.href = response.checkoutUrl;
         } else {
           // If no direct URL, show success message
@@ -371,7 +371,7 @@ const CheckoutPage = () => {
           <div className="border rounded-lg p-6 mb-8">
             <h2 className="font-semibold text-xl mb-4">Payment Information</h2>
             <p className="mb-6">
-              You will be redirected to YekPay's secure payment gateway to complete your purchase.
+              You will be redirected to Stripe's secure payment gateway to complete your purchase.
               After successful payment, you will receive access to download your purchased designs.
             </p>
             

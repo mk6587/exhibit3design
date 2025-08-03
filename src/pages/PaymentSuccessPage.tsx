@@ -58,9 +58,9 @@ const PaymentSuccessPage = () => {
           setOrderProcessed(true);
           toast.success("Payment completed successfully!");
         }
-        // Handle legacy YekPay success (backward compatibility)
+        // Handle legacy Stripe success (backward compatibility)
         else if (status === 'success' && orderNumber) {
-          console.log('Processing YekPay payment success', { orderNumber, authority, reference });
+          console.log('Processing Stripe payment success', { orderNumber, authority, reference });
           
           await updateOrderStatus(orderNumber, 'completed', authority, reference);
           clearCart();
