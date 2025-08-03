@@ -143,8 +143,8 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     formData.append('description', paymentData.description);
     
     // Add success and cancel URLs
-    const successUrl = `${window.location.origin}/payment-success`;
-    const cancelUrl = `${window.location.origin}/payment-cancelled`;
+    const successUrl = `${window.location.origin}/payment-success.php`;
+    const cancelUrl = `${window.location.origin}/payment-cancelled.php`;
     
     formData.append('success_url', successUrl);
     formData.append('cancel_url', cancelUrl);
