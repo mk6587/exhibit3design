@@ -75,7 +75,7 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
   }
 };
 
-// Submit payment form to YekPay backend
+// Submit payment to YekPay backend using fetch API (faster than form submission)
 export const initiatePayment = async (paymentData: PaymentRequest) => {
   try {
     // Generate unique order number
@@ -84,14 +84,8 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     // Create pending order in database
     await createPendingOrder(paymentData, orderNumber);
     
-    // Create form and submit to YekPay backend
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://pay.exhibit3design.com/yekpay.php';
-    form.style.display = 'none';
-
-    // Add all required fields
-    const fields = {
+    // Prepare payment data for YekPay backend
+    const paymentPayload = {
       initiate_payment: '1',
       amount: paymentData.amount.toFixed(2),
       order_number: orderNumber,
@@ -106,21 +100,33 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
       description: paymentData.description
     };
 
-    // Create hidden input fields
-    Object.entries(fields).forEach(([name, value]) => {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = name;
-      input.value = value;
-      form.appendChild(input);
+    // Use fetch API for faster processing
+    const response = await fetch('https://pay.exhibit3design.com/yekpay.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams(paymentPayload).toString()
     });
 
-    // Append form to body and submit
-    document.body.appendChild(form);
-    form.submit();
+    if (!response.ok) {
+      throw new Error(`Payment gateway error: ${response.status}`);
+    }
+
+    const responseText = await response.text();
     
-    // Clean up
-    document.body.removeChild(form);
+    // If response contains a redirect URL, return it
+    if (responseText.includes('http')) {
+      const urlMatch = responseText.match(/https?:\/\/[^\s"'<>]+/);
+      if (urlMatch) {
+        return {
+          success: true,
+          checkoutUrl: urlMatch[0],
+          orderNumber,
+          message: "Redirecting to YekPay payment gateway..."
+        };
+      }
+    }
     
     return { 
       success: true, 

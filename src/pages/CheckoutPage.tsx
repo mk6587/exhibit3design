@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { createStripeCheckout } from "@/services/stripePaymentService";
+import { initiatePayment } from "@/services/paymentService";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/contexts/ProductsContext";
@@ -148,9 +148,9 @@ const CheckoutPage = () => {
     setIsProcessing(true);
     try {
       // Track payment info event
-      trackAddPaymentInfo(cartItems, cartTotal, 'Stripe');
+      trackAddPaymentInfo(cartItems, cartTotal, 'YekPay');
 
-      // Prepare payment data for Stripe
+      // Prepare payment data for YekPay
       const paymentData = {
         amount: cartTotal,
         description: `Purchase of ${cartItems.length} design(s) from Exhibit3Design`,
@@ -175,12 +175,17 @@ const CheckoutPage = () => {
       // Save user profile information before payment
       await saveUserProfile();
 
-      // Create Stripe checkout session using AJAX
-      const response = await createStripeCheckout(paymentData);
+      // Create YekPay payment using fetch API
+      const response = await initiatePayment(paymentData);
 
-      if (response.success && response.checkoutUrl) {
-        // Redirect to Stripe Checkout immediately - no intermediate redirects
-        window.location.href = response.checkoutUrl;
+      if (response.success) {
+        if (response.checkoutUrl) {
+          // Redirect to YekPay payment gateway immediately
+          window.location.href = response.checkoutUrl;
+        } else {
+          // If no direct URL, show success message
+          toast.success(response.message || "Payment initiated successfully");
+        }
       }
     } catch (error) {
       console.error("Payment error:", error);
@@ -366,7 +371,7 @@ const CheckoutPage = () => {
           <div className="border rounded-lg p-6 mb-8">
             <h2 className="font-semibold text-xl mb-4">Payment Information</h2>
             <p className="mb-6">
-              You will be redirected to Stripe's secure payment gateway to complete your purchase.
+              You will be redirected to YekPay's secure payment gateway to complete your purchase.
               After successful payment, you will receive access to download your purchased designs.
             </p>
             
