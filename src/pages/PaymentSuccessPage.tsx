@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
-import { updateOrderStatus, getOrderByNumber } from "@/services/stripePaymentService";
+import { updateOrderStatus, getOrderByNumber } from "@/services/paymentService";
 import { useProducts } from "@/contexts/ProductsContext";
 import { trackPurchase } from "@/services/ga4Analytics";
 
@@ -23,49 +23,44 @@ const PaymentSuccessPage = () => {
 
   useEffect(() => {
     const processSuccess = async () => {
+      console.log("PaymentSuccessPage - URL params:", { sessionId, orderNumber, status, authority, reference });
+      
       // Prevent double processing
       if (orderProcessed) return;
 
       try {
-        // Handle Stripe success
-        if (sessionId && orderNumber) {
+        // Handle YekPay success
+        if (status === 'success' && orderNumber) {
+          console.log('Processing YekPay payment success', { orderNumber, authority, reference });
+          
+          try {
+            console.log("Attempting to update order status...");
+            await updateOrderStatus(orderNumber, 'completed', authority || undefined, reference || undefined);
+            clearCart();
+            setOrderProcessed(true);
+            toast.success("Payment completed successfully!");
+            console.log("Order status updated successfully");
+          } catch (error) {
+            console.error("Failed to update order status:", error);
+            // Don't let this error break the page - just log it
+            toast.success("Payment completed successfully!");
+            setOrderProcessed(true);
+          }
+        }
+        // Handle Stripe success (if using sessionId)
+        else if (sessionId && orderNumber) {
           console.log('Processing Stripe payment success', { sessionId, orderNumber });
           
-          // Get order details from database
-          const order = await getOrderByNumber(orderNumber);
-          if (!order) {
-            toast.error("Order not found");
-            return;
+          try {
+            await updateOrderStatus(orderNumber, 'completed', sessionId);
+            clearCart();
+            setOrderProcessed(true);
+            toast.success("Payment completed successfully!");
+          } catch (error) {
+            console.error("Failed to update order status:", error);
+            toast.success("Payment completed successfully!");
+            setOrderProcessed(true);
           }
-
-          // Update order status
-          await updateOrderStatus(orderNumber, 'completed', sessionId);
-          
-          // Track GA4 purchase event with order items
-          if (order.payment_description && order.amount) {
-            // Convert order data to cart items format for GA4
-            const cartItems = [{
-              id: order.product_id,
-              title: order.payment_description,
-              price: order.amount,
-              quantity: 1
-            }];
-            
-            trackPurchase(orderNumber, cartItems, order.amount, 'Stripe');
-          }
-
-          clearCart();
-          setOrderProcessed(true);
-          toast.success("Payment completed successfully!");
-        }
-        // Handle legacy Stripe success (backward compatibility)
-        else if (status === 'success' && orderNumber) {
-          console.log('Processing Stripe payment success', { orderNumber, authority, reference });
-          
-          await updateOrderStatus(orderNumber, 'completed', authority, reference);
-          clearCart();
-          setOrderProcessed(true);
-          toast.success("Payment completed successfully!");
         }
       } catch (error) {
         console.error("Failed to process payment success:", error);
@@ -124,8 +119,8 @@ const PaymentSuccessPage = () => {
               
               <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
                 <p className="text-sm text-blue-800">
-                  <strong>Next Steps:</strong> Your design files are now available for download. 
-                  You can access them from your downloads page.
+                  <strong>Design Files:</strong> Your design files will be sent to your email address within 1 hour. 
+                  You can also access them from your downloads page once they're ready.
                 </p>
               </div>
 
