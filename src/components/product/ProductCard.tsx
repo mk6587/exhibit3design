@@ -31,8 +31,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   return (
     <Card className="group overflow-hidden transition-all duration-200 hover:shadow-md aspect-[4/3] bg-background animate-fade-in border border-border rounded-none hover:border-primary/20">
-      {/* Full Coverage Image Container - Larger viewport */}
-      <div className="relative h-5/6 overflow-hidden">
+      {/* Full Coverage Image Container with Text Overlay */}
+      <div className="relative h-full overflow-hidden">
         <Link to={`/product/${product.id}`} className="block w-full h-full">
           <img
             src={product.image}
@@ -62,15 +62,17 @@ const ProductCard = ({ product }: ProductCardProps) => {
             €{product.price}
           </Badge>
         </div>
-      </div>
 
-      {/* Responsive Bottom Section for Title with Border */}
-      <div className="h-1/6 flex items-center justify-start px-2 sm:px-3 md:px-4 py-2 bg-background border-t border-border">
-        <Link to={`/product/${product.id}`} className="w-full">
-          <h3 className="text-foreground font-normal text-sm sm:text-base md:text-lg hover:text-primary transition-colors duration-150 truncate text-left leading-tight">
-            {product.title}
-          </h3>
-        </Link>
+        {/* Text Overlay - Left Center with Background for Legibility */}
+        <div className="absolute inset-0 flex items-center justify-start z-10">
+          <div className="bg-black/60 backdrop-blur-sm px-3 py-2 ml-3 rounded-sm">
+            <Link to={`/product/${product.id}`}>
+              <h3 className="text-white font-medium text-sm sm:text-base md:text-lg hover:text-primary-foreground transition-colors duration-150 leading-tight max-w-[200px] sm:max-w-[250px] md:max-w-[300px]">
+                {product.title}
+              </h3>
+            </Link>
+          </div>
+        </div>
       </div>
 
       <ImageViewer
