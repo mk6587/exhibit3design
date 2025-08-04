@@ -165,3 +165,78 @@ html, body {
 .featured-section {
   background: hsl(var(--flat-surface));
 }
+
+/* Mobile-first flat design improvements */
+@media (max-width: 768px) {
+  /* Flat card design for mobile */
+  .card {
+    @apply border-0 shadow-none bg-background;
+    border-radius: 8px;
+  }
+  
+  /* Flat button styles for mobile */
+  .mobile-flat-btn {
+    @apply bg-primary text-primary-foreground rounded-lg font-medium;
+    padding: 12px 20px;
+    border: none;
+    box-shadow: none;
+    min-height: 48px;
+  }
+  
+  /* Mobile navigation improvements */
+  .mobile-nav-item {
+    @apply text-base font-medium py-4 px-4 border-b border-flat-border;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Reduced spacing for mobile */
+  .mobile-section {
+    @apply py-8 px-4;
+  }
+  
+  /* Flat input design */
+  .mobile-flat-input {
+    @apply border border-flat-border bg-flat-surface rounded-lg;
+    padding: 14px 16px;
+    font-size: 16px;
+    min-height: 48px;
+  }
+  
+  /* Mobile-optimized typography */
+  .mobile-title {
+    @apply text-2xl font-bold mb-4;
+    line-height: 1.2;
+  }
+  
+  .mobile-subtitle {
+    @apply text-lg text-muted-foreground mb-6;
+    line-height: 1.4;
+  }
+  
+  /* Touch-friendly product cards */
+  .mobile-product-card {
+    @apply bg-background border border-flat-border rounded-lg overflow-hidden;
+    min-height: 200px;
+  }
+  
+  .mobile-product-image {
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    width: 100%;
+  }
+  
+  .mobile-product-content {
+    @apply p-3;
+  }
+  
+  .mobile-product-title {
+    @apply font-semibold text-sm mb-1;
+    line-height: 1.3;
+  }
+  
+  .mobile-product-price {
+    @apply text-primary font-bold text-lg;
+  }
+}

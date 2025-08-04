@@ -85,32 +85,32 @@ const Header = () => {
       </div>
 
       {/* Mobile Menu */}
-      <div className={cn("md:hidden bg-background absolute w-full shadow-lg border-t z-50 left-0 right-0", isMenuOpen ? "block" : "hidden")}>
-        <nav className="container mx-auto px-4 sm:px-6 py-4 flex flex-col space-y-1">
-          <Link to="/products" className="p-3 hover:bg-muted rounded-sm transition-colors" onClick={() => setIsMenuOpen(false)}>
+      <div className={cn("md:hidden bg-background absolute w-full shadow-sm border-t border-flat-border z-50 left-0 right-0", isMenuOpen ? "block" : "hidden")}>
+        <nav className="container mx-auto px-4 sm:px-6 py-2 flex flex-col">
+          <Link to="/products" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
             Browse Designs
           </Link>
-          <Link to="/contact" className="p-3 hover:bg-muted rounded-sm transition-colors" onClick={() => setIsMenuOpen(false)}>
+          <Link to="/contact" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
             Custom Services
           </Link>
-          <Link to="/about" className="p-3 hover:bg-muted rounded-sm transition-colors" onClick={() => setIsMenuOpen(false)}>
+          <Link to="/about" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
             About
           </Link>
-          <Link to="/faq" className="p-3 hover:bg-muted rounded-sm transition-colors" onClick={() => setIsMenuOpen(false)}>
+          <Link to="/faq" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
             FAQ
           </Link>
           
           {user ? <>
-              <Link to="/profile" className="p-3 hover:bg-muted rounded-sm flex items-center transition-colors" onClick={() => setIsMenuOpen(false)}>
-                <User className="h-4 w-4 mr-2" />
+              <Link to="/profile" className="mobile-nav-item hover:bg-flat-hover transition-colors flex items-center" onClick={() => setIsMenuOpen(false)}>
+                <User className="h-5 w-5 mr-3" />
                 My Profile
               </Link>
-              <button onClick={handleSignOut} className="p-3 hover:bg-muted rounded-sm text-left flex items-center w-full transition-colors">
-                <LogOut className="h-4 w-4 mr-2" />
+              <button onClick={handleSignOut} className="mobile-nav-item hover:bg-flat-hover transition-colors text-left flex items-center w-full">
+                <LogOut className="h-5 w-5 mr-3" />
                 Sign Out
               </button>
             </> : <>
-              <Link to="/auth" className="p-3 hover:bg-muted rounded-sm transition-colors" onClick={() => setIsMenuOpen(false)}>
+              <Link to="/auth" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
                 Login / Register
               </Link>
             </>}

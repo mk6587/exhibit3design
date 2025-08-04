@@ -30,14 +30,14 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   return (
-    <Card className="group overflow-hidden transition-all duration-200 hover:border-primary/50 hover:shadow-sm hover:-translate-y-[2px] aspect-[4/3] flex flex-col bg-background animate-fade-in">
+    <Card className="group overflow-hidden transition-all duration-200 hover:border-primary/50 hover:shadow-sm hover:-translate-y-[2px] aspect-[4/3] flex flex-col bg-background animate-fade-in md:hover:border-primary/50 mobile-product-card">
       {/* Image Section - Takes up most of the card */}
       <div className="relative flex-1 overflow-hidden">
         <Link to={`/product/${product.id}`}>
           <img
             src={product.image}
             alt={product.title}
-            className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-95 group-hover:scale-[1.02]"
+            className="mobile-product-image transition-all duration-300 group-hover:opacity-95 md:group-hover:scale-[1.02]"
             onContextMenu={handleImageClick}
             onClick={handleImageClick}
             onError={(e) => {
@@ -46,8 +46,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
           />
         </Link>
         
-        {/* Clickable Indicators */}
-        <div className="absolute top-3 right-3 flex gap-2">
+        {/* Clickable Indicators - Hidden on mobile for cleaner look */}
+        <div className="absolute top-3 right-3 flex gap-2 hidden md:flex">
           <div className="bg-background border border-border p-2 rounded-sm opacity-0 group-hover:opacity-100 transition-all duration-200 animate-scale-in">
             <Eye className="h-3 w-3 text-foreground" />
           </div>
@@ -56,19 +56,19 @@ const ProductCard = ({ product }: ProductCardProps) => {
           </div>
         </div>
 
-        {/* Price Badge */}
-        <div className="absolute top-3 left-3">
-          <Badge variant="secondary" className="bg-background border border-border text-foreground rounded-sm transition-all duration-150 hover:shadow-sm">
+        {/* Price Badge - Mobile optimized */}
+        <div className="absolute top-2 left-2 md:top-3 md:left-3">
+          <Badge variant="secondary" className="bg-background border border-flat-border text-foreground text-xs md:text-sm font-bold px-2 py-1 rounded-md">
             €{product.price}
           </Badge>
         </div>
       </div>
 
-      {/* Compact Bottom Section */}
-      <div className="p-4 border-t border-border">
+      {/* Compact Bottom Section - Mobile optimized */}
+      <div className="mobile-product-content border-t border-flat-border">
         {/* Small Title Only */}
         <Link to={`/product/${product.id}`}>
-          <h3 className="text-sm font-medium line-clamp-2 hover:text-primary transition-all duration-150">
+          <h3 className="mobile-product-title hover:text-primary transition-all duration-150">
             {product.title}
           </h3>
         </Link>
