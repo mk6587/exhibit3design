@@ -55,9 +55,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
       </div>
 
-      {/* Price Badge - Consistent sizing */}
+      {/* Price Badge - Small and compact */}
       <div className="absolute top-3 left-3 z-10">
-        <Badge variant="secondary" className="bg-background border border-flat-border text-foreground text-sm font-semibold px-3 py-1.5 rounded-md shadow-sm">
+        <Badge variant="secondary" className="bg-background border border-flat-border text-foreground text-xs font-medium px-2 py-1 rounded-sm shadow-sm">
           €{product.price}
         </Badge>
       </div>
