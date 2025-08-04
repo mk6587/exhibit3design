@@ -102,7 +102,7 @@ const FeaturedProducts = () => {
                   
                   return (
                     <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-4/5 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                      <Link to={`/products/${product.id}`} className="block group">
+                      <Link to={`/product/${product.id}`} className="block group">
                         <div className="relative overflow-hidden rounded-lg bg-secondary">
                           <div className="aspect-[4/3] overflow-hidden">
                             <img 
