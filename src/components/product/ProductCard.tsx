@@ -65,9 +65,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
       </div>
 
       {/* Compact Bottom Section for Title */}
-      <div className="h-1/6 flex items-center px-2 py-1 bg-background">
-        <Link to={`/product/${product.id}`} className="w-full">
-          <h3 className="text-foreground font-normal text-sm hover:text-primary transition-colors duration-150 truncate">
+      <div className="h-1/6 flex items-center justify-start px-2 py-1 bg-background">
+        <Link to={`/product/${product.id}`} className="w-full text-left">
+          <h3 className="text-foreground font-normal text-sm hover:text-primary transition-colors duration-150 truncate text-left">
             {product.title}
           </h3>
         </Link>
