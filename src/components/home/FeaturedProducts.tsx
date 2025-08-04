@@ -1,9 +1,8 @@
 
-import ProductCard from "@/components/product/ProductCard";
 import { Link } from "react-router-dom";
 import { useProducts } from "@/contexts/ProductsContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import "@/components/ui/rich-text-editor.css";
 
 const FeaturedProducts = () => {
@@ -14,15 +13,19 @@ const FeaturedProducts = () => {
   
   if (loading) {
     return (
-      <section className="py-12 px-4">
-        <div className="container mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Featured Designs</h2>
-          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {[1, 2, 3, 4].map((i) => (
-              <Card key={i} className="overflow-hidden aspect-square">
-                <Skeleton className="h-full w-full" />
-              </Card>
-            ))}
+      <section className="py-6 md:py-12 px-0 md:px-4">
+        <div className="w-full md:container md:mx-auto">
+          <h2 className="text-lg md:text-3xl font-bold mb-4 md:mb-8 px-4 md:px-0">Featured Designs</h2>
+          <div className="px-4 md:px-0">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                    <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
           </div>
         </div>
       </section>
@@ -31,7 +34,6 @@ const FeaturedProducts = () => {
   
   return (
     <section className="py-6 md:py-12 px-0 md:px-4">
-      {/* Full-width container for mobile */}
       <div className="w-full md:container md:mx-auto">
         <div className="flex justify-between items-baseline mb-4 md:mb-8 px-4 md:px-0">
           <h2 className="text-lg md:text-3xl font-bold">Featured Designs</h2>
@@ -45,25 +47,45 @@ const FeaturedProducts = () => {
             <p className="text-muted-foreground text-sm md:text-lg">No featured products available</p>
           </div>
         ) : (
-          <div className="overflow-x-auto md:overflow-visible">
-            <div className="flex md:grid gap-3 md:gap-6 pb-4 md:pb-0 px-4 md:px-0 md:grid-cols-2 lg:grid-cols-4" style={{ width: 'max-content' }}>
-              {featuredProducts.slice(0, 6).map((product) => {
-                const productForCard = {
-                  id: product.id,
-                  title: product.title,
-                  price: product.price,
-                  image: product.images[0] && !product.images[0].startsWith('blob:') 
+          <div className="px-4 md:px-0">
+            <Carousel 
+              className="w-full"
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+            >
+              <CarouselContent className="-ml-2 md:-ml-4">
+                {featuredProducts.slice(0, 8).map((product) => {
+                  const imageUrl = product.images[0] && !product.images[0].startsWith('blob:') 
                     ? product.images[0] 
-                    : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
-                  tags: product.tags
-                };
-                return (
-                  <div key={product.id} className="w-32 md:w-auto flex-shrink-0">
-                    <ProductCard product={productForCard} />
-                  </div>
-                );
-              })}
-            </div>
+                    : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
+                  
+                  return (
+                    <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-4/5 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                      <Link to={`/products/${product.id}`} className="block group">
+                        <div className="relative overflow-hidden rounded-lg bg-secondary">
+                          <div className="aspect-[4/3] overflow-hidden">
+                            <img 
+                              src={imageUrl}
+                              alt={product.title}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
+                          </div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                            <h3 className="font-semibold text-sm md:text-base mb-1 line-clamp-1">{product.title}</h3>
+                            <p className="text-lg md:text-xl font-bold">${product.price}</p>
+                          </div>
+                        </div>
+                      </Link>
+                    </CarouselItem>
+                  );
+                })}
+              </CarouselContent>
+              <CarouselPrevious className="hidden md:flex -left-12 border-none bg-white/80 hover:bg-white" />
+              <CarouselNext className="hidden md:flex -right-12 border-none bg-white/80 hover:bg-white" />
+            </Carousel>
           </div>
         )}
       </div>
