@@ -58,8 +58,8 @@ const Header = () => {
                   <User className="h-5 w-5" />
                 </Link>
               </Button>
-              <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4" />
+              <Button variant="ghost" size="icon" onClick={handleSignOut}>
+                <LogOut className="h-5 w-5" />
               </Button>
             </div> : <div className="hidden md:flex items-center space-x-2">
               <Button size="sm" asChild>

@@ -374,8 +374,13 @@ const CheckoutPage = () => {
             </p>
             
             <div className="flex items-start space-x-3 mb-4">
-              <Checkbox id="privacy-policy" checked={policyAgreed} onCheckedChange={checked => setPolicyAgreed(checked as boolean)} />
-              <label htmlFor="privacy-policy" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+              <Checkbox 
+                id="privacy-policy" 
+                checked={policyAgreed} 
+                onCheckedChange={checked => setPolicyAgreed(checked as boolean)} 
+                className="mt-1"
+              />
+              <label htmlFor="privacy-policy" className="text-sm leading-relaxed cursor-pointer">
                 I have read and agree to the <Link to="/privacy-policy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
               </label>
             </div>
