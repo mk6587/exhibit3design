@@ -25,7 +25,7 @@ const Header = () => {
     setIsMenuOpen(false);
   };
   return <header className="bg-background border-b border-border fixed top-0 left-0 right-0 z-50">
-      <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between min-h-16">
         <Link to="/" className="font-bold text-lg sm:text-xl text-primary shrink-0 flex items-center">
           Exhibit3Design
         </Link>
