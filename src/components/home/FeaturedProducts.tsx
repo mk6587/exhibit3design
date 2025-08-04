@@ -16,13 +16,14 @@ const FeaturedProducts = () => {
       <>
         {/* Full-width video section */}
         <section className="relative w-full h-[300px] md:h-[400px] overflow-hidden">
-          <video
-            className="w-full h-full object-cover"
-            autoPlay
-            loop
-            muted
-            playsInline
-          >
+        <video
+          className="w-full h-full object-cover"
+          style={{ objectPosition: 'center top' }}
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
             <source src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/stand-rotate.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby9zdGFuZC1yb3RhdGUubXA0IiwiaWF0IjoxNzU0MzQwNDUyLCJleHAiOjE5MTIwMjA0NTJ9.FBw_9izAc0P_UOdc6LXhScc1B5tiYp9iJ8HLXU29OPg" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
@@ -55,6 +56,7 @@ const FeaturedProducts = () => {
       <section className="relative w-full h-[300px] md:h-[400px] overflow-hidden">
         <video
           className="w-full h-full object-cover"
+          style={{ objectPosition: 'center top' }}
           autoPlay
           loop
           muted
