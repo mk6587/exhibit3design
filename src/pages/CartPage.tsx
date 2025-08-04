@@ -12,6 +12,11 @@ const CartPage = () => {
   const { cartItems, removeFromCart, updateCartQuantity, cartTotal } = useProducts();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
+  // Scroll to top when cart page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Track view_cart when cart is viewed
   useEffect(() => {
     if (cartItems.length > 0) {

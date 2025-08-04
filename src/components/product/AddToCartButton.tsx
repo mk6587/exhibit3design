@@ -32,6 +32,11 @@ const AddToCartButton = ({ productId, productName }: AddToCartButtonProps) => {
       // Track GA4 add_to_cart event
       trackAddToCart(product, 1);
       
+      // Scroll to top on mobile after adding to cart for better UX
+      if (window.innerWidth <= 768) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      
       setIsLoading(false);
     }, 300);
   };
