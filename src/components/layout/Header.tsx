@@ -26,20 +26,20 @@ const Header = () => {
   };
   return <header className="bg-background border-b border-border fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between min-h-16">
-        <Link to="/" className="font-bold text-lg sm:text-xl text-primary shrink-0 flex items-center">
+        <Link to="/" className="font-bold text-lg sm:text-xl text-primary shrink-0 flex items-center h-full">
           Exhibit3Design
         </Link>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link to="/products" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px]">Browse Designs</Link>
-          <Link to="/contact" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px]">
+        <nav className="hidden md:flex items-center space-x-6 h-full">
+          <Link to="/products" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">Browse Designs</Link>
+          <Link to="/contact" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
             Custom Services
           </Link>
-          <Link to="/about" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px]">
+          <Link to="/about" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
             About
           </Link>
-          <Link to="/faq" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px]">
+          <Link to="/faq" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
             FAQ
           </Link>
         </nav>
