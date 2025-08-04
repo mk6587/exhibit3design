@@ -30,8 +30,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   return (
-    <Card className="group overflow-hidden transition-all duration-200 hover:border-primary/50 hover:shadow-sm hover:-translate-y-[2px] aspect-[4/3] flex flex-col bg-background animate-fade-in">
-      {/* Square Image Section */}
+    <Card className="group overflow-hidden transition-all duration-200 hover:border-primary/50 hover:shadow-sm hover:-translate-y-[2px] aspect-[3/4] flex flex-col bg-background animate-fade-in">
+      {/* Image Section - Takes up most of the card */}
       <div className="relative flex-1 overflow-hidden">
         <Link to={`/product/${product.id}`}>
           <img
