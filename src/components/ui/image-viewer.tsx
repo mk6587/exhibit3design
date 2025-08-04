@@ -115,7 +115,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     
     // Ensure imageSize and containerSize are valid
     if (imageSize.width === 0 || imageSize.height === 0 || containerSize.width === 0 || containerSize.height === 0) {
-      console.log('Invalid sizes, allowing free movement:', { imageSize, containerSize });
+      
       // Allow generous movement when sizes aren't calculated yet
       const maxMove = Math.max(containerSize.width || 500, containerSize.height || 500) * 0.5;
       return {
@@ -140,18 +140,6 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
       x: Math.max(-maxX, Math.min(maxX, newX)),
       y: Math.max(-maxY, Math.min(maxY, newY))
     };
-    
-    console.log('constrainPosition:', { 
-      currentScale,
-      scaledImageWidth, 
-      scaledImageHeight, 
-      excessWidth, 
-      excessHeight, 
-      maxX, 
-      maxY, 
-      input: { newX, newY }, 
-      result 
-    });
     
     return result;
   };
@@ -188,7 +176,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
         x: e.clientX - position.x,
         y: e.clientY - position.y
       });
-      console.log('Started dragging at:', { clientX: e.clientX, clientY: e.clientY, position, offsetX, offsetY });
+      
     }
   };
 
@@ -201,13 +189,13 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
       const newX = e.clientX - dragStart.x;
       const newY = e.clientY - dragStart.y;
       const constrainedPos = constrainPosition(newX, newY, scale);
-      console.log('Moving to:', { newX, newY, constrainedPos, scale });
+      
       setPosition(constrainedPos);
     }
   };
 
   const handleMouseUp = (e: React.MouseEvent) => {
-    console.log('Mouse up, was dragging:', isDragging);
+    
     setIsDragging(false);
   };
 

@@ -24,9 +24,9 @@ const Header = () => {
     navigate("/");
     setIsMenuOpen(false);
   };
-  return <header className="bg-background z-40 sticky top-0">
-      <div className="container mx-auto px-6 flex justify-between items-center h-16">
-        <Link to="/" className="font-bold text-xl text-primary">
+  return <header className="bg-background z-40 sticky top-0 border-b">
+      <div className="container mx-auto px-4 sm:px-6 flex justify-between items-center h-16">
+        <Link to="/" className="font-bold text-lg sm:text-xl text-primary shrink-0">
           Exhibit3Design
         </Link>
         
@@ -45,7 +45,7 @@ const Header = () => {
         </nav>
         
         {/* Actions */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1 sm:space-x-2">
           {/* Search Toggle */}
           <Button variant="ghost" size="icon" onClick={toggleSearch} className="hidden md:flex">
             <Search className="h-5 w-5" />
@@ -85,8 +85,8 @@ const Header = () => {
       </div>
 
       {/* Mobile Menu */}
-      <div className={cn("md:hidden bg-background absolute w-full shadow-lg border-t z-50", isMenuOpen ? "block" : "hidden")}>
-        <nav className="container mx-auto px-6 py-6 flex flex-col space-y-2">
+      <div className={cn("md:hidden bg-background absolute w-full shadow-lg border-t z-50 left-0 right-0", isMenuOpen ? "block" : "hidden")}>
+        <nav className="container mx-auto px-4 sm:px-6 py-4 flex flex-col space-y-1">
           <Link to="/products" className="p-3 hover:bg-muted rounded-sm transition-colors" onClick={() => setIsMenuOpen(false)}>
             Browse Designs
           </Link>
@@ -118,8 +118,8 @@ const Header = () => {
       </div>
 
       {/* Search Bar */}
-      <div className={cn("bg-background absolute w-full transition-all duration-200 ease-in-out", isSearchOpen ? "top-16" : "-top-20")}>
-        <div className="container mx-auto px-6 py-6">
+      <div className={cn("bg-background absolute w-full transition-all duration-200 ease-in-out left-0 right-0", isSearchOpen ? "top-16" : "-top-20")}>
+        <div className="container mx-auto px-4 sm:px-6 py-4">
           <form className="flex items-center gap-3">
             <Input type="search" placeholder="Search designs..." className="flex-1" />
             <Button type="submit" size="default">
