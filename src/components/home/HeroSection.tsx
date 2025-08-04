@@ -22,13 +22,10 @@ const HeroSection = () => {
           Ready-to-use design files at affordable prices
         </p>
         
-        {/* Mobile: Stack buttons with primary action prominent */}
-        <div className="flex flex-col md:flex-row justify-center gap-3 md:gap-6 px-4">
-          <Button asChild size="lg" className="mobile-flat-btn md:min-w-[160px] text-lg font-semibold">
+        {/* Centered primary action */}
+        <div className="flex justify-center px-4">
+          <Button asChild size="default" className="mobile-flat-btn md:min-w-[140px] font-semibold">
             <Link to="/products">Browse Designs</Link>
-          </Button>
-          <Button asChild size="sm" variant="ghost" className="md:min-w-[160px] text-muted-foreground text-sm">
-            <Link to="/register">Create Account</Link>
           </Button>
         </div>
       </div>
