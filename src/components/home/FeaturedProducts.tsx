@@ -19,7 +19,6 @@ const FeaturedProducts = () => {
         <video
           className="w-full h-full object-cover"
           style={{ 
-            transform: 'scale(1.1) translateY(-5%)',
             objectPosition: 'center center'
           }}
           autoPlay
@@ -60,7 +59,6 @@ const FeaturedProducts = () => {
         <video
           className="w-full h-full object-cover"
           style={{ 
-            transform: 'scale(1.1) translateY(-5%)',
             objectPosition: 'center center'
           }}
           autoPlay
