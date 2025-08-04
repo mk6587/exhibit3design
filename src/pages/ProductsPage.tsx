@@ -128,7 +128,7 @@ const ProductsPage = () => {
         </div>
         
         {filteredProducts.length > 0 ? (
-          <div className="product-grid">
+          <div className="flex flex-col gap-6 max-w-sm mx-auto">
             {filteredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
