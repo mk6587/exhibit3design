@@ -24,7 +24,7 @@ const Header = () => {
     navigate("/");
     setIsMenuOpen(false);
   };
-  return <header className="bg-background border-b sticky top-0 z-50">
+  return <header className="bg-background border-b fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <Link to="/" className="font-bold text-lg sm:text-xl text-primary shrink-0 flex items-center">
           Exhibit3Design

@@ -22,7 +22,7 @@ const Layout = ({ children, title, description, keywords, url }: LayoutProps) =>
         url={url}
       />
       <Header />
-      <main className="flex-grow">
+      <main className="flex-grow pt-16">
         {children}
       </main>
       <Footer />
