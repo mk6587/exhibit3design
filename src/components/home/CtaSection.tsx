@@ -4,21 +4,25 @@ import { Link } from "react-router-dom";
 
 const CtaSection = () => {
   return (
-    <section className="py-12 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
-      <div className="container mx-auto text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6">
-          Need Exhibition Stand Designs?
+    <section className="py-8 md:py-12 px-0 md:px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white relative overflow-hidden">
+      {/* Full-width background pattern for mobile */}
+      <div className="absolute inset-0 opacity-20 md:hidden">
+        <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10"></div>
+      </div>
+      
+      <div className="container mx-auto text-center relative z-10">
+        <h2 className="text-xl md:text-4xl font-bold mb-3 md:mb-6 px-4">
+          Ready to Start?
         </h2>
-        <p className="text-lg mb-8 max-w-2xl mx-auto opacity-90">
-          Choose from our affordable ready-made designs or request a custom-designed exhibition 
-          stand tailored to your specific requirements.
+        <p className="text-sm md:text-lg mb-6 md:mb-8 max-w-lg md:max-w-2xl mx-auto opacity-90 px-4">
+          Browse our designs or get custom work
         </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Button asChild size="lg" variant="secondary">
+        <div className="flex flex-col md:flex-row justify-center gap-3 md:gap-4 px-4">
+          <Button asChild size="lg" variant="secondary" className="font-semibold">
             <Link to="/products">Browse Designs</Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white/10">
-            <Link to="/contact">Request Custom Design</Link>
+          <Button asChild size="sm" variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10 text-sm">
+            <Link to="/contact">Custom Design</Link>
           </Button>
         </div>
       </div>

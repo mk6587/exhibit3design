@@ -31,27 +31,26 @@ const features = [
 
 const FeaturesSection = () => {
   return (
-    <section className="py-12 px-4 featured-section">
+    <section className="py-6 md:py-12 px-4 featured-section">
       <div className="container mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className="text-3xl font-bold mb-4">Why Use Our Design Files?</h2>
-          <p className="text-muted-foreground">
-            Get professional exhibition stand designs at a fraction of the cost, 
-            ready to customize for your next project.
+        <div className="text-center max-w-2xl mx-auto mb-6 md:mb-12">
+          <h2 className="text-xl md:text-3xl font-bold mb-2 md:mb-4">Why Choose Us?</h2>
+          <p className="text-sm md:text-base text-muted-foreground hidden md:block">
+            Professional designs at affordable prices
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="bg-background border-border hover:border-primary/30 hover:shadow-sm hover:-translate-y-[1px] transition-all duration-200 animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
-              <CardContent className="p-8">
-                <div className="flex items-start gap-4">
-                  <div className="mt-1 bg-primary p-2 rounded-sm transition-all duration-150 group-hover:shadow-sm">
-                    <Check className="h-4 w-4 text-primary-foreground" />
+            <Card key={index} className="bg-background border-border hover:border-primary/30 transition-all duration-200">
+              <CardContent className="p-3 md:p-8">
+                <div className="flex flex-col md:flex-row md:items-start md:gap-4">
+                  <div className="mb-2 md:mb-0 md:mt-1 bg-primary p-1 md:p-2 rounded-sm w-fit">
+                    <Check className="h-3 w-3 md:h-4 md:w-4 text-primary-foreground" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-3 text-base">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                    <h3 className="font-semibold mb-1 md:mb-3 text-xs md:text-base">{feature.title}</h3>
+                    <p className="text-xs md:text-sm text-muted-foreground leading-relaxed hidden md:block">{feature.description}</p>
                   </div>
                 </div>
               </CardContent>
