@@ -21,7 +21,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   title
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [scale, setScale] = useState(0.5); // Changed from 1 to 0.5 (50%)
+  const [scale, setScale] = useState(1); // Reset to 1 for better mobile experience
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -103,14 +103,13 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   };
 
   const canDragImage = () => {
-    const canDrag = scale > 0.5;
-    console.log('canDragImage check:', { scale, canDrag });
+    const canDrag = scale > 1;
     return canDrag;
   };
 
   const constrainPosition = (newX: number, newY: number, currentScale: number) => {
-    // Allow free movement when scale > 0.5
-    if (currentScale <= 0.5) {
+    // Allow free movement when scale > 1
+    if (currentScale <= 1) {
       return { x: 0, y: 0 };
     }
     
@@ -174,7 +173,6 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   // Mouse handlers with improved event handling
   const handleMouseDown = (e: React.MouseEvent) => {
     const canDrag = canDragImage();
-    console.log('handleMouseDown:', { scale, canDrag, imageSize, containerSize });
     
     if (canDrag) {
       e.preventDefault();
@@ -391,7 +389,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               variant="outline"
               size="sm"
               onClick={handleZoomOut}
-              disabled={scale <= 0.25} // Changed from 0.5 to 0.25
+              disabled={scale <= 0.5}
               className="text-gray-700"
               aria-label="Zoom out"
             >

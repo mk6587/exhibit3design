@@ -85,15 +85,15 @@ const Header = () => {
       </div>
 
       {/* Mobile Menu */}
-      <div className={cn("md:hidden bg-background absolute w-full", isMenuOpen ? "block" : "hidden")}>
+      <div className={cn("md:hidden bg-background absolute w-full shadow-lg border-t z-50", isMenuOpen ? "block" : "hidden")}>
         <nav className="container mx-auto px-6 py-6 flex flex-col space-y-2">
-          <Link to="/products" className="p-3 hover:bg-muted rounded-sm transition-colors">
-            €10 Designs
+          <Link to="/products" className="p-3 hover:bg-muted rounded-sm transition-colors" onClick={() => setIsMenuOpen(false)}>
+            Browse Designs
           </Link>
-          <Link to="/contact" className="p-3 hover:bg-muted rounded-sm transition-colors">
+          <Link to="/contact" className="p-3 hover:bg-muted rounded-sm transition-colors" onClick={() => setIsMenuOpen(false)}>
             Custom Services
           </Link>
-          <Link to="/about" className="p-3 hover:bg-muted rounded-sm transition-colors">
+          <Link to="/about" className="p-3 hover:bg-muted rounded-sm transition-colors" onClick={() => setIsMenuOpen(false)}>
             About
           </Link>
           <Link to="/faq" className="p-3 hover:bg-muted rounded-sm transition-colors" onClick={() => setIsMenuOpen(false)}>

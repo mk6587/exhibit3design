@@ -64,9 +64,8 @@ export const useSupabaseProducts = () => {
       console.log('📡 Method 1: Standard Supabase query...');
       const timeoutPromise = new Promise((resolve) => {
         setTimeout(() => {
-          console.log('⏰ Method 1 timeout (3s)');
           resolve({ data: null, error: { message: 'timeout' } });
-        }, 3000);
+        }, 8000);
       });
       
       const queryPromise = supabase
