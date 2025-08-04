@@ -371,21 +371,21 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
         </div>
 
         {/* Fixed Controls Footer */}
-        <div className="flex justify-between items-center gap-2 p-4 border-t bg-gray-50 flex-shrink-0">
-          <div className="flex justify-center items-center gap-2 flex-1">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2 p-4 border-t bg-gray-50 flex-shrink-0">
+          <div className="flex justify-center items-center gap-1 sm:gap-2 flex-wrap">
             <Button
               variant="outline"
               size="sm"
               onClick={handleZoomOut}
               disabled={scale <= 0.5}
-              className="text-gray-700"
+              className="text-gray-700 px-2 sm:px-3"
               aria-label="Zoom out"
             >
-              <ZoomOut className="h-4 w-4 mr-1" />
-              Zoom Out
+              <ZoomOut className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Zoom Out</span>
             </Button>
             
-            <div className="text-gray-700 text-sm px-3 py-1 bg-gray-200 rounded">
+            <div className="text-gray-700 text-xs sm:text-sm px-2 sm:px-3 py-1 bg-gray-200 rounded">
               {Math.round(scale * 100)}%
             </div>
             
@@ -393,32 +393,32 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               variant="outline"
               size="sm"
               onClick={handleZoomIn}
-              disabled={scale >= 2} // Changed from 3 to 2
-              className="text-gray-700"
+              disabled={scale >= 2}
+              className="text-gray-700 px-2 sm:px-3"
               aria-label="Zoom in"
             >
-              <ZoomIn className="h-4 w-4 mr-1" />
-              Zoom In
+              <ZoomIn className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Zoom In</span>
             </Button>
             
             <Button
               variant="outline"
               size="sm"
               onClick={resetView}
-              className="text-gray-700"
+              className="text-gray-700 px-2 sm:px-3"
               aria-label="Reset view"
             >
-              <RotateCcw className="h-4 w-4 mr-1" />
-              Reset
+              <RotateCcw className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Reset</span>
             </Button>
           </div>
           
-          {/* Close button moved to footer */}
+          {/* Close button */}
           <Button
             variant="outline"
             size="sm"
             onClick={onClose}
-            className="text-gray-700"
+            className="text-gray-700 mt-2 sm:mt-0"
             aria-label="Close"
           >
             Close
