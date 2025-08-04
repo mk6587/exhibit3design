@@ -30,14 +30,14 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   return (
-    <Card className="group overflow-hidden transition-all duration-200 hover:shadow-sm aspect-[4/3] bg-background animate-fade-in border border-border rounded-none">
+    <Card className="group overflow-hidden transition-all duration-200 hover:shadow-md aspect-[4/3] bg-background animate-fade-in border border-border rounded-none hover:border-primary/20">
       {/* Full Coverage Image Container - Larger viewport */}
       <div className="relative h-5/6 overflow-hidden">
         <Link to={`/product/${product.id}`} className="block w-full h-full">
           <img
             src={product.image}
             alt={product.title}
-            className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-95"
+            className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-95 group-hover:scale-[1.02]"
             onContextMenu={handleImageClick}
             onClick={handleImageClick}
             onError={(e) => {
@@ -45,6 +45,16 @@ const ProductCard = ({ product }: ProductCardProps) => {
             }}
           />
         </Link>
+        
+        {/* Hover Indicator Icons */}
+        <div className="absolute top-2 right-2 flex gap-1 z-10">
+          <div className="bg-white border border-border p-1.5 rounded-sm opacity-0 group-hover:opacity-100 transition-all duration-200 animate-scale-in">
+            <Eye className="h-3 w-3 text-foreground" />
+          </div>
+          <div className="bg-white border border-border p-1.5 rounded-sm opacity-0 group-hover:opacity-100 transition-all duration-200 animate-scale-in">
+            <MousePointer2 className="h-3 w-3 text-foreground" />
+          </div>
+        </div>
         
         {/* Price Badge - Small and minimal */}
         <div className="absolute top-2 left-2 z-10">
