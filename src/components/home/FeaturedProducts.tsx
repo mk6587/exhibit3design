@@ -18,7 +18,10 @@ const FeaturedProducts = () => {
         <section className="relative w-full h-[300px] md:h-[400px] overflow-hidden">
         <video
           className="w-full h-full object-cover"
-          style={{ objectPosition: 'center top' }}
+          style={{ 
+            transform: 'scale(1.1) translateY(-5%)',
+            objectPosition: 'center center'
+          }}
           autoPlay
           loop
           muted
@@ -56,7 +59,10 @@ const FeaturedProducts = () => {
       <section className="relative w-full h-[300px] md:h-[400px] overflow-hidden">
         <video
           className="w-full h-full object-cover"
-          style={{ objectPosition: 'center top' }}
+          style={{ 
+            transform: 'scale(1.1) translateY(-5%)',
+            objectPosition: 'center center'
+          }}
           autoPlay
           loop
           muted
