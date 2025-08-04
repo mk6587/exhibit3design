@@ -52,13 +52,13 @@ const Header = () => {
           </Button>
 
           {/* User Menu */}
-          {user ? <div className="hidden md:flex items-center space-x-2">
+          {user ? <div className="flex items-center space-x-2">
               <Button variant="ghost" size="icon" asChild>
                 <Link to="/profile">
                   <User className="h-5 w-5" />
                 </Link>
               </Button>
-              <Button variant="ghost" size="icon" onClick={handleSignOut}>
+              <Button variant="ghost" size="icon" onClick={handleSignOut} className="hidden md:flex">
                 <LogOut className="h-5 w-5" />
               </Button>
             </div> : <div className="hidden md:flex items-center space-x-2">
