@@ -128,10 +128,8 @@ const ProductsPage = () => {
         </div>
         
         {filteredProducts.length > 0 ? (
-          <div className="product-grid">
-            {filteredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          <div className="flex justify-center">
+            <ProductCard product={filteredProducts[0]} />
           </div>
         ) : (
           <div className="py-12 text-center">
