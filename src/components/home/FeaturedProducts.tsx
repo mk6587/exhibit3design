@@ -13,9 +13,9 @@ const FeaturedProducts = () => {
   
   if (loading) {
     return (
-      <section className="py-6 md:py-12 px-0 md:px-4">
-        <div className="w-full md:container md:mx-auto">
-          <h2 className="text-lg md:text-3xl font-bold mb-4 md:mb-8 px-4 md:px-0">Featured Designs</h2>
+      <section className="py-8 md:py-12 px-4">
+        <div className="container mx-auto">
+          <h2 className="text-lg md:text-3xl font-bold mb-4 md:mb-8">Featured Designs</h2>
           <div className="px-4 md:px-0">
             <Carousel className="w-full">
               <CarouselContent>
@@ -33,9 +33,9 @@ const FeaturedProducts = () => {
   }
   
   return (
-    <section className="py-6 md:py-12 px-0 md:px-4">
-      <div className="w-full md:container md:mx-auto">
-        <div className="flex justify-between items-baseline mb-4 md:mb-8 px-4 md:px-0">
+    <section className="py-8 md:py-12 px-4">
+      <div className="container mx-auto">
+        <div className="flex justify-between items-baseline mb-4 md:mb-8">
           <h2 className="text-lg md:text-3xl font-bold">Featured Designs</h2>
           <Link to="/products" className="text-primary hover:underline text-xs md:text-base">
             View All
@@ -43,11 +43,11 @@ const FeaturedProducts = () => {
         </div>
         
         {featuredProducts.length === 0 ? (
-          <div className="text-center py-8 md:py-12 px-4">
+          <div className="text-center py-8 md:py-12">
             <p className="text-muted-foreground text-sm md:text-lg">No featured products available</p>
           </div>
         ) : (
-          <div className="px-4 md:px-0">
+          <div className="">
             <Carousel 
               className="w-full"
               opts={{
