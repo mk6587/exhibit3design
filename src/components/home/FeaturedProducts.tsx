@@ -27,7 +27,7 @@ const FeaturedProducts = () => {
           muted
           playsInline
         >
-            <source src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/stand-rotate.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby9zdGFuZC1yb3RhdGUubXA0IiwiaWF0IjoxNzU0MzQwNDUyLCJleHAiOjE5MTIwMjA0NTJ9.FBw_9izAc0P_UOdc6LXhScc1B5tiYp9iJ8HLXU29OPg" type="video/mp4" />
+            <source src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/veo3.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby92ZW8zLm1wNCIsImlhdCI6MTc1NDM0MjA1OSwiZXhwIjoxOTEyMDIyMDU5fQ.br8HgLwcWpmJQP8NB7UdD-vnjYLHCw641P9_-o5PTPg" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <div className="absolute inset-0 bg-black/20" />
@@ -68,7 +68,7 @@ const FeaturedProducts = () => {
           muted
           playsInline
         >
-          <source src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/stand-rotate.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby9zdGFuZC1yb3RhdGUubXA0IiwiaWF0IjoxNzU0MzQwNDUyLCJleHAiOjE5MTIwMjA0NTJ9.FBw_9izAc0P_UOdc6LXhScc1B5tiYp9iJ8HLXU29OPg" type="video/mp4" />
+          <source src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/veo3.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby92ZW8zLm1wNCIsImlhdCI6MTc1NDM0MjA1OSwiZXhwIjoxOTEyMDIyMDU5fQ.br8HgLwcWpmJQP8NB7UdD-vnjYLHCw641P9_-o5PTPg" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         <div className="absolute inset-0 bg-black/20" />
