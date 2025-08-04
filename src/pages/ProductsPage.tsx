@@ -71,7 +71,7 @@ const ProductsPage = () => {
   
   return (
     <Layout>
-      <div className="py-12 sm:py-16 px-4">
+      <div className="py-6 sm:py-8 px-4">
         <div className="container mx-auto">
         <h1 className="text-3xl font-bold mb-8">Browse Exhibition Stand Designs</h1>
         

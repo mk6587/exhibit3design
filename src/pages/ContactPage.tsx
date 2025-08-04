@@ -66,7 +66,7 @@ const ContactPage = () => {
       });
   };
   return <Layout>
-      <div className="py-12 sm:py-16 px-4">
+      <div className="py-6 sm:py-8 px-4">
         <div className="container mx-auto">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold mb-8">Contact Us</h1>
