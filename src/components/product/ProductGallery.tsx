@@ -12,9 +12,22 @@ const ProductGallery = ({ images, title }: ProductGalleryProps) => {
   const [activeImage, setActiveImage] = useState(0);
   const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
   const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(false);
   
   const handleImageError = (index: number) => {
     setImageErrors(prev => ({ ...prev, [index]: true }));
+    setIsImageLoading(false);
+  };
+
+  const handleImageLoad = () => {
+    setIsImageLoading(false);
+  };
+
+  const handleThumbnailClick = (index: number) => {
+    if (index !== activeImage) {
+      setIsImageLoading(true);
+      setActiveImage(index);
+    }
   };
 
   const getImageSrc = (image: string, index: number) => {
@@ -35,14 +48,22 @@ const ProductGallery = ({ images, title }: ProductGalleryProps) => {
   return (
     <div className="space-y-4">
       <Card className="overflow-hidden p-2 bg-secondary">
-        <div className="aspect-[4/3] overflow-hidden rounded cursor-pointer hover:opacity-90 transition-opacity clickable-image-container">
+        <div className="aspect-[4/3] overflow-hidden rounded cursor-pointer hover:opacity-90 transition-opacity clickable-image-container relative">
           <img 
             src={getImageSrc(images[activeImage], activeImage)} 
             alt={`${title} - preview ${activeImage + 1}`}
-            className="w-full h-full object-contain"
+            className={`w-full h-full object-contain transition-opacity duration-300 ${
+              isImageLoading ? 'opacity-0' : 'opacity-100'
+            }`}
             onError={() => handleImageError(activeImage)}
+            onLoad={handleImageLoad}
             onClick={handleImageClick}
           />
+          {isImageLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-secondary">
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
         </div>
       </Card>
       
@@ -51,7 +72,7 @@ const ProductGallery = ({ images, title }: ProductGalleryProps) => {
           {images.map((image, index) => (
             <button
               key={index}
-              onClick={() => setActiveImage(index)}
+              onClick={() => handleThumbnailClick(index)}
               className={`aspect-[4/3] overflow-hidden rounded transition-all duration-200 ${
                 activeImage === index 
                   ? "ring-2 ring-primary" 
