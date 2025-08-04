@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const CtaSection = () => {
   return (
-    <section className="py-6 sm:py-8 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+    <section className="py-12 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
       <div className="container mx-auto text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
           Need Exhibition Stand Designs?

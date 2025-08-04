@@ -31,7 +31,7 @@ const features = [
 
 const FeaturesSection = () => {
   return (
-    <section className="py-6 sm:py-8 px-4 featured-section">
+    <section className="py-12 px-4 featured-section">
       <div className="container mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl font-bold mb-4">Why Use Our Design Files?</h2>
