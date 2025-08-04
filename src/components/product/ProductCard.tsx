@@ -30,7 +30,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   return (
-    <Card className="group overflow-hidden transition-all duration-200 hover:shadow-sm aspect-[4/3] bg-background animate-fade-in border-0 rounded-none">
+    <Card className="group overflow-hidden transition-all duration-200 hover:shadow-sm aspect-[4/3] bg-background animate-fade-in border border-border rounded-none">
       {/* Full Coverage Image Container */}
       <div className="relative h-4/5 overflow-hidden">
         <Link to={`/product/${product.id}`} className="block w-full h-full">
