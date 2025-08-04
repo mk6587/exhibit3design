@@ -17,7 +17,7 @@ const FeaturedProducts = () => {
       <section className="py-12 sm:py-16 px-4">
         <div className="container mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Featured Designs</h2>
-          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
             {[1, 2, 3, 4].map((i) => (
               <Card key={i} className="overflow-hidden aspect-square">
                 <Skeleton className="h-full w-full" />
@@ -44,7 +44,7 @@ const FeaturedProducts = () => {
             <p className="text-gray-500 text-lg">No featured products available at the moment.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
             {featuredProducts.map((product) => {
               const productForCard = {
                 id: product.id,
