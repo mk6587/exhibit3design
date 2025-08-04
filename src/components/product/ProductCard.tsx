@@ -31,8 +31,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   return (
     <Card className="group overflow-hidden transition-all duration-200 hover:shadow-sm aspect-[4/3] bg-background animate-fade-in border border-border rounded-none">
-      {/* Full Coverage Image Container */}
-      <div className="relative h-4/5 overflow-hidden">
+      {/* Full Coverage Image Container - Larger viewport */}
+      <div className="relative h-5/6 overflow-hidden">
         <Link to={`/product/${product.id}`} className="block w-full h-full">
           <img
             src={product.image}
@@ -54,8 +54,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
       </div>
 
-      {/* Flat Bottom Section for Title */}
-      <div className="h-1/5 flex items-center px-3 bg-background">
+      {/* Compact Bottom Section for Title */}
+      <div className="h-1/6 flex items-center px-2 py-1 bg-background">
         <Link to={`/product/${product.id}`} className="w-full">
           <h3 className="text-foreground font-normal text-sm hover:text-primary transition-colors duration-150 truncate">
             {product.title}
