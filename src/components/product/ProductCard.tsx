@@ -64,10 +64,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
       </div>
 
-      {/* Compact Bottom Section for Title */}
-      <div className="h-1/6 flex items-center justify-start px-3 py-2 bg-background">
+      {/* Responsive Bottom Section for Title */}
+      <div className="h-1/6 flex items-center justify-start px-2 sm:px-3 py-1 sm:py-2 bg-background">
         <Link to={`/product/${product.id}`} className="w-full">
-          <h3 className="text-foreground font-normal text-sm hover:text-primary transition-colors duration-150 truncate text-left leading-tight">
+          <h3 className="text-foreground font-normal text-xs sm:text-sm hover:text-primary transition-colors duration-150 truncate text-left leading-tight">
             {product.title}
           </h3>
         </Link>
