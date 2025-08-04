@@ -55,8 +55,7 @@ const faqItems = [
 const FaqPage = () => {
   return (
     <Layout>
-      <div className="py-6 sm:py-8 px-4">
-        <div className="container mx-auto">
+      <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold mb-4">Frequently Asked Questions</h1>
           <p className="text-muted-foreground mb-8">
@@ -85,7 +84,6 @@ const FaqPage = () => {
               <Link to="/contact">Contact Us</Link>
             </Button>
           </div>
-        </div>
         </div>
       </div>
     </Layout>

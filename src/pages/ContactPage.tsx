@@ -66,8 +66,7 @@ const ContactPage = () => {
       });
   };
   return <Layout>
-      <div className="py-6 sm:py-8 px-4">
-        <div className="container mx-auto">
+      <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold mb-8">Contact Us</h1>
           
@@ -128,7 +127,6 @@ const ContactPage = () => {
               </form>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </Layout>;

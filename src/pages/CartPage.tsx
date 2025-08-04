@@ -44,8 +44,7 @@ const CartPage = () => {
   
   return (
     <Layout>
-      <div className="py-6 sm:py-8 px-4">
-        <div className="container mx-auto">
+      <div className="container mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
         
         {cartItems.length > 0 ? (
@@ -108,7 +107,6 @@ const CartPage = () => {
             </Button>
           </div>
         )}
-        </div>
       </div>
     </Layout>
   );

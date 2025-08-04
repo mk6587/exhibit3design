@@ -1,8 +1,7 @@
 import Layout from "@/components/layout/Layout";
 const AboutPage = () => {
   return <Layout>
-      <div className="py-6 sm:py-8 px-4">
-        <div className="container mx-auto">
+      <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold mb-8">About Exhibit3Design</h1>
           
@@ -49,7 +48,6 @@ const AboutPage = () => {
             <h2 className="text-2xl font-semibold mt-8 mb-4">How It Works</h2>
             <p>Simply browse our collection of designs, purchase the one that best fits your needs, and get the files under one hour. You'll receive multiple file formats (SKP, 3DS) that you can customize to your specifications. It's that easy!</p>
           </div>
-        </div>
         </div>
       </div>
     </Layout>;
