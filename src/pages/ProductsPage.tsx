@@ -128,8 +128,10 @@ const ProductsPage = () => {
         </div>
         
         {filteredProducts.length > 0 ? (
-          <div className="flex justify-center">
-            <ProductCard product={filteredProducts[0]} />
+          <div className="flex flex-col gap-6 max-w-md mx-auto">
+            {filteredProducts.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         ) : (
           <div className="py-12 text-center">
