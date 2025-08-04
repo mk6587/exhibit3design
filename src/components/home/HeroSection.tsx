@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const HeroSection = () => {
   return (
-    <section className="py-16 sm:py-24 px-4 bg-secondary">
+    <section className="py-6 sm:py-8 px-4 bg-secondary">
       <div className="container mx-auto text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 sm:mb-8 text-primary leading-tight">
           Affordable Exhibition Stand Designs
