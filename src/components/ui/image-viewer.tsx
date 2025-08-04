@@ -413,12 +413,12 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
             </Button>
           </div>
           
-          {/* Close button */}
+          {/* Close button - hidden on mobile since there's a close icon in top right */}
           <Button
             variant="outline"
             size="sm"
             onClick={onClose}
-            className="text-gray-700 mt-2 sm:mt-0"
+            className="text-gray-700 mt-2 sm:mt-0 hidden sm:block"
             aria-label="Close"
           >
             Close
