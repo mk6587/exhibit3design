@@ -13,7 +13,23 @@ const FeaturedProducts = () => {
   
   if (loading) {
     return (
-      <section className="py-6 md:py-12 px-0 md:px-4">
+      <>
+        {/* Full-width video section */}
+        <section className="relative w-full h-[300px] md:h-[400px] overflow-hidden">
+          <video
+            className="w-full h-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            <source src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/stand-rotate.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby9zdGFuZC1yb3RhdGUubXA0IiwiaWF0IjoxNzU0MzQwNDUyLCJleHAiOjE5MTIwMjA0NTJ9.FBw_9izAc0P_UOdc6LXhScc1B5tiYp9iJ8HLXU29OPg" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div className="absolute inset-0 bg-black/20" />
+        </section>
+        
+        <section className="py-6 md:py-12 px-0 md:px-4">
         <div className="w-full md:container md:mx-auto">
           <h2 className="text-lg md:text-3xl font-bold mb-4 md:mb-8 px-4 md:px-0">Featured Designs</h2>
           <div className="px-4 md:px-0">
@@ -28,12 +44,29 @@ const FeaturedProducts = () => {
             </Carousel>
           </div>
         </div>
-      </section>
+        </section>
+      </>
     );
   }
   
   return (
-    <section className="py-6 md:py-12 px-0 md:px-4">
+    <>
+      {/* Full-width video section */}
+      <section className="relative w-full h-[300px] md:h-[400px] overflow-hidden">
+        <video
+          className="w-full h-full object-cover"
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/stand-rotate.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby9zdGFuZC1yb3RhdGUubXA0IiwiaWF0IjoxNzU0MzQwNDUyLCJleHAiOjE5MTIwMjA0NTJ9.FBw_9izAc0P_UOdc6LXhScc1B5tiYp9iJ8HLXU29OPg" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <div className="absolute inset-0 bg-black/20" />
+      </section>
+      
+      <section className="py-6 md:py-12 px-0 md:px-4">
       <div className="w-full md:container md:mx-auto">
         <div className="flex justify-between items-baseline mb-4 md:mb-8 px-4 md:px-0">
           <h2 className="text-lg md:text-3xl font-bold">Featured Designs</h2>
@@ -89,7 +122,8 @@ const FeaturedProducts = () => {
           </div>
         )}
       </div>
-    </section>
+      </section>
+    </>
   );
 };
 
