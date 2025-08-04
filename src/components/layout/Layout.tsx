@@ -14,7 +14,7 @@ interface LayoutProps {
 
 const Layout = ({ children, title, description, keywords, url }: LayoutProps) => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen relative">
       <SEOHead 
         title={title}
         description={description}
