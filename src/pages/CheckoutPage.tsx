@@ -373,15 +373,15 @@ const CheckoutPage = () => {
               After successful payment, you will receive access to download your purchased designs.
             </p>
             
-            <div className="flex items-start space-x-3 mb-4">
+            <div className="flex items-start space-x-4 mb-6 p-4 bg-muted/30 rounded-lg border">
               <Checkbox 
                 id="privacy-policy" 
                 checked={policyAgreed} 
                 onCheckedChange={checked => setPolicyAgreed(checked as boolean)} 
-                className="mt-1"
+                className="mt-0.5"
               />
-              <label htmlFor="privacy-policy" className="text-sm leading-relaxed cursor-pointer">
-                I have read and agree to the <Link to="/privacy-policy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
+              <label htmlFor="privacy-policy" className="text-sm leading-relaxed cursor-pointer font-medium">
+                I have read and agree to the <Link to="/privacy-policy" className="text-primary hover:underline font-semibold" target="_blank">Privacy Policy</Link>
               </label>
             </div>
             
