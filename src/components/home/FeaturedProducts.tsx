@@ -32,7 +32,7 @@ const FeaturedProducts = () => {
   return (
     <section className="py-12 sm:py-16 px-4">
       <div className="container mx-auto">
-        <div className="flex justify-between items-center mb-6 sm:mb-8">
+        <div className="flex justify-between items-baseline mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold">Featured Designs</h2>
           <Link to="/products" className="text-primary hover:underline text-sm sm:text-base">
             View All
