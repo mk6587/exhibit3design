@@ -48,10 +48,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
         
         {/* Hover Indicator Icons */}
         <div className="absolute top-2 right-2 flex gap-1 z-10">
-          <div className="bg-white border border-border p-1.5 rounded-sm opacity-0 group-hover:opacity-100 transition-all duration-200 animate-scale-in">
+          <div className="bg-white border border-border px-2 py-0.5 rounded-sm opacity-0 group-hover:opacity-100 transition-all duration-200 animate-scale-in">
             <Eye className="h-3 w-3 text-foreground" />
           </div>
-          <div className="bg-white border border-border p-1.5 rounded-sm opacity-0 group-hover:opacity-100 transition-all duration-200 animate-scale-in">
+          <div className="bg-white border border-border px-2 py-0.5 rounded-sm opacity-0 group-hover:opacity-100 transition-all duration-200 animate-scale-in">
             <MousePointer2 className="h-3 w-3 text-foreground" />
           </div>
         </div>
