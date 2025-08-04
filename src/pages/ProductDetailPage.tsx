@@ -101,7 +101,8 @@ const ProductDetailPage = () => {
   
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-12">
+      <div className="py-12 sm:py-16 px-4">
+        <div className="container mx-auto">
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {/* Product Gallery */}
           <div>
@@ -255,6 +256,7 @@ const ProductDetailPage = () => {
             </TabsContent>
           </div>
         </Tabs>
+        </div>
       </div>
     </Layout>
   );
