@@ -14,7 +14,7 @@ const FeaturedProducts = () => {
   
   if (loading) {
     return (
-      <section className="py-12 sm:py-16 px-4">
+      <section className="py-12 px-4">
         <div className="container mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Featured Designs</h2>
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -30,7 +30,7 @@ const FeaturedProducts = () => {
   }
   
   return (
-    <section className="py-12 sm:py-16 px-4">
+    <section className="py-12 px-4">
       <div className="container mx-auto">
         <div className="flex justify-between items-baseline mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold">Featured Designs</h2>
