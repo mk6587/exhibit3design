@@ -399,7 +399,7 @@ const ProfilePage = () => {
                                    </div>
                                 </div>
                               </TableCell>
-                              <TableCell>${order.amount}</TableCell>
+                              <TableCell>€{order.amount}</TableCell>
                               <TableCell>
                                 <Badge
                                   variant={

@@ -143,7 +143,7 @@ const DownloadsPage = () => {
                         </div>
                         <div className="text-right">
                           <p className="text-lg font-semibold">
-                            ${order.amount}
+                            €{order.amount}
                           </p>
                           <p className="text-sm text-green-600 font-medium">
                             {order.status === 'completed' ? 'Paid' : order.status}
