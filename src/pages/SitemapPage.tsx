@@ -2,7 +2,20 @@ import { useEffect } from 'react';
 
 const SitemapPage = () => {
   useEffect(() => {
-    const sitemapXML = `<?xml version="1.0" encoding="UTF-8"?>
+    // Set content type to XML
+    const metaContentType = document.querySelector('meta[http-equiv="Content-Type"]');
+    if (metaContentType) {
+      metaContentType.setAttribute('content', 'application/xml; charset=UTF-8');
+    } else {
+      const meta = document.createElement('meta');
+      meta.setAttribute('http-equiv', 'Content-Type');
+      meta.setAttribute('content', 'application/xml; charset=UTF-8');
+      document.head.appendChild(meta);
+    }
+  }, []);
+
+  // Return raw XML content
+  const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://www.exhibit3design.com/</loc>
@@ -42,13 +55,21 @@ const SitemapPage = () => {
     </url>
 </urlset>`;
 
-    // Replace entire document content with XML
-    document.open();
-    document.write(sitemapXML);
-    document.close();
-  }, []);
-
-  return null;
+  return (
+    <div 
+      style={{ 
+        fontFamily: 'monospace', 
+        whiteSpace: 'pre', 
+        margin: 0, 
+        padding: 0,
+        backgroundColor: 'white',
+        color: 'black',
+        fontSize: '14px',
+        lineHeight: '1.4'
+      }}
+      dangerouslySetInnerHTML={{ __html: xmlContent }}
+    />
+  );
 };
 
 export default SitemapPage;
