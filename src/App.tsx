@@ -37,6 +37,7 @@ import AdminSetupPage from "./pages/AdminSetupPage";
 
 import NotFound from "./pages/NotFound";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import SitemapPage from "./pages/SitemapPage";
 
 const queryClient = new QueryClient();
 
@@ -96,6 +97,7 @@ const App = () => (
                     </ProtectedAdminRoute>
                   } />
                   <Route path="/admin-setup" element={<AdminSetupPage />} />
+                  <Route path="/sitemap.xml" element={<SitemapPage />} />
                   
                   <Route path="*" element={<NotFound />} />
                 </Routes>
