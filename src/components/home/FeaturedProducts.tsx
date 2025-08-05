@@ -15,7 +15,7 @@ const FeaturedProducts = () => {
     return (
       <>
         {/* Full-width video section */}
-        <section className="relative w-full max-w-6xl mx-auto h-[400px] md:h-[600px] overflow-hidden">
+        <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden">
         <video
           className="w-full h-full object-cover"
           style={{ 
@@ -55,7 +55,7 @@ const FeaturedProducts = () => {
   return (
     <>
       {/* Full-width video section */}
-      <section className="relative w-full max-w-6xl mx-auto h-[400px] md:h-[600px] overflow-hidden">
+      <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden">
         <video
           className="w-full h-full object-cover"
           style={{ 
