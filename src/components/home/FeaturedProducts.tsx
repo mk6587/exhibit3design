@@ -13,13 +13,21 @@ const FeaturedProducts = () => {
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
 
+  // Use a consistent video URL
+  const videoUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/veo3.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby92ZW8zLm1wNCIsImlhdCI6MTc1NDM0MjA1OSwiZXhwIjoxOTEyMDIyMDU5fQ.br8HgLwcWpmJQP8NB7UdD-vnjYLHCw641P9_-o5PTPg";
+
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
+      // Force reload the video source
       video.load();
-      video.play().catch(() => {
-        // Autoplay failed, which is fine
-      });
+      // Attempt to play, but don't worry if it fails due to autoplay restrictions
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Autoplay failed, which is fine for UX
+        });
+      }
     }
   }, []);
   
@@ -39,7 +47,7 @@ const FeaturedProducts = () => {
           playsInline
           preload="metadata"
         >
-            <source src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/veo3.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby92ZW8zLm1wNCIsImlhdCI6MTc1NDM0MjA1OSwiZXhwIjoxOTEyMDIyMDU5fQ.br8HgLwcWpmJQP8NB7UdD-vnjYLHCw641P9_-o5PTPg" type="video/mp4" />
+            <source src={videoUrl} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <div className="absolute inset-0 bg-black/20" />
@@ -81,7 +89,7 @@ const FeaturedProducts = () => {
           playsInline
           preload="metadata"
         >
-          <source src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/veo3.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby92ZW8zLW1wNCIsImlhdCI6MTc1NDM0MjA1OSwiZXhwIjoxOTEyMDIyMDU5fQ.br8HgLwcWpmJQP8NB7UdD-vnjYLHCw641P9_-o5PTPg" type="video/mp4" />
+          <source src={videoUrl} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         <div className="absolute inset-0 bg-black/20" />
