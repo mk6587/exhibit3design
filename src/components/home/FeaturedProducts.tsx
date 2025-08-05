@@ -3,13 +3,25 @@ import { Link } from "react-router-dom";
 import { useProducts } from "@/contexts/ProductsContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useEffect, useRef } from "react";
 import "@/components/ui/rich-text-editor.css";
 
 const FeaturedProducts = () => {
   const { products, loading } = useProducts();
+  const videoRef = useRef<HTMLVideoElement>(null);
   
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.load();
+      video.play().catch(() => {
+        // Autoplay failed, which is fine
+      });
+    }
+  }, []);
   
   if (loading) {
     return (
@@ -58,6 +70,7 @@ const FeaturedProducts = () => {
       {/* Full-width video section */}
       <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden">
         <video
+          ref={videoRef}
           className="w-full h-full object-cover"
           style={{ 
             objectPosition: 'center center'
