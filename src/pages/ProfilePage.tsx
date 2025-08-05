@@ -396,7 +396,7 @@ const ProfilePage = () => {
                                   </div>
                                 </div>
                               </TableCell>
-                              <TableCell>${order.amount}</TableCell>
+                              <TableCell>${(order.amount / 100).toFixed(2)}</TableCell>
                               <TableCell>
                                 <Badge
                                   variant={
@@ -416,7 +416,7 @@ const ProfilePage = () => {
                                       onClick={() => handleDownload(order)}
                                     >
                                       <Download className="h-4 w-4 mr-2" />
-                                      Download
+                                      Order Status
                                     </Button>
                                   ) : (
                                     <Button 

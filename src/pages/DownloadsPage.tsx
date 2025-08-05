@@ -73,12 +73,12 @@ const DownloadsPage = () => {
     const hoursPassed = (currentTime - orderTime) / (1000 * 60 * 60);
     
     if (hoursPassed >= 1) {
-      return { status: 'delivered', message: 'Design files have been sent to your email' };
+      return { status: 'delivered', message: 'Design files will be sent to your email within 1 hour' };
     } else {
       const remainingMinutes = Math.ceil((1 - hoursPassed) * 60);
       return { 
         status: 'pending', 
-        message: `Design files will be sent within ${remainingMinutes} minutes` 
+        message: `Design files will be sent to your email within 1 hour` 
       };
     }
   };
@@ -148,11 +148,9 @@ const DownloadsPage = () => {
                           <p className="text-sm text-green-600 font-medium">
                             {order.status === 'completed' ? 'Paid' : order.status}
                           </p>
-                          {order.payment_method && (
-                            <p className="text-xs text-muted-foreground">
-                              via {order.payment_method}
-                            </p>
-                          )}
+                          <p className="text-xs text-muted-foreground">
+                            via Stripe
+                          </p>
                         </div>
                       </div>
                     </CardHeader>
