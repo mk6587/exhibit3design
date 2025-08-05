@@ -13,6 +13,7 @@ import { useProducts } from "@/contexts/ProductsContext";
 import { supabase } from "@/integrations/supabase/client";
 import { trackBeginCheckout, trackAddShippingInfo, trackAddPaymentInfo } from "@/services/ga4Analytics";
 import PaymentRedirectModal from "@/components/checkout/PaymentRedirectModal";
+import { testYekPayConnection } from "@/utils/testYekPayConnection";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -190,6 +191,25 @@ const CheckoutPage = () => {
       toast.error(errorMessage);
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleTestConnection = async () => {
+    console.log("🔍 Testing YekPay connection...");
+    toast.info("Testing payment gateway connection...");
+    
+    try {
+      const result = await testYekPayConnection();
+      if (result.success) {
+        toast.success("✅ Payment gateway is reachable!");
+        console.log("Connection test result:", result);
+      } else {
+        toast.error(`❌ Connection failed: ${result.error}`);
+        console.error("Connection test failed:", result);
+      }
+    } catch (error) {
+      toast.error("❌ Connection test failed");
+      console.error("Connection test error:", error);
     }
   };
   return (
@@ -385,9 +405,20 @@ const CheckoutPage = () => {
               </label>
             </div>
             
-            <Button onClick={handlePayment} disabled={isProcessing} className="w-full">
-              {isProcessing ? "Processing..." : "Proceed to Payment"}
-            </Button>
+            <div className="space-y-3">
+              <Button onClick={handlePayment} disabled={isProcessing} className="w-full">
+                {isProcessing ? "Processing..." : "Proceed to Payment"}
+              </Button>
+              
+              <Button 
+                onClick={handleTestConnection} 
+                variant="outline" 
+                className="w-full text-sm"
+                type="button"
+              >
+                🔍 Test Payment Gateway Connection
+              </Button>
+            </div>
             
             <div className="mt-4 text-center text-sm text-muted-foreground">
               <p>Your payment is secure and encrypted</p>
