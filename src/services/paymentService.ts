@@ -1,5 +1,5 @@
 
-// Stripe Payment Gateway Integration Service
+// YekPay Payment Gateway Integration Service
 // Integrates with pay.exhibit3design.com/yekpay.php backend endpoint
 
 import { toast } from "sonner";
@@ -104,30 +104,32 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
   }
 };
 
-// Submit payment to Stripe backend (form submission - no CORS issues)
+// Submit payment to YekPay backend
 export const initiatePayment = async (paymentData: PaymentRequest) => {
   try {
-    console.log("Starting payment initiation");
+    console.log("🚀 Starting payment initiation process");
+    console.log("💰 Payment data:", JSON.stringify(paymentData, null, 2));
     
     // Check authentication first
-    console.log("Checking auth");
+    console.log("🔐 Checking authentication...");
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
-      console.error("Auth failed:", authError);
+      console.error("❌ Auth failed:", authError);
       throw new Error("Please log in to complete your purchase");
     }
-    console.log("Auth OK");
+    console.log("✅ Authentication successful for user:", user.email);
 
     // Generate unique order number
     const orderNumber = generateOrderNumber();
-    console.log("Order number:", orderNumber);
+    console.log("📝 Generated order number:", orderNumber);
     
     // Create pending order in database
-    console.log("About to create order");
+    console.log("📊 Creating pending order in database...");
     await createPendingOrder(paymentData, orderNumber);
-    console.log("Order created successfully");
+    console.log("✅ Order created successfully");
     
-    // Use fetch to get JSON response and handle redirect
+    // Prepare form data for YekPay
+    console.log("📦 Preparing form data for YekPay...");
     const formData = new FormData();
     formData.append('initiate_payment', '1');
     formData.append('amount', paymentData.amount.toFixed(2));
@@ -152,41 +154,93 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     formData.append('return_url', successUrl);
     formData.append('cancel_return_url', cancelUrl);
     
-    console.log("🔗 Sending URLs to payment gateway:");
-    console.log("✅ Success URL:", successUrl);
+    console.log("🔗 Success URL:", successUrl);
     console.log("❌ Cancel URL:", cancelUrl);
 
-    console.log("Sending request to payment gateway");
-    const response = await fetch('https://pay.exhibit3design.com/yekpay.php', {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded'
+    // Log all form data being sent
+    console.log("📤 Form data being sent to YekPay:");
+    for (const [key, value] of formData.entries()) {
+      console.log(`  ${key}: ${value}`);
+    }
+
+    console.log("🌐 Making request to YekPay endpoint...");
+    console.log("🎯 Endpoint URL: https://pay.exhibit3design.com/yekpay.php");
+    
+    let response;
+    try {
+      response = await fetch('https://pay.exhibit3design.com/yekpay.php', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        },
+        // Add timeout and other fetch options for better debugging
+        signal: AbortSignal.timeout(30000) // 30 second timeout
+      });
+      console.log("✅ Fetch request completed");
+      console.log("📊 Response status:", response.status);
+      console.log("📋 Response headers:", Object.fromEntries(response.headers.entries()));
+    } catch (fetchError) {
+      console.error("❌ Fetch request failed:");
+      console.error("   Error type:", fetchError?.constructor?.name);
+      console.error("   Error message:", fetchError instanceof Error ? fetchError.message : String(fetchError));
+      console.error("   Full error:", fetchError);
+      
+      if (fetchError instanceof TypeError) {
+        throw new Error("Network error: Unable to connect to payment gateway. Please check your internet connection and try again.");
+      } else if (fetchError.name === 'AbortError') {
+        throw new Error("Request timeout: The payment gateway is taking too long to respond. Please try again.");
+      } else {
+        throw new Error(`Connection failed: ${fetchError instanceof Error ? fetchError.message : 'Unknown network error'}`);
       }
-    });
+    }
 
     // Check if the response is OK (HTTP status 200-299)
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("❌ HTTP error! Status:", response.status, "Response:", errorText);
-      throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
+      let errorText;
+      try {
+        errorText = await response.text();
+      } catch (textError) {
+        errorText = "Unable to read error response";
+      }
+      console.error("❌ HTTP error! Status:", response.status);
+      console.error("❌ Response body:", errorText);
+      throw new Error(`Payment gateway returned error ${response.status}: ${errorText}`);
     }
 
-    // Ensure the response is JSON before parsing
+    // Check content type before parsing
     const contentType = response.headers.get('content-type');
+    console.log("📄 Response content-type:", contentType);
+    
     if (!contentType || !contentType.includes('application/json')) {
-      const responseText = await response.text();
-      console.error("❌ Unexpected response type:", contentType, "Response:", responseText);
-      throw new Error(`Unexpected response type from payment gateway: ${contentType || 'unknown'}`);
+      let responseText;
+      try {
+        responseText = await response.text();
+      } catch (textError) {
+        responseText = "Unable to read response";
+      }
+      console.error("❌ Unexpected response type:", contentType);
+      console.error("❌ Response body:", responseText);
+      throw new Error(`Payment gateway returned unexpected format. Expected JSON but got: ${contentType || 'unknown'}`);
     }
 
-    const result = await response.json();
-    console.log("✅ Payment gateway JSON response:", result);
+    // Parse JSON response
+    let result;
+    try {
+      result = await response.json();
+      console.log("✅ Successfully parsed JSON response:", result);
+    } catch (jsonError) {
+      console.error("❌ Failed to parse JSON response:", jsonError);
+      const responseText = await response.text();
+      console.error("❌ Raw response:", responseText);
+      throw new Error("Payment gateway returned invalid JSON response");
+    }
     
-    // THIS IS THE CRUCIAL PART: Check for 'redirect_url' in the JSON response
+    // Check for redirect URL in response
     if (result.redirect_url) {
-      console.log("🔗 Redirecting to payment gateway:", result.redirect_url);
+      console.log("🔗 Redirect URL received:", result.redirect_url);
+      console.log("🚀 Initiating redirect to payment gateway...");
+      
       // Programmatic redirect to payment gateway
       window.location.href = result.redirect_url;
       
@@ -196,19 +250,19 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
         message: "Redirecting to payment gateway..." 
       };
     } else {
-      // Handle other JSON responses (e.g., if yekpay.php sends a custom error JSON)
-      const errorMessage = result.message || result.error || 'No redirect URL received from payment gateway';
+      // Handle error responses from YekPay
+      const errorMessage = result.message || result.error || result.status || 'No redirect URL received from payment gateway';
       console.error("❌ Payment gateway error response:", result);
-      throw new Error(errorMessage);
+      throw new Error(`Payment setup failed: ${errorMessage}`);
     }
     
   } catch (error) {
-    console.error("❌ Payment initiation failed:", error);
-    console.error("❌ Error message:", error instanceof Error ? error.message : 'Unknown error');
-    console.error("❌ Error details:", JSON.stringify(error));
-    console.error("❌ Error type:", typeof error);
-    console.error("❌ Error constructor:", error?.constructor?.name);
-    // Don't show toast here - let the calling component handle the error display
+    console.error("❌ Payment initiation failed:");
+    console.error("   Error type:", error?.constructor?.name);
+    console.error("   Error message:", error instanceof Error ? error.message : 'Unknown error');
+    console.error("   Full error object:", error);
+    
+    // Re-throw the error for the UI to handle
     throw error;
   }
 };
