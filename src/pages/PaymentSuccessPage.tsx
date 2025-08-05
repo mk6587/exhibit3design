@@ -24,7 +24,10 @@ const PaymentSuccessPage = () => {
 
   useEffect(() => {
     const processSuccess = async () => {
-      console.log("PaymentSuccessPage - URL params:", { sessionId, orderNumber, status, authority, reference });
+      // Log all URL parameters for debugging
+      const allParams = Object.fromEntries(searchParams);
+      console.log("PaymentSuccessPage - All URL params:", allParams);
+      console.log("PaymentSuccessPage - Individual params:", { sessionId, orderNumber, status, authority, reference });
       
       // Prevent double processing
       if (orderProcessed) return;
@@ -48,36 +51,32 @@ const PaymentSuccessPage = () => {
             setOrderProcessed(true);
           }
         }
-        // Handle Stripe success (if using sessionId)
-        else if (sessionId && orderNumber) {
-          console.log('Processing Stripe payment success', { sessionId, orderNumber });
+        // Handle direct access with orderNumber (when redirected from payment gateway)
+        else if (orderNumber && !status && !sessionId) {
+          console.log('Direct payment success redirect', { orderNumber, authority, reference });
           
           try {
-            // Verify payment with Stripe edge function
-            const { data, error } = await supabase.functions.invoke('verify-stripe-payment', {
-              body: { sessionId }
-            });
-            
-            if (error) {
-              console.error("Stripe verification error:", error);
-              throw error;
+            // Check if order exists and update if it's still pending
+            const order = await getOrderByNumber(orderNumber);
+            if (order && order.status === 'pending') {
+              console.log("Updating pending order to completed");
+              await updateOrderStatus(orderNumber, 'completed', authority || undefined, reference || undefined);
             }
-            
-            console.log("Stripe verification result:", data);
-            
-            if (data.success && data.paymentStatus === 'paid') {
-              clearCart();
-              setOrderProcessed(true);
-              toast.success("Payment completed successfully!");
-            } else {
-              throw new Error("Payment verification failed");
-            }
+            clearCart();
+            setOrderProcessed(true);
+            toast.success("Payment completed successfully!");
           } catch (error) {
-            console.error("Failed to verify Stripe payment:", error);
-            // Still show success to user since they reached this page from Stripe
+            console.error("Failed to process payment success:", error);
             toast.success("Payment completed successfully!");
             setOrderProcessed(true);
           }
+        }
+        // Fallback: If user reaches this page without specific parameters, assume success
+        else if (!orderProcessed) {
+          console.log('Payment success page accessed without specific parameters - assuming success');
+          clearCart();
+          setOrderProcessed(true);
+          toast.success("Payment completed successfully!");
         }
       } catch (error) {
         console.error("Failed to process payment success:", error);
