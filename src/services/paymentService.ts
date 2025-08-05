@@ -161,20 +161,33 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
       method: 'POST',
       body: formData,
       headers: {
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded'
       }
     });
 
+    // Check if the response is OK (HTTP status 200-299)
     if (!response.ok) {
-      throw new Error(`Payment gateway error: ${response.status}`);
+      const errorText = await response.text();
+      console.error("❌ HTTP error! Status:", response.status, "Response:", errorText);
+      throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
+    }
+
+    // Ensure the response is JSON before parsing
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const responseText = await response.text();
+      console.error("❌ Unexpected response type:", contentType, "Response:", responseText);
+      throw new Error(`Unexpected response type from payment gateway: ${contentType || 'unknown'}`);
     }
 
     const result = await response.json();
-    console.log("Payment gateway response:", result);
+    console.log("✅ Payment gateway JSON response:", result);
     
+    // THIS IS THE CRUCIAL PART: Check for 'redirect_url' in the JSON response
     if (result.redirect_url) {
-      console.log("Redirecting to:", result.redirect_url);
-      // Redirect to the payment page
+      console.log("🔗 Redirecting to payment gateway:", result.redirect_url);
+      // Programmatic redirect to payment gateway
       window.location.href = result.redirect_url;
       
       return { 
@@ -183,7 +196,10 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
         message: "Redirecting to payment gateway..." 
       };
     } else {
-      throw new Error('No redirect URL received from payment gateway');
+      // Handle other JSON responses (e.g., if yekpay.php sends a custom error JSON)
+      const errorMessage = result.message || result.error || 'No redirect URL received from payment gateway';
+      console.error("❌ Payment gateway error response:", result);
+      throw new Error(errorMessage);
     }
     
   } catch (error) {
