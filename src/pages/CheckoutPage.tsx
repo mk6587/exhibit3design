@@ -13,7 +13,7 @@ import { useProducts } from "@/contexts/ProductsContext";
 import { supabase } from "@/integrations/supabase/client";
 import { trackBeginCheckout, trackAddShippingInfo, trackAddPaymentInfo } from "@/services/ga4Analytics";
 import PaymentRedirectModal from "@/components/checkout/PaymentRedirectModal";
-import { testYekPayConnection } from "@/utils/testYekPayConnection";
+
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const CheckoutPage = () => {
   const [policyAgreed, setPolicyAgreed] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-  // Customer Information for Stripe
+  // Customer Information for YekPay
   const [customerInfo, setCustomerInfo] = useState({
     firstName: "",
     lastName: "",
@@ -152,7 +152,7 @@ const CheckoutPage = () => {
       // Track payment info event
       trackAddPaymentInfo(cartItems, cartTotal, 'Card');
 
-      // Prepare payment data for Stripe
+      // Prepare payment data for YekPay
       const paymentData = {
         amount: cartTotal,
         description: `Purchase of ${cartItems.length} design(s) from Exhibit3Design`,
@@ -177,13 +177,13 @@ const CheckoutPage = () => {
       // Save user profile information before payment
       await saveUserProfile();
 
-      // Create Stripe payment using fetch API
+      // Create YekPay payment using fetch API
       const response = await initiatePayment(paymentData);
 
       if (response.success) {
-        // Form submission handles the redirect automatically
+        // Redirect to payment gateway happens automatically
         toast.success(response.message || "Payment initiated successfully");
-        // The form.submit() will redirect the user to the payment gateway
+        // The redirect to YekPay gateway happens in the service
       }
     } catch (error) {
       console.error("Payment error:", error);
@@ -194,24 +194,6 @@ const CheckoutPage = () => {
     }
   };
 
-  const handleTestConnection = async () => {
-    console.log("🔍 Testing YekPay connection...");
-    toast.info("Testing payment gateway connection...");
-    
-    try {
-      const result = await testYekPayConnection();
-      if (result.success) {
-        toast.success("✅ Payment gateway is reachable!");
-        console.log("Connection test result:", result);
-      } else {
-        toast.error(`❌ Connection failed: ${result.error}`);
-        console.error("Connection test failed:", result);
-      }
-    } catch (error) {
-      toast.error("❌ Connection test failed");
-      console.error("Connection test error:", error);
-    }
-  };
   return (
     <Layout>
       <div className="container mx-auto px-4 py-12">
@@ -405,20 +387,9 @@ const CheckoutPage = () => {
               </label>
             </div>
             
-            <div className="space-y-3">
-              <Button onClick={handlePayment} disabled={isProcessing} className="w-full">
-                {isProcessing ? "Processing..." : "Proceed to Payment"}
-              </Button>
-              
-              <Button 
-                onClick={handleTestConnection} 
-                variant="outline" 
-                className="w-full text-sm"
-                type="button"
-              >
-                🔍 Test Payment Gateway Connection
-              </Button>
-            </div>
+            <Button onClick={handlePayment} disabled={isProcessing} className="w-full">
+              {isProcessing ? "Processing..." : "Proceed to Payment"}
+            </Button>
             
             <div className="mt-4 text-center text-sm text-muted-foreground">
               <p>Your payment is secure and encrypted</p>
