@@ -396,7 +396,7 @@ const ProfilePage = () => {
                                   </div>
                                 </div>
                               </TableCell>
-                              <TableCell>${(order.amount / 100).toFixed(2)}</TableCell>
+                              <TableCell>${order.amount}</TableCell>
                               <TableCell>
                                 <Badge
                                   variant={
