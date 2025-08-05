@@ -66,10 +66,10 @@ const App = () => (
                   <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/downloads" element={<DownloadsPage />} />
-                  <Route path="/payment-success.php" element={<PaymentSuccessPage />} />
-                  <Route path="/payment-failed.php" element={<PaymentFailedPage />} />
-                  <Route path="/payment-cancelled.php" element={<PaymentCancelledPage />} />
-                  <Route path="/payment-error.php" element={<PaymentErrorPage />} />
+                  <Route path="/payment-success" element={<PaymentSuccessPage />} />
+                  <Route path="/payment-failed" element={<PaymentFailedPage />} />
+                  <Route path="/payment-cancelled" element={<PaymentCancelledPage />} />
+                  <Route path="/payment-error" element={<PaymentErrorPage />} />
                   <Route path="/auth" element={<AuthPage />} />
                   <Route path="/login" element={<AuthPage />} />
                   <Route path="/register" element={<AuthPage />} />
