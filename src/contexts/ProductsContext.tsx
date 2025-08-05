@@ -55,25 +55,25 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) 
     setCartItems(prev => {
       const existingItem = prev.find(item => item.id === product.id);
       if (existingItem) {
-        return prev.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
+        // Don't increase quantity for digital files - just show message
+        if (showToast) {
+          toast.info(`${product.title} is already in your cart!`);
+        }
+        return prev;
       }
       return [...prev, {
         id: product.id,
         title: product.title,
         price: product.price,
-        quantity,
+        quantity: 1, // Always quantity 1 for digital files
         image
       }];
     });
     
-    if (showToast) {
+    if (showToast && !cartItems.find(item => item.id === product.id)) {
       toast.success(`${product.title} added to cart!`);
     }
-  }, []);
+  }, [cartItems]);
 
   const removeFromCart = useCallback((productId: number) => {
     setCartItems(prev => prev.filter(item => item.id !== productId));
@@ -81,16 +81,11 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) 
   }, []);
 
   const updateCartQuantity = useCallback((productId: number, quantity: number) => {
+    // For digital files, quantity is always 1, so just remove if quantity <= 0
     if (quantity <= 0) {
       removeFromCart(productId);
-      return;
     }
-    
-    setCartItems(prev =>
-      prev.map(item =>
-        item.id === productId ? { ...item, quantity } : item
-      )
-    );
+    // No need to update quantity since it's always 1 for digital files
   }, [removeFromCart]);
 
   const clearCart = useCallback(() => {

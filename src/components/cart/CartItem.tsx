@@ -40,27 +40,6 @@ const CartItem = ({ item, onRemove, onUpdateQuantity }: CartItemProps) => {
           </div>
         </div>
         <div className="flex flex-1 items-end justify-between text-sm">
-          <div className="flex items-center border rounded-md">
-            <button
-              className="p-2"
-              onClick={() => onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
-              aria-label="Decrease quantity"
-              disabled={item.quantity <= 1}
-            >
-              <Minus className="h-3 w-3" />
-            </button>
-            <span className="px-2 py-1 min-w-[2rem] text-center">
-              {item.quantity}
-            </span>
-            <button
-              className="p-2"
-              onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-              aria-label="Increase quantity"
-            >
-              <Plus className="h-3 w-3" />
-            </button>
-          </div>
-
           <div className="flex">
             <Button
               variant="ghost"
