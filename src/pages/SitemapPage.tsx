@@ -56,19 +56,21 @@ const SitemapPage = () => {
 </urlset>`;
 
   return (
-    <div 
+    <pre 
       style={{ 
         fontFamily: 'monospace', 
-        whiteSpace: 'pre', 
         margin: 0, 
-        padding: 0,
+        padding: '20px',
         backgroundColor: 'white',
         color: 'black',
         fontSize: '14px',
-        lineHeight: '1.4'
+        lineHeight: '1.4',
+        whiteSpace: 'pre-wrap',
+        overflow: 'auto'
       }}
-      dangerouslySetInnerHTML={{ __html: xmlContent }}
-    />
+    >
+      {xmlContent}
+    </pre>
   );
 };
 
