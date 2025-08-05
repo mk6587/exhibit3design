@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Loader2, User, ShoppingBag, LogOut, Download, ShoppingCart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { toast as sonnerToast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 interface Order {
   id: string;
@@ -389,11 +389,14 @@ const ProfilePage = () => {
                                       className="w-12 h-12 object-cover rounded"
                                     />
                                   )}
-                                  <div>
-                                    <div className="font-medium">
-                                      {order.products.title}
-                                    </div>
-                                  </div>
+                                   <div>
+                                     <Link 
+                                       to={`/products/${order.product_id}`}
+                                       className="font-medium hover:text-primary transition-colors"
+                                     >
+                                       {order.products.title}
+                                     </Link>
+                                   </div>
                                 </div>
                               </TableCell>
                               <TableCell>${order.amount}</TableCell>
