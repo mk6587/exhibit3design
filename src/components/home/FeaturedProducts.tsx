@@ -3,13 +3,37 @@ import { Link } from "react-router-dom";
 import { useProducts } from "@/contexts/ProductsContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useEffect, useRef, useState } from "react";
 import "@/components/ui/rich-text-editor.css";
 
 const FeaturedProducts = () => {
   const { products, loading } = useProducts();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !videoLoaded) {
+            video.load();
+            setVideoLoaded(true);
+            observer.unobserve(video);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [videoLoaded]);
   
   if (loading) {
     return (
@@ -17,6 +41,7 @@ const FeaturedProducts = () => {
         {/* Full-width video section */}
         <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden">
         <video
+          ref={videoRef}
           className="w-full h-full object-cover"
           style={{ 
             objectPosition: 'center center'
@@ -25,7 +50,7 @@ const FeaturedProducts = () => {
           loop
           muted
           playsInline
-          preload="auto"
+          preload="none"
         >
             <source src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/veo3.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby92ZW8zLm1wNCIsImlhdCI6MTc1NDM0MjA1OSwiZXhwIjoxOTEyMDIyMDU5fQ.br8HgLwcWpmJQP8NB7UdD-vnjYLHCw641P9_-o5PTPg" type="video/mp4" />
             Your browser does not support the video tag.
@@ -58,6 +83,7 @@ const FeaturedProducts = () => {
       {/* Full-width video section */}
       <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden">
         <video
+          ref={videoRef}
           className="w-full h-full object-cover"
           style={{ 
             objectPosition: 'center center'
@@ -66,7 +92,7 @@ const FeaturedProducts = () => {
           loop
           muted
           playsInline
-          preload="auto"
+          preload="none"
         >
           <source src="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/veo3.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby92ZW8zLW1wNCIsImlhdCI6MTc1NDM0MjA1OSwiZXhwIjoxOTEyMDIyMDU5fQ.br8HgLwcWpmJQP8NB7UdD-vnjYLHCw641P9_-o5PTPg" type="video/mp4" />
           Your browser does not support the video tag.
