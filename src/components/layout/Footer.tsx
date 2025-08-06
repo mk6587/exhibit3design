@@ -13,23 +13,23 @@ const Footer = () => {
           
           <div>
             <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
-            <ul className="space-y-2 text-sm">
-              <li><Link to="/" className="hover:text-primary">Home</Link></li>
-              <li><Link to="/products" className="hover:text-primary">Browse Designs</Link></li>
-              <li><Link to="/about" className="hover:text-primary">About Us</Link></li>
-              <li><Link to="/contact" className="hover:text-primary">Contact</Link></li>
-              <li><Link to="/faq" className="hover:text-primary">FAQ</Link></li>
-              <li><Link to="/privacy-policy" className="hover:text-primary">Privacy Policy</Link></li>
+            <ul className="space-y-1 text-sm">
+              <li><Link to="/" className="block py-2 hover:text-primary transition-colors touch-manipulation">Home</Link></li>
+              <li><Link to="/products" className="block py-2 hover:text-primary transition-colors touch-manipulation">Browse Designs</Link></li>
+              <li><Link to="/about" className="block py-2 hover:text-primary transition-colors touch-manipulation">About Us</Link></li>
+              <li><Link to="/contact" className="block py-2 hover:text-primary transition-colors touch-manipulation">Contact</Link></li>
+              <li><Link to="/faq" className="block py-2 hover:text-primary transition-colors touch-manipulation">FAQ</Link></li>
+              <li><Link to="/privacy-policy" className="block py-2 hover:text-primary transition-colors touch-manipulation">Privacy Policy</Link></li>
             </ul>
           </div>
           
           <div>
             <h3 className="font-semibold text-lg mb-4">Account</h3>
-            <ul className="space-y-2 text-sm">
-              <li><Link to="/auth" className="hover:text-primary">Login</Link></li>
-              <li><Link to="/auth" className="hover:text-primary">Register</Link></li>
-              <li><Link to="/profile" className="hover:text-primary">My Orders</Link></li>
-              <li><Link to="/downloads" className="hover:text-primary">My Downloads</Link></li>
+            <ul className="space-y-1 text-sm">
+              <li><Link to="/auth" className="block py-2 hover:text-primary transition-colors touch-manipulation">Login</Link></li>
+              <li><Link to="/auth" className="block py-2 hover:text-primary transition-colors touch-manipulation">Register</Link></li>
+              <li><Link to="/profile" className="block py-2 hover:text-primary transition-colors touch-manipulation">My Orders</Link></li>
+              <li><Link to="/downloads" className="block py-2 hover:text-primary transition-colors touch-manipulation">My Downloads</Link></li>
             </ul>
           </div>
           
@@ -37,7 +37,7 @@ const Footer = () => {
             <h3 className="font-semibold text-lg mb-4">Contact</h3>
             <address className="text-sm text-muted-foreground not-italic">
               
-              <p>Phone: <a href="https://wa.me/447508879096" target="_blank" rel="noopener noreferrer" className="hover:text-primary">+44 7508 879096</a></p>
+              <p>Phone: <a href="https://wa.me/447508879096" target="_blank" rel="noopener noreferrer" className="inline-block py-1 hover:text-primary transition-colors touch-manipulation">+44 7508 879096</a></p>
             </address>
             
           </div>
