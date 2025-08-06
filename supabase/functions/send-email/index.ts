@@ -181,7 +181,7 @@ function generateOrderConfirmationEmail(props: any): string {
           .detail-row { display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center; }
           .label { font-weight: bold; color: #495057; }
           .value { color: #212529; }
-          .amount { font-size: 1.3em; font-weight: bold; color: #28a745; }
+          .amount { color: #212529; }
           .footer { text-align: center; margin-top: 30px; padding: 20px; color: #6c757d; font-size: 14px; }
         </style>
       </head>
