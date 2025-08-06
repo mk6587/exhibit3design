@@ -312,26 +312,11 @@ export const updateOrderStatus = async (
         if (orderError) {
           console.error('Failed to fetch order for email:', orderError);
         } else {
-          // Use the general email service
-          const { error: emailError } = await supabase.functions.invoke('send-email', {
-            body: {
-              to: orderData.customer_email,
-              bcc: 'info@exhibit3design.com',
-              subject: 'Payment Successful - Your Design Files Are Being Prepared',
-              template: {
-                name: 'order-confirmation',
-                props: {
-                  order: orderData,
-                  orderNumber,
-                  customerName: orderData.customer_first_name && orderData.customer_last_name 
-                    ? `${orderData.customer_first_name} ${orderData.customer_last_name}` 
-                    : orderData.customer_first_name || 'Valued Customer'
-                }
-              }
-            }
-          });
+          // Import and use the EmailService for order confirmation
+          const { EmailService } = await import('@/services/emailService');
+          const { success, error: emailError } = await EmailService.sendOrderConfirmation(orderData, orderNumber);
           
-          if (emailError) {
+          if (!success) {
             console.error('Failed to send order notification:', emailError);
           } else {
             console.log('Order notification email sent successfully');
