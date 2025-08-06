@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface OrderNotificationRequest {
+interface OrderConfirmationRequest {
   orderNumber: string;
   orderData?: any;
 }
@@ -18,8 +18,8 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { orderNumber, orderData }: OrderNotificationRequest = await req.json();
-    console.log('Sending order notification for order:', orderNumber);
+    const { orderNumber, orderData }: OrderConfirmationRequest = await req.json();
+    console.log('Sending payment confirmation email for order:', orderNumber);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -49,191 +49,110 @@ const handler = async (req: Request): Promise<Response> => {
       order = orderData;
     }
 
-    if (!order) {
-      throw new Error('No order data available');
+    if (!order || !order.customer_email) {
+      throw new Error('No order data or customer email available');
     }
 
-    // Get user profile information
-    let userProfile = null;
-    if (order.user_id) {
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', order.user_id)
-        .single();
-      userProfile = profileData;
-    }
-
-    // Prepare email content
+    // Customer name for personalization
     const customerName = order.customer_first_name && order.customer_last_name 
       ? `${order.customer_first_name} ${order.customer_last_name}` 
-      : 'N/A';
+      : order.customer_first_name || 'Valued Customer';
 
-    const emailSubject = `New Order Received - ${orderNumber}`;
+    // Prepare customer-facing email content
+    const emailSubject = `Payment Successful - Your Design Files Are Being Prepared`;
     
     const emailHtml = `
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="utf-8">
-          <title>New Order Notification</title>
+          <title>Payment Confirmation</title>
           <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-            .section { margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 5px; }
-            .section h3 { margin-top: 0; color: #495057; }
-            .detail-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-            .label { font-weight: bold; }
-            .amount { font-size: 1.2em; font-weight: bold; color: #28a745; }
-            .status { padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-            .status.completed { background-color: #d4edda; color: #155724; }
-            .status.pending { background-color: #fff3cd; color: #856404; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; border-radius: 8px; text-align: center; margin-bottom: 30px; }
+            .header h1 { margin: 0; font-size: 28px; font-weight: bold; }
+            .header p { margin: 10px 0 0 0; font-size: 16px; opacity: 0.9; }
+            .success-icon { font-size: 48px; margin-bottom: 10px; }
+            .section { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #28a745; }
+            .section h3 { margin-top: 0; color: #495057; font-size: 18px; }
+            .order-details { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e9ecef; }
+            .detail-row { display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center; }
+            .label { font-weight: bold; color: #495057; }
+            .value { color: #212529; }
+            .amount { font-size: 1.3em; font-weight: bold; color: #28a745; }
+            .next-steps { background: #e7f3ff; padding: 20px; border-radius: 8px; border-left: 4px solid #0066cc; margin-top: 20px; }
+            .footer { text-align: center; margin-top: 30px; padding: 20px; color: #6c757d; font-size: 14px; }
+            .product-info { background: white; padding: 15px; border-radius: 8px; margin: 10px 0; border: 1px solid #e9ecef; }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
-              <h2>🎉 New Order Received!</h2>
-              <p>Order Number: <strong>${orderNumber}</strong></p>
-              <p>Date: ${new Date(order.created_at).toLocaleString()}</p>
+              <div class="success-icon">✅</div>
+              <h1>Payment Successful!</h1>
+              <p>Thank you for your purchase, ${customerName}</p>
             </div>
 
             <div class="section">
-              <h3>💰 Order Summary</h3>
+              <h3>🎉 Your payment has been processed successfully</h3>
+              <p>We're excited to prepare your design files! Your order has been confirmed and our team is already working on processing your files.</p>
+            </div>
+
+            <div class="order-details">
+              <h3 style="margin-top: 0; color: #495057;">📋 Order Summary</h3>
               <div class="detail-row">
-                <span class="label">Amount:</span>
+                <span class="label">Order Number:</span>
+                <span class="value" style="font-family: monospace; font-weight: bold;">${orderNumber}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Amount Paid:</span>
                 <span class="amount">€${parseFloat(order.amount).toFixed(2)}</span>
               </div>
               <div class="detail-row">
-                <span class="label">Status:</span>
-                <span class="status ${order.status}">${order.status.toUpperCase()}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Payment Method:</span>
-                <span>${order.payment_method || 'YekPay'}</span>
+                <span class="label">Payment Date:</span>
+                <span class="value">${new Date(order.created_at).toLocaleDateString()}</span>
               </div>
               ${order.authority ? `
               <div class="detail-row">
                 <span class="label">Transaction ID:</span>
-                <span>${order.authority}</span>
+                <span class="value" style="font-family: monospace;">${order.authority}</span>
               </div>
               ` : ''}
-              ${order.yekpay_reference ? `
-              <div class="detail-row">
-                <span class="label">YekPay Reference:</span>
-                <span>${order.yekpay_reference}</span>
-              </div>
-              ` : ''}
-            </div>
-
-            <div class="section">
-              <h3>👤 Customer Information</h3>
-              <div class="detail-row">
-                <span class="label">Name:</span>
-                <span>${customerName}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Email:</span>
-                <span>${order.customer_email || 'N/A'}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Phone:</span>
-                <span>${order.customer_mobile || 'N/A'}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Address:</span>
-                <span>${order.customer_address || 'N/A'}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">City:</span>
-                <span>${order.customer_city || 'N/A'}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Country:</span>
-                <span>${order.customer_country || 'N/A'}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Postal Code:</span>
-                <span>${order.customer_postal_code || 'N/A'}</span>
-              </div>
             </div>
 
             ${order.products ? `
-            <div class="section">
-              <h3>📦 Product Details</h3>
+            <div class="product-info">
+              <h3 style="margin-top: 0; color: #495057;">📦 Your Purchase</h3>
               <div class="detail-row">
-                <span class="label">Product:</span>
-                <span>${order.products.title}</span>
+                <span class="label">Design Package:</span>
+                <span class="value">${order.products.title}</span>
               </div>
               <div class="detail-row">
                 <span class="label">Price:</span>
-                <span>€${parseFloat(order.products.price).toFixed(2)}</span>
-              </div>
-              ${order.products.specifications ? `
-              <div style="margin-top: 10px;">
-                <span class="label">Specifications:</span>
-                <div style="margin-top: 5px; background-color: #f8f9fa; padding: 10px; border-radius: 4px;">
-                  ${order.products.specifications}
-                </div>
-              </div>
-              ` : ''}
-            </div>
-            ` : ''}
-
-            ${userProfile ? `
-            <div class="section">
-              <h3>👥 User Profile</h3>
-              <div class="detail-row">
-                <span class="label">Profile Name:</span>
-                <span>${userProfile.first_name || ''} ${userProfile.last_name || ''}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Profile Email:</span>
-                <span>${userProfile.email || 'N/A'}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Phone Number:</span>
-                <span>${userProfile.phone_number || 'N/A'}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Address:</span>
-                <span>${userProfile.address_line_1 || 'N/A'}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">City:</span>
-                <span>${userProfile.city || 'N/A'}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Country:</span>
-                <span>${userProfile.country || 'N/A'}</span>
+                <span class="value">€${parseFloat(order.products.price).toFixed(2)}</span>
               </div>
             </div>
             ` : ''}
 
-            <div class="section">
-              <h3>📝 Additional Details</h3>
-              <div class="detail-row">
-                <span class="label">Description:</span>
-                <span>${order.payment_description || 'N/A'}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Order Created:</span>
-                <span>${new Date(order.created_at).toLocaleString()}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Last Updated:</span>
-                <span>${new Date(order.updated_at).toLocaleString()}</span>
-              </div>
+            <div class="next-steps">
+              <h3 style="margin-top: 0; color: #0066cc;">📁 What happens next?</h3>
+              <p style="margin-bottom: 15px;"><strong>Your design files will be sent to your email address within 1 hour.</strong></p>
+              <p style="margin-bottom: 10px;">✉️ <strong>Delivery Email:</strong> ${order.customer_email}</p>
+              <p style="margin-bottom: 0;">Please check your inbox (and spam folder) for an email containing your design files. If you don't receive them within 1 hour, please contact our support team.</p>
             </div>
 
-            <div style="margin-top: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 8px; text-align: center;">
-              <p style="margin: 0; color: #6c757d;">
-                <strong>Next Steps:</strong><br>
-                1. Process the design files for the customer<br>
-                2. Send the files to the customer's email within 1 hour<br>
-                3. Update the order status if needed
-              </p>
+            <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #e9ecef;">
+              <h3 style="margin-top: 0; color: #495057;">📞 Need Help?</h3>
+              <p style="margin-bottom: 10px;">If you have any questions about your order or need assistance, feel free to contact us:</p>
+              <p style="margin: 5px 0;"><strong>Email:</strong> info@exhibit3design.com</p>
+              <p style="margin: 5px 0;"><strong>Phone:</strong> +44 7508 879096</p>
+            </div>
+
+            <div class="footer">
+              <p><strong>Exhibit3Design</strong></p>
+              <p>Premium exhibition stand design files for professionals</p>
+              <p style="font-size: 12px; margin-top: 15px;">Please keep this email for your records. Your order number is <strong>${orderNumber}</strong></p>
             </div>
           </div>
         </body>
@@ -290,10 +209,15 @@ const handler = async (req: Request): Promise<Response> => {
       await writeCommand(btoa(smtpPassword));
       await readResponse();
       
-      // Send email
+      // Send email to customer with BCC to info@exhibit3design.com
       await writeCommand(`MAIL FROM:<${fromEmail}>`);
       await readResponse();
       
+      // Primary recipient: customer
+      await writeCommand(`RCPT TO:<${order.customer_email}>`);
+      await readResponse();
+      
+      // BCC recipient: info@exhibit3design.com
       await writeCommand(`RCPT TO:<info@exhibit3design.com>`);
       await readResponse();
       
@@ -302,7 +226,8 @@ const handler = async (req: Request): Promise<Response> => {
       
       const emailData = [
         `From: ${fromEmail}`,
-        `To: info@exhibit3design.com`,
+        `To: ${order.customer_email}`,
+        `Bcc: info@exhibit3design.com`,
         `Subject: ${emailSubject}`,
         `Content-Type: text/html; charset=UTF-8`,
         '',
@@ -318,10 +243,10 @@ const handler = async (req: Request): Promise<Response> => {
       
       conn.close();
       
-      console.log('Order notification email sent successfully');
+      console.log('Payment confirmation email sent successfully to customer with BCC to admin');
 
       return new Response(
-        JSON.stringify({ success: true, message: 'Order notification sent' }),
+        JSON.stringify({ success: true, message: 'Payment confirmation email sent' }),
         {
           status: 200,
           headers: {
