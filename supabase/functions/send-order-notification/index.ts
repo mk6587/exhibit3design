@@ -149,6 +149,17 @@ const handler = async (req: Request): Promise<Response> => {
               <p style="margin: 5px 0;"><strong>Phone:</strong> +44 7508 879096</p>
             </div>
 
+            <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 25px; border-radius: 8px; margin: 20px 0; text-align: center; border: 1px solid #dee2e6;">
+              <h3 style="margin-top: 0; color: #495057;">💝 Thank You for Your Purchase!</h3>
+              <p style="margin-bottom: 15px; font-size: 16px; line-height: 1.6;">
+                <strong>Exhibit3Design</strong> provides ready-to-use design files at affordable prices. 
+                We're passionate about helping professionals create stunning exhibition stands without breaking the budget.
+              </p>
+              <p style="margin-bottom: 0; font-size: 16px; color: #6c757d;">
+                We hope you'll find our designs valuable for your projects and look forward to serving you again in the future! 🎨
+              </p>
+            </div>
+
             <div class="footer">
               <p><strong>Exhibit3Design</strong></p>
               <p>Premium exhibition stand design files for professionals</p>
