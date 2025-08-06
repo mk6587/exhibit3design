@@ -294,15 +294,48 @@ export const updateOrderStatus = async (
     if (status === 'completed') {
       try {
         console.log('Sending order notification email for order:', orderNumber);
-        const { error: notificationError } = await supabase.functions.invoke('send-order-notification', {
-          body: { orderNumber }
-        });
         
-        if (notificationError) {
-          console.error('Failed to send order notification:', notificationError);
-          // Don't throw error - order update should still succeed even if email fails
+        // Get order details for email
+        const { data: orderData, error: orderError } = await supabase
+          .from('orders')
+          .select(`
+            *,
+            products (
+              title,
+              price,
+              specifications
+            )
+          `)
+          .eq('order_number', orderNumber)
+          .single();
+
+        if (orderError) {
+          console.error('Failed to fetch order for email:', orderError);
         } else {
-          console.log('Order notification email sent successfully');
+          // Use the general email service
+          const { error: emailError } = await supabase.functions.invoke('send-email', {
+            body: {
+              to: orderData.customer_email,
+              bcc: 'info@exhibit3design.com',
+              subject: 'Payment Successful - Your Design Files Are Being Prepared',
+              template: {
+                name: 'order-confirmation',
+                props: {
+                  order: orderData,
+                  orderNumber,
+                  customerName: orderData.customer_first_name && orderData.customer_last_name 
+                    ? `${orderData.customer_first_name} ${orderData.customer_last_name}` 
+                    : orderData.customer_first_name || 'Valued Customer'
+                }
+              }
+            }
+          });
+          
+          if (emailError) {
+            console.error('Failed to send order notification:', emailError);
+          } else {
+            console.log('Order notification email sent successfully');
+          }
         }
       } catch (emailError) {
         console.error('Error sending order notification email:', emailError);
