@@ -159,7 +159,7 @@ export const trackAddShippingInfo = (cartItems: any[], cartTotal: number, shippi
 };
 
 // 7. Add Payment Info
-export const trackAddPaymentInfo = (cartItems: any[], cartTotal: number, paymentType: string = 'Stripe') => {
+export const trackAddPaymentInfo = (cartItems: any[], cartTotal: number, paymentType: string = 'YekPay') => {
   if (!isGtagAvailable()) return;
 
   const items = cartItems.map((item, index) => convertToGAItem(item, index + 1));
@@ -179,7 +179,7 @@ export const trackPurchase = (
   transactionId: string,
   cartItems: any[],
   cartTotal: number,
-  affiliation: string = 'Stripe'
+  affiliation: string = 'YekPay'
 ) => {
   if (!isGtagAvailable()) return;
 

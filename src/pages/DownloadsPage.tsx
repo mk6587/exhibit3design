@@ -149,7 +149,7 @@ const DownloadsPage = () => {
                             {order.status === 'completed' ? 'Paid' : order.status}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            via Stripe
+                            via YekPay
                           </p>
                         </div>
                       </div>
