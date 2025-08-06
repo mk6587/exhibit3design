@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Layout from "@/components/layout/Layout";
 import ProductCard, { Product } from "@/components/product/ProductCard";
 import { useProducts } from "@/contexts/ProductsContext";
@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { trackViewItemList } from "@/services/ga4Analytics";
+import { trackSearchQuery } from "@/services/searchAnalytics";
 
 const ProductsPage = () => {
   const { products } = useProducts();
@@ -22,6 +23,20 @@ const ProductsPage = () => {
   const [searchText, setSearchText] = useState("");
   const [sort, setSort] = useState("latest");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  // Debounced search tracking
+  const debouncedTrackSearch = useCallback(
+    (() => {
+      let timeoutId: NodeJS.Timeout;
+      return (query: string, resultsCount: number) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          trackSearchQuery({ query, results_count: resultsCount });
+        }, 1000); // Track after 1 second of no typing
+      };
+    })(),
+    []
+  );
   
   // Convert products to match ProductCard interface
   const allProducts: Product[] = products.map(product => ({
@@ -54,6 +69,13 @@ const ProductsPage = () => {
       if (sort === "price-desc") return b.price - a.price;
       return b.id - a.id; // Latest by default (assuming higher ID = newer)
     });
+
+  // Track search queries when search text changes
+  useEffect(() => {
+    if (searchText.trim()) {
+      debouncedTrackSearch(searchText, filteredProducts.length);
+    }
+  }, [searchText, filteredProducts.length, debouncedTrackSearch]);
   
   const handleTagSelect = (tag: string) => {
     setSelectedTags(prev => 
