@@ -1,63 +1,13 @@
-import React from 'npm:react@18.3.1'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.3'
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
-import { renderAsync } from 'npm:@react-email/components@0.0.22'
-import { PasswordResetEmail } from './_templates/password-reset.tsx'
 
 const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') as string
 
-// SMTP configuration from Supabase secrets
-const smtpConfig = {
-  host: Deno.env.get('SMTP_HOST') as string,
-  port: parseInt(Deno.env.get('SMTP_PORT') || '587'),
-  username: Deno.env.get('SMTP_USER') as string,
-  password: Deno.env.get('SMTP_PASSWORD') as string,
-  fromEmail: Deno.env.get('SMTP_FROM_EMAIL') as string,
-}
-
-async function sendEmail(to: string, subject: string, html: string) {
-  console.log('📧 Sending password reset email via SMTP to:', to)
-  console.log('📧 SMTP Config:', { 
-    host: smtpConfig.host, 
-    port: smtpConfig.port, 
-    username: smtpConfig.username,
-    fromEmail: smtpConfig.fromEmail 
-  })
-  
-  try {
-    // Use denomailer for SMTP
-    const { SMTPClient } = await import('https://deno.land/x/denomailer@1.6.0/mod.ts')
-    
-    const client = new SMTPClient({
-      connection: {
-        hostname: smtpConfig.host,
-        port: smtpConfig.port,
-        tls: true,
-        auth: {
-          username: smtpConfig.username,
-          password: smtpConfig.password,
-        },
-      },
-    })
-
-    console.log('📧 Connecting to SMTP server for password reset...')
-    
-    await client.send({
-      from: smtpConfig.fromEmail,
-      to,
-      subject,
-      content: html,
-      html,
-    })
-
-    console.log('✅ Password reset email sent successfully via SMTP')
-    await client.close()
-    
-    return { success: true }
-  } catch (error) {
-    console.error('❌ Password Reset SMTP Error:', error)
-    throw error
-  }
-}
+// Initialize Supabase client for calling the centralized email service
+const supabase = createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+)
 
 Deno.serve(async (req) => {
   if (req.method !== 'POST') {
@@ -87,29 +37,31 @@ Deno.serve(async (req) => {
 
     console.log('🔑 Processing password reset email for:', user.email, 'Type:', email_action_type)
 
-    const html = await renderAsync(
-      React.createElement(PasswordResetEmail, {
-        supabase_url: Deno.env.get('SUPABASE_URL') ?? '',
-        token,
-        token_hash,
-        redirect_to,
-        email_action_type,
-        user_email: user.email,
-      })
-    )
-
-    const subject = 'Reset Your Password - Exhibit3Design'
-
-    console.log('📧 Attempting to send password reset email:', { 
-      to: user.email, 
-      subject, 
-      type: email_action_type 
+    // Use the centralized send-email service
+    const { error } = await supabase.functions.invoke('send-email', {
+      body: {
+        to: user.email,
+        subject: 'Reset Your Password - Exhibit3Design',
+        template: {
+          name: 'password-reset',
+          props: {
+            supabase_url: Deno.env.get('SUPABASE_URL') ?? '',
+            token,
+            token_hash,
+            redirect_to,
+            email_action_type,
+            user_email: user.email,
+          }
+        }
+      }
     })
 
-    // Send email via SMTP
-    await sendEmail(user.email, subject, html)
+    if (error) {
+      console.error('❌ Centralized email service error:', error)
+      throw error
+    }
     
-    console.log('✅ Password reset email processing completed successfully')
+    console.log('✅ Password reset email sent successfully via centralized service')
     
   } catch (error) {
     console.error('❌ Password reset email sending error:', error)

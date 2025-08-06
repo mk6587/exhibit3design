@@ -1,82 +1,13 @@
-import React from 'npm:react@18.3.1'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.3'
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
-import { renderAsync } from 'npm:@react-email/components@0.0.22'
-import { SignupConfirmationEmail } from './_templates/signup-confirmation.tsx'
 
 const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') as string
 
-// SMTP configuration from Supabase secrets
-const smtpConfig = {
-  host: Deno.env.get('SMTP_HOST') as string,
-  port: parseInt(Deno.env.get('SMTP_PORT') || '587'),
-  username: Deno.env.get('SMTP_USER') as string,
-  password: Deno.env.get('SMTP_PASSWORD') as string,
-  fromEmail: Deno.env.get('SMTP_FROM_EMAIL') as string,
-}
-
-async function sendEmail(to: string, subject: string, html: string) {
-  console.log('📧 Sending email via SMTP to:', to)
-  console.log('📧 SMTP Config:', { 
-    host: smtpConfig.host, 
-    port: smtpConfig.port, 
-    username: smtpConfig.username,
-    fromEmail: smtpConfig.fromEmail 
-  })
-  
-  try {
-    // Use fetch to send email via an SMTP API approach
-    const emailPayload = {
-      to,
-      from: smtpConfig.fromEmail,
-      subject,
-      html,
-      smtp: {
-        host: smtpConfig.host,
-        port: smtpConfig.port,
-        username: smtpConfig.username,
-        password: smtpConfig.password,
-      }
-    }
-
-    console.log('📧 Sending email with payload:', { to, subject, from: smtpConfig.fromEmail })
-
-    // For now, let's use a simple email service approach
-    // You might need to integrate with your specific SMTP provider's API
-    
-    // Alternative: Use nodemailer-like approach via npm
-    const { SMTPClient } = await import('https://deno.land/x/denomailer@1.6.0/mod.ts')
-    
-    const client = new SMTPClient({
-      connection: {
-        hostname: smtpConfig.host,
-        port: smtpConfig.port,
-        tls: true,
-        auth: {
-          username: smtpConfig.username,
-          password: smtpConfig.password,
-        },
-      },
-    })
-
-    console.log('📧 Connecting to SMTP server...')
-    
-    await client.send({
-      from: smtpConfig.fromEmail,
-      to,
-      subject,
-      content: html,
-      html,
-    })
-
-    console.log('✅ Email sent successfully via SMTP')
-    await client.close()
-    
-    return { success: true }
-  } catch (error) {
-    console.error('❌ SMTP Error:', error)
-    throw error
-  }
-}
+// Initialize Supabase client for calling the centralized email service
+const supabase = createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+)
 
 Deno.serve(async (req) => {
   if (req.method !== 'POST') {
@@ -104,35 +35,47 @@ Deno.serve(async (req) => {
       }
     }
 
-    console.log('📨 Processing email for:', user.email, 'Type:', email_action_type)
+    console.log('📨 Processing email confirmation for:', user.email, 'Type:', email_action_type)
 
-    const html = await renderAsync(
-      React.createElement(SignupConfirmationEmail, {
-        supabase_url: Deno.env.get('SUPABASE_URL') ?? '',
-        token,
-        token_hash,
-        redirect_to,
-        email_action_type,
-        user_email: user.email,
-      })
-    )
-
-    // Determine email content based on action type
+    // Determine template and subject based on action type
     const isPasswordReset = email_action_type === 'recovery'
+    const templateName = isPasswordReset ? 'password-reset' : 'signup-confirmation'
     const subject = isPasswordReset 
       ? 'Reset Your Password - Exhibit3Design'
       : 'Welcome to Exhibit3Design - Confirm your account'
 
-    console.log('📧 Attempting to send email:', { 
+    console.log('📧 Using centralized email service:', { 
       to: user.email, 
       subject, 
+      template: templateName,
       type: email_action_type 
     })
 
-    // Send email via SMTP
-    await sendEmail(user.email, subject, html)
+    // Use the centralized send-email service
+    const { error } = await supabase.functions.invoke('send-email', {
+      body: {
+        to: user.email,
+        subject,
+        template: {
+          name: templateName,
+          props: {
+            supabase_url: Deno.env.get('SUPABASE_URL') ?? '',
+            token,
+            token_hash,
+            redirect_to,
+            email_action_type,
+            user_email: user.email,
+          }
+        }
+      }
+    })
+
+    if (error) {
+      console.error('❌ Centralized email service error:', error)
+      throw error
+    }
     
-    console.log('✅ Email processing completed successfully')
+    console.log('✅ Email sent successfully via centralized service')
     
   } catch (error) {
     console.error('❌ Email sending error:', error)
