@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import ProductCard, { Product } from "@/components/product/ProductCard";
 import { useProducts } from "@/contexts/ProductsContext";
@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, Search } from "lucide-react";
 import { trackViewItemList } from "@/services/ga4Analytics";
 import { trackSearchQuery } from "@/services/searchAnalytics";
 
@@ -21,22 +21,9 @@ const ProductsPage = () => {
     }
   }, [products]);
   const [searchText, setSearchText] = useState("");
+  const [activeSearchText, setActiveSearchText] = useState("");
   const [sort, setSort] = useState("latest");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
-  // Debounced search tracking
-  const debouncedTrackSearch = useCallback(
-    (() => {
-      let timeoutId: NodeJS.Timeout;
-      return (query: string, resultsCount: number) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-          trackSearchQuery({ query, results_count: resultsCount });
-        }, 1000); // Track after 1 second of no typing
-      };
-    })(),
-    []
-  );
   
   // Convert products to match ProductCard interface
   const allProducts: Product[] = products.map(product => ({
@@ -55,8 +42,9 @@ const ProductsPage = () => {
   // Filter and sort products
   const filteredProducts = allProducts
     .filter(product => {
-      // Text search
-      const matchesSearch = product.title.toLowerCase().includes(searchText.toLowerCase());
+      // Text search using activeSearchText (only updated on button click)
+      const matchesSearch = activeSearchText === "" || 
+        product.title.toLowerCase().includes(activeSearchText.toLowerCase());
       
       // Tag filter
       const matchesTags = selectedTags.length === 0 || 
@@ -70,12 +58,27 @@ const ProductsPage = () => {
       return b.id - a.id; // Latest by default (assuming higher ID = newer)
     });
 
-  // Track search queries when search text changes
-  useEffect(() => {
+  // Handle search button click
+  const handleSearch = () => {
+    setActiveSearchText(searchText);
     if (searchText.trim()) {
-      debouncedTrackSearch(searchText, filteredProducts.length);
+      // Calculate results count after applying the search
+      const searchResults = allProducts.filter(product => {
+        const matchesSearch = product.title.toLowerCase().includes(searchText.toLowerCase());
+        const matchesTags = selectedTags.length === 0 || 
+          selectedTags.some(tag => product.tags.includes(tag));
+        return matchesSearch && matchesTags;
+      });
+      trackSearchQuery({ query: searchText, results_count: searchResults.length });
     }
-  }, [searchText, filteredProducts.length, debouncedTrackSearch]);
+  };
+
+  // Handle Enter key press in search input
+  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
   
   const handleTagSelect = (tag: string) => {
     setSelectedTags(prev => 
@@ -87,6 +90,7 @@ const ProductsPage = () => {
   
   const clearFilters = () => {
     setSearchText("");
+    setActiveSearchText("");
     setSelectedTags([]);
     setSort("latest");
   };
@@ -99,13 +103,17 @@ const ProductsPage = () => {
         {/* Filters */}
         <div className="mb-8 space-y-4">
           <div className="flex flex-wrap gap-4">
-            <div className="flex-1 min-w-[300px]">
+            <div className="flex-1 min-w-[300px] flex gap-2">
               <Input
                 placeholder="Search designs..."
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                className="w-full"
+                onKeyPress={handleSearchKeyPress}
+                className="flex-1"
               />
+              <Button onClick={handleSearch} size="icon">
+                <Search className="h-4 w-4" />
+              </Button>
             </div>
             
             <Select value={sort} onValueChange={setSort}>
@@ -136,7 +144,7 @@ const ProductsPage = () => {
             </div>
           </div>
           
-          {(searchText || selectedTags.length > 0 || sort !== "latest") && (
+          {(activeSearchText || selectedTags.length > 0 || sort !== "latest") && (
             <Button 
               variant="ghost" 
               size="sm"
