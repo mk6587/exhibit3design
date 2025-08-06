@@ -290,6 +290,26 @@ export const updateOrderStatus = async (
 
     if (error) throw error;
     
+    // Send order notification email when order is completed
+    if (status === 'completed') {
+      try {
+        console.log('Sending order notification email for order:', orderNumber);
+        const { error: notificationError } = await supabase.functions.invoke('send-order-notification', {
+          body: { orderNumber }
+        });
+        
+        if (notificationError) {
+          console.error('Failed to send order notification:', notificationError);
+          // Don't throw error - order update should still succeed even if email fails
+        } else {
+          console.log('Order notification email sent successfully');
+        }
+      } catch (emailError) {
+        console.error('Error sending order notification email:', emailError);
+        // Don't throw error - order update should still succeed even if email fails
+      }
+    }
+    
     return { success: true };
   } catch (error) {
     console.error("Failed to update order status:", error);
