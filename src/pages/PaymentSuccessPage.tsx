@@ -135,8 +135,7 @@ const PaymentSuccessPage = () => {
               
               <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
                 <p className="text-sm text-blue-800">
-                  <strong>Design Files:</strong> Your design files will be sent to your email address within 1 hour. 
-                  You can also access them from your downloads page once they're ready.
+                  <strong>Design Files:</strong> Your design files will be sent to your email address within 1 hour.
                 </p>
               </div>
 
