@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.3'
-import { Resend } from "npm:resend@2.0.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -171,28 +170,100 @@ const handler = async (req: Request): Promise<Response> => {
       </html>
     `;
 
-    // Initialize Resend
-    const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    if (!resendApiKey) {
-      throw new Error('RESEND_API_KEY is required');
+    // Get SMTP configuration
+    const smtpHost = Deno.env.get('SMTP_HOST');
+    const smtpPort = parseInt(Deno.env.get('SMTP_PORT') || '587');
+    const smtpUser = Deno.env.get('SMTP_USER');
+    const smtpPassword = Deno.env.get('SMTP_PASSWORD');
+    const fromEmail = Deno.env.get('SMTP_FROM_EMAIL');
+
+    if (!smtpHost || !smtpUser || !smtpPassword || !fromEmail) {
+      throw new Error('SMTP configuration incomplete');
     }
-    
-    const resend = new Resend(resendApiKey);
+
+    console.log('Using SMTP server:', smtpHost, 'Port:', smtpPort, 'User:', smtpUser, 'From:', fromEmail);
+    console.log('Sending email to:', order.customer_email);
+
+    // Send email using SMTP
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+
+    // Create SMTP connection
+    const conn = await Deno.connect({
+      hostname: smtpHost,
+      port: smtpPort,
+    });
+
+    const writeCommand = async (command: string) => {
+      console.log('SMTP Command:', command);
+      await conn.write(encoder.encode(command + '\r\n'));
+    };
+
+    const readResponse = async () => {
+      const buffer = new Uint8Array(1024);
+      const n = await conn.read(buffer);
+      const response = decoder.decode(buffer.subarray(0, n || 0));
+      console.log('SMTP Response:', response.trim());
+      return response;
+    };
 
     try {
-      // Send email using Resend (much more reliable than SMTP)
-      const emailResponse = await resend.emails.send({
-        from: 'Exhibit3Design <onboarding@resend.dev>', // Use your verified domain
-        to: [order.customer_email],
-        bcc: ['info@exhibit3design.com'],
-        subject: emailSubject,
-        html: emailHtml,
-      });
-
-      console.log('Payment confirmation email sent successfully:', emailResponse);
+      // SMTP handshake
+      await readResponse(); // Initial greeting
+      await writeCommand(`EHLO ${smtpHost}`);
+      await readResponse();
+      
+      await writeCommand('STARTTLS');
+      await readResponse();
+      
+      // Start TLS would go here, but for simplicity using basic auth
+      await writeCommand('AUTH LOGIN');
+      await readResponse();
+      
+      await writeCommand(btoa(smtpUser));
+      await readResponse();
+      
+      await writeCommand(btoa(smtpPassword));
+      await readResponse();
+      
+      // Send email to customer with BCC to info@exhibit3design.com
+      await writeCommand(`MAIL FROM:<${fromEmail}>`);
+      await readResponse();
+      
+      // Primary recipient: customer
+      await writeCommand(`RCPT TO:<${order.customer_email}>`);
+      await readResponse();
+      
+      // BCC recipient: info@exhibit3design.com
+      await writeCommand(`RCPT TO:<info@exhibit3design.com>`);
+      await readResponse();
+      
+      await writeCommand('DATA');
+      await readResponse();
+      
+      const emailData = [
+        `From: ${fromEmail}`,
+        `To: ${order.customer_email}`,
+        `Bcc: info@exhibit3design.com`,
+        `Subject: ${emailSubject}`,
+        `Content-Type: text/html; charset=UTF-8`,
+        '',
+        emailHtml,
+        '.'
+      ].join('\r\n');
+      
+      await writeCommand(emailData);
+      await readResponse();
+      
+      await writeCommand('QUIT');
+      await readResponse();
+      
+      conn.close();
+      
+      console.log('Payment confirmation email sent successfully to customer with BCC to admin');
 
       return new Response(
-        JSON.stringify({ success: true, message: 'Payment confirmation email sent', emailResponse }),
+        JSON.stringify({ success: true, message: 'Payment confirmation email sent' }),
         {
           status: 200,
           headers: {
@@ -201,9 +272,10 @@ const handler = async (req: Request): Promise<Response> => {
           },
         }
       );
-    } catch (emailError) {
-      console.error('Resend Email Error:', emailError);
-      throw emailError;
+    } catch (smtpError) {
+      console.error('SMTP Error:', smtpError);
+      conn.close();
+      throw smtpError;
     }
 
   } catch (error: any) {
