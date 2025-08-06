@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import EmailService from "@/services/emailService";
 const ContactPage = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -24,25 +25,18 @@ const ContactPage = () => {
       [name]: value
     }));
   };
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Call the edge function to send email
-    fetch("https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/send-contact-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to send message");
-        }
-        return response.json();
-      })
-      .then(() => {
+    try {
+      const { success, error } = await EmailService.sendContactNotification({
+        name: formData.name,
+        email: formData.email,
+        message: `Subject: ${formData.subject}\n\n${formData.message}`
+      });
+
+      if (success) {
         toast.success("Message sent successfully", {
           description: "We'll get back to you as soon as possible."
         });
@@ -54,16 +48,17 @@ const ContactPage = () => {
           subject: "",
           message: ""
         });
-      })
-      .catch((error) => {
-        console.error("Error sending message:", error);
-        toast.error("Failed to send message", {
-          description: "Please try again or contact us directly."
-        });
-      })
-      .finally(() => {
-        setIsSubmitting(false);
+      } else {
+        throw new Error(error || "Failed to send message");
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Failed to send message", {
+        description: "Please try again or contact us directly."
       });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   return <Layout>
       <div className="container mx-auto px-4 py-12">
