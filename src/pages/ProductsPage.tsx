@@ -74,7 +74,7 @@ const ProductsPage = () => {
   };
 
   // Handle Enter key press in search input
-  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
@@ -108,7 +108,7 @@ const ProductsPage = () => {
                 placeholder="Search designs..."
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                onKeyPress={handleSearchKeyPress}
+                onKeyDown={handleSearchKeyDown}
                 className="flex-1"
               />
               <Button onClick={handleSearch} size="icon">
