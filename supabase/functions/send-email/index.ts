@@ -53,6 +53,14 @@ async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
     fromEmail: smtpConfig.fromEmail 
   });
 
+  // Validate recipients
+  const recipients = Array.isArray(emailRequest.to) ? emailRequest.to : [emailRequest.to];
+  for (const recipient of recipients) {
+    if (!recipient || !recipient.includes('@')) {
+      throw new Error(`Invalid email address: ${recipient}`);
+    }
+  }
+
   try {
     const { SMTPClient } = await import('https://deno.land/x/denomailer@1.6.0/mod.ts');
     
@@ -71,23 +79,34 @@ async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
     console.log('📧 Connecting to SMTP server...');
 
     // Prepare recipients
-    const recipients = Array.isArray(emailRequest.to) ? emailRequest.to : [emailRequest.to];
     const bccRecipients = emailRequest.bcc ? (Array.isArray(emailRequest.bcc) ? emailRequest.bcc : [emailRequest.bcc]) : [];
     const ccRecipients = emailRequest.cc ? (Array.isArray(emailRequest.cc) ? emailRequest.cc : [emailRequest.cc]) : [];
 
+    // Validate BCC and CC recipients
+    [...bccRecipients, ...ccRecipients].forEach(email => {
+      if (email && !email.includes('@')) {
+        throw new Error(`Invalid email address: ${email}`);
+      }
+    });
+
     // Send email to all recipients
     for (const recipient of recipients) {
-      await client.send({
-        from: smtpConfig.fromEmail,
-        to: recipient,
-        bcc: bccRecipients.length > 0 ? bccRecipients.join(', ') : undefined,
-        cc: ccRecipients.length > 0 ? ccRecipients.join(', ') : undefined,
-        subject: emailRequest.subject,
-        content: emailRequest.text || emailRequest.html || '',
-        html: emailRequest.html,
-      });
+      try {
+        await client.send({
+          from: smtpConfig.fromEmail,
+          to: recipient,
+          bcc: bccRecipients.length > 0 ? bccRecipients.join(', ') : undefined,
+          cc: ccRecipients.length > 0 ? ccRecipients.join(', ') : undefined,
+          subject: emailRequest.subject,
+          content: emailRequest.text || emailRequest.html || '',
+          html: emailRequest.html,
+        });
 
-      console.log(`✅ Email sent successfully to: ${recipient}`);
+        console.log(`✅ Email sent successfully to: ${recipient}`);
+      } catch (sendError) {
+        console.error(`❌ Failed to send email to ${recipient}:`, sendError);
+        throw new Error(`Failed to send email to ${recipient}: ${sendError.message}`);
+      }
     }
 
     await client.close();
@@ -95,7 +114,7 @@ async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
     
   } catch (error) {
     console.error('❌ SMTP Error:', error);
-    throw error;
+    throw new Error(`SMTP Error: ${error.message || error}`);
   }
 }
 
@@ -126,6 +145,24 @@ const getEmailTemplate = async (templateName: string, props: any): Promise<strin
 // Generate order confirmation email HTML
 function generateOrderConfirmationEmail(props: any): string {
   const { order, orderNumber, customerName } = props;
+  
+  // Validate required props
+  if (!order || !orderNumber || !customerName) {
+    throw new Error('Missing required props for order confirmation email');
+  }
+
+  // Safely parse amount
+  const amount = order.amount ? parseFloat(order.amount) : 0;
+  const formattedAmount = amount > 0 ? amount.toFixed(2) : '0.00';
+  
+  // Safely format date
+  const paymentDate = order.created_at 
+    ? new Date(order.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    : new Date().toLocaleDateString();
   
   return `
     <!DOCTYPE html>
@@ -169,11 +206,11 @@ function generateOrderConfirmationEmail(props: any): string {
             </div>
             <div class="detail-row">
               <span class="label">Amount Paid:</span>
-              <span class="amount">€${parseFloat(order.amount).toFixed(2)}</span>
+              <span class="amount">€${formattedAmount}</span>
             </div>
             <div class="detail-row">
               <span class="label">Payment Date:</span>
-              <span class="value">${new Date(order.created_at).toLocaleDateString()}</span>
+              <span class="value">${paymentDate}</span>
             </div>
           </div>
           
@@ -191,6 +228,16 @@ function generateOrderConfirmationEmail(props: any): string {
 function generateContactNotificationEmail(props: any): string {
   const { name, email, message } = props;
   
+  // Validate required props
+  if (!name || !email || !message) {
+    throw new Error('Missing required props for contact notification email');
+  }
+
+  // Sanitize inputs to prevent HTML injection
+  const safeName = String(name).replace(/[<>]/g, '');
+  const safeEmail = String(email).replace(/[<>]/g, '');
+  const safeMessage = String(message).replace(/[<>]/g, '').replace(/\n/g, '<br>');
+  
   return `
     <!DOCTYPE html>
     <html>
@@ -202,18 +249,20 @@ function generateContactNotificationEmail(props: any): string {
           .container { max-width: 600px; margin: 0 auto; }
           .header { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
           .content { background: white; padding: 20px; border: 1px solid #e9ecef; border-radius: 8px; }
+          .timestamp { color: #666; font-size: 12px; margin-top: 20px; }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
             <h2>New Contact Form Submission</h2>
+            <div class="timestamp">Received: ${new Date().toLocaleString()}</div>
           </div>
           <div class="content">
-            <p><strong>Name:</strong> ${name}</p>
-            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Name:</strong> ${safeName}</p>
+            <p><strong>Email:</strong> ${safeEmail}</p>
             <p><strong>Message:</strong></p>
-            <p>${message}</p>
+            <p>${safeMessage}</p>
           </div>
         </div>
       </body>
@@ -284,6 +333,21 @@ const handler = async (req: Request): Promise<Response> => {
     // Validate email request
     if (!emailRequest.to || !emailRequest.subject || (!emailRequest.html && !emailRequest.text)) {
       throw new Error('Missing required email fields: to, subject, and content (html or text)');
+    }
+
+    // Additional validation
+    if (emailRequest.subject.length > 200) {
+      throw new Error('Email subject too long (max 200 characters)');
+    }
+
+    // Validate recipient emails
+    const recipients = Array.isArray(emailRequest.to) ? emailRequest.to : [emailRequest.to];
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    for (const recipient of recipients) {
+      if (!emailRegex.test(recipient)) {
+        throw new Error(`Invalid email format: ${recipient}`);
+      }
     }
 
     console.log('📧 Sending email to:', emailRequest.to);
