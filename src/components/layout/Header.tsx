@@ -26,19 +26,9 @@ const Header = () => {
   };
   return <header className="bg-background border-b border-border fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between min-h-16">
-        <div className="font-bold text-lg sm:text-xl text-primary shrink-0 flex flex-col items-center h-full justify-center">
-          <Link to="/" className="leading-tight">Exhibit3Design</Link>
-          <button 
-            onClick={() => {
-              const message = encodeURIComponent("I need help with Exhibit3Design services");
-              const whatsappUrl = `https://wa.me/1234567890?text=${message}`;
-              window.open(whatsappUrl, '_blank');
-            }}
-            className="text-xs text-muted-foreground font-normal hover:text-purple-500 transition-colors cursor-pointer"
-          >
-            need help?
-          </button>
-        </div>
+        <Link to="/" className="font-bold text-lg sm:text-xl text-primary shrink-0 flex items-center h-full">
+          Exhibit3Design
+        </Link>
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6 h-full">
@@ -52,6 +42,16 @@ const Header = () => {
           <Link to="/faq" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
             FAQ
           </Link>
+          <button 
+            onClick={() => {
+              const message = encodeURIComponent("I need help with Exhibit3Design services");
+              const whatsappUrl = `https://wa.me/1234567890?text=${message}`;
+              window.open(whatsappUrl, '_blank');
+            }}
+            className="text-xs text-muted-foreground hover:text-purple-500 transition-colors cursor-pointer flex items-center h-full"
+          >
+            need help?
+          </button>
         </nav>
         
         {/* Actions */}
