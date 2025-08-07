@@ -216,6 +216,66 @@ export const trackRefund = (
   console.log('GA4: refund tracked', { transactionId, refundAmount });
 };
 
+// Additional tracking functions for product filtering
+
+// Track search events (GA4 standard search event)
+export const trackSearch = (searchTerm: string, resultsCount: number) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', 'search', {
+    search_term: searchTerm,
+    results_count: resultsCount
+  });
+
+  console.log('GA4: search tracked', { searchTerm, resultsCount });
+};
+
+// Track filter application
+export const trackFilterApplied = (filterType: string, filterValue: string, resultsCount: number) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', 'filter_applied', {
+    filter_type: filterType,
+    filter_value: filterValue,
+    results_count: resultsCount,
+    custom_parameters: {
+      engagement_time_msec: 100
+    }
+  });
+
+  console.log('GA4: filter_applied tracked', { filterType, filterValue, resultsCount });
+};
+
+// Track sort changes
+export const trackSortChanged = (sortType: string, resultsCount: number) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', 'sort_changed', {
+    sort_type: sortType,
+    results_count: resultsCount,
+    custom_parameters: {
+      engagement_time_msec: 100
+    }
+  });
+
+  console.log('GA4: sort_changed tracked', { sortType, resultsCount });
+};
+
+// Track filters cleared
+export const trackFiltersCleared = (previousFiltersCount: number, resultsCount: number) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', 'filters_cleared', {
+    previous_filters_count: previousFiltersCount,
+    results_count: resultsCount,
+    custom_parameters: {
+      engagement_time_msec: 100
+    }
+  });
+
+  console.log('GA4: filters_cleared tracked', { previousFiltersCount, resultsCount });
+};
+
 // Declare gtag function for TypeScript
 declare global {
   interface Window {

@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { X, Search } from "lucide-react";
-import { trackViewItemList } from "@/services/ga4Analytics";
+import { trackViewItemList, trackSearch, trackFilterApplied, trackSortChanged, trackFiltersCleared } from "@/services/ga4Analytics";
 import { trackSearchQuery } from "@/services/searchAnalytics";
 
 const ProductsPage = () => {
@@ -70,6 +70,7 @@ const ProductsPage = () => {
         return matchesSearch && matchesTags;
       });
       trackSearchQuery({ query: searchText, results_count: searchResults.length });
+      trackSearch(searchText, searchResults.length);
     }
   };
 
@@ -81,18 +82,36 @@ const ProductsPage = () => {
   };
   
   const handleTagSelect = (tag: string) => {
-    setSelectedTags(prev => 
-      prev.includes(tag) 
-        ? prev.filter(t => t !== tag) 
-        : [...prev, tag]
-    );
+    const newSelectedTags = selectedTags.includes(tag) 
+      ? selectedTags.filter(t => t !== tag) 
+      : [...selectedTags, tag];
+    
+    setSelectedTags(newSelectedTags);
+    
+    // Calculate results count after tag change
+    const results = allProducts.filter(product => {
+      const matchesSearch = activeSearchText === "" || 
+        product.title.toLowerCase().includes(activeSearchText.toLowerCase());
+      const matchesTags = newSelectedTags.length === 0 || 
+        newSelectedTags.some(selectedTag => product.tags.includes(selectedTag));
+      return matchesSearch && matchesTags;
+    });
+    
+    // Track filter action
+    const action = selectedTags.includes(tag) ? 'removed' : 'added';
+    trackFilterApplied('tag', `${action}:${tag}`, results.length);
   };
   
   const clearFilters = () => {
+    const previousFiltersCount = selectedTags.length + (activeSearchText ? 1 : 0) + (sort !== "latest" ? 1 : 0);
+    
     setSearchText("");
     setActiveSearchText("");
     setSelectedTags([]);
     setSort("latest");
+    
+    // Track clear filters with all products count (no filters applied)
+    trackFiltersCleared(previousFiltersCount, allProducts.length);
   };
   
   return (
@@ -116,7 +135,11 @@ const ProductsPage = () => {
               </Button>
             </div>
             
-            <Select value={sort} onValueChange={setSort}>
+            <Select value={sort} onValueChange={(newSort) => {
+              setSort(newSort);
+              // Track sort change with current filtered results
+              trackSortChanged(newSort, filteredProducts.length);
+            }}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
