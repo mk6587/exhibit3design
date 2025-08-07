@@ -10,9 +10,9 @@ const HelpButton = () => {
   return (
     <Button
       onClick={handleHelpClick}
-      className="fixed bottom-6 right-6 z-50 h-auto w-auto px-4 py-2 shadow-lg hover:shadow-xl transition-all duration-300 bg-purple-500/20 hover:bg-purple-500/30 text-purple-100 backdrop-blur-md border border-purple-300/20 rounded-full text-sm font-medium"
+      className="fixed bottom-6 right-6 z-50 h-auto w-auto px-3 py-1.5 shadow-lg hover:shadow-xl transition-all duration-300 bg-purple-500/20 hover:bg-purple-500/30 text-purple-100 backdrop-blur-md border border-purple-300/20 rounded-full text-xs font-medium"
     >
-      need help?
+      Need help?
     </Button>
   );
 };
