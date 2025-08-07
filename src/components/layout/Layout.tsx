@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import SEOHead from "../SEO/SEOHead";
+import HelpButton from "../ui/help-button";
 
 interface LayoutProps {
   children: ReactNode;
@@ -26,6 +27,7 @@ const Layout = ({ children, title, description, keywords, url }: LayoutProps) =>
         {children}
       </main>
       <Footer />
+      <HelpButton />
     </div>
   );
 };

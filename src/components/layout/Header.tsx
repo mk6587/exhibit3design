@@ -42,16 +42,6 @@ const Header = () => {
           <Link to="/faq" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
             FAQ
           </Link>
-          <button 
-            onClick={() => {
-              const message = encodeURIComponent("I need help with Exhibit3Design services");
-              const whatsappUrl = `https://wa.me/1234567890?text=${message}`;
-              window.open(whatsappUrl, '_blank');
-            }}
-            className="text-xs text-muted-foreground hover:text-purple-500 transition-colors cursor-pointer flex items-center h-full"
-          >
-            need help?
-          </button>
         </nav>
         
         {/* Actions */}
