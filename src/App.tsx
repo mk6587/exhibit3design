@@ -9,6 +9,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AdminProvider } from "@/contexts/AdminContext";
 import { ProductsProvider } from "@/contexts/ProductsContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { OTPAuthProvider } from "@/contexts/OTPAuthContext";
 import ErrorBoundary from "@/components/ui/error-boundary";
 import Index from "./pages/Index";
 import ProductsPage from "./pages/ProductsPage";
@@ -18,6 +19,7 @@ import ContactPage from "./pages/ContactPage";
 import FaqPage from "./pages/FaqPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import OTPCheckoutPage from "./pages/OTPCheckoutPage";
 import ProfilePage from "./pages/ProfilePage";
 import DownloadsPage from "./pages/DownloadsPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
@@ -25,6 +27,7 @@ import PaymentFailedPage from "./pages/PaymentFailedPage";
 import PaymentCancelledPage from "./pages/PaymentCancelledPage";
 import PaymentErrorPage from "./pages/PaymentErrorPage";
 import AuthPage from "./pages/AuthPage";
+import OTPAuthPage from "./pages/OTPAuthPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import EmailConfirmationPage from "./pages/EmailConfirmationPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
@@ -48,8 +51,9 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
         <AuthProvider>
-          <ProductsProvider>
-            <AdminProvider>
+          <OTPAuthProvider>
+            <ProductsProvider>
+              <AdminProvider>
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
@@ -66,16 +70,16 @@ const App = () => (
                   <Route path="/contact" element={<ContactPage />} />
                   <Route path="/faq" element={<FaqPage />} />
                   <Route path="/cart" element={<CartPage />} />
-                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/checkout" element={<OTPCheckoutPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/downloads" element={<DownloadsPage />} />
                   <Route path="/payment-success" element={<PaymentSuccessPage />} />
                   <Route path="/payment-failed" element={<PaymentFailedPage />} />
                   <Route path="/payment-cancelled" element={<PaymentCancelledPage />} />
                   <Route path="/payment-error" element={<PaymentErrorPage />} />
-                  <Route path="/auth" element={<AuthPage />} />
-                  <Route path="/login" element={<AuthPage />} />
-                  <Route path="/register" element={<AuthPage />} />
+                  <Route path="/auth" element={<OTPAuthPage />} />
+                  <Route path="/login" element={<OTPAuthPage />} />
+                  <Route path="/register" element={<OTPAuthPage />} />
                   <Route path="/reset-password" element={<ResetPasswordPage />} />
                   <Route path="/confirm-email" element={<EmailConfirmationPage />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
@@ -102,8 +106,9 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </TooltipProvider>
-            </AdminProvider>
-          </ProductsProvider>
+              </AdminProvider>
+            </ProductsProvider>
+          </OTPAuthProvider>
         </AuthProvider>
         </BrowserRouter>
       </QueryClientProvider>
