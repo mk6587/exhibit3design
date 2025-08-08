@@ -56,10 +56,7 @@ const OTPAuthPage = () => {
     if (result.success) {
       setStep('otp');
       setTimeLeft(120); // 2 minutes
-      toast({
-        title: 'Code sent!',
-        description: 'Please check your email for the verification code.',
-      });
+      // No toast notification - keep the UI clean
     } else {
       setError(result.error || 'Failed to send verification code');
     }
@@ -77,11 +74,11 @@ const OTPAuthPage = () => {
     const result = await verifyOTP(email, otp);
     
     if (result.success) {
+      // Immediately redirect without any success notifications
       if (result.magicLink) {
-        // Navigate to magic link to complete authentication
         window.location.href = result.magicLink;
       } else {
-        navigate('/');
+        window.location.href = '/';
       }
     } else {
       setError(result.error || 'Invalid verification code');
@@ -100,10 +97,7 @@ const OTPAuthPage = () => {
     if (result.success) {
       setTimeLeft(120);
       setOTP('');
-      toast({
-        title: 'Code resent!',
-        description: 'A new verification code has been sent to your email.',
-      });
+      // No toast notification - keep the UI clean
     } else {
       setError(result.error || 'Failed to resend code');
     }
