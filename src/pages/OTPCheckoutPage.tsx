@@ -16,6 +16,7 @@ import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/SEO/SEOHead";
 import { trackBeginCheckout, trackAddPaymentInfo, trackAddShippingInfo } from "@/services/ga4Analytics";
 import { Trash2, ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CustomerInfo {
   firstName: string;
@@ -159,58 +160,48 @@ const OTPCheckoutPage = () => {
     const result = await verifyOTP(customerInfo.email, otp);
     
     if (result.success) {
-      // If there's a magic link, navigate to it first to complete authentication
+      // If there's a magic link, navigate to it directly to complete authentication
       if (result.magicLink) {
-        // Use a different approach - open magic link in hidden iframe and then continue
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = result.magicLink;
-        document.body.appendChild(iframe);
+        // Extract the token from the magic link URL
+        const url = new URL(result.magicLink);
+        const token = url.searchParams.get('token');
+        const type = url.searchParams.get('type');
         
-        // Wait a moment for auth to complete, then proceed
-        setTimeout(async () => {
-          document.body.removeChild(iframe);
-          // Continue with payment processing after authentication
+        if (token && type === 'magiclink') {
           try {
-            const paymentData = {
-              amount: cartTotal,
-              description: `Order for ${cartItems.length} digital design files`,
-              customerInfo: {
-                firstName: customerInfo.firstName,
-                lastName: customerInfo.lastName,
-                email: customerInfo.email,
-                mobile: customerInfo.phone,
-                address: customerInfo.address,
-                postalCode: customerInfo.postalCode,
-                country: customerInfo.country,
-                city: customerInfo.city
-              },
-              orderItems: cartItems.map(item => ({
-                id: item.id,
-                name: item.title,
-                price: item.price,
-                quantity: item.quantity
-              }))
-            };
-
-            const paymentResponse = await initiatePayment(paymentData);
+            // Use verifyOtp to establish the session
+            const { data, error } = await supabase.auth.verifyOtp({
+              token_hash: token,
+              type: 'magiclink'
+            });
             
-            if (paymentResponse.success) {
-              clearCart();
-            } else {
-              throw new Error('Payment initiation failed');
+            if (error) {
+              console.error('Auth verification error:', error);
+              throw new Error('Failed to authenticate');
             }
-          } catch (error: any) {
-            console.error('Payment error:', error);
+            
+            console.log('Authentication successful:', data);
+            // Continue with payment processing after successful authentication
+          } catch (authError: any) {
+            console.error('Authentication failed:', authError);
             toast({
-              title: 'Payment Error',
-              description: error.message || 'Failed to initiate payment. Please try again.',
+              title: 'Authentication Error',
+              description: 'Failed to authenticate. Please try again.',
               variant: 'destructive',
             });
             setStep('otp');
+            return;
           }
-        }, 2000);
-        return;
+        } else {
+          console.error('Invalid magic link format');
+          toast({
+            title: 'Authentication Error',
+            description: 'Invalid authentication link.',
+            variant: 'destructive',
+          });
+          setStep('otp');
+          return;
+        }
       }
       // Proceed with payment
       try {
