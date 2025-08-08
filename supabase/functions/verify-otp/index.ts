@@ -59,55 +59,76 @@ const handler = async (req: Request): Promise<Response> => {
       .update({ verified: true })
       .eq('id', otpRecord.id);
 
+    // Check if user exists by searching through all users
+    let existingUser = null;
+    try {
+      const { data: allUsers } = await supabase.auth.admin.listUsers();
+      existingUser = allUsers?.users?.find(user => user.email === email);
+    } catch (error) {
+      console.error('Error listing users:', error);
+    }
+
     let authResponse;
 
-    // Check if user exists
-    const { data: allUsers } = await supabase.auth.admin.listUsers();
-    const existingUser = allUsers?.users?.find(user => user.email === email);
-
     if (existingUser) {
-      // Existing user - sign them in
-      const { data, error } = await supabase.auth.admin.generateLink({
-        type: 'magiclink',
-        email: email,
-        options: {
-          redirectTo: `${req.headers.get('origin') || 'http://localhost:5173'}/`
-        }
-      });
+      // Existing user - generate a session for them
+      try {
+        const { data, error } = await supabase.auth.admin.generateLink({
+          type: 'magiclink',
+          email: email,
+          options: {
+            redirectTo: `${req.headers.get('origin') || 'http://localhost:5173'}/`
+          }
+        });
 
-      if (error) {
-        console.error('Error generating magic link:', error);
+        if (error) {
+          console.error('Error generating magic link:', error);
+          return new Response(
+            JSON.stringify({ error: 'Failed to authenticate user' }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        authResponse = { 
+          user: existingUser, 
+          session: null,
+          magicLink: data.properties?.action_link 
+        };
+      } catch (error) {
+        console.error('Magic link generation failed:', error);
         return new Response(
-          JSON.stringify({ error: 'Failed to authenticate user' }),
+          JSON.stringify({ error: 'Authentication failed' }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-
-      authResponse = { 
-        user: existingUser, 
-        session: null,
-        magicLink: data.properties?.action_link 
-      };
     } else if (otpRecord.password_hash) {
-      // New user registration during checkout
-      const { data, error } = await supabase.auth.admin.createUser({
-        email: email,
-        password: otpRecord.password_hash,
-        email_confirm: true,
-        user_metadata: {
-          email_verified: true
-        }
-      });
+      // New user registration
+      try {
+        const { data, error } = await supabase.auth.admin.createUser({
+          email: email,
+          password: otpRecord.password_hash,
+          email_confirm: true,
+          user_metadata: {
+            email_verified: true
+          }
+        });
 
-      if (error) {
-        console.error('Error creating user:', error);
+        if (error) {
+          console.error('Error creating user:', error);
+          return new Response(
+            JSON.stringify({ error: 'Failed to create user account' }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        authResponse = { user: data.user, session: null };
+      } catch (error) {
+        console.error('User creation failed:', error);
         return new Response(
           JSON.stringify({ error: 'Failed to create user account' }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-
-      authResponse = { user: data.user, session: null };
     } else {
       return new Response(
         JSON.stringify({ error: 'User not found and no registration data provided' }),
