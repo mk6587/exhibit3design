@@ -62,9 +62,10 @@ const handler = async (req: Request): Promise<Response> => {
     let authResponse;
 
     // Check if user exists
-    const { data: existingUser } = await supabase.auth.admin.getUserByEmail(email);
+    const { data: allUsers } = await supabase.auth.admin.listUsers();
+    const existingUser = allUsers?.users?.find(user => user.email === email);
 
-    if (existingUser.user) {
+    if (existingUser) {
       // Existing user - sign them in
       const { data, error } = await supabase.auth.admin.generateLink({
         type: 'magiclink',
@@ -83,7 +84,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       authResponse = { 
-        user: existingUser.user, 
+        user: existingUser, 
         session: null,
         magicLink: data.properties?.action_link 
       };
