@@ -288,37 +288,48 @@ const OTPCheckoutPage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="space-y-8">
             {/* Order Summary */}
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Order Summary</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex-1">
-                        <h3 className="font-medium">{item.title}</h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Digital design files
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold">€{item.price}</p>
-                      </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Order Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {cartItems.map((item) => (
+                  <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg">
+                    <div className="w-16 h-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
+                      {item.image ? (
+                        <img 
+                          src={item.image} 
+                          alt={item.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-muted-foreground/10 flex items-center justify-center text-xs text-muted-foreground">
+                          No image
+                        </div>
+                      )}
                     </div>
-                  ))}
-                  
-                  <Separator />
-                  
-                  <div className="flex justify-between items-center font-semibold text-lg">
-                    <span>Total</span>
-                    <span>€{cartTotal}</span>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium truncate">{item.title}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Digital design files
+                      </p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="font-semibold">€{item.price}</p>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                ))}
+                
+                <Separator />
+                
+                <div className="flex justify-between items-center font-semibold text-lg">
+                  <span>Total</span>
+                  <span>€{cartTotal}</span>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Checkout Form */}
             <div>
