@@ -63,10 +63,10 @@ const OTPCheckoutPage = () => {
   } = useProducts();
   const navigate = useNavigate();
 
-  // Scroll to top when component mounts
+  // Scroll to top when component mounts or step changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [step]);
 
   // Timer for OTP expiration
   useEffect(() => {
