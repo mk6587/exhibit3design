@@ -241,7 +241,7 @@ html, body {
   }
 }
 
-/* Hide external welcome modals */
+/* Hide external welcome modals and old auth forms */
 [data-testid*="welcome"],
 [class*="welcome-modal"],
 [class*="welcome-dialog"],
@@ -250,17 +250,25 @@ div[style*="position: fixed"]:has(*:contains("Welcome to Exhibit3Design")),
 div[style*="position: fixed"]:has(*:contains("Congratulations")),
 div[style*="position: fixed"]:has(*:contains("professional exhibition")),
 div[style*="position: absolute"]:has(*:contains("Welcome to Exhibit3Design")),
-div[style*="z-index"]:has(*:contains("Continue to Exhibit3Design")) {
+div[style*="z-index"]:has(*:contains("Continue to Exhibit3Design")),
+form:has(input[placeholder*="email"], input[placeholder*="password"]):has(*:contains("Welcome to Exhibit3Design")),
+div:has(input[type="email"], input[type="password"]):has(*:contains("Enter your email and password")) {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
 }
 
-/* Hide any modal overlays containing welcome text */
+/* Hide any modal overlays containing welcome text or old auth forms */
 .modal-overlay:has(*:contains("Welcome")),
 .overlay:has(*:contains("Congratulations")),
 [role="dialog"]:has(*:contains("Welcome to Exhibit3Design")),
-[role="alertdialog"]:has(*:contains("Congratulations")) {
+[role="alertdialog"]:has(*:contains("Congratulations")),
+div:has(*:contains("Enter your email and password to sign in or register")) {
+  display: none !important;
+}
+
+/* Force hide any cached old auth forms */
+form:has(input[placeholder*="Enter your email"], input[placeholder*="Enter your password"]) {
   display: none !important;
 }

@@ -13,13 +13,16 @@ export const hideWelcomeModals = () => {
       'div[style*="position: absolute"]'
     ];
 
-    // Keywords to identify the welcome modal content
+    // Keywords to identify the welcome modal content and old auth forms
     const keywords = [
       'Welcome to Exhibit3Design',
       'Congratulations',
       'professional exhibition',
       'Continue to Exhibit3Design',
-      'Your email has been confirmed successfully'
+      'Your email has been confirmed successfully',
+      'Enter your email and password to sign in or register',
+      'Enter your email and password',
+      'Forgot Password?'
     ];
 
     selectors.forEach(selector => {
@@ -46,6 +49,24 @@ export const hideWelcomeModals = () => {
           }
         }
       });
+    });
+
+    // Also hide old auth forms specifically
+    const oldAuthForms = document.querySelectorAll('form');
+    oldAuthForms.forEach(form => {
+      const hasEmailInput = form.querySelector('input[type="email"], input[placeholder*="email"]');
+      const hasPasswordInput = form.querySelector('input[type="password"], input[placeholder*="password"]');
+      const hasWelcomeText = form.textContent?.includes('Welcome to Exhibit3Design');
+      
+      if (hasEmailInput && hasPasswordInput && hasWelcomeText) {
+        (form as HTMLElement).style.display = 'none';
+        // Hide the entire parent container too
+        let parent = form.parentElement;
+        while (parent && parent !== document.body) {
+          (parent as HTMLElement).style.display = 'none';
+          parent = parent.parentElement;
+        }
+      }
     });
   };
 
