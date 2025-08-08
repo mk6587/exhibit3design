@@ -181,7 +181,49 @@ const OTPCheckoutPage = () => {
             }
             
             console.log('Authentication successful:', data);
-            // Continue with payment processing after successful authentication
+            
+            // Wait a moment for auth state to update, then proceed with payment
+            setTimeout(async () => {
+              try {
+                const paymentData = {
+                  amount: cartTotal,
+                  description: `Order for ${cartItems.length} digital design files`,
+                  customerInfo: {
+                    firstName: customerInfo.firstName,
+                    lastName: customerInfo.lastName,
+                    email: customerInfo.email,
+                    mobile: customerInfo.phone,
+                    address: customerInfo.address,
+                    postalCode: customerInfo.postalCode,
+                    country: customerInfo.country,
+                    city: customerInfo.city
+                  },
+                  orderItems: cartItems.map(item => ({
+                    id: item.id,
+                    name: item.title,
+                    price: item.price,
+                    quantity: item.quantity
+                  }))
+                };
+
+                const paymentResponse = await initiatePayment(paymentData);
+                
+                if (paymentResponse.success) {
+                  clearCart();
+                } else {
+                  throw new Error('Payment initiation failed');
+                }
+              } catch (paymentError: any) {
+                console.error('Payment error:', paymentError);
+                toast({
+                  title: 'Payment Error',
+                  description: paymentError.message || 'Failed to initiate payment. Please try again.',
+                  variant: 'destructive',
+                });
+                setStep('otp');
+              }
+            }, 1000);
+            return;
           } catch (authError: any) {
             console.error('Authentication failed:', authError);
             toast({
@@ -203,7 +245,8 @@ const OTPCheckoutPage = () => {
           return;
         }
       }
-      // Proceed with payment
+
+      // If no magic link or direct auth, proceed with payment
       try {
         const paymentData = {
           amount: cartTotal,
