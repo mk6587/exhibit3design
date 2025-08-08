@@ -204,16 +204,17 @@ html, body {
     min-height: 48px;
   }
   
-  /* Mobile-optimized typography */
+/* Mobile-optimized typography */
   .mobile-title {
     @apply text-2xl font-bold mb-4;
     line-height: 1.2;
   }
-  
+
   .mobile-subtitle {
     @apply text-lg text-muted-foreground mb-6;
     line-height: 1.4;
   }
+}
   
   /* Touch-friendly product cards */
   .mobile-product-card {
@@ -239,4 +240,28 @@ html, body {
   .mobile-product-price {
     @apply text-primary font-bold text-lg;
   }
+}
+
+/* Hide external welcome modals */
+[data-testid*="welcome"],
+[class*="welcome-modal"],
+[class*="welcome-dialog"],
+[class*="congratulations"],
+div[style*="position: fixed"]:has(*:contains("Welcome to Exhibit3Design")),
+div[style*="position: fixed"]:has(*:contains("Congratulations")),
+div[style*="position: fixed"]:has(*:contains("professional exhibition")),
+div[style*="position: absolute"]:has(*:contains("Welcome to Exhibit3Design")),
+div[style*="z-index"]:has(*:contains("Continue to Exhibit3Design")) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Hide any modal overlays containing welcome text */
+.modal-overlay:has(*:contains("Welcome")),
+.overlay:has(*:contains("Congratulations")),
+[role="dialog"]:has(*:contains("Welcome to Exhibit3Design")),
+[role="alertdialog"]:has(*:contains("Congratulations")) {
+  display: none !important;
 }
