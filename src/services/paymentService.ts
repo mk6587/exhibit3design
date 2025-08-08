@@ -168,11 +168,15 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     
     let response;
     try {
+      // First, let's test if the endpoint is reachable
+      console.log("🧪 Testing endpoint accessibility...");
+      
       response = await fetch('https://pay.exhibit3design.com/yekpay.php', {
         method: 'POST',
         body: formData,
         headers: {
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'User-Agent': 'Mozilla/5.0 (compatible; Exhibit3Design/1.0)',
         },
         // Add timeout and other fetch options for better debugging
         signal: AbortSignal.timeout(30000) // 30 second timeout
@@ -186,8 +190,11 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
       console.error("   Error message:", fetchError instanceof Error ? fetchError.message : String(fetchError));
       console.error("   Full error:", fetchError);
       
-      if (fetchError instanceof TypeError) {
-        throw new Error("Network error: Unable to connect to payment gateway. Please check your internet connection and try again.");
+      // More specific error handling
+      if (fetchError instanceof TypeError && fetchError.message.includes('fetch')) {
+        // Network connectivity issue
+        console.error("🌐 Network connectivity issue detected");
+        throw new Error("Network error: Unable to connect to payment gateway. This could be due to:\n• Payment gateway server is down\n• Network connectivity issues\n• CORS policy restrictions\n• Firewall blocking the connection\n\nPlease try again in a few minutes or contact support.");
       } else if (fetchError.name === 'AbortError') {
         throw new Error("Request timeout: The payment gateway is taking too long to respond. Please try again.");
       } else {
