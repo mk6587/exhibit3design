@@ -26,7 +26,7 @@ import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import PaymentFailedPage from "./pages/PaymentFailedPage";
 import PaymentCancelledPage from "./pages/PaymentCancelledPage";
 import PaymentErrorPage from "./pages/PaymentErrorPage";
-import AuthPage from "./pages/AuthPage";
+
 import OTPAuthPage from "./pages/OTPAuthPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import EmailConfirmationPage from "./pages/EmailConfirmationPage";
