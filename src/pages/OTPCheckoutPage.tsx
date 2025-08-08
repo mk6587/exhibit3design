@@ -63,6 +63,11 @@ const OTPCheckoutPage = () => {
   } = useProducts();
   const navigate = useNavigate();
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Timer for OTP expiration
   useEffect(() => {
     let timer: NodeJS.Timeout;
