@@ -81,10 +81,6 @@ const OTPAuthPage = () => {
         // Navigate to magic link to complete authentication
         window.location.href = result.magicLink;
       } else {
-        toast({
-          title: 'Welcome!',
-          description: 'You have been successfully logged in.',
-        });
         navigate('/');
       }
     } else {
