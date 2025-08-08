@@ -9,7 +9,6 @@ import exhibit3Logo from '@/assets/exhibit3design-logo.png';
 
 export default function EmailConfirmationPage() {
   const [loading, setLoading] = useState(true);
-  const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const [searchParams] = useSearchParams();
@@ -49,19 +48,9 @@ export default function EmailConfirmationPage() {
             }
             
             if (data?.session) {
-              setSuccess(true);
-              // Redirect after successful confirmation
-              setTimeout(() => {
-                navigate('/');
-              }, 1000);
-              // Clear the hash from URL
+              // Redirect immediately without showing success screen
+              navigate('/');
               window.history.replaceState(null, '', window.location.pathname);
-              
-              // Redirect to home page after a short delay
-              setTimeout(() => {
-                navigate('/');
-              }, 2000);
-              
               return;
             }
           }
@@ -74,14 +63,8 @@ export default function EmailConfirmationPage() {
         
         if (sessionData?.session?.user) {
           console.log('✅ User already authenticated!');
-          setSuccess(true);
-          // Redirect after successful confirmation
-          setTimeout(() => {
-            navigate('/');
-          }, 1000);
-          setTimeout(() => {
-            navigate('/');
-          }, 2000);
+          // Redirect immediately without showing success screen
+          navigate('/');
           return;
         }
         
@@ -115,23 +98,14 @@ export default function EmailConfirmationPage() {
         }
 
         if (data?.user) {
-          setSuccess(true);
-          // Redirect after successful confirmation
-          setTimeout(() => {
-            navigate('/');
-          }, 1000);
-          // Redirect to home page after a short delay
-          setTimeout(() => {
-            navigate('/');
-          }, 2000);
+          // Redirect immediately without showing success screen
+          navigate('/');
         }
       } catch (error) {
         console.error('Confirmation process error:', error);
         setError('An unexpected error occurred. Please try again.');
       } finally {
-        if (!success) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
@@ -159,14 +133,7 @@ export default function EmailConfirmationPage() {
                   <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping"></div>
                   <Loader2 className="h-16 w-16 animate-spin text-primary relative z-10" />
                 </div>
-              )}
-              {success && (
-                <div className="relative">
-                  <div className="absolute inset-0 bg-green-500/20 rounded-full animate-pulse"></div>
-                  <CheckCircle className="h-16 w-16 text-green-500 relative z-10" />
-                  <Sparkles className="h-6 w-6 text-accent absolute -top-1 -right-1 animate-bounce" />
-                </div>
-              )}
+               )}
               {error && (
                 <div className="relative">
                   <div className="absolute inset-0 bg-destructive/20 rounded-full"></div>
@@ -177,43 +144,16 @@ export default function EmailConfirmationPage() {
             
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               {loading && "Confirming your email..."}
-              {success && "Welcome to Exhibit3Design!"}
               {error && "Confirmation Failed"}
             </CardTitle>
             
             <CardDescription className="text-base text-muted-foreground mt-4 leading-relaxed">
               {loading && "Please wait while we verify your email address and complete your registration."}
-              {success && "Your email has been confirmed successfully! You're now logged in and will be redirected shortly."}
               {error && error}
             </CardDescription>
           </CardHeader>
           
           <CardContent className="text-center pb-8">
-            {success && (
-              <div className="space-y-6">
-                <div className="relative overflow-hidden p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50 rounded-xl border border-green-200/50 dark:border-green-800/50">
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-400/10 to-emerald-400/10"></div>
-                  <div className="relative z-10">
-                    <Sparkles className="h-8 w-8 text-green-600 mx-auto mb-3" />
-                    <p className="text-green-800 dark:text-green-200 font-medium">
-                      🎉 Congratulations! You now have access to professional exhibition stand design files at affordable prices!
-                    </p>
-                    <p className="text-sm text-green-700 dark:text-green-300 mt-2">
-                      Professional designs • Instant downloads • 80% cost savings
-                    </p>
-                  </div>
-                </div>
-                
-                <Button 
-                  onClick={() => navigate('/')} 
-                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg transition-all duration-300 group"
-                >
-                  Continue to Exhibit3Design
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </div>
-            )}
-            
             {error && (
               <div className="space-y-4">
                 <div className="p-4 bg-destructive/10 rounded-lg border border-destructive/20">
