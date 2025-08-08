@@ -159,6 +159,59 @@ const OTPCheckoutPage = () => {
     const result = await verifyOTP(customerInfo.email, otp);
     
     if (result.success) {
+      // If there's a magic link, navigate to it first to complete authentication
+      if (result.magicLink) {
+        // Use a different approach - open magic link in hidden iframe and then continue
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = result.magicLink;
+        document.body.appendChild(iframe);
+        
+        // Wait a moment for auth to complete, then proceed
+        setTimeout(async () => {
+          document.body.removeChild(iframe);
+          // Continue with payment processing after authentication
+          try {
+            const paymentData = {
+              amount: cartTotal,
+              description: `Order for ${cartItems.length} digital design files`,
+              customerInfo: {
+                firstName: customerInfo.firstName,
+                lastName: customerInfo.lastName,
+                email: customerInfo.email,
+                mobile: customerInfo.phone,
+                address: customerInfo.address,
+                postalCode: customerInfo.postalCode,
+                country: customerInfo.country,
+                city: customerInfo.city
+              },
+              orderItems: cartItems.map(item => ({
+                id: item.id,
+                name: item.title,
+                price: item.price,
+                quantity: item.quantity
+              }))
+            };
+
+            const paymentResponse = await initiatePayment(paymentData);
+            
+            if (paymentResponse.success) {
+              clearCart();
+            } else {
+              throw new Error('Payment initiation failed');
+            }
+          } catch (error: any) {
+            console.error('Payment error:', error);
+            toast({
+              title: 'Payment Error',
+              description: error.message || 'Failed to initiate payment. Please try again.',
+              variant: 'destructive',
+            });
+            setStep('otp');
+          }
+        }, 2000);
+        return;
+      }
       // Proceed with payment
       try {
         const paymentData = {

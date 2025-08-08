@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface OTPAuthContextType {
   sendOTP: (email: string, passwordHash?: string) => Promise<{ success: boolean; error?: string }>;
-  verifyOTP: (email: string, otp: string) => Promise<{ success: boolean; error?: string; magicLink?: string }>;
+  verifyOTP: (email: string, otp: string) => Promise<{ success: boolean; error?: string; user?: any; magicLink?: string; isNewUser?: boolean }>;
   isLoading: boolean;
 }
 
@@ -53,18 +53,22 @@ export function OTPAuthProvider({ children }: OTPAuthProviderProps) {
       });
 
       if (error) {
-        console.error('Verify OTP error:', error);
-        return { success: false, error: error.message };
+        console.error('Error verifying OTP:', error);
+        return { success: false, error: error.message || 'Failed to verify code' };
       }
 
-      // If there's a magic link, navigate to it to complete authentication
-      if (data?.magicLink) {
-        return { success: true, magicLink: data.magicLink };
+      if (data?.error) {
+        return { success: false, error: data.error };
       }
 
-      return { success: true };
-    } catch (error: any) {
-      console.error('Verify OTP error:', error);
+      return { 
+        success: true, 
+        user: data?.user,
+        magicLink: data?.magicLink,
+        isNewUser: data?.isNewUser
+      };
+    } catch (err: any) {
+      console.error('Error verifying OTP:', err);
       return { success: false, error: 'Failed to verify code' };
     } finally {
       setIsLoading(false);

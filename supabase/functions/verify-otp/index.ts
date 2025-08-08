@@ -71,14 +71,11 @@ const handler = async (req: Request): Promise<Response> => {
     let authResponse;
 
     if (existingUser) {
-      // Existing user - generate a session for them
+      // Existing user - generate a magic link session
       try {
         const { data, error } = await supabase.auth.admin.generateLink({
           type: 'magiclink',
           email: email,
-          options: {
-            redirectTo: `${req.headers.get('origin') || 'http://localhost:5173'}/`
-          }
         });
 
         if (error) {
@@ -92,10 +89,10 @@ const handler = async (req: Request): Promise<Response> => {
         authResponse = { 
           user: existingUser, 
           session: null,
-          magicLink: data.properties?.action_link 
+          magicLink: data.properties?.action_link
         };
       } catch (error) {
-        console.error('Magic link generation failed:', error);
+        console.error('Authentication failed:', error);
         return new Response(
           JSON.stringify({ error: 'Authentication failed' }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -121,7 +118,18 @@ const handler = async (req: Request): Promise<Response> => {
           );
         }
 
-        authResponse = { user: data.user, session: null };
+        // Generate magic link for new user
+        const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
+          type: 'magiclink',
+          email: email,
+        });
+
+        authResponse = { 
+          user: data.user, 
+          session: null,
+          isNewUser: true,
+          magicLink: linkData?.properties?.action_link
+        };
       } catch (error) {
         console.error('User creation failed:', error);
         return new Response(
@@ -147,7 +155,8 @@ const handler = async (req: Request): Promise<Response> => {
         success: true, 
         message: 'Email verified successfully',
         user: authResponse.user,
-        magicLink: authResponse.magicLink
+        magicLink: authResponse.magicLink,
+        isNewUser: authResponse.isNewUser || false
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
