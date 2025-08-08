@@ -214,7 +214,6 @@ html, body {
     @apply text-lg text-muted-foreground mb-6;
     line-height: 1.4;
   }
-}
   
   /* Touch-friendly product cards */
   .mobile-product-card {
