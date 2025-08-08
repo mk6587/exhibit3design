@@ -134,7 +134,7 @@ export type Database = {
           expires_at: string
           id: string
           otp: string
-          password_hash: string
+          password_hash: string | null
           verified: boolean
         }
         Insert: {
@@ -143,7 +143,7 @@ export type Database = {
           expires_at: string
           id?: string
           otp: string
-          password_hash: string
+          password_hash?: string | null
           verified?: boolean
         }
         Update: {
@@ -152,7 +152,7 @@ export type Database = {
           expires_at?: string
           id?: string
           otp?: string
-          password_hash?: string
+          password_hash?: string | null
           verified?: boolean
         }
         Relationships: []
