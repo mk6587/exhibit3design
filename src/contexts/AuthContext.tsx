@@ -220,12 +220,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       console.log(`[${new Date().toISOString()}] ✅ AUTH: Account created successfully`);
-      
-      toast({
-        title: "Please check your email",
-        description: "We've sent you a confirmation link to verify your account.",
-        variant: "default",
-      });
 
       return { error: null };
     } catch (error) {
@@ -282,11 +276,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       console.log(`[${new Date().toISOString()}] ✅ AUTH: Password reset email sent successfully`);
-      
-      toast({
-        title: "Password reset email sent",
-        description: "Check your email for password reset instructions.",
-      });
 
       return { error: null };
     } catch (error) {
@@ -310,11 +299,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       // Refresh profile data
       await refreshProfile();
-      
-      toast({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated.",
-      });
 
       return { error: null };
     } catch (error) {
