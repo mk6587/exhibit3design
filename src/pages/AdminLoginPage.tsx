@@ -18,10 +18,6 @@ const AdminLoginPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (login(username, password)) {
-      toast({
-        title: "Login Successful",
-        description: "Welcome to the admin panel!",
-      });
       navigate('/admin/dashboard');
     } else {
       toast({

@@ -50,11 +50,10 @@ export default function EmailConfirmationPage() {
             
             if (data?.session) {
               setSuccess(true);
-              toast({
-                title: "Email confirmed successfully!",
-                description: "Welcome to Exhibit3Design. You are now logged in.",
-              });
-              
+              // Redirect after successful confirmation
+              setTimeout(() => {
+                navigate('/');
+              }, 1000);
               // Clear the hash from URL
               window.history.replaceState(null, '', window.location.pathname);
               
@@ -76,11 +75,10 @@ export default function EmailConfirmationPage() {
         if (sessionData?.session?.user) {
           console.log('✅ User already authenticated!');
           setSuccess(true);
-          toast({
-            title: "Email confirmed successfully!",
-            description: "Welcome to Exhibit3Design. You are now logged in.",
-          });
-          
+          // Redirect after successful confirmation
+          setTimeout(() => {
+            navigate('/');
+          }, 1000);
           setTimeout(() => {
             navigate('/');
           }, 2000);
@@ -118,11 +116,10 @@ export default function EmailConfirmationPage() {
 
         if (data?.user) {
           setSuccess(true);
-          toast({
-            title: "Email confirmed successfully!",
-            description: "Welcome to Exhibit3Design. You are now logged in.",
-          });
-          
+          // Redirect after successful confirmation
+          setTimeout(() => {
+            navigate('/');
+          }, 1000);
           // Redirect to home page after a short delay
           setTimeout(() => {
             navigate('/');
