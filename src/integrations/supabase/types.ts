@@ -316,6 +316,20 @@ export type Database = {
         Args: { data: string; secret_key?: string }
         Returns: string
       }
+      get_decrypted_customer_data: {
+        Args: { order_id: string }
+        Returns: {
+          id: string
+          customer_email: string
+          customer_first_name: string
+          customer_last_name: string
+          customer_mobile: string
+          customer_address: string
+          customer_city: string
+          customer_postal_code: string
+          customer_country: string
+        }[]
+      }
       has_role: {
         Args: {
           _user_id: string
