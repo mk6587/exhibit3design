@@ -12,6 +12,7 @@ import Layout from '@/components/layout/Layout';
 import SEOHead from '@/components/SEO/SEOHead';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const OTPAuthPage = () => {
   const [email, setEmail] = useState('');
@@ -74,8 +75,36 @@ const OTPAuthPage = () => {
     
     if (result.success) {
       if (result.magicLink) {
-        // Redirect to magic link to complete authentication
-        window.location.href = result.magicLink;
+        try {
+          // Extract token from magic link and verify directly
+          const url = new URL(result.magicLink);
+          const tokenHash = url.searchParams.get('token_hash');
+          const type = url.searchParams.get('type');
+          
+          if (tokenHash && type) {
+            // Use verifyOtp to establish the session directly
+            const { data, error } = await supabase.auth.verifyOtp({
+              token_hash: tokenHash,
+              type: type as any
+            });
+            
+            if (error) {
+              console.error('Auth verification error:', error);
+              setError('Authentication failed. Please try again.');
+              return;
+            }
+            
+            console.log('Authentication successful:', data.user?.email);
+            // Navigate to home - the auth context will update automatically
+            navigate('/');
+          } else {
+            // Fallback to magic link redirect
+            window.location.href = result.magicLink;
+          }
+        } catch (authError: any) {
+          console.error('Authentication failed:', authError);
+          setError('Authentication failed. Please try again.');
+        }
       } else {
         // No magic link, just go to home
         navigate('/');
