@@ -17,6 +17,15 @@ const smtpConfig = {
   fromEmail: Deno.env.get('SMTP_FROM_EMAIL') as string,
 };
 
+// Log SMTP configuration (without password) for debugging
+console.log('🔧 SMTP Configuration:', {
+  host: smtpConfig.host,
+  port: smtpConfig.port,
+  username: smtpConfig.username,
+  fromEmail: smtpConfig.fromEmail,
+  hasPassword: !!smtpConfig.password
+});
+
 interface EmailRequest {
   to: string | string[];
   subject: string;
