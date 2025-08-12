@@ -236,62 +236,58 @@ const CheckoutPage = () => {
     
     const result = await verifyOTP(customerInfo.email, otp);
     if (result.success) {
-      // If there's a magic link, navigate to it directly to complete authentication
+      console.log('OTP verification successful, waiting for authentication...');
+      toast.success('Verification successful! Processing your payment...');
+      
+      // If there's a magic link, process it in a hidden iframe to complete auth
       if (result.magicLink) {
-        // Extract the token_hash from the magic link URL (not 'token')
-        const url = new URL(result.magicLink);
-        const tokenHash = url.searchParams.get('token_hash') || url.searchParams.get('token');
-        const type = url.searchParams.get('type');
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = result.magicLink;
+        document.body.appendChild(iframe);
         
-        console.log('Magic link verification:', { tokenHash: tokenHash ? '[PRESENT]' : '[MISSING]', type });
-        
-        if (tokenHash && type) {
-          try {
-            // Use verifyOtp to establish the session
-            const { data, error } = await supabase.auth.verifyOtp({
-              token_hash: tokenHash,
-              type: type as any
-            });
+        // Wait for auth state to propagate, then check if user is authenticated
+        let attempts = 0;
+        const checkAuthAndProcess = async () => {
+          attempts++;
+          
+          // Check current session
+          const { data: { session } } = await supabase.auth.getSession();
+          
+          if (session?.user) {
+            console.log('Authentication completed, proceeding with payment');
+            document.body.removeChild(iframe);
             
-            if (error) {
-              console.error('Auth verification error:', error);
-              throw new Error('Failed to authenticate: ' + error.message);
+            try {
+              await processPayment();
+            } catch (paymentError: any) {
+              console.error('Payment error:', paymentError);
+              toast.error(paymentError.message || 'Failed to initiate payment. Please try again.');
+              setStep('otp');
             }
-            
-            console.log('Authentication successful:', data.user?.email);
-
-            // Wait a moment for auth state to update, then proceed with payment
-            setTimeout(async () => {
-              try {
-                await processPayment();
-              } catch (paymentError: any) {
-                console.error('Payment error:', paymentError);
-                toast.error(paymentError.message || 'Failed to initiate payment. Please try again.');
-                setStep('otp');
-              }
-            }, 1000);
-            return;
-          } catch (authError: any) {
-            console.error('Authentication failed:', authError);
-            toast.error('Authentication failed: ' + (authError.message || 'Please try again.'));
+          } else if (attempts < 10) {
+            // Try again in 1 second
+            setTimeout(checkAuthAndProcess, 1000);
+          } else {
+            // Timeout after 10 seconds
+            console.error('Authentication timeout');
+            document.body.removeChild(iframe);
+            toast.error('Authentication timeout. Please try again.');
             setStep('otp');
-            return;
           }
-        } else {
-          console.error('Missing token_hash or type in magic link:', { tokenHash, type, url: result.magicLink });
-          toast.error('Invalid authentication link received.');
+        };
+        
+        // Start checking after 1 second
+        setTimeout(checkAuthAndProcess, 1000);
+      } else {
+        // No magic link, try to proceed anyway
+        try {
+          await processPayment();
+        } catch (error: any) {
+          console.error('Payment error:', error);
+          toast.error(error.message || 'Failed to initiate payment. Please try again.');
           setStep('otp');
-          return;
         }
-      }
-
-      // If no magic link or direct auth, proceed with payment
-      try {
-        await processPayment();
-      } catch (error: any) {
-        console.error('Payment error:', error);
-        toast.error(error.message || 'Failed to initiate payment. Please try again.');
-        setStep('otp');
       }
     } else {
       setOTPError(result.error || 'Invalid verification code');

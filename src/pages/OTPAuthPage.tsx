@@ -74,9 +74,11 @@ const OTPAuthPage = () => {
     
     if (result.success) {
       if (result.magicLink) {
+        // Redirect to magic link to complete authentication
         window.location.href = result.magicLink;
       } else {
-        window.location.href = '/';
+        // No magic link, just go to home
+        navigate('/');
       }
     } else {
       setError(result.error || 'Invalid verification code');
