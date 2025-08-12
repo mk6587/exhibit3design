@@ -3,9 +3,6 @@ project_id = "fipebdkvzdrljwwxccrj"
 [functions.send-email]
 verify_jwt = false
 
-[functions.send-email-simple]
-verify_jwt = false
-
 [functions.send-confirmation-email]
 verify_jwt = false
 
