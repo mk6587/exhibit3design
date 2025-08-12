@@ -357,6 +357,15 @@ export type Database = {
         Args: { otp_code: string }
         Returns: string
       }
+      insert_otp_registration: {
+        Args: {
+          p_email: string
+          p_otp: string
+          p_expires_at: string
+          p_password_hash?: string
+        }
+        Returns: boolean
+      }
       is_admin: {
         Args: { user_id: string }
         Returns: boolean

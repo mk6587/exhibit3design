@@ -66,18 +66,16 @@ const handler = async (req: Request): Promise<Response> => {
       search_email: email
     });
 
-    // Insert new OTP record
-    const { error: insertError } = await supabase
-      .from('otp_registrations')
-      .insert({
-        email,
-        otp,  // OTP will be hashed by the hash_otp_code database function during insert via RPC
-        password_hash: passwordHash || null,
-        expires_at: expiresAt.toISOString(),
-        verified: false
+    // Insert new OTP record with proper hashing and encryption
+    const { data: insertSuccess, error: insertError } = await supabase
+      .rpc('insert_otp_registration', {
+        p_email: email,
+        p_otp: otp,
+        p_expires_at: expiresAt.toISOString(),
+        p_password_hash: passwordHash || null
       });
 
-    if (insertError) {
+    if (insertError || !insertSuccess) {
       console.error('Error inserting OTP:', insertError);
       return new Response(
         JSON.stringify({ error: 'Failed to generate verification code' }),
