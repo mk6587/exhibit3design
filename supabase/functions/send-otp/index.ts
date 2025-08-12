@@ -12,8 +12,15 @@ interface SendOTPRequest {
   captchaToken?: string;
 }
 
-const supabaseUrl = Deno.env.get('SUPABASE_URL') as string;
-const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') as string;
+const supabaseUrl = Deno.env.get('SUPABASE_URL');
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+// Debug environment variables
+console.log('🔧 Environment check:', {
+  hasSupabaseUrl: !!supabaseUrl,
+  hasServiceKey: !!supabaseServiceKey,
+  supabaseUrlValue: supabaseUrl
+});
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -23,6 +30,19 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     console.log('🔧 OTP Request received');
+    
+    // Check environment variables first
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('❌ Missing environment variables:', {
+        hasSupabaseUrl: !!supabaseUrl,
+        hasServiceKey: !!supabaseServiceKey
+      });
+      return new Response(
+        JSON.stringify({ error: 'Server configuration error' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
     const { email, passwordHash, captchaToken }: SendOTPRequest = await req.json();
     console.log('📧 Processing OTP for email:', email);
 
