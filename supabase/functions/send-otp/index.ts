@@ -1,6 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
 
+// EdgeRuntime for background tasks
+declare const EdgeRuntime: {
+  waitUntil(promise: Promise<any>): void;
+};
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -150,31 +155,40 @@ const handler = async (req: Request): Promise<Response> => {
     
     console.log('✅ OTP record inserted successfully');
 
-    // Send email with OTP
-    const { error: emailError } = await supabase.functions.invoke('send-email', {
-      body: {
-        to: email,
-        subject: 'Your verification code',
-        template: {
-          name: 'otp-verification',
-          props: {
-            otp,
-            email
+    // Start email sending in background - don't wait for it
+    const sendEmailInBackground = async () => {
+      try {
+        console.log('📧 Sending email in background');
+        const { error: emailError } = await supabase.functions.invoke('send-email', {
+          body: {
+            to: email,
+            subject: 'Your verification code',
+            template: {
+              name: 'otp-verification',
+              props: {
+                otp,
+                email
+              }
+            }
           }
+        });
+
+        if (emailError) {
+          console.error('❌ Background email error:', emailError);
+        } else {
+          console.log('✅ Background email sent successfully');
         }
+      } catch (error) {
+        console.error('❌ Background email exception:', error);
       }
-    });
+    };
 
-    if (emailError) {
-      console.error('Error sending email:', emailError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to send verification code' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Use waitUntil to handle email sending in background
+    EdgeRuntime.waitUntil(sendEmailInBackground());
 
-    console.log(`OTP sent to ${email}: ${otp}`); // Remove in production
+    console.log(`✅ OTP generated for ${email}: ${otp}`); // For testing - remove in production
 
+    // Return immediate success so user can proceed to enter OTP
     return new Response(
       JSON.stringify({ success: true, message: 'Verification code sent to your email' }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
