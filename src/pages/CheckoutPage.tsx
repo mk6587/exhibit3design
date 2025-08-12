@@ -84,8 +84,11 @@ const CheckoutPage = () => {
     // Track begin_checkout when checkout page loads
     trackBeginCheckout(cartItems, cartTotal);
     
-    // If user is already logged in, they can proceed directly without OTP
-    // The form will be pre-filled with their profile data
+    // Reset step to 'info' for all users - logged-in users should never see OTP step
+    console.log('CheckoutPage: User status:', user ? 'Logged in' : 'Guest');
+    if (step !== 'info' && step !== 'processing') {
+      setStep('info');
+    }
   }, [cartItems.length, navigate, user, cartItems, cartTotal]);
 
   // Initialize customer info with user data if logged in
@@ -563,19 +566,17 @@ const CheckoutPage = () => {
               </>
             )}
 
-            {step === 'otp' && (
+            {step === 'otp' && !user && (
               <>
                 <div className="flex items-center gap-4 mb-4">
-                  {!user && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleBackToInfo}
-                    >
-                      <ArrowLeft className="w-4 h-4 mr-2" />
-                      Back
-                    </Button>
-                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleBackToInfo}
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back
+                  </Button>
                   <h2 className="font-semibold text-xl">Email Verification</h2>
                 </div>
                 
