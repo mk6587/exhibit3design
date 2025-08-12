@@ -71,7 +71,7 @@ const handler = async (req: Request): Promise<Response> => {
       .from('otp_registrations')
       .insert({
         email,
-        otp,
+        otp,  // OTP will be hashed by the hash_otp_code database function during insert via RPC
         password_hash: passwordHash || null,
         expires_at: expiresAt.toISOString(),
         verified: false
