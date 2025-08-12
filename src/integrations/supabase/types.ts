@@ -300,6 +300,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_recent_otp: {
+        Args: { search_email: string; minutes_ago?: number }
+        Returns: boolean
+      }
       cleanup_expired_otps: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -312,9 +316,25 @@ export type Database = {
         Args: { encrypted_data: string; secret_key?: string }
         Returns: string
       }
+      delete_otp_by_email: {
+        Args: { search_email: string }
+        Returns: boolean
+      }
       encrypt_sensitive_data: {
         Args: { data: string; secret_key?: string }
         Returns: string
+      }
+      find_otp_by_email: {
+        Args: { search_email: string }
+        Returns: {
+          id: string
+          email: string
+          otp: string
+          password_hash: string
+          expires_at: string
+          verified: boolean
+          created_at: string
+        }[]
       }
       get_decrypted_customer_data: {
         Args: { order_id: string }
@@ -348,6 +368,17 @@ export type Database = {
       validate_payment_update: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      verify_otp_code: {
+        Args: { search_email: string; input_otp: string }
+        Returns: {
+          id: string
+          email: string
+          password_hash: string
+          expires_at: string
+          verified: boolean
+          created_at: string
+        }[]
       }
     }
     Enums: {

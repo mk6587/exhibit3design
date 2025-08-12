@@ -43,14 +43,11 @@ const handler = async (req: Request): Promise<Response> => {
     // Rate limiting: Check if an OTP was sent recently (within 1 minute)
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
-    const { data: recentOTP } = await supabase
-      .from('otp_registrations')
-      .select('created_at')
-      .eq('email', email)
-      .gte('created_at', new Date(Date.now() - 60000).toISOString()) // 1 minute ago
-      .single();
+    const { data: hasRecentOTP } = await supabase.rpc('check_recent_otp', {
+      search_email: email
+    });
 
-    if (recentOTP) {
+    if (hasRecentOTP) {
       return new Response(
         JSON.stringify({ error: 'Please wait before requesting another code' }),
         { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -65,10 +62,9 @@ const handler = async (req: Request): Promise<Response> => {
     await supabase.rpc('cleanup_expired_otps');
 
     // Delete any existing OTP for this email
-    await supabase
-      .from('otp_registrations')
-      .delete()
-      .eq('email', email);
+    await supabase.rpc('delete_otp_by_email', {
+      search_email: email
+    });
 
     // Insert new OTP record
     const { error: insertError } = await supabase

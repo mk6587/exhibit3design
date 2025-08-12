@@ -36,22 +36,20 @@ const handler = async (req: Request): Promise<Response> => {
     // Clean up expired OTPs
     await supabase.rpc('cleanup_expired_otps');
 
-    // Find valid OTP
-    const { data: otpRecord, error: fetchError } = await supabase
-      .from('otp_registrations')
-      .select('*')
-      .eq('email', email)
-      .eq('otp', otp)
-      .eq('verified', false)
-      .gte('expires_at', new Date().toISOString())
-      .single();
+    // Find valid OTP using secure helper function
+    const { data: otpRecords, error: fetchError } = await supabase.rpc('verify_otp_code', {
+      search_email: email,
+      input_otp: otp
+    });
 
-    if (fetchError || !otpRecord) {
+    if (fetchError || !otpRecords || otpRecords.length === 0) {
       return new Response(
         JSON.stringify({ error: 'Invalid or expired verification code' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    const otpRecord = otpRecords[0];
 
     // Mark OTP as verified
     await supabase
