@@ -308,12 +308,24 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      decrypt_sensitive_data: {
+        Args: { encrypted_data: string; secret_key?: string }
+        Returns: string
+      }
+      encrypt_sensitive_data: {
+        Args: { data: string; secret_key?: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      hash_otp_code: {
+        Args: { otp_code: string }
+        Returns: string
       }
       is_admin: {
         Args: { user_id: string }
