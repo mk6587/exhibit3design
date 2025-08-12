@@ -361,6 +361,10 @@ export type Database = {
         Args: { user_id: string }
         Returns: boolean
       }
+      is_current_user_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       mask_sensitive_data: {
         Args: { data: string; mask_type?: string }
         Returns: string
