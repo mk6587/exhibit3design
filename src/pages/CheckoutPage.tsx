@@ -207,11 +207,12 @@ const CheckoutPage = () => {
 
     // If user is already logged in, proceed directly to payment
     if (user) {
+      console.log('User is logged in, proceeding directly to payment');
       setStep('processing');
       try {
         await processPayment();
       } catch (error: any) {
-        console.error('Payment error:', error);
+        console.error('Payment error for logged-in user:', error);
         toast.error(error.message || 'Failed to initiate payment. Please try again.');
         setStep('info');
       }
@@ -555,7 +556,7 @@ const CheckoutPage = () => {
                 </div>
                 
                 <Button onClick={handleInfoSubmit} disabled={isLoading} className="w-full">
-                  {isLoading ? "Sending verification code..." : "Continue to Verification"}
+                  {isLoading ? "Processing..." : user ? "Complete Purchase" : "Continue to Verification"}
                 </Button>
               </>
             )}
