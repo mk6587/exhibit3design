@@ -319,6 +319,10 @@ export type Database = {
         Args: { user_id: string }
         Returns: boolean
       }
+      validate_payment_update: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
