@@ -102,7 +102,7 @@ async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
     for (const recipient of recipients) {
       try {
         await client.send({
-          from: smtpConfig.fromEmail,
+          from: `Exhibit3Design <${smtpConfig.fromEmail}>`,
           to: recipient,
           bcc: bccRecipients.length > 0 ? bccRecipients.join(', ') : undefined,
           cc: ccRecipients.length > 0 ? ccRecipients.join(', ') : undefined,
