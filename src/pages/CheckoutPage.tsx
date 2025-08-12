@@ -238,25 +238,27 @@ const CheckoutPage = () => {
     if (result.success) {
       // If there's a magic link, navigate to it directly to complete authentication
       if (result.magicLink) {
-        // Extract the token from the magic link URL
+        // Extract the token_hash from the magic link URL (not 'token')
         const url = new URL(result.magicLink);
-        const token = url.searchParams.get('token');
+        const tokenHash = url.searchParams.get('token_hash') || url.searchParams.get('token');
         const type = url.searchParams.get('type');
         
-        if (token && type === 'magiclink') {
+        console.log('Magic link verification:', { tokenHash: tokenHash ? '[PRESENT]' : '[MISSING]', type });
+        
+        if (tokenHash && type) {
           try {
             // Use verifyOtp to establish the session
             const { data, error } = await supabase.auth.verifyOtp({
-              token_hash: token,
-              type: 'magiclink'
+              token_hash: tokenHash,
+              type: type as any
             });
             
             if (error) {
               console.error('Auth verification error:', error);
-              throw new Error('Failed to authenticate');
+              throw new Error('Failed to authenticate: ' + error.message);
             }
             
-            console.log('Authentication successful:', data);
+            console.log('Authentication successful:', data.user?.email);
 
             // Wait a moment for auth state to update, then proceed with payment
             setTimeout(async () => {
@@ -271,10 +273,15 @@ const CheckoutPage = () => {
             return;
           } catch (authError: any) {
             console.error('Authentication failed:', authError);
-            toast.error('Failed to authenticate. Please try again.');
+            toast.error('Authentication failed: ' + (authError.message || 'Please try again.'));
             setStep('otp');
             return;
           }
+        } else {
+          console.error('Missing token_hash or type in magic link:', { tokenHash, type, url: result.magicLink });
+          toast.error('Invalid authentication link received.');
+          setStep('otp');
+          return;
         }
       }
 
