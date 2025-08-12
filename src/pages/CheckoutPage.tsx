@@ -84,10 +84,8 @@ const CheckoutPage = () => {
     // Track begin_checkout when checkout page loads
     trackBeginCheckout(cartItems, cartTotal);
     
-    // If user is logged in, skip to OTP step
-    if (user) {
-      setStep('otp');
-    }
+    // If user is already logged in, they can proceed directly without OTP
+    // The form will be pre-filled with their profile data
   }, [cartItems.length, navigate, user, cartItems, cartTotal]);
 
   // Initialize customer info with user data if logged in
@@ -207,7 +205,20 @@ const CheckoutPage = () => {
     // Track shipping info added
     trackAddShippingInfo(cartItems, cartTotal, 'Digital');
 
-    // Generate temporary password hash for new user registration
+    // If user is already logged in, proceed directly to payment
+    if (user) {
+      setStep('processing');
+      try {
+        await processPayment();
+      } catch (error: any) {
+        console.error('Payment error:', error);
+        toast.error(error.message || 'Failed to initiate payment. Please try again.');
+        setStep('info');
+      }
+      return;
+    }
+
+    // For non-logged-in users, send OTP for verification
     const tempPassword = Math.random().toString(36).slice(-12);
     const passwordHash = await hashPassword(tempPassword);
     
