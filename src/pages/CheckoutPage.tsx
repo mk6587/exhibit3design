@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { OTPInput } from "@/components/ui/otp-input";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { initiatePayment } from "@/services/paymentService";
 import { useAuth } from "@/contexts/AuthContext";
@@ -367,281 +366,272 @@ const CheckoutPage = () => {
         url="https://exhibit3design.com/checkout" 
       />
       
-      <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 flex items-center justify-center p-4">
-        <div className="w-full max-w-4xl">
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Checkout</h1>
-            <p className="text-muted-foreground">
-              {step === 'info' && 'Complete your order information'}
-              {step === 'otp' && 'Verify your email to complete the purchase'}
-              {step === 'processing' && 'Processing your order...'}
-            </p>
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+          
+          <div className="bg-secondary p-6 rounded-lg mb-8">
+            <h2 className="font-semibold text-xl mb-4">Order Summary</h2>
+            
+            {cartItems.map(item => (
+              <div key={item.id} className="flex justify-between py-3 border-b last:border-0">
+                <div>
+                  <h3 className="font-medium">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                </div>
+                <div className="font-medium">€{item.price}</div>
+              </div>
+            ))}
+            
+            <div className="pt-4 mt-4 flex justify-between font-semibold text-lg">
+              <span>Total</span>
+              <span>€{cartTotal.toFixed(2)}</span>
+            </div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-6">
-            {/* Order Summary */}
-            <Card className="border-border/50 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/95">
-              <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {cartItems.map(item => (
-                  <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg">
-                    <div className="w-16 h-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
-                      {item.image ? (
-                        <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full bg-muted-foreground/10 flex items-center justify-center text-xs text-muted-foreground">
-                          No image
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium truncate">{item.title}</h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Digital design files
-                      </p>
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      <p className="font-semibold">€{item.price}</p>
-                    </div>
+          {/* Contact & Shipping Information Section */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Your Contact Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Returning Customer Info Display */}
+              {user && profile && (profile.first_name || profile.phone_number || profile.address_line_1) && (
+                <div className="p-4 bg-muted rounded-lg mb-4">
+                  <p className="text-sm font-medium mb-2">Using your saved information:</p>
+                  <div className="text-sm text-muted-foreground space-y-1">
+                    {customerInfo.firstName && <p>Name: {customerInfo.firstName} {customerInfo.lastName}</p>}
+                    {customerInfo.email && <p>Email: {customerInfo.email}</p>}
+                    {customerInfo.mobile && <p>Phone: {customerInfo.mobile}</p>}
+                    {customerInfo.address && <p>Address: {customerInfo.address}, {customerInfo.city}, {customerInfo.postalCode} {customerInfo.country}</p>}
                   </div>
-                ))}
-                
-                <Separator />
-                
-                <div className="flex justify-between items-center font-semibold text-lg">
-                  <span>Total</span>
-                  <span>€{cartTotal}</span>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    You can update this information in your <Link to="/profile" className="text-primary hover:underline">Profile Settings</Link>
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
+              )}
 
-            {/* Checkout Form */}
-            <Card className="border-border/50 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/95">
-              <CardHeader>
-                <CardTitle>
-                  {step === 'info' && 'Contact & Shipping Information'}
-                  {step === 'otp' && 'Email Verification'}
-                  {step === 'processing' && 'Processing Order'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {/* STEP 1: Customer Info (for guests) */}
-                {step === 'info' && (
-                  <form onSubmit={handleInfoSubmit} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="firstName">First Name *</Label>
-                        <Input 
-                          id="firstName" 
-                          value={customerInfo.firstName} 
-                          onChange={e => updateCustomerInfo('firstName', e.target.value)} 
-                          className={validationErrors.firstName ? 'border-destructive' : ''} 
-                        />
-                        {validationErrors.firstName && <p className="text-sm text-destructive">{validationErrors.firstName}</p>}
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="lastName">Last Name *</Label>
-                        <Input 
-                          id="lastName" 
-                          value={customerInfo.lastName} 
-                          onChange={e => updateCustomerInfo('lastName', e.target.value)} 
-                          className={validationErrors.lastName ? 'border-destructive' : ''} 
-                        />
-                        {validationErrors.lastName && <p className="text-sm text-destructive">{validationErrors.lastName}</p>}
-                      </div>
-                    </div>
+              {/* Customer Information Form - Always visible but pre-filled for logged-in users */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="firstName">First Name *</Label>
+                  <Input 
+                    id="firstName" 
+                    value={customerInfo.firstName} 
+                    onChange={e => updateCustomerInfo('firstName', e.target.value)}
+                    placeholder="Enter your first name" 
+                    className={validationErrors.firstName ? "border-destructive" : ""} 
+                  />
+                  {validationErrors.firstName && <p className="text-sm text-destructive mt-1">{validationErrors.firstName}</p>}
+                </div>
+                
+                <div>
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input 
+                    id="lastName" 
+                    value={customerInfo.lastName} 
+                    onChange={e => updateCustomerInfo('lastName', e.target.value)}
+                    placeholder="Enter your last name" 
+                    className={validationErrors.lastName ? "border-destructive" : ""} 
+                  />
+                  {validationErrors.lastName && <p className="text-sm text-destructive mt-1">{validationErrors.lastName}</p>}
+                </div>
+                
+                <div>
+                  <Label htmlFor="email">Email Address *</Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    value={customerInfo.email} 
+                    onChange={e => updateCustomerInfo('email', e.target.value)}
+                    placeholder="Enter your email" 
+                    className={validationErrors.email ? "border-destructive" : ""} 
+                    readOnly={!!user}
+                    disabled={!!user}
+                  />
+                  {user && <p className="text-xs text-muted-foreground mt-1">Email cannot be changed (from your account)</p>}
+                  {validationErrors.email && <p className="text-sm text-destructive mt-1">{validationErrors.email}</p>}
+                </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email Address *</Label>
-                      <Input 
-                        id="email" 
-                        type="email" 
-                        value={customerInfo.email} 
-                        onChange={e => updateCustomerInfo('email', e.target.value)} 
-                        className={validationErrors.email ? 'border-destructive' : ''} 
-                      />
-                      {validationErrors.email && <p className="text-sm text-destructive">{validationErrors.email}</p>}
-                    </div>
+                <div>
+                  <Label htmlFor="mobile">Mobile Number *</Label>
+                  <Input 
+                    id="mobile" 
+                    value={customerInfo.mobile} 
+                    onChange={e => updateCustomerInfo('mobile', e.target.value)}
+                    placeholder="+44123456789" 
+                    className={validationErrors.mobile ? "border-destructive" : ""} 
+                  />
+                  {validationErrors.mobile && <p className="text-sm text-destructive mt-1">{validationErrors.mobile}</p>}
+                </div>
+              </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="mobile">Phone Number *</Label>
-                      <Input 
-                        id="mobile" 
-                        type="tel" 
-                        value={customerInfo.mobile} 
-                        onChange={e => updateCustomerInfo('mobile', e.target.value)} 
-                        className={validationErrors.mobile ? 'border-destructive' : ''} 
-                      />
-                      {validationErrors.mobile && <p className="text-sm text-destructive">{validationErrors.mobile}</p>}
-                    </div>
+              <div>
+                <Label htmlFor="address">Address *</Label>
+                <Input 
+                  id="address" 
+                  value={customerInfo.address} 
+                  onChange={e => updateCustomerInfo('address', e.target.value)}
+                  placeholder="Enter your full address" 
+                  className={validationErrors.address ? "border-destructive" : ""} 
+                />
+                {validationErrors.address && <p className="text-sm text-destructive mt-1">{validationErrors.address}</p>}
+              </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="address">Address *</Label>
-                      <Input 
-                        id="address" 
-                        value={customerInfo.address} 
-                        onChange={e => updateCustomerInfo('address', e.target.value)} 
-                        className={validationErrors.address ? 'border-destructive' : ''} 
-                      />
-                      {validationErrors.address && <p className="text-sm text-destructive">{validationErrors.address}</p>}
-                    </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="city">City *</Label>
+                  <Input 
+                    id="city" 
+                    value={customerInfo.city} 
+                    onChange={e => updateCustomerInfo('city', e.target.value)}
+                    placeholder="City" 
+                    className={validationErrors.city ? "border-destructive" : ""} 
+                  />
+                  {validationErrors.city && <p className="text-sm text-destructive mt-1">{validationErrors.city}</p>}
+                </div>
+                
+                <div>
+                  <Label htmlFor="postalCode">Postal Code *</Label>
+                  <Input 
+                    id="postalCode" 
+                    value={customerInfo.postalCode} 
+                    onChange={e => updateCustomerInfo('postalCode', e.target.value)}
+                    placeholder="Postal Code" 
+                    className={validationErrors.postalCode ? "border-destructive" : ""} 
+                  />
+                  {validationErrors.postalCode && <p className="text-sm text-destructive mt-1">{validationErrors.postalCode}</p>}
+                </div>
+                
+                <div>
+                  <Label htmlFor="country">Country *</Label>
+                  <Input 
+                    id="country" 
+                    value={customerInfo.country} 
+                    onChange={e => updateCustomerInfo('country', e.target.value)}
+                    placeholder="US, UK, TR, etc." 
+                    className={validationErrors.country ? "border-destructive" : ""} 
+                  />
+                  {validationErrors.country && <p className="text-sm text-destructive mt-1">{validationErrors.country}</p>}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Payment Section - Changes based on step */}
+          <div className="border rounded-lg p-6 mb-8">
+            {step === 'info' && (
+              <>
+                <h2 className="font-semibold text-xl mb-4">Payment Information</h2>
+                <p className="mb-6">
+                  You will be redirected to our secure payment gateway to complete your purchase.
+                  After successful payment, you will receive access to download your purchased designs.
+                </p>
+                
+                <div className="flex items-start justify-center space-x-4 mb-6 p-4 bg-muted/30 rounded-lg border">
+                  <Checkbox 
+                    id="privacy-policy" 
+                    checked={policyAgreed} 
+                    onCheckedChange={(checked) => setPolicyAgreed(checked as boolean)} 
+                    className="mt-0.5"
+                  />
+                  <label htmlFor="privacy-policy" className="text-sm leading-relaxed cursor-pointer font-medium">
+                    I agree to the <Link to="/privacy-policy" className="text-primary hover:underline font-semibold" target="_blank">Privacy Policy</Link> and consent to the processing of my personal data for order fulfillment.
+                  </label>
+                </div>
+                
+                <Button onClick={handleInfoSubmit} disabled={isLoading} className="w-full">
+                  {isLoading ? "Sending verification code..." : "Continue to Verification"}
+                </Button>
+              </>
+            )}
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="city">City *</Label>
-                        <Input 
-                          id="city" 
-                          value={customerInfo.city} 
-                          onChange={e => updateCustomerInfo('city', e.target.value)} 
-                          className={validationErrors.city ? 'border-destructive' : ''} 
-                        />
-                        {validationErrors.city && <p className="text-sm text-destructive">{validationErrors.city}</p>}
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="postalCode">Postal Code *</Label>
-                        <Input 
-                          id="postalCode" 
-                          value={customerInfo.postalCode} 
-                          onChange={e => updateCustomerInfo('postalCode', e.target.value)} 
-                          className={validationErrors.postalCode ? 'border-destructive' : ''} 
-                        />
-                        {validationErrors.postalCode && <p className="text-sm text-destructive">{validationErrors.postalCode}</p>}
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="country">Country *</Label>
-                      <Input 
-                        id="country" 
-                        value={customerInfo.country} 
-                        onChange={e => updateCustomerInfo('country', e.target.value)} 
-                        className={validationErrors.country ? 'border-destructive' : ''} 
-                      />
-                      {validationErrors.country && <p className="text-sm text-destructive">{validationErrors.country}</p>}
-                    </div>
-
-                    <div className="flex items-start space-x-3 p-4 bg-muted/30 rounded-lg border">
-                      <Checkbox 
-                        id="privacy-policy" 
-                        checked={policyAgreed} 
-                        onCheckedChange={(checked) => setPolicyAgreed(checked as boolean)} 
-                        className="mt-0.5"
-                      />
-                      <label htmlFor="privacy-policy" className="text-sm leading-relaxed cursor-pointer">
-                        I agree to the <Link to="/privacy-policy" className="text-primary hover:underline font-semibold" target="_blank">Privacy Policy</Link> and consent to the processing of my personal data for order fulfillment.
-                      </label>
-                    </div>
-
-                    <Button type="submit" disabled={isLoading} className="w-full">
-                      {isLoading ? "Sending code..." : "Continue to Verification"}
+            {step === 'otp' && (
+              <>
+                <div className="flex items-center gap-4 mb-4">
+                  {!user && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleBackToInfo}
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Back
                     </Button>
-                  </form>
-                )}
+                  )}
+                  <h2 className="font-semibold text-xl">Email Verification</h2>
+                </div>
+                
+                <div className="text-center mb-6">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    We've sent a 4-digit verification code to:
+                  </p>
+                  <p className="font-medium text-foreground mb-6">{customerInfo.email}</p>
+                  
+                  <div className="flex justify-center mb-4">
+                    <OTPInput
+                      value={otp}
+                      onChange={setOTP}
+                      error={otpError}
+                    />
+                  </div>
+                  
+                  {timeLeft > 0 && (
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Code expires in {formatTime(timeLeft)}
+                    </p>
+                  )}
+                </div>
 
-                {/* STEP 2: OTP Verification */}
-                {step === 'otp' && (
-                  <form onSubmit={handleOTPSubmit} className="space-y-6">
-                    {/* Show customer info for logged-in users */}
-                    {user && profile && (profile.first_name || profile.phone_number || profile.address_line_1) && (
-                      <div className="p-4 bg-muted/30 rounded-lg mb-6">
-                        <p className="text-sm font-medium mb-2">Using your saved information:</p>
-                        <div className="text-sm text-muted-foreground space-y-1">
-                          {customerInfo.firstName && <p>Name: {customerInfo.firstName} {customerInfo.lastName}</p>}
-                          {customerInfo.email && <p>Email: {customerInfo.email}</p>}
-                          {customerInfo.mobile && <p>Phone: {customerInfo.mobile}</p>}
-                          {customerInfo.address && <p>Address: {customerInfo.address}, {customerInfo.city}, {customerInfo.postalCode} {customerInfo.country}</p>}
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-2">
-                          You can update this information in your <Link to="/profile" className="text-primary hover:underline">Profile Settings</Link>
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground mb-4">
-                        We've sent a 4-digit verification code to:
-                      </p>
-                      <p className="font-medium text-foreground mb-6">{customerInfo.email}</p>
-                      
-                      <div className="flex justify-center mb-4">
-                        <OTPInput
-                          value={otp}
-                          onChange={setOTP}
-                          error={otpError}
-                        />
-                      </div>
-                      
-                      {otpError && <p className="text-sm text-destructive mb-4">{otpError}</p>}
-                      
-                      {timeLeft > 0 && (
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Code expires in {formatTime(timeLeft)}
-                        </p>
-                      )}
-                    </div>
-
-                    {!policyAgreed && (
-                      <div className="flex items-start space-x-3 p-4 bg-muted/30 rounded-lg border">
-                        <Checkbox 
-                          id="privacy-policy-otp" 
-                          checked={policyAgreed} 
-                          onCheckedChange={(checked) => setPolicyAgreed(checked as boolean)} 
-                          className="mt-0.5"
-                        />
-                        <label htmlFor="privacy-policy-otp" className="text-sm leading-relaxed cursor-pointer">
-                          I agree to the <Link to="/privacy-policy" className="text-primary hover:underline font-semibold" target="_blank">Privacy Policy</Link> and consent to the processing of my personal data for order fulfillment.
-                        </label>
-                      </div>
-                    )}
-
-                    <div className="space-y-3">
-                      <Button 
-                        type="submit" 
-                        disabled={isLoading || !otp || otp.length !== 4 || !policyAgreed} 
-                        className="w-full"
-                      >
-                        {isLoading ? "Verifying..." : "Complete Purchase"}
-                      </Button>
-                      
-                      <div className="flex gap-3">
-                        {!user && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleBackToInfo}
-                            className="flex-1"
-                          >
-                            <ArrowLeft className="w-4 h-4 mr-2" />
-                            Back
-                          </Button>
-                        )}
-                        
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={handleResendOTP}
-                          disabled={timeLeft > 0 || isResending}
-                          className="flex-1"
-                        >
-                          {isResending ? "Sending..." : "Resend Code"}
-                        </Button>
-                      </div>
-                    </div>
-                  </form>
-                )}
-
-                {/* STEP 3: Processing */}
-                {step === 'processing' && (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                    <h3 className="text-lg font-medium mb-2">Processing your order...</h3>
-                    <p className="text-muted-foreground">Please wait while we redirect you to the payment gateway.</p>
+                {!policyAgreed && (
+                  <div className="flex items-start space-x-4 mb-6 p-4 bg-muted/30 rounded-lg border">
+                    <Checkbox 
+                      id="privacy-policy-otp" 
+                      checked={policyAgreed} 
+                      onCheckedChange={(checked) => setPolicyAgreed(checked as boolean)} 
+                      className="mt-0.5"
+                    />
+                    <label htmlFor="privacy-policy-otp" className="text-sm leading-relaxed cursor-pointer font-medium">
+                      I agree to the <Link to="/privacy-policy" className="text-primary hover:underline font-semibold" target="_blank">Privacy Policy</Link> and consent to the processing of my personal data for order fulfillment.
+                    </label>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+
+                <div className="space-y-3">
+                  <Button 
+                    onClick={handleOTPSubmit} 
+                    disabled={isLoading || !otp || otp.length !== 4 || !policyAgreed} 
+                    className="w-full"
+                  >
+                    {isLoading ? "Processing..." : "Complete Purchase"}
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    onClick={handleResendOTP}
+                    disabled={timeLeft > 0 || isResending}
+                    className="w-full"
+                  >
+                    {isResending ? "Sending..." : "Resend Code"}
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {step === 'processing' && (
+              <>
+                <h2 className="font-semibold text-xl mb-4">Processing Your Order</h2>
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                  <h3 className="text-lg font-medium mb-2">Processing your order...</h3>
+                  <p className="text-muted-foreground">Please wait while we redirect you to the payment gateway.</p>
+                </div>
+              </>
+            )}
+            
+            <div className="mt-4 text-center text-sm text-muted-foreground">
+              <p>Your payment is secure and encrypted</p>
+            </div>
           </div>
         </div>
       </div>
@@ -652,4 +642,5 @@ const CheckoutPage = () => {
     </Layout>
   );
 };
+
 export default CheckoutPage;
