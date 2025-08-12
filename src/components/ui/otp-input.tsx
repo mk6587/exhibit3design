@@ -19,53 +19,55 @@ export const OTPInput = React.forwardRef<
   return (
     <div className={cn("space-y-2", className)}>
       {label && (
-        <Label className="text-sm font-medium">
+        <Label className="text-sm font-medium text-center block">
           {label}
         </Label>
       )}
-      <InputOTP
-        ref={ref}
-        maxLength={4}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        className={cn(
-          error && "ring-2 ring-destructive ring-offset-2"
-        )}
-      >
-        <InputOTPGroup className="gap-2">
-          <InputOTPSlot 
-            index={0} 
-            className={cn(
-              "w-12 h-12 text-lg font-semibold border-2",
-              error && "border-destructive"
-            )}
-          />
-          <InputOTPSlot 
-            index={1} 
-            className={cn(
-              "w-12 h-12 text-lg font-semibold border-2",
-              error && "border-destructive"
-            )}
-          />
-          <InputOTPSlot 
-            index={2} 
-            className={cn(
-              "w-12 h-12 text-lg font-semibold border-2",
-              error && "border-destructive"
-            )}
-          />
-          <InputOTPSlot 
-            index={3} 
-            className={cn(
-              "w-12 h-12 text-lg font-semibold border-2",
-              error && "border-destructive"
-            )}
-          />
-        </InputOTPGroup>
-      </InputOTP>
+      <div className="flex justify-center">
+        <InputOTP
+          ref={ref}
+          maxLength={4}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          className={cn(
+            error && "ring-2 ring-destructive ring-offset-2"
+          )}
+        >
+          <InputOTPGroup className="gap-2">
+            <InputOTPSlot 
+              index={0} 
+              className={cn(
+                "w-12 h-12 text-lg font-semibold border-2",
+                error && "border-destructive"
+              )}
+            />
+            <InputOTPSlot 
+              index={1} 
+              className={cn(
+                "w-12 h-12 text-lg font-semibold border-2",
+                error && "border-destructive"
+              )}
+            />
+            <InputOTPSlot 
+              index={2} 
+              className={cn(
+                "w-12 h-12 text-lg font-semibold border-2",
+                error && "border-destructive"
+              )}
+            />
+            <InputOTPSlot 
+              index={3} 
+              className={cn(
+                "w-12 h-12 text-lg font-semibold border-2",
+                error && "border-destructive"
+              )}
+            />
+          </InputOTPGroup>
+        </InputOTP>
+      </div>
       {error && (
-        <p className="text-sm text-destructive font-medium">
+        <p className="text-sm text-destructive font-medium text-center">
           {error}
         </p>
       )}
