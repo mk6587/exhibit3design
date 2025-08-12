@@ -312,16 +312,12 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
-      decrypt_sensitive_data: {
-        Args: { encrypted_data: string; secret_key?: string }
-        Returns: string
-      }
       delete_otp_by_email: {
         Args: { search_email: string }
         Returns: boolean
       }
       encrypt_sensitive_data: {
-        Args: { data: string; secret_key?: string }
+        Args: { data: string }
         Returns: string
       }
       find_otp_by_email: {
@@ -364,6 +360,10 @@ export type Database = {
       is_admin: {
         Args: { user_id: string }
         Returns: boolean
+      }
+      mask_sensitive_data: {
+        Args: { data: string; mask_type?: string }
+        Returns: string
       }
       validate_payment_update: {
         Args: Record<PropertyKey, never>
