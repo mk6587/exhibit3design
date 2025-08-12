@@ -57,67 +57,67 @@ const App = () => {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <ScrollToTop />
-        <AuthProvider>
-          <OTPAuthProvider>
-            <ProductsProvider>
-              <AdminProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <Routes>
-                  <Route path="/" element={
-                    <>
-                      <HashConfirmationHandler />
-                      <Index />
-                    </>
-                  } />
-                  <Route path="/products" element={<ProductsPage />} />
-                  <Route path="/product/:id" element={<ProductDetailPage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/faq" element={<FaqPage />} />
-                  <Route path="/cart" element={<CartPage />} />
-                  <Route path="/checkout" element={<CheckoutPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/downloads" element={<DownloadsPage />} />
-                  <Route path="/payment-success" element={<PaymentSuccessPage />} />
-                  <Route path="/payment-failed" element={<PaymentFailedPage />} />
-                  <Route path="/payment-cancelled" element={<PaymentCancelledPage />} />
-                  <Route path="/payment-error" element={<PaymentErrorPage />} />
-                  <Route path="/auth" element={<OTPAuthPage />} />
-                  <Route path="/login" element={<OTPAuthPage />} />
-                  <Route path="/register" element={<OTPAuthPage />} />
-                  <Route path="/reset-password" element={<ResetPasswordPage />} />
-                  <Route path="/confirm-email" element={<EmailConfirmationPage />} />
-                  <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-                  <Route path="/admin" element={<AdminLoginPage />} />
-                  <Route path="/admin/login" element={<AdminLoginPage />} />
-                  <Route path="/admin/dashboard" element={
-                    <ProtectedAdminRoute>
-                      <AdminPage />
-                    </ProtectedAdminRoute>
-                  } />
-                  <Route path="/admin/product/new" element={
-                    <ProtectedAdminRoute>
-                      <AdminProductCreatePage />
-                    </ProtectedAdminRoute>
-                  } />
-                  <Route path="/admin/product/:id/edit" element={
-                    <ProtectedAdminRoute>
-                      <AdminProductEditPage />
-                    </ProtectedAdminRoute>
-                  } />
-                  <Route path="/admin-setup" element={<AdminSetupPage />} />
-                  <Route path="/sitemap.xml" element={<SitemapPage />} />
-                  
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </TooltipProvider>
-              </AdminProvider>
-            </ProductsProvider>
-          </OTPAuthProvider>
-        </AuthProvider>
+          <AuthProvider>
+            <OTPAuthProvider>
+              <ProductsProvider>
+                <AdminProvider>
+                  <TooltipProvider>
+                    <ScrollToTop />
+                    <Toaster />
+                    <Sonner />
+                    <Routes>
+                      <Route path="/" element={
+                        <>
+                          <HashConfirmationHandler />
+                          <Index />
+                        </>
+                      } />
+                      <Route path="/products" element={<ProductsPage />} />
+                      <Route path="/product/:id" element={<ProductDetailPage />} />
+                      <Route path="/about" element={<AboutPage />} />
+                      <Route path="/contact" element={<ContactPage />} />
+                      <Route path="/faq" element={<FaqPage />} />
+                      <Route path="/cart" element={<CartPage />} />
+                      <Route path="/checkout" element={<CheckoutPage />} />
+                      <Route path="/profile" element={<ProfilePage />} />
+                      <Route path="/downloads" element={<DownloadsPage />} />
+                      <Route path="/payment-success" element={<PaymentSuccessPage />} />
+                      <Route path="/payment-failed" element={<PaymentFailedPage />} />
+                      <Route path="/payment-cancelled" element={<PaymentCancelledPage />} />
+                      <Route path="/payment-error" element={<PaymentErrorPage />} />
+                      <Route path="/auth" element={<OTPAuthPage />} />
+                      <Route path="/login" element={<OTPAuthPage />} />
+                      <Route path="/register" element={<OTPAuthPage />} />
+                      <Route path="/reset-password" element={<ResetPasswordPage />} />
+                      <Route path="/confirm-email" element={<EmailConfirmationPage />} />
+                      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                      <Route path="/admin" element={<AdminLoginPage />} />
+                      <Route path="/admin/login" element={<AdminLoginPage />} />
+                      <Route path="/admin/dashboard" element={
+                        <ProtectedAdminRoute>
+                          <AdminPage />
+                        </ProtectedAdminRoute>
+                      } />
+                      <Route path="/admin/product/new" element={
+                        <ProtectedAdminRoute>
+                          <AdminProductCreatePage />
+                        </ProtectedAdminRoute>
+                      } />
+                      <Route path="/admin/product/:id/edit" element={
+                        <ProtectedAdminRoute>
+                          <AdminProductEditPage />
+                        </ProtectedAdminRoute>
+                      } />
+                      <Route path="/admin-setup" element={<AdminSetupPage />} />
+                      <Route path="/sitemap.xml" element={<SitemapPage />} />
+                      
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </TooltipProvider>
+                </AdminProvider>
+              </ProductsProvider>
+            </OTPAuthProvider>
+          </AuthProvider>
         </BrowserRouter>
       </QueryClientProvider>
     </HelmetProvider>
