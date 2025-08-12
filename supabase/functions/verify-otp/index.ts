@@ -16,6 +16,8 @@ const supabaseUrl = Deno.env.get('SUPABASE_URL') as string;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') as string;
 
 const handler = async (req: Request): Promise<Response> => {
+  console.log('🔧 Verify OTP Request received');
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -23,26 +25,37 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const { email, otp, captchaToken }: VerifyOTPRequest = await req.json();
+    console.log('📧 Processing OTP verification for email:', email);
 
     if (!email || !otp) {
+      console.error('❌ Missing email or OTP');
       return new Response(
         JSON.stringify({ error: 'Email and OTP are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log('🔧 Created Supabase client');
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Clean up expired OTPs
+    console.log('🧹 Cleaning up expired OTPs');
     await supabase.rpc('cleanup_expired_otps');
 
     // Find valid OTP using secure helper function
+    console.log('🔍 Verifying OTP code');
     const { data: otpRecords, error: fetchError } = await supabase.rpc('verify_otp_code', {
       search_email: email,
       input_otp: otp
     });
 
+    console.log('📝 OTP verification result:', { 
+      hasRecords: !!otpRecords && otpRecords.length > 0, 
+      error: fetchError?.message || 'none' 
+    });
+
     if (fetchError || !otpRecords || otpRecords.length === 0) {
+      console.error('❌ Invalid or expired OTP:', fetchError?.message);
       return new Response(
         JSON.stringify({ error: 'Invalid or expired verification code' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -50,20 +63,32 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const otpRecord = otpRecords[0];
+    console.log('✅ Valid OTP found, record ID:', otpRecord.id);
 
     // Mark OTP as verified
+    console.log('📝 Marking OTP as verified');
     await supabase
       .from('otp_registrations')
       .update({ verified: true })
       .eq('id', otpRecord.id);
 
     // Check if user exists by searching through all users
+    console.log('👤 Checking if user exists');
     let existingUser = null;
     try {
-      const { data: allUsers } = await supabase.auth.admin.listUsers();
+      const { data: allUsers, error: listError } = await supabase.auth.admin.listUsers();
+      if (listError) {
+        console.error('❌ Error listing users:', listError);
+        throw listError;
+      }
       existingUser = allUsers?.users?.find(user => user.email === email);
+      console.log('👤 User lookup result:', existingUser ? 'Found existing user' : 'New user');
     } catch (error) {
-      console.error('Error listing users:', error);
+      console.error('❌ Error listing users:', error);
+      return new Response(
+        JSON.stringify({ error: 'Failed to verify user status' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     let authResponse;
@@ -160,9 +185,12 @@ const handler = async (req: Request): Promise<Response> => {
     );
 
   } catch (error: any) {
-    console.error('Error in verify-otp function:', error);
+    console.error('❌ Error in verify-otp function:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ 
+        error: 'Internal server error',
+        details: error.message 
+      }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
