@@ -20,7 +20,7 @@ import ContactPage from "./pages/ContactPage";
 import FaqPage from "./pages/FaqPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
-import OTPCheckoutPage from "./pages/OTPCheckoutPage";
+
 import ProfilePage from "./pages/ProfilePage";
 import DownloadsPage from "./pages/DownloadsPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
@@ -78,7 +78,7 @@ const App = () => {
                   <Route path="/contact" element={<ContactPage />} />
                   <Route path="/faq" element={<FaqPage />} />
                   <Route path="/cart" element={<CartPage />} />
-                  <Route path="/checkout" element={<OTPCheckoutPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/downloads" element={<DownloadsPage />} />
                   <Route path="/payment-success" element={<PaymentSuccessPage />} />
