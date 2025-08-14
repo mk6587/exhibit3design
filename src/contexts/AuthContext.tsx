@@ -15,6 +15,8 @@ interface Profile {
   state_region: string | null;
   postcode: string | null;
   email_confirmed: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 interface AuthContextType {
@@ -99,72 +101,39 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Transfer guest order data to user profile
-  const transferGuestOrderData = async (userId: string, userEmail: string) => {
-    try {
-      // Get the most recent guest order with this email to transfer customer info
-      const { data: guestOrders, error: ordersError } = await supabase
-        .from('orders')
-        .select('customer_first_name, customer_last_name, customer_mobile, customer_address, customer_city, customer_postal_code, customer_country')
-        .eq('customer_email', userEmail)
-        .is('user_id', null)
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      if (ordersError || !guestOrders?.length) {
-        console.log('No guest orders found for transfer');
-        return await getUserLocation();
-      }
-
-      const guestOrder = guestOrders[0];
-      console.log('Transferring guest order data to profile:', { userEmail, hasData: !!guestOrder });
-
-      // Update all guest orders with this email to link to authenticated user
-      const { error: linkError } = await supabase
-        .from('orders')
-        .update({ user_id: userId })
-        .eq('customer_email', userEmail)
-        .is('user_id', null);
-
-      if (linkError) {
-        console.error('Error linking guest orders to user:', linkError);
-      } else {
-        console.log('Successfully linked guest orders to authenticated user');
-      }
-
-      return {
-        country: guestOrder.customer_country || null,
-        city: guestOrder.customer_city || null,
-        first_name: guestOrder.customer_first_name || null,
-        last_name: guestOrder.customer_last_name || null,
-        phone_number: guestOrder.customer_mobile || null,
-        address_line_1: guestOrder.customer_address || null,
-        postcode: guestOrder.customer_postal_code || null
-      };
-    } catch (error) {
-      console.error('Error transferring guest order data:', error);
-      return await getUserLocation();
-    }
-  };
-
-  // Create initial profile with location and guest order data
+  // Create initial profile with guest order data transfer
   const createInitialProfile = async (userId: string, userEmail?: string) => {
-    const profileData = userEmail 
-      ? await transferGuestOrderData(userId, userEmail)
-      : await getUserLocation();
-    
     try {
+      if (userEmail) {
+        // Use Supabase function to create profile with guest order data
+        const { data, error } = await supabase.rpc('create_profile_with_guest_data', {
+          p_user_id: userId,
+          p_email: userEmail
+        });
+
+        if (error) {
+          console.error('Error creating profile with guest data:', error);
+          // Continue to fallback
+        } else if (data && data.length > 0 && data[0]?.profile_data) {
+          console.log('Successfully created profile with guest order data transfer');
+          // The profile_data is a JSON object that matches our Profile interface
+          return data[0].profile_data as unknown as Profile;
+        }
+      }
+
+      // Fallback: create basic profile with location data
+      const location = await getUserLocation();
       const { data, error } = await supabase
         .from('profiles')
         .insert({
           user_id: userId,
-          first_name: profileData.first_name || null,
-          last_name: profileData.last_name || null,
-          country: profileData.country,
-          city: profileData.city,
-          phone_number: profileData.phone_number || null,
-          address_line_1: profileData.address_line_1 || null,
-          postcode: profileData.postcode || null,
+          first_name: location.first_name,
+          last_name: location.last_name,
+          country: location.country,
+          city: location.city,
+          phone_number: location.phone_number,
+          address_line_1: location.address_line_1,
+          postcode: location.postcode,
         })
         .select()
         .single();

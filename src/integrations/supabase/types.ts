@@ -329,6 +329,12 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      create_profile_with_guest_data: {
+        Args: { p_email: string; p_user_id: string }
+        Returns: {
+          profile_data: Json
+        }[]
+      }
       current_user_is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
@@ -447,6 +453,19 @@ export type Database = {
       set_order_token_session: {
         Args: { token: string }
         Returns: undefined
+      }
+      transfer_guest_order_data: {
+        Args: { p_email: string; p_user_id: string }
+        Returns: {
+          address_line_1: string
+          city: string
+          country: string
+          first_name: string
+          last_name: string
+          phone_number: string
+          postal_code: string
+          success: boolean
+        }[]
       }
       validate_payment_update: {
         Args: Record<PropertyKey, never>
