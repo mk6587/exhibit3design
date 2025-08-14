@@ -57,11 +57,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const data = await response.json();
       return {
         country: data.country_name || null,
-        city: data.city || null
+        city: data.city || null,
+        first_name: null,
+        last_name: null,
+        phone_number: null,
+        address_line_1: null,
+        postcode: null
       };
     } catch (error) {
       console.error('Failed to get user location:', error);
-      return { country: null, city: null };
+      return { 
+        country: null, 
+        city: null,
+        first_name: null,
+        last_name: null,
+        phone_number: null,
+        address_line_1: null,
+        postcode: null
+      };
     }
   };
 
@@ -86,19 +99,72 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Create initial profile with location
-  const createInitialProfile = async (userId: string) => {
-    const location = await getUserLocation();
+  // Transfer guest order data to user profile
+  const transferGuestOrderData = async (userId: string, userEmail: string) => {
+    try {
+      // Get the most recent guest order with this email to transfer customer info
+      const { data: guestOrders, error: ordersError } = await supabase
+        .from('orders')
+        .select('customer_first_name, customer_last_name, customer_mobile, customer_address, customer_city, customer_postal_code, customer_country')
+        .eq('customer_email', userEmail)
+        .is('user_id', null)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (ordersError || !guestOrders?.length) {
+        console.log('No guest orders found for transfer');
+        return await getUserLocation();
+      }
+
+      const guestOrder = guestOrders[0];
+      console.log('Transferring guest order data to profile:', { userEmail, hasData: !!guestOrder });
+
+      // Update all guest orders with this email to link to authenticated user
+      const { error: linkError } = await supabase
+        .from('orders')
+        .update({ user_id: userId })
+        .eq('customer_email', userEmail)
+        .is('user_id', null);
+
+      if (linkError) {
+        console.error('Error linking guest orders to user:', linkError);
+      } else {
+        console.log('Successfully linked guest orders to authenticated user');
+      }
+
+      return {
+        country: guestOrder.customer_country || null,
+        city: guestOrder.customer_city || null,
+        first_name: guestOrder.customer_first_name || null,
+        last_name: guestOrder.customer_last_name || null,
+        phone_number: guestOrder.customer_mobile || null,
+        address_line_1: guestOrder.customer_address || null,
+        postcode: guestOrder.customer_postal_code || null
+      };
+    } catch (error) {
+      console.error('Error transferring guest order data:', error);
+      return await getUserLocation();
+    }
+  };
+
+  // Create initial profile with location and guest order data
+  const createInitialProfile = async (userId: string, userEmail?: string) => {
+    const profileData = userEmail 
+      ? await transferGuestOrderData(userId, userEmail)
+      : await getUserLocation();
     
     try {
       const { data, error } = await supabase
         .from('profiles')
         .insert({
           user_id: userId,
-          first_name: null,
-          last_name: null,
-          country: location.country,
-          city: location.city,
+          first_name: profileData.first_name || null,
+          last_name: profileData.last_name || null,
+          country: profileData.country,
+          city: profileData.city,
+          phone_number: profileData.phone_number || null,
+          address_line_1: profileData.address_line_1 || null,
+          postcode: profileData.postcode || null,
         })
         .select()
         .single();
@@ -156,9 +222,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             try {
               let profileData = await fetchProfile(session.user.id);
               
-              // If no profile exists, create one (this handles existing users)
+              // If no profile exists, create one with guest order data transfer
               if (!profileData) {
-                profileData = await createInitialProfile(session.user.id);
+                profileData = await createInitialProfile(session.user.id, session.user.email);
               }
               
               setProfile(profileData);
