@@ -97,9 +97,9 @@ const FeaturedProducts = () => {
             textShadow: '1px 1px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 0, 0, 0.5)'
           }}>Get it done faster with affordable, ready-made designs.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">
+              <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                 <Link to="/products">Explore Our Designs</Link>
-            </Button>
+              </Button>
               {!hasVideo && <div className="text-sm text-white/80 bg-black/20 px-4 py-2 rounded-lg backdrop-blur-sm">
                   💡 Upload a video to the 'videos' storage bucket to replace this image
                 </div>}
