@@ -83,13 +83,22 @@ const CheckoutPage = () => {
 
     // Track begin_checkout when checkout page loads
     trackBeginCheckout(cartItems, cartTotal);
-    
-    // Reset step to 'info' for all users - logged-in users should never see OTP step
+  }, [cartItems.length, navigate, cartItems, cartTotal]);
+
+  // Handle user authentication state changes - ensure logged-in users never see OTP step
+  useEffect(() => {
     console.log('CheckoutPage: User status:', user ? 'Logged in' : 'Guest');
-    if (step !== 'info' && step !== 'processing') {
+    console.log('CheckoutPage: Current step:', step);
+    
+    // If user is logged in and somehow in OTP step, reset to info immediately
+    if (user && step === 'otp') {
+      console.log('Logged-in user detected in OTP step, resetting to info');
       setStep('info');
+      setOTP('');
+      setOTPError('');
+      setTimeLeft(0);
     }
-  }, [cartItems.length, navigate, user, cartItems, cartTotal]);
+  }, [user, step]);
 
   // Initialize customer info with user data if logged in
   useEffect(() => {
