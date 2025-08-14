@@ -284,17 +284,17 @@ const CheckoutPage = () => {
 
     // Prevent double submission
     if (step === 'processing') return;
-    
-    trackAddPaymentInfo(cartItems, cartTotal, 'Card');
-    setStep('processing');
 
+    console.log('🔐 CHECKOUT DEBUG - Starting OTP verification for guest:', customerInfo.email);
+    
     const result = await verifyOTP(customerInfo.email, otp);
     if (!result.success) {
       setOTPError(result.error || 'Invalid verification code');
-      setStep('otp');
       setOTP('');
       return;
     }
+
+    console.log('✅ CHECKOUT DEBUG - OTP verified successfully, proceeding to payment');
 
     // Optional magic link -> elevate to session
     if (result.magicLink) {
@@ -309,13 +309,17 @@ const CheckoutPage = () => {
         
         // Wait briefly for auth state to update
         await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log('🔑 CHECKOUT DEBUG - Magic link authentication successful');
       } catch (err: any) {
         console.error('Authentication error:', err);
         toast.error('Authentication failed: ' + (err.message || 'Please try again.'));
-        setStep('otp');
         return;
       }
     }
+
+    // Now set processing and track payment info only after successful OTP verification
+    trackAddPaymentInfo(cartItems, cartTotal, 'Card');
+    setStep('processing');
 
     try {
       await processPayment();
@@ -630,7 +634,7 @@ const CheckoutPage = () => {
         </div>
       </div>
 
-      <PaymentRedirectModal isOpen={step === 'processing' || isLoading} />
+      <PaymentRedirectModal isOpen={step === 'processing'} />
     </Layout>
   );
 };
