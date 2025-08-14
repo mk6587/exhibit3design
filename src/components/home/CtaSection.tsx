@@ -21,7 +21,7 @@ const CtaSection = () => {
           <Button asChild size="lg" variant="secondary" className="font-semibold">
             <Link to="/products">Browse Designs</Link>
           </Button>
-          <Button asChild size="lg" className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300">
+          <Button asChild size="lg" variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">
             <Link to="/contact">Custom Design</Link>
           </Button>
         </div>
