@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,9 @@ const OTPAuthPage = () => {
   const { user } = useAuth();
   const { sendOTP, verifyOTP, isLoading } = useOTPAuth();
   const navigate = useNavigate();
+  
+  // Ref for OTP input to focus after sending code
+  const otpInputRef = useRef<HTMLInputElement>(null);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -57,6 +60,10 @@ const OTPAuthPage = () => {
     if (result.success) {
       setStep('otp');
       setTimeLeft(120); // 2 minutes
+      // Focus the OTP input after successfully sending the code
+      setTimeout(() => {
+        otpInputRef.current?.focus();
+      }, 100);
     } else {
       setError(result.error || 'Failed to send verification code');
     }
@@ -126,6 +133,10 @@ const OTPAuthPage = () => {
     if (result.success) {
       setTimeLeft(120);
       setOTP('');
+      // Focus the OTP input after successfully resending the code
+      setTimeout(() => {
+        otpInputRef.current?.focus();
+      }, 100);
     } else {
       setError(result.error || 'Failed to resend code');
     }
@@ -210,6 +221,7 @@ const OTPAuthPage = () => {
                   </div>
 
                   <OTPInput
+                    ref={otpInputRef}
                     value={otp}
                     onChange={setOTP}
                     disabled={isLoading}
