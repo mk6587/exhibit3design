@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -244,36 +244,6 @@ export type Database = {
         }
         Relationships: []
       }
-      search_queries: {
-        Row: {
-          created_at: string
-          id: string
-          ip_address: unknown | null
-          query: string
-          results_count: number | null
-          user_agent: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          ip_address?: unknown | null
-          query: string
-          results_count?: number | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          ip_address?: unknown | null
-          query?: string
-          results_count?: number | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -301,7 +271,7 @@ export type Database = {
     }
     Functions: {
       check_recent_otp: {
-        Args: { search_email: string; minutes_ago?: number }
+        Args: { minutes_ago?: number; search_email: string }
         Returns: boolean
       }
       cleanup_expired_otps: {
@@ -323,33 +293,33 @@ export type Database = {
       find_otp_by_email: {
         Args: { search_email: string }
         Returns: {
-          id: string
+          created_at: string
           email: string
+          expires_at: string
+          id: string
           otp: string
           password_hash: string
-          expires_at: string
           verified: boolean
-          created_at: string
         }[]
       }
       get_decrypted_customer_data: {
         Args: { order_id: string }
         Returns: {
-          id: string
+          customer_address: string
+          customer_city: string
+          customer_country: string
           customer_email: string
           customer_first_name: string
           customer_last_name: string
           customer_mobile: string
-          customer_address: string
-          customer_city: string
           customer_postal_code: string
-          customer_country: string
+          id: string
         }[]
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
@@ -360,8 +330,8 @@ export type Database = {
       insert_otp_registration: {
         Args: {
           p_email: string
-          p_otp: string
           p_expires_at: string
+          p_otp: string
           p_password_hash?: string
         }
         Returns: boolean
@@ -383,14 +353,14 @@ export type Database = {
         Returns: boolean
       }
       verify_otp_code: {
-        Args: { search_email: string; input_otp: string }
+        Args: { input_otp: string; search_email: string }
         Returns: {
-          id: string
-          email: string
-          password_hash: string
-          expires_at: string
-          verified: boolean
           created_at: string
+          email: string
+          expires_at: string
+          id: string
+          password_hash: string
+          verified: boolean
         }[]
       }
     }

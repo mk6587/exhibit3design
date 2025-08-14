@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { X, Search } from "lucide-react";
 import { trackViewItemList, trackSearch, trackFilterApplied, trackSortChanged, trackFiltersCleared } from "@/services/ga4Analytics";
-import { trackSearchQuery } from "@/services/searchAnalytics";
 
 const ProductsPage = () => {
   const { products } = useProducts();
@@ -69,7 +68,6 @@ const ProductsPage = () => {
           selectedTags.some(tag => product.tags.includes(tag));
         return matchesSearch && matchesTags;
       });
-      trackSearchQuery({ query: searchText, results_count: searchResults.length });
       trackSearch(searchText, searchResults.length);
     }
   };
