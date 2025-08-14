@@ -3,20 +3,62 @@ import { useProducts } from "@/contexts/ProductsContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { VideoStream } from "@/components/performance/VideoStream";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import "@/components/ui/rich-text-editor.css";
 
 const FeaturedProducts = () => {
   const { products, loading } = useProducts();
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string>("");
+  const [hasVideo, setHasVideo] = useState(false);
   
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
 
-  // Video URLs - MP4 fallback and HLS streaming
-  const videoUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/veo3.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby92ZW8zLm1wNCIsImlhdCI6MTc1NDM0MjA1OSwiZXhwIjoxOTEyMDIyMDU5fQ.br8HgLwcWpmJQP8NB7UdD-vnjYLHCw641P9_-o5PTPg";
-  // For future HLS implementation
-  const hlsUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/video/veo3.m3u8"; // When available
+  // Fetch video from Supabase storage
+  useEffect(() => {
+    const fetchVideo = async () => {
+      try {
+        // List videos in the videos bucket
+        const { data: videoFiles, error } = await supabase.storage
+          .from('videos')
+          .list('', {
+            limit: 1,
+            sortBy: { column: 'created_at', order: 'desc' }
+          });
+
+        if (error) {
+          console.log('No videos bucket or error fetching videos:', error);
+          setHasVideo(false);
+          return;
+        }
+
+        if (videoFiles && videoFiles.length > 0) {
+          const firstVideo = videoFiles.find(file => 
+            file.name.endsWith('.mp4') || 
+            file.name.endsWith('.webm') || 
+            file.name.endsWith('.mov')
+          );
+
+          if (firstVideo) {
+            const videoPath = `https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos/${firstVideo.name}`;
+            setVideoUrl(videoPath);
+            setHasVideo(true);
+          } else {
+            setHasVideo(false);
+          }
+        } else {
+          setHasVideo(false);
+        }
+      } catch (error) {
+        console.error('Error fetching video:', error);
+        setHasVideo(false);
+      }
+    };
+
+    fetchVideo();
+  }, []);
   
   if (loading) {
     return (
@@ -58,22 +100,39 @@ const FeaturedProducts = () => {
   
   return (
     <>
-      {/* Full-width video section with HLS streaming */}
+      {/* Full-width hero section */}
       <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
-        <VideoStream
-          src={videoUrl}
-          // hlsUrl={hlsUrl} // Enable when HLS version is available
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="object-cover"
-          style={{ objectPosition: 'center center' }}
-          onLoadStart={() => setIsVideoLoaded(false)}
-          onLoadedData={() => setIsVideoLoaded(true)}
-          onError={(error) => console.error('Video streaming error:', error)}
-        />
-        <div className="absolute inset-0 bg-black/20" />
+        {hasVideo && videoUrl ? (
+          // Show video if available
+          <>
+            <VideoStream
+              src={videoUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="object-cover"
+              style={{ objectPosition: 'center center' }}
+              onLoadStart={() => setIsVideoLoaded(false)}
+              onLoadedData={() => setIsVideoLoaded(true)}
+              onError={(error) => {
+                console.error('Video streaming error:', error);
+                setHasVideo(false);
+              }}
+            />
+            <div className="absolute inset-0 bg-black/20" />
+          </>
+        ) : (
+          // Fallback to beautiful hero image
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: `url("https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=600&fit=crop&crop=center&auto=format&q=80")`
+            }}
+          >
+            <div className="absolute inset-0 bg-black/30" />
+          </div>
+        )}
         
         {/* Hero content overlay */}
         <div className="absolute inset-0 flex items-center justify-center">
@@ -84,12 +143,19 @@ const FeaturedProducts = () => {
             <p className="text-xl md:text-2xl mb-8 drop-shadow-lg max-w-2xl mx-auto">
               Transform your brand presence with our cutting-edge exhibition stand designs
             </p>
-            <Link 
-              to="/products" 
-              className="inline-block bg-primary text-primary-foreground px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary/90 transition-colors shadow-lg"
-            >
-              Explore Our Designs
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link 
+                to="/products" 
+                className="inline-block bg-primary text-primary-foreground px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary/90 transition-colors shadow-lg"
+              >
+                Explore Our Designs
+              </Link>
+              {!hasVideo && (
+                <div className="text-sm text-white/80 bg-black/20 px-4 py-2 rounded-lg backdrop-blur-sm">
+                  💡 Upload a video to the 'videos' storage bucket to replace this image
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
