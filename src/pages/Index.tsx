@@ -1,6 +1,5 @@
 
 import Layout from "@/components/layout/Layout";
-import HeroSection from "@/components/home/HeroSection";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
 import FeaturesSection from "@/components/home/FeaturesSection";
 import CtaSection from "@/components/home/CtaSection";
@@ -14,7 +13,6 @@ const Index = () => {
       keywords="exhibition stand design, trade show booth, custom exhibition design, exhibition services, stand builder, trade show design"
       url="https://exhibit3design.com/"
     >
-      <HeroSection />
       <FeaturedProducts />
       <FeaturesSection />
       <CtaSection />
