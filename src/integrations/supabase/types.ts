@@ -62,6 +62,7 @@ export type Database = {
           customer_postal_code: string | null
           id: string
           order_number: string | null
+          order_token: string | null
           payment_description: string | null
           payment_method: string | null
           product_id: number
@@ -85,6 +86,7 @@ export type Database = {
           customer_postal_code?: string | null
           id?: string
           order_number?: string | null
+          order_token?: string | null
           payment_description?: string | null
           payment_method?: string | null
           product_id: number
@@ -108,6 +110,7 @@ export type Database = {
           customer_postal_code?: string | null
           id?: string
           order_number?: string | null
+          order_token?: string | null
           payment_description?: string | null
           payment_method?: string | null
           product_id?: number
@@ -309,6 +312,10 @@ export type Database = {
           password_hash: string
           verified: boolean
         }[]
+      }
+      generate_order_token: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       get_decrypted_customer_data: {
         Args: { order_id: string }
