@@ -208,8 +208,8 @@ const CheckoutPage = () => {
 
     trackAddShippingInfo(cartItems, cartTotal, 'Digital');
 
-    if (!isGuest) {
-      // LOGGED-IN: No OTP
+    // If user is logged in (either through auth context or session), skip OTP entirely
+    if (user || sessionUser) {
       setStep('processing');
       trackAddPaymentInfo(cartItems, cartTotal, 'Card');
       try {
@@ -221,7 +221,7 @@ const CheckoutPage = () => {
       return;
     }
 
-    // GUEST: Send OTP
+    // GUEST ONLY: Send OTP
     const tempPassword = Math.random().toString(36).slice(-12);
     const passwordHash = await hashPassword(tempPassword);
     const result = await sendOTP(customerInfo.email, passwordHash);
@@ -508,8 +508,8 @@ const CheckoutPage = () => {
             </>
           )}
 
-          {/* OTP SECTION: COMPLETELY BLOCKED for logged-in users */}
-          {authReady && step === 'otp' && isGuest && !user && !sessionUser && (
+          {/* OTP SECTION: Only show for guests */}
+          {authReady && step === 'otp' && !user && !sessionUser && (
             <>
               <div className="flex items-center gap-4 mb-4">
                 <Button variant="outline" size="sm" onClick={handleBackToInfo}>
