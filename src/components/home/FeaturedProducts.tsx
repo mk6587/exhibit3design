@@ -148,8 +148,8 @@ const FeaturedProducts = () => {
                 {featuredProducts.map((product) => (
                   <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
                     <div className="p-1">
-                      <div className="bg-card rounded-lg shadow-sm border p-4 h-full">
-                        <div className="aspect-[4/3] relative mb-4 overflow-hidden rounded-md">
+                      <div className="bg-card rounded-lg shadow-sm border overflow-hidden h-full">
+                        <div className="aspect-[4/3] relative overflow-hidden">
                           <img
                             src={product.images?.[0] || "/placeholder.svg"}
                             alt={product.title}
@@ -158,7 +158,7 @@ const FeaturedProducts = () => {
                           />
                         </div>
                         
-                        <div className="space-y-3">
+                        <div className="p-4 space-y-3">
                           <h3 className="font-semibold text-lg leading-tight">
                             {product.title}
                           </h3>
