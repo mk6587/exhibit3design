@@ -32,20 +32,22 @@ interface CustomerInfo {
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { user, profile, updateProfile } = useAuth();
-  const { sendOTP, verifyOTP, isLoading } = useOTPAuth();
+  const { sendOTP, verifyOTP, isLoading } = useOTPAuth(); // used only in guest OTP flow
   const { cartItems, cartTotal, clearCart } = useProducts();
-  
+
   // Multi-step flow: 'info' | 'otp' | 'processing'
   const [step, setStep] = useState<'info' | 'otp' | 'processing'>('info');
-  const [isProcessing, setIsProcessing] = useState(false);
   const [policyAgreed, setPolicyAgreed] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  
-  // OTP related state
+
+  // OTP related state (guest-only)
   const [otp, setOTP] = useState('');
   const [timeLeft, setTimeLeft] = useState(0);
   const [otpError, setOTPError] = useState('');
   const [isResending, setIsResending] = useState(false);
+
+  // Convenience flag
+  const isGuest = !user;
 
   // Customer Information
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
@@ -64,11 +66,12 @@ const CheckoutPage = () => {
     window.scrollTo(0, 0);
   }, [step]);
 
-  // Timer for OTP expiration
+  // Timer for OTP expiration (guest-only)
   useEffect(() => {
+    if (step !== 'otp') return;
     let timer: NodeJS.Timeout;
-    if (timeLeft > 0 && step === 'otp') {
-      timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+    if (timeLeft > 0) {
+      timer = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
     }
     return () => clearTimeout(timer);
   }, [timeLeft, step]);
@@ -80,19 +83,13 @@ const CheckoutPage = () => {
       toast.error("Your cart is empty");
       return;
     }
-
     // Track begin_checkout when checkout page loads
     trackBeginCheckout(cartItems, cartTotal);
   }, [cartItems.length, navigate, cartItems, cartTotal]);
 
-  // Handle user authentication state changes - ensure logged-in users never see OTP step
+  // Ensure logged-in users never see OTP step
   useEffect(() => {
-    console.log('CheckoutPage: User status:', user ? 'Logged in' : 'Guest');
-    console.log('CheckoutPage: Current step:', step);
-    
-    // If user is logged in and somehow in OTP step, reset to info immediately
     if (user && step === 'otp') {
-      console.log('Logged-in user detected in OTP step, resetting to info');
       setStep('info');
       setOTP('');
       setOTPError('');
@@ -150,9 +147,8 @@ const CheckoutPage = () => {
 
   const saveUserProfile = async () => {
     if (!user || !updateProfile || !profile) return;
-    
-    // Check if any profile data has actually changed
-    const hasChanges = 
+
+    const hasChanges =
       customerInfo.firstName !== (profile.first_name || "") ||
       customerInfo.lastName !== (profile.last_name || "") ||
       customerInfo.mobile !== (profile.phone_number || "") ||
@@ -160,15 +156,10 @@ const CheckoutPage = () => {
       customerInfo.city !== (profile.city || "") ||
       customerInfo.postalCode !== (profile.postcode || "") ||
       customerInfo.country !== (profile.country || "");
-    
-    // Only update if there are actual changes
-    if (!hasChanges) {
-      console.log("No profile changes detected, skipping update");
-      return;
-    }
-    
+
+    if (!hasChanges) return;
+
     try {
-      console.log("Updating profile with new information");
       await updateProfile({
         first_name: customerInfo.firstName,
         last_name: customerInfo.lastName,
@@ -183,7 +174,7 @@ const CheckoutPage = () => {
     }
   };
 
-  // Simple password hashing for temporary passwords
+  // Simple password hashing for temporary passwords (guest-only)
   const hashPassword = async (password: string): Promise<string> => {
     const encoder = new TextEncoder();
     const data = encoder.encode(password);
@@ -207,7 +198,7 @@ const CheckoutPage = () => {
   const handleInfoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setOTPError('');
-    
+
     if (!validateForm()) return;
     if (!policyAgreed) {
       toast.error("You must agree to our Privacy Policy to proceed with the payment");
@@ -217,9 +208,8 @@ const CheckoutPage = () => {
     // Track shipping info added
     trackAddShippingInfo(cartItems, cartTotal, 'Digital');
 
-    // If user is already logged in, proceed directly to payment
-    if (user) {
-      console.log('User is logged in, proceeding directly to payment');
+    // Logged-in path: go straight to payment (no OTP)
+    if (!isGuest) {
       setStep('processing');
       try {
         await processPayment();
@@ -231,10 +221,10 @@ const CheckoutPage = () => {
       return;
     }
 
-    // For non-logged-in users, send OTP for verification
+    // Guest path: send OTP
     const tempPassword = Math.random().toString(36).slice(-12);
     const passwordHash = await hashPassword(tempPassword);
-    
+
     const result = await sendOTP(customerInfo.email, passwordHash);
     if (result.success) {
       setStep('otp');
@@ -247,45 +237,37 @@ const CheckoutPage = () => {
 
   const handleOTPSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isGuest) return; // safety guard
     setOTPError('');
-    
+
     if (!otp || otp.length !== 4) {
       setOTPError('Please enter a 4-digit code');
       return;
     }
 
-    // Track payment info added
     trackAddPaymentInfo(cartItems, cartTotal, 'Card');
     setStep('processing');
-    
+
     const result = await verifyOTP(customerInfo.email, otp);
     if (result.success) {
-      console.log('OTP verification successful for checkout');
       toast.success('Verification successful! Processing your payment...');
-      
-      // If there's a magic link, process it directly to establish session
+
       if (result.magicLink) {
         try {
-          // Extract token from magic link and verify directly
           const url = new URL(result.magicLink);
           const tokenHash = url.searchParams.get('token_hash');
           const type = url.searchParams.get('type');
-          
+
           if (tokenHash && type) {
-            // Use verifyOtp to establish the session directly
             const { data, error } = await supabase.auth.verifyOtp({
               token_hash: tokenHash,
               type: type as any
             });
-            
+
             if (error) {
-              console.error('Auth verification error:', error);
               throw new Error('Failed to authenticate: ' + error.message);
             }
-            
-            console.log('Authentication successful for checkout:', data.user?.email);
-            
-            // Wait a moment for auth state to propagate, then proceed with payment
+
             setTimeout(async () => {
               try {
                 await processPayment();
@@ -296,7 +278,6 @@ const CheckoutPage = () => {
               }
             }, 1000);
           } else {
-            console.error('Missing token_hash or type in magic link');
             toast.error('Invalid authentication link received.');
             setStep('otp');
           }
@@ -306,7 +287,6 @@ const CheckoutPage = () => {
           setStep('otp');
         }
       } else {
-        // No magic link, try to proceed anyway (should not happen for new users)
         try {
           await processPayment();
         } catch (error: any) {
@@ -324,7 +304,7 @@ const CheckoutPage = () => {
 
   const processPayment = async () => {
     // Save user profile information before payment (for logged-in users)
-    if (user) {
+    if (!isGuest) {
       await saveUserProfile();
     }
 
@@ -358,13 +338,14 @@ const CheckoutPage = () => {
   };
 
   const handleResendOTP = async () => {
+    if (!isGuest) return; // safety guard
     if (isResending) return;
     setIsResending(true);
     setOTPError('');
-    
+
     const tempPassword = Math.random().toString(36).slice(-12);
     const passwordHash = await hashPassword(tempPassword);
-    
+
     const result = await sendOTP(customerInfo.email, passwordHash);
     if (result.success) {
       setTimeLeft(120);
@@ -389,19 +370,19 @@ const CheckoutPage = () => {
 
   return (
     <Layout>
-      <SEOHead 
-        title="Secure Checkout - Exhibit3Design" 
-        description="Complete your purchase with our secure, password-free checkout process." 
-        url="https://exhibit3design.com/checkout" 
+      <SEOHead
+        title="Secure Checkout - Exhibit3Design"
+        description="Complete your purchase with our secure, password-free checkout process."
+        url="https://exhibit3design.com/checkout"
       />
-      
+
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold mb-8">Checkout</h1>
-          
+
           <div className="bg-secondary p-6 rounded-lg mb-8">
             <h2 className="font-semibold text-xl mb-4">Order Summary</h2>
-            
+
             {cartItems.map(item => (
               <div key={item.id} className="flex justify-between py-3 border-b last:border-0">
                 <div>
@@ -411,7 +392,7 @@ const CheckoutPage = () => {
                 <div className="font-medium">€{item.price}</div>
               </div>
             ))}
-            
+
             <div className="pt-4 mt-4 flex justify-between font-semibold text-lg">
               <span>Total</span>
               <span>€{cartTotal.toFixed(2)}</span>
@@ -444,52 +425,52 @@ const CheckoutPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="firstName">First Name *</Label>
-                  <Input 
-                    id="firstName" 
-                    value={customerInfo.firstName} 
+                  <Input
+                    id="firstName"
+                    value={customerInfo.firstName}
                     onChange={e => updateCustomerInfo('firstName', e.target.value)}
-                    placeholder="Enter your first name" 
-                    className={validationErrors.firstName ? "border-destructive" : ""} 
+                    placeholder="Enter your first name"
+                    className={validationErrors.firstName ? "border-destructive" : ""}
                   />
                   {validationErrors.firstName && <p className="text-sm text-destructive mt-1">{validationErrors.firstName}</p>}
                 </div>
-                
+
                 <div>
                   <Label htmlFor="lastName">Last Name *</Label>
-                  <Input 
-                    id="lastName" 
-                    value={customerInfo.lastName} 
+                  <Input
+                    id="lastName"
+                    value={customerInfo.lastName}
                     onChange={e => updateCustomerInfo('lastName', e.target.value)}
-                    placeholder="Enter your last name" 
-                    className={validationErrors.lastName ? "border-destructive" : ""} 
+                    placeholder="Enter your last name"
+                    className={validationErrors.lastName ? "border-destructive" : ""}
                   />
                   {validationErrors.lastName && <p className="text-sm text-destructive mt-1">{validationErrors.lastName}</p>}
                 </div>
-                
+
                 <div>
                   <Label htmlFor="email">Email Address *</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    value={customerInfo.email} 
+                  <Input
+                    id="email"
+                    type="email"
+                    value={customerInfo.email}
                     onChange={e => updateCustomerInfo('email', e.target.value)}
-                    placeholder="Enter your email" 
-                    className={validationErrors.email ? "border-destructive" : ""} 
-                    readOnly={!!user}
-                    disabled={!!user}
+                    placeholder="Enter your email"
+                    className={validationErrors.email ? "border-destructive" : ""}
+                    readOnly={!isGuest}
+                    disabled={!isGuest}
                   />
-                  {user && <p className="text-xs text-muted-foreground mt-1">Email cannot be changed (from your account)</p>}
+                  {!isGuest && <p className="text-xs text-muted-foreground mt-1">Email cannot be changed (from your account)</p>}
                   {validationErrors.email && <p className="text-sm text-destructive mt-1">{validationErrors.email}</p>}
                 </div>
 
                 <div>
                   <Label htmlFor="mobile">Mobile Number *</Label>
-                  <Input 
-                    id="mobile" 
-                    value={customerInfo.mobile} 
+                  <Input
+                    id="mobile"
+                    value={customerInfo.mobile}
                     onChange={e => updateCustomerInfo('mobile', e.target.value)}
-                    placeholder="+44123456789" 
-                    className={validationErrors.mobile ? "border-destructive" : ""} 
+                    placeholder="+44123456789"
+                    className={validationErrors.mobile ? "border-destructive" : ""}
                   />
                   {validationErrors.mobile && <p className="text-sm text-destructive mt-1">{validationErrors.mobile}</p>}
                 </div>
@@ -497,12 +478,12 @@ const CheckoutPage = () => {
 
               <div>
                 <Label htmlFor="address">Address *</Label>
-                <Input 
-                  id="address" 
-                  value={customerInfo.address} 
+                <Input
+                  id="address"
+                  value={customerInfo.address}
                   onChange={e => updateCustomerInfo('address', e.target.value)}
-                  placeholder="Enter your full address" 
-                  className={validationErrors.address ? "border-destructive" : ""} 
+                  placeholder="Enter your full address"
+                  className={validationErrors.address ? "border-destructive" : ""}
                 />
                 {validationErrors.address && <p className="text-sm text-destructive mt-1">{validationErrors.address}</p>}
               </div>
@@ -510,43 +491,43 @@ const CheckoutPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="city">City *</Label>
-                  <Input 
-                    id="city" 
-                    value={customerInfo.city} 
+                  <Input
+                    id="city"
+                    value={customerInfo.city}
                     onChange={e => updateCustomerInfo('city', e.target.value)}
-                    placeholder="City" 
-                    className={validationErrors.city ? "border-destructive" : ""} 
+                    placeholder="City"
+                    className={validationErrors.city ? "border-destructive" : ""}
                   />
                   {validationErrors.city && <p className="text-sm text-destructive mt-1">{validationErrors.city}</p>}
                 </div>
-                
+
                 <div>
                   <Label htmlFor="postalCode">Postal Code *</Label>
-                  <Input 
-                    id="postalCode" 
-                    value={customerInfo.postalCode} 
+                  <Input
+                    id="postalCode"
+                    value={customerInfo.postalCode}
                     onChange={e => updateCustomerInfo('postalCode', e.target.value)}
-                    placeholder="Postal Code" 
-                    className={validationErrors.postalCode ? "border-destructive" : ""} 
+                    placeholder="Postal Code"
+                    className={validationErrors.postalCode ? "border-destructive" : ""}
                   />
                   {validationErrors.postalCode && <p className="text-sm text-destructive mt-1">{validationErrors.postalCode}</p>}
                 </div>
-                
+
                 <div>
                   <Label htmlFor="country">Country *</Label>
-                  <Input 
-                    id="country" 
-                    value={customerInfo.country} 
+                  <Input
+                    id="country"
+                    value={customerInfo.country}
                     onChange={e => updateCustomerInfo('country', e.target.value)}
-                    placeholder="US, UK, TR, etc." 
-                    className={validationErrors.country ? "border-destructive" : ""} 
+                    placeholder="US, UK, TR, etc."
+                    className={validationErrors.country ? "border-destructive" : ""}
                   />
                   {validationErrors.country && <p className="text-sm text-destructive mt-1">{validationErrors.country}</p>}
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
           {/* Payment Section - Changes based on step */}
           <div className="border rounded-lg p-6 mb-8">
             {step === 'info' && (
@@ -556,36 +537,35 @@ const CheckoutPage = () => {
                   You will be redirected to our secure payment gateway to complete your purchase.
                   After successful payment, you will receive access to download your purchased designs.
                 </p>
-                
+
                 <div className="flex items-start justify-center space-x-4 mb-6 p-4 bg-muted/30 rounded-lg border">
-                  <Checkbox 
-                    id="privacy-policy" 
-                    checked={policyAgreed} 
-                    onCheckedChange={(checked) => setPolicyAgreed(checked as boolean)} 
+                  <Checkbox
+                    id="privacy-policy"
+                    checked={policyAgreed}
+                    onCheckedChange={(checked) => setPolicyAgreed(checked as boolean)}
                     className="mt-0.5"
                   />
                   <label htmlFor="privacy-policy" className="text-sm leading-relaxed cursor-pointer font-medium">
                     I agree to the <Link to="/privacy-policy" className="text-primary hover:underline font-semibold" target="_blank">Privacy Policy</Link> and consent to the processing of my personal data for order fulfillment.
                   </label>
                 </div>
-                
-                <Button onClick={handleInfoSubmit} disabled={isLoading} className="w-full">
-                  {isLoading ? "Processing..." : user ? "Complete Purchase" : "Continue to Verification"}
+
+                <Button onClick={handleInfoSubmit} disabled={step === 'processing'} className="w-full">
+                  {step === 'processing' ? "Processing..." : isGuest ? "Continue to Verification" : "Complete Purchase"}
                 </Button>
-                
-                {/* Debug info - remove in production */}
+
                 {process.env.NODE_ENV === 'development' && (
                   <div className="mt-2 p-2 bg-gray-100 text-xs rounded">
                     <strong>Debug Info:</strong><br/>
-                    User: {user ? 'Logged In' : 'Guest'}<br/>
+                    User: {isGuest ? 'Guest' : 'Logged In'}<br/>
                     Step: {step}<br/>
-                    Button Text: {isLoading ? "Processing..." : user ? "Complete Purchase" : "Continue to Verification"}
+                    Button Text: {step === 'processing' ? "Processing..." : isGuest ? "Continue to Verification" : "Complete Purchase"}
                   </div>
                 )}
               </>
             )}
 
-            {step === 'otp' && !user && (
+            {step === 'otp' && isGuest && (
               <>
                 <div className="flex items-center gap-4 mb-4">
                   <Button
@@ -598,13 +578,13 @@ const CheckoutPage = () => {
                   </Button>
                   <h2 className="font-semibold text-xl">Email Verification</h2>
                 </div>
-                
+
                 <div className="text-center mb-6">
                   <p className="text-sm text-muted-foreground mb-4">
                     We've sent a 4-digit verification code to:
                   </p>
                   <p className="font-medium text-foreground mb-6">{customerInfo.email}</p>
-                  
+
                   <div className="flex justify-center mb-4">
                     <OTPInput
                       value={otp}
@@ -612,7 +592,7 @@ const CheckoutPage = () => {
                       error={otpError}
                     />
                   </div>
-                  
+
                   {timeLeft > 0 && (
                     <p className="text-sm text-muted-foreground mb-4">
                       Code expires in {formatTime(timeLeft)}
@@ -622,10 +602,10 @@ const CheckoutPage = () => {
 
                 {!policyAgreed && (
                   <div className="flex items-start space-x-4 mb-6 p-4 bg-muted/30 rounded-lg border">
-                    <Checkbox 
-                      id="privacy-policy-otp" 
-                      checked={policyAgreed} 
-                      onCheckedChange={(checked) => setPolicyAgreed(checked as boolean)} 
+                    <Checkbox
+                      id="privacy-policy-otp"
+                      checked={policyAgreed}
+                      onCheckedChange={(checked) => setPolicyAgreed(checked as boolean)}
                       className="mt-0.5"
                     />
                     <label htmlFor="privacy-policy-otp" className="text-sm leading-relaxed cursor-pointer font-medium">
@@ -635,14 +615,14 @@ const CheckoutPage = () => {
                 )}
 
                 <div className="space-y-3">
-                  <Button 
-                    onClick={handleOTPSubmit} 
-                    disabled={isLoading || !otp || otp.length !== 4 || !policyAgreed} 
+                  <Button
+                    onClick={handleOTPSubmit}
+                    disabled={isLoading || !otp || otp.length !== 4 || !policyAgreed}
                     className="w-full"
                   >
                     {isLoading ? "Processing..." : "Complete Purchase"}
                   </Button>
-                  
+
                   <Button
                     variant="outline"
                     onClick={handleResendOTP}
@@ -665,15 +645,15 @@ const CheckoutPage = () => {
                 </div>
               </>
             )}
-            
+
             <div className="mt-4 text-center text-sm text-muted-foreground">
               <p>Your payment is secure and encrypted</p>
             </div>
           </div>
         </div>
       </div>
-      
-      <PaymentRedirectModal 
+
+      <PaymentRedirectModal
         isOpen={step === 'processing'}
       />
     </Layout>
