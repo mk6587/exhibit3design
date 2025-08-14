@@ -31,7 +31,7 @@ interface CustomerInfo {
 }
 
 // Turnstile site key
-const TURNSTILE_SITE_KEY = '0x4AAAAAABrwThKzyiXPx2_NxNLd8UkCcG8';
+const TURNSTILE_SITE_KEY = '0x4AAAAAABrwTuOgXHn1AdM8';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();

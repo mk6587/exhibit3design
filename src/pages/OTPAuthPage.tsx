@@ -16,7 +16,7 @@ import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 // Turnstile site key
-const TURNSTILE_SITE_KEY = '0x4AAAAAABrwThKzyiXPx2_NxNLd8UkCcG8';
+const TURNSTILE_SITE_KEY = '0x4AAAAAABrwTuOgXHn1AdM8';
 
 const OTPAuthPage = () => {
   const [email, setEmail] = useState('');
