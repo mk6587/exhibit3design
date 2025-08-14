@@ -45,7 +45,7 @@ const CheckoutPage = () => {
       try {
         const { data } = await supabase.auth.getSession();
         if (!active) return;
-        setSessionUser(data.session?.user ?? null);
+        setSessionUser(data.session?.user ? { email: data.session.user.email || '' } : null);
       } finally {
         if (active) setAuthReady(true);
       }
@@ -498,27 +498,17 @@ const CheckoutPage = () => {
 
               <Button
                 onClick={handleInfoSubmit}
-                disabled={!authReady || step === 'processing'}
+                disabled={!authReady || isLoading}
                 className="w-full"
               >
                 {!authReady
                   ? "Checking login status…"
-                  : step === 'processing'
+                  : isLoading
                   ? "Processing..."
                   : isGuest
                   ? "Continue to Verification"
                   : "Complete Purchase"}
               </Button>
-
-              {process.env.NODE_ENV === 'development' && (
-                <div className="mt-2 p-2 bg-gray-100 text-xs rounded">
-                  <strong>Debug Info:</strong><br/>
-                  AuthReady: {String(authReady)}<br/>
-                  User from context: {user ? 'yes' : 'no'} | Session user: {sessionUser ? 'yes' : 'no'}<br/>
-                  Final authedUser: {authedUser ? 'yes' : 'no'} | isGuest: {String(isGuest)}<br/>
-                  Step: {step}
-                </div>
-              )}
             </>
           )}
 
