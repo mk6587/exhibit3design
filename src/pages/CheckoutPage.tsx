@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -67,6 +67,7 @@ const CheckoutPage = () => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [otpError, setOTPError] = useState('');
   const [isResending, setIsResending] = useState(false);
+  const otpInputRef = useRef<React.ElementRef<typeof OTPInput>>(null);
 
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     firstName: "",
@@ -80,6 +81,15 @@ const CheckoutPage = () => {
   });
 
   useEffect(() => { window.scrollTo(0, 0); }, [step]);
+
+  // Focus OTP input when step changes to 'otp'
+  useEffect(() => {
+    if (step === 'otp' && otpInputRef.current) {
+      setTimeout(() => {
+        otpInputRef.current?.focus();
+      }, 100);
+    }
+  }, [step]);
 
   useEffect(() => {
     if (step !== 'otp') return;
@@ -609,7 +619,7 @@ const CheckoutPage = () => {
                 <p className="font-medium text-foreground mb-6">{customerInfo.email}</p>
 
                 <div className="flex justify-center mb-4">
-                  <OTPInput value={otp} onChange={setOTP} error={otpError} />
+                  <OTPInput ref={otpInputRef} value={otp} onChange={setOTP} error={otpError} />
                 </div>
 
                 {timeLeft > 0 && (
