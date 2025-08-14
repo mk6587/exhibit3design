@@ -20,6 +20,8 @@ import ContactPage from "./pages/ContactPage";
 import FaqPage from "./pages/FaqPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import OrderLookupPage from "./pages/OrderLookupPage";
+import OrderDetailsPage from "./pages/OrderDetailsPage";
 
 import ProfilePage from "./pages/ProfilePage";
 import DownloadsPage from "./pages/DownloadsPage";
@@ -79,6 +81,8 @@ const App = () => {
                       <Route path="/faq" element={<FaqPage />} />
                       <Route path="/cart" element={<CartPage />} />
                       <Route path="/checkout" element={<CheckoutPage />} />
+                      <Route path="/order-lookup" element={<OrderLookupPage />} />
+                      <Route path="/order/:orderId" element={<OrderDetailsPage />} />
                       <Route path="/profile" element={<ProfilePage />} />
                       <Route path="/downloads" element={<DownloadsPage />} />
                       <Route path="/payment-success" element={<PaymentSuccessPage />} />

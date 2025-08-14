@@ -44,7 +44,7 @@ export class EmailService {
   /**
    * Send order confirmation email
    */
-  static async sendOrderConfirmation(order: any, orderNumber: string): Promise<{ success: boolean; error?: string }> {
+  static async sendOrderConfirmation(order: any, orderNumber: string, orderToken?: string): Promise<{ success: boolean; error?: string }> {
     const customerName = order.customer_first_name && order.customer_last_name 
       ? `${order.customer_first_name} ${order.customer_last_name}` 
       : order.customer_first_name || 'Valued Customer';
@@ -58,7 +58,8 @@ export class EmailService {
         props: {
           order,
           orderNumber,
-          customerName
+          customerName,
+          orderToken // Include the secure token for guest orders
         }
       }
     });

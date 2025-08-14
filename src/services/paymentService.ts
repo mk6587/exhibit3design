@@ -316,7 +316,7 @@ export const updateOrderStatus = async (
         } else {
           // Import and use the EmailService for order confirmation
           const { EmailService } = await import('@/services/emailService');
-          const { success, error: emailError } = await EmailService.sendOrderConfirmation(orderData, orderNumber);
+          const { success, error: emailError } = await EmailService.sendOrderConfirmation(orderData, orderNumber, orderData.order_token);
           
           if (!success) {
             console.error('Failed to send order notification:', emailError);

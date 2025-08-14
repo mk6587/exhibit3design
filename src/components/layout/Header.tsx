@@ -42,6 +42,9 @@ const Header = () => {
           <Link to="/faq" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
             FAQ
           </Link>
+          <Link to="/order-lookup" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
+            Track Order
+          </Link>
         </nav>
         
         {/* Actions */}
@@ -98,6 +101,9 @@ const Header = () => {
           </Link>
           <Link to="/faq" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
             FAQ
+          </Link>
+          <Link to="/order-lookup" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
+            Track Order
           </Link>
           
           {user ? <>
