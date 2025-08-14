@@ -40,15 +40,11 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
   try {
     console.log("Creating order - step 1");
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    console.log("Creating order - step 2");
-    if (authError) {
-      console.error("Auth error in createOrder:", authError);
-      throw new Error("Please sign in to create an order");
-    }
+    console.log("Creating order - step 2, user:", user ? { email: user.email, id: user.id } : 'No user');
     
-    if (!user) {
-      console.error("No user in createOrder");
-      throw new Error("You must be signed in to complete your purchase");
+    // Allow guest checkout - user is optional
+    if (authError) {
+      console.warn("Auth error in createOrder (guest checkout allowed):", authError);
     }
     console.log("Creating order - step 3");
 
@@ -57,7 +53,7 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
     
     console.log("📝 Preparing order data...");
     const orderData = {
-      user_id: user.id,
+      user_id: user?.id || null, // Allow null for guest checkout
       product_id: paymentData.orderItems[0]?.id || 0,
       amount: totalAmount,
       status: 'pending',
@@ -110,14 +106,13 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     console.log("🚀 Starting payment initiation process");
     console.log("💰 Payment data:", JSON.stringify(paymentData, null, 2));
     
-    // Check authentication first
+    // Check authentication (optional for guest checkout)
     console.log("🔐 Checking authentication...");
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      console.error("❌ Auth failed:", authError);
-      throw new Error("Please sign in to complete your purchase");
+    if (authError) {
+      console.warn("⚠️ Auth warning (guest checkout allowed):", authError);
     }
-    console.log("✅ Authentication successful for user:", user.email);
+    console.log("ℹ️ User status:", user ? `Authenticated user: ${user.email}` : 'Guest checkout');
 
     // Generate unique order number
     const orderNumber = generateOrderNumber();
