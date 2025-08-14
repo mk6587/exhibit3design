@@ -14,6 +14,7 @@ interface Order {
   status: string;
   amount: number;
   created_at: string;
+  updated_at?: string;
   product_id: number;
   customer_first_name: string;
   customer_last_name: string;
@@ -24,7 +25,8 @@ interface Order {
   customer_postal_code: string;
   customer_country: string;
   payment_method: string;
-  user_id: string | null;
+  payment_description?: string;
+  user_id?: string | null; // Optional for guest orders
 }
 
 const OrderDetailsPage = () => {
@@ -37,6 +39,7 @@ const OrderDetailsPage = () => {
 
   const isGuestOrder = location.state?.isGuestOrder;
   const orderToken = location.state?.orderToken;
+  const preloadedOrderData = location.state?.orderData;
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -47,31 +50,70 @@ const OrderDetailsPage = () => {
       }
 
       try {
-        let query = supabase.from("orders").select("*").eq("id", orderId);
+        // If we have preloaded order data from the lookup page, use it
+        if (preloadedOrderData && isGuestOrder) {
+          // Add user_id: null for guest orders to match the interface
+          setOrder({ ...preloadedOrderData, user_id: null });
+          setLoading(false);
+          return;
+        }
 
-        // For guest orders, verify the token
         if (isGuestOrder && orderToken) {
-          query = query.eq("order_token", orderToken);
-        }
+          // For guest orders, verify access using the secure function
+          const { data: hasAccess, error: verifyError } = await supabase
+            .rpc("verify_guest_order_access", { 
+              order_id_param: orderId, 
+              order_token_param: orderToken 
+            });
 
-        const { data: orderData, error: orderError } = await query.maybeSingle();
+          if (verifyError) {
+            throw verifyError;
+          }
 
-        if (orderError) {
-          throw orderError;
-        }
+          if (!hasAccess) {
+            setError("Order not found or access denied");
+            return;
+          }
 
-        if (!orderData) {
-          setError("Order not found or access denied");
+          // Get the order data using the secure function
+          const { data: orders, error: orderError } = await supabase
+            .rpc("get_guest_order_by_token", { order_token_param: orderToken });
+
+          if (orderError) {
+            throw orderError;
+          }
+
+          const orderData = orders?.find(o => o.id === orderId);
+          if (!orderData) {
+            setError("Order not found");
+            return;
+          }
+
+          // Add user_id: null for guest orders to match the interface
+          setOrder({ ...orderData, user_id: null });
+        } else if (user) {
+          // For authenticated users, query their own orders
+          const { data: orderData, error: orderError } = await supabase
+            .from("orders")
+            .select("*")
+            .eq("id", orderId)
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+          if (orderError) {
+            throw orderError;
+          }
+
+          if (!orderData) {
+            setError("Order not found or access denied");
+            return;
+          }
+
+          setOrder(orderData);
+        } else {
+          setError("Access denied");
           return;
         }
-
-        // For authenticated users, ensure they own the order
-        if (!isGuestOrder && user && orderData.user_id !== user.id) {
-          setError("You don't have permission to view this order");
-          return;
-        }
-
-        setOrder(orderData);
       } catch (err) {
         console.error("Error fetching order:", err);
         setError("Failed to load order details");
@@ -81,7 +123,7 @@ const OrderDetailsPage = () => {
     };
 
     fetchOrder();
-  }, [orderId, user, isGuestOrder, orderToken]);
+  }, [orderId, user, isGuestOrder, orderToken, preloadedOrderData]);
 
   // Redirect non-authenticated users without proper guest access
   if (!user && !isGuestOrder) {

@@ -22,29 +22,29 @@ const OrderLookupPage = () => {
     setError("");
 
     try {
-      // Look up the order using email and token
-      const { data: order, error: orderError } = await supabase
-        .from("orders")
-        .select("*")
-        .eq("order_token", orderToken)
-        .maybeSingle();
+      // Use the secure function to look up guest orders by token
+      const { data: orders, error: orderError } = await supabase
+        .rpc("get_guest_order_by_token", { order_token_param: orderToken });
 
       if (orderError) {
         throw orderError;
       }
 
-      if (!order) {
+      if (!orders || orders.length === 0) {
         setError("Order not found. Please check your order token and try again.");
         return;
       }
 
-      // Note: We can't directly compare encrypted emails, so we'll need to implement
-      // a secure verification method. For now, we'll redirect to a secure order view.
+      const order = orders[0];
+
+      // Note: For additional security, we could verify the email matches
+      // but since customer data is encrypted, we'll rely on the token validation
       toast.success("Order found! Redirecting to order details...");
       navigate(`/order/${order.id}`, { 
         state: { 
           orderToken, 
-          isGuestOrder: true 
+          isGuestOrder: true,
+          orderData: order // Pass the order data to avoid another lookup
         } 
       });
 

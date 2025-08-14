@@ -335,6 +335,28 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_guest_order_by_token: {
+        Args: { order_token_param: string }
+        Returns: {
+          amount: number
+          created_at: string
+          customer_address: string
+          customer_city: string
+          customer_country: string
+          customer_email: string
+          customer_first_name: string
+          customer_last_name: string
+          customer_mobile: string
+          customer_postal_code: string
+          id: string
+          order_number: string
+          payment_description: string
+          payment_method: string
+          product_id: number
+          status: string
+          updated_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -371,8 +393,16 @@ export type Database = {
         Args: { data: string; mask_type?: string }
         Returns: string
       }
+      set_order_token_session: {
+        Args: { token: string }
+        Returns: undefined
+      }
       validate_payment_update: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      verify_guest_order_access: {
+        Args: { order_id_param: string; order_token_param: string }
         Returns: boolean
       }
       verify_otp_code: {
