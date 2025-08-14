@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useProducts } from "@/contexts/ProductsContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { VideoStream } from "@/components/performance/VideoStream";
 import { useState } from "react";
