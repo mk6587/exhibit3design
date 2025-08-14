@@ -54,8 +54,8 @@ const CheckoutPage = () => {
   }, []);
   // ----------------------------------------
 
-  // Multi-step flow: 'info' | 'otp' | 'processing'
-  const [step, setStep] = useState<'info' | 'otp' | 'processing'>('info');
+  // Multi-step flow: 'info' | 'otp' for guests only, logged-in users stay on 'info'
+  const [step, setStep] = useState<'info' | 'otp'>('info');
   const [policyAgreed, setPolicyAgreed] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
@@ -211,13 +211,11 @@ const CheckoutPage = () => {
 
     // ✅ Authenticated path: straight to payment
     if (!isGuest) {
-      setStep('processing');
       try {
         await processPayment();
       } catch (error: any) {
         console.error('Payment error for logged-in user:', error);
         toast.error(error.message || 'Failed to initiate payment. Please try again.');
-        setStep('info');
       }
       return;
     }
@@ -247,7 +245,6 @@ const CheckoutPage = () => {
     }
 
     trackAddPaymentInfo(cartItems, cartTotal, 'Card');
-    setStep('processing');
 
     const result = await verifyOTP(customerInfo.email, otp);
     if (result.success) {
@@ -575,16 +572,7 @@ const CheckoutPage = () => {
             </>
           )}
 
-          {step === 'processing' && (
-            <>
-              <h2 className="font-semibold text-xl mb-4">Processing Your Order</h2>
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                <h3 className="text-lg font-medium mb-2">Processing your order...</h3>
-                <p className="text-muted-foreground">Please wait while we redirect you to the payment gateway.</p>
-              </div>
-            </>
-          )}
+          {/* Processing state is now handled by button loading states */}
 
           <div className="mt-4 text-center text-sm text-muted-foreground">
             <p>Your payment is secure and encrypted</p>
@@ -593,7 +581,7 @@ const CheckoutPage = () => {
         </div>
       </div>
 
-      <PaymentRedirectModal isOpen={step === 'processing'} />
+      <PaymentRedirectModal isOpen={isLoading} />
     </Layout>
   );
 };
