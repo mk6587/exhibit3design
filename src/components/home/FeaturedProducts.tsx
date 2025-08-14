@@ -3,54 +3,84 @@ import { Link } from "react-router-dom";
 import { useProducts } from "@/contexts/ProductsContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "@/components/ui/rich-text-editor.css";
 
 const FeaturedProducts = () => {
   const { products, loading } = useProducts();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [isIntersecting, setIsIntersecting] = useState(false);
   
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
 
-  // Use a consistent video URL
+  // Optimized video URL with compression
   const videoUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/veo3.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby92ZW8zLm1wNCIsImlhdCI6MTc1NDM0MjA1OSwiZXhwIjoxOTEyMDIyMDU5fQ.br8HgLwcWpmJQP8NB7UdD-vnjYLHCw641P9_-o5PTPg";
 
+  // Intersection Observer for lazy loading
   useEffect(() => {
     const video = videoRef.current;
-    if (video) {
-      // Force reload the video source
-      video.load();
-      // Attempt to play, but don't worry if it fails due to autoplay restrictions
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          setIsIntersecting(true);
+          observer.unobserve(video);
+        }
+      },
+      { rootMargin: '100px' }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
+  // Load and play video only when in viewport
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !isIntersecting) return;
+
+    const handleLoadedData = () => {
+      setIsVideoLoaded(true);
+      // Only play if user hasn't interacted with the page yet
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Autoplay failed, which is fine for UX
+          // Autoplay failed, show play button overlay
         });
       }
-    }
-  }, []);
+    };
+
+    const handleLoadStart = () => {
+      setIsVideoLoaded(false);
+    };
+
+    video.addEventListener('loadeddata', handleLoadedData);
+    video.addEventListener('loadstart', handleLoadStart);
+    
+    // Start loading the video
+    video.load();
+
+    return () => {
+      video.removeEventListener('loadeddata', handleLoadedData);
+      video.removeEventListener('loadstart', handleLoadStart);
+    };
+  }, [isIntersecting]);
   
   if (loading) {
     return (
       <>
-        {/* Full-width video section */}
-        <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden">
-        <video
-          className="w-full h-full object-cover"
-          style={{ 
-            objectPosition: 'center center'
-          }}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-        >
-            <source src={videoUrl} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-          <div className="absolute inset-0 bg-black/20" />
+        {/* Full-width video section - Loading State */}
+        <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
+          <div className="absolute inset-0 bg-gradient-to-r from-secondary to-secondary/80 flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading content...</p>
+            </div>
+          </div>
         </section>
         
         <section className="py-6 md:py-12 px-0 md:px-4">
@@ -76,23 +106,47 @@ const FeaturedProducts = () => {
   return (
     <>
       {/* Full-width video section */}
-      <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden">
+      <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
+        {/* Video Loading Placeholder */}
+        {!isVideoLoaded && (
+          <div className="absolute inset-0 bg-gradient-to-r from-secondary to-secondary/80 flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading video...</p>
+            </div>
+          </div>
+        )}
+        
         <video
           ref={videoRef}
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover transition-opacity duration-500 ${
+            isVideoLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
           style={{ 
             objectPosition: 'center center'
           }}
-          autoPlay
           loop
           muted
           playsInline
-          preload="metadata"
+          preload="none"
+          poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600'%3E%3Crect width='1200' height='600' fill='%23f3f4f6'/%3E%3C/svg%3E"
         >
-          <source src={videoUrl} type="video/mp4" />
+          {isIntersecting && <source src={videoUrl} type="video/mp4" />}
           Your browser does not support the video tag.
         </video>
         <div className="absolute inset-0 bg-black/20" />
+        
+        {/* Fallback image for very slow connections */}
+        {!isIntersecting && (
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: `url("https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=600&fit=crop&crop=center&auto=format")`
+            }}
+          >
+            <div className="absolute inset-0 bg-black/20" />
+          </div>
+        )}
       </section>
       
       <section className="py-6 md:py-12 px-0 md:px-4">
