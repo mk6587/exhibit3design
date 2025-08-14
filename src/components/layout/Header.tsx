@@ -100,9 +100,7 @@ const Header = () => {
           <Link to="/faq" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
             FAQ
           </Link>
-          <Link to="/order-lookup" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
-            Track Order
-          </Link>
+          
           
           {user ? <>
               <Link to="/profile" className="mobile-nav-item hover:bg-flat-hover transition-colors flex items-center" onClick={() => setIsMenuOpen(false)}>
