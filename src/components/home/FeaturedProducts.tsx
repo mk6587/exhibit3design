@@ -3,62 +3,19 @@ import { useProducts } from "@/contexts/ProductsContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { VideoStream } from "@/components/performance/VideoStream";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import "@/components/ui/rich-text-editor.css";
 
 const FeaturedProducts = () => {
   const { products, loading } = useProducts();
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const [videoUrl, setVideoUrl] = useState<string>("");
-  const [hasVideo, setHasVideo] = useState(false);
   
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
 
-  // Fetch video from Supabase storage
-  useEffect(() => {
-    const fetchVideo = async () => {
-      try {
-        // List videos in the videos bucket
-        const { data: videoFiles, error } = await supabase.storage
-          .from('videos')
-          .list('', {
-            limit: 1,
-            sortBy: { column: 'created_at', order: 'desc' }
-          });
-
-        if (error) {
-          console.log('No videos bucket or error fetching videos:', error);
-          setHasVideo(false);
-          return;
-        }
-
-        if (videoFiles && videoFiles.length > 0) {
-          const firstVideo = videoFiles.find(file => 
-            file.name.endsWith('.mp4') || 
-            file.name.endsWith('.webm') || 
-            file.name.endsWith('.mov')
-          );
-
-          if (firstVideo) {
-            const videoPath = `https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos/${firstVideo.name}`;
-            setVideoUrl(videoPath);
-            setHasVideo(true);
-          } else {
-            setHasVideo(false);
-          }
-        } else {
-          setHasVideo(false);
-        }
-      } catch (error) {
-        console.error('Error fetching video:', error);
-        setHasVideo(false);
-      }
-    };
-
-    fetchVideo();
-  }, []);
+  // Your specific video URL
+  const videoUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/veo3.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby92ZW8zLm1wNCIsImlhdCI6MTc1NTE4NDM5MCwiZXhwIjoyMDcwNTQ0MzkwfQ.dblLLoiM3qAh9QYveO0a4e9FbDiKjBVvard_Yvslado";
+  const hasVideo = true; // Since we have a direct video URL
   
   if (loading) {
     return (
@@ -117,7 +74,7 @@ const FeaturedProducts = () => {
               onLoadedData={() => setIsVideoLoaded(true)}
               onError={(error) => {
                 console.error('Video streaming error:', error);
-                setHasVideo(false);
+                // Video error - will fallback to the fallback image section
               }}
             />
             <div className="absolute inset-0 bg-black/20" />
