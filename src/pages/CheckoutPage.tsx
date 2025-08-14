@@ -501,7 +501,7 @@ const CheckoutPage = () => {
           )}
 
           {/* OTP SECTION: COMPLETELY BLOCKED for logged-in users */}
-          {authReady && step === 'otp' && isGuest && !user && (
+          {authReady && step === 'otp' && isGuest && !user && !sessionUser && (
             <>
               <div className="flex items-center gap-4 mb-4">
                 <Button variant="outline" size="sm" onClick={handleBackToInfo}>
