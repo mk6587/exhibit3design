@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { OTPInput } from '@/components/ui/otp-input';
+import { TurnstileCaptcha, TurnstileCaptchaRef } from '@/components/ui/turnstile-captcha';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOTPAuth } from '@/contexts/OTPAuthContext';
@@ -14,6 +15,9 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
+// Turnstile site key for testing (replace with your actual site key)
+const TURNSTILE_SITE_KEY = '1x00000000000000000000AA';
+
 const OTPAuthPage = () => {
   const [email, setEmail] = useState('');
   const [otp, setOTP] = useState('');
@@ -21,14 +25,16 @@ const OTPAuthPage = () => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [error, setError] = useState('');
   const [isResending, setIsResending] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string>('');
 
   const { toast } = useToast();
   const { user } = useAuth();
   const { sendOTP, verifyOTP, isLoading } = useOTPAuth();
   const navigate = useNavigate();
   
-  // Ref for OTP input to focus after sending code
+  // Refs for focus management
   const otpInputRef = useRef<HTMLInputElement>(null);
+  const captchaRef = useRef<TurnstileCaptchaRef>(null);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -55,16 +61,27 @@ const OTPAuthPage = () => {
       return;
     }
 
-    const result = await sendOTP(email);
+    if (!captchaToken) {
+      setError('Please complete the security verification');
+      return;
+    }
+
+    const result = await sendOTP(email, undefined, captchaToken);
     
     if (result.success) {
       setStep('otp');
       setTimeLeft(120); // 2 minutes
+      // Reset captcha after successful send
+      captchaRef.current?.reset();
+      setCaptchaToken('');
       // Focus the OTP input after successfully sending the code
       setTimeout(() => {
         otpInputRef.current?.focus();
       }, 100);
     } else {
+      // Reset captcha on error
+      captchaRef.current?.reset();
+      setCaptchaToken('');
       setError(result.error || 'Failed to send verification code');
     }
   };
@@ -100,16 +117,28 @@ const OTPAuthPage = () => {
     setIsResending(true);
     setError('');
     
-    const result = await sendOTP(email);
+    if (!captchaToken) {
+      setError('Please complete the security verification to resend code');
+      setIsResending(false);
+      return;
+    }
+    
+    const result = await sendOTP(email, undefined, captchaToken);
     
     if (result.success) {
       setTimeLeft(120);
       setOTP('');
+      // Reset captcha after successful resend
+      captchaRef.current?.reset();
+      setCaptchaToken('');
       // Focus the OTP input after successfully resending the code
       setTimeout(() => {
         otpInputRef.current?.focus();
       }, 100);
     } else {
+      // Reset captcha on error
+      captchaRef.current?.reset();
+      setCaptchaToken('');
       setError(result.error || 'Failed to resend code');
     }
     
@@ -121,6 +150,8 @@ const OTPAuthPage = () => {
     setOTP('');
     setTimeLeft(0);
     setError('');
+    setCaptchaToken('');
+    captchaRef.current?.reset();
   };
 
   const formatTime = (seconds: number) => {
@@ -169,6 +200,24 @@ const OTPAuthPage = () => {
                     />
                   </div>
 
+                  <div className="space-y-2">
+                    <Label>Security Verification</Label>
+                    <TurnstileCaptcha
+                      ref={captchaRef}
+                      siteKey={TURNSTILE_SITE_KEY}
+                      onVerify={setCaptchaToken}
+                      onError={() => {
+                        setCaptchaToken('');
+                        setError('Security verification failed. Please try again.');
+                      }}
+                      onExpire={() => {
+                        setCaptchaToken('');
+                        setError('Security verification expired. Please verify again.');
+                      }}
+                      className="flex justify-center"
+                    />
+                  </div>
+
                   {error && (
                     <div className="text-sm text-destructive font-medium">
                       {error}
@@ -178,7 +227,7 @@ const OTPAuthPage = () => {
                   <Button 
                     type="submit" 
                     className="w-full" 
-                    disabled={isLoading}
+                    disabled={isLoading || !captchaToken}
                   >
                     {isLoading ? 'Sending...' : 'Send Verification Code'}
                   </Button>
@@ -228,16 +277,35 @@ const OTPAuthPage = () => {
                   </div>
 
                   {timeLeft === 0 && (
-                    <div className="text-center">
-                      <Button
-                        type="button"
-                        variant="link"
-                        onClick={handleResendCode}
-                        disabled={isResending}
-                        className="text-sm"
-                      >
-                        {isResending ? 'Resending...' : 'Resend verification code'}
-                      </Button>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Security Verification for Resend</Label>
+                        <TurnstileCaptcha
+                          ref={captchaRef}
+                          siteKey={TURNSTILE_SITE_KEY}
+                          onVerify={setCaptchaToken}
+                          onError={() => {
+                            setCaptchaToken('');
+                            setError('Security verification failed. Please try again.');
+                          }}
+                          onExpire={() => {
+                            setCaptchaToken('');
+                            setError('Security verification expired. Please verify again.');
+                          }}
+                          className="flex justify-center"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <Button
+                          type="button"
+                          variant="link"
+                          onClick={handleResendCode}
+                          disabled={isResending || !captchaToken}
+                          className="text-sm"
+                        >
+                          {isResending ? 'Resending...' : 'Resend verification code'}
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </form>

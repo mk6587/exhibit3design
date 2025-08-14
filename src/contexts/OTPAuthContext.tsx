@@ -2,8 +2,8 @@ import React, { createContext, useContext, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface OTPAuthContextType {
-  sendOTP: (email: string, passwordHash?: string) => Promise<{ success: boolean; error?: string }>;
-  verifyOTP: (email: string, otp: string) => Promise<{ success: boolean; error?: string; user?: any; magicLink?: string; isNewUser?: boolean }>;
+  sendOTP: (email: string, passwordHash?: string, captchaToken?: string) => Promise<{ success: boolean; error?: string }>;
+  verifyOTP: (email: string, otp: string, captchaToken?: string) => Promise<{ success: boolean; error?: string; user?: any; magicLink?: string; isNewUser?: boolean }>;
   isLoading: boolean;
 }
 
@@ -24,11 +24,11 @@ interface OTPAuthProviderProps {
 export function OTPAuthProvider({ children }: OTPAuthProviderProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const sendOTP = async (email: string, passwordHash?: string) => {
+  const sendOTP = async (email: string, passwordHash?: string, captchaToken?: string) => {
     setIsLoading(true);
     try {
       const response = await supabase.functions.invoke('send-otp', {
-        body: { email, passwordHash }
+        body: { email, passwordHash, captchaToken }
       });
 
       if (response.error) {
@@ -72,11 +72,11 @@ export function OTPAuthProvider({ children }: OTPAuthProviderProps) {
     }
   };
 
-  const verifyOTP = async (email: string, otp: string) => {
+  const verifyOTP = async (email: string, otp: string, captchaToken?: string) => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('verify-otp', {
-        body: { email, otp }
+        body: { email, otp, captchaToken }
       });
 
       if (error) {

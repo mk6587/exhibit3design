@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { OTPInput } from "@/components/ui/otp-input";
+import { TurnstileCaptcha, TurnstileCaptchaRef } from "@/components/ui/turnstile-captcha";
 import { toast } from "sonner";
 import { initiatePayment } from "@/services/paymentService";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,6 +29,9 @@ interface CustomerInfo {
   postalCode: string;
   country: string;
 }
+
+// Turnstile site key for testing (replace with your actual site key)
+const TURNSTILE_SITE_KEY = '1x00000000000000000000AA';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -67,7 +71,9 @@ const CheckoutPage = () => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [otpError, setOTPError] = useState('');
   const [isResending, setIsResending] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string>('');
   const otpInputRef = useRef<React.ElementRef<typeof OTPInput>>(null);
+  const captchaRef = useRef<TurnstileCaptchaRef>(null);
 
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     firstName: "",
@@ -271,15 +277,26 @@ const CheckoutPage = () => {
     console.log('👤 CHECKOUT DEBUG - Guest user, proceeding to OTP step');
 
     // GUEST ONLY: Send OTP
+    if (!captchaToken) {
+      setOTPError('Please complete the security verification');
+      return;
+    }
+
     const tempPassword = Math.random().toString(36).slice(-12);
     const passwordHash = await hashPassword(tempPassword);
-    const result = await sendOTP(customerInfo.email, passwordHash);
+    const result = await sendOTP(customerInfo.email, passwordHash, captchaToken);
 
     if (result.success) {
       setStep('otp');
       setTimeLeft(120);
+      // Reset captcha after successful send
+      captchaRef.current?.reset();
+      setCaptchaToken('');
       toast.success('Verification code sent! Please check your email.');
     } else {
+      // Reset captcha on error
+      captchaRef.current?.reset();
+      setCaptchaToken('');
       setOTPError(result.error || 'Failed to send verification code');
     }
   };
@@ -421,15 +438,27 @@ const CheckoutPage = () => {
     setIsResending(true);
     setOTPError('');
 
+    if (!captchaToken) {
+      setOTPError('Please complete the security verification to resend code');
+      setIsResending(false);
+      return;
+    }
+
     const tempPassword = Math.random().toString(36).slice(-12);
     const passwordHash = await hashPassword(tempPassword);
 
-    const result = await sendOTP(customerInfo.email, passwordHash);
+    const result = await sendOTP(customerInfo.email, passwordHash, captchaToken);
     if (result.success) {
       setTimeLeft(120);
       setOTP('');
+      // Reset captcha after successful resend
+      captchaRef.current?.reset();
+      setCaptchaToken('');
       toast.success('Code resent! A new verification code has been sent to your email.');
     } else {
+      // Reset captcha on error
+      captchaRef.current?.reset();
+      setCaptchaToken('');
       setOTPError(result.error || 'Failed to resend code');
     }
     setIsResending(false);
@@ -440,6 +469,8 @@ const CheckoutPage = () => {
     setOTP('');
     setTimeLeft(0);
     setOTPError('');
+    setCaptchaToken('');
+    captchaRef.current?.reset();
   };
 
   if (cartItems.length === 0) return null;
@@ -589,6 +620,26 @@ const CheckoutPage = () => {
                 After successful payment, you will receive access to download your purchased designs.
               </p>
 
+              {isGuest && (
+                <div className="space-y-2 mb-6">
+                  <Label>Security Verification</Label>
+                  <TurnstileCaptcha
+                    ref={captchaRef}
+                    siteKey={TURNSTILE_SITE_KEY}
+                    onVerify={setCaptchaToken}
+                    onError={() => {
+                      setCaptchaToken('');
+                      setOTPError('Security verification failed. Please try again.');
+                    }}
+                    onExpire={() => {
+                      setCaptchaToken('');
+                      setOTPError('Security verification expired. Please verify again.');
+                    }}
+                    className="flex justify-center"
+                  />
+                </div>
+              )}
+
               <div className="flex items-start justify-center space-x-4 mb-6 p-4 bg-muted/30 rounded-lg border">
                 <Checkbox
                   id="privacy-policy"
@@ -601,9 +652,15 @@ const CheckoutPage = () => {
                 </label>
               </div>
 
+              {otpError && (
+                <div className="text-sm text-destructive font-medium mb-4">
+                  {otpError}
+                </div>
+              )}
+
               <Button
                 onClick={handleInfoSubmit}
-                disabled={!authReady || isLoading}
+                disabled={!authReady || isLoading || (isGuest && !captchaToken)}
                 className="w-full"
               >
                 {!authReady
@@ -680,10 +737,32 @@ const CheckoutPage = () => {
                   {isLoading ? "Processing..." : "Complete Purchase"}
                 </Button>
 
+                {timeLeft === 0 && (
+                  <div className="space-y-4 mb-6">
+                    <div className="space-y-2">
+                      <Label>Security Verification for Resend</Label>
+                      <TurnstileCaptcha
+                        ref={captchaRef}
+                        siteKey={TURNSTILE_SITE_KEY}
+                        onVerify={setCaptchaToken}
+                        onError={() => {
+                          setCaptchaToken('');
+                          setOTPError('Security verification failed. Please try again.');
+                        }}
+                        onExpire={() => {
+                          setCaptchaToken('');
+                          setOTPError('Security verification expired. Please verify again.');
+                        }}
+                        className="flex justify-center"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <Button
                   variant="outline"
                   onClick={handleResendOTP}
-                  disabled={timeLeft > 0 || isResending}
+                  disabled={timeLeft > 0 || isResending || (timeLeft === 0 && !captchaToken)}
                   className="w-full"
                 >
                   {isResending ? "Sending..." : "Resend Code"}

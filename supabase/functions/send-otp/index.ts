@@ -17,6 +17,28 @@ interface SendOTPRequest {
   captchaToken?: string;
 }
 
+// Turnstile validation function
+async function validateTurnstileCaptcha(token: string, secretKey: string): Promise<boolean> {
+  try {
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        secret: secretKey,
+        response: token,
+      }),
+    });
+
+    const result = await response.json();
+    return result.success === true;
+  } catch (error) {
+    console.error('Turnstile validation error:', error);
+    return false;
+  }
+}
+
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
@@ -57,6 +79,30 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({ error: 'Email is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    // Validate captcha token if provided
+    if (captchaToken) {
+      const turnstileSecretKey = Deno.env.get('TURNSTILE_SECRET_KEY');
+      if (!turnstileSecretKey) {
+        console.error('❌ Turnstile secret key not configured');
+        return new Response(
+          JSON.stringify({ error: 'Captcha validation not configured' }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      console.log('🔐 Validating captcha token');
+      const captchaValid = await validateTurnstileCaptcha(captchaToken, turnstileSecretKey);
+      if (!captchaValid) {
+        console.log('❌ Captcha validation failed for email:', email);
+        return new Response(
+          JSON.stringify({ error: 'Security verification failed. Please try again.' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      console.log('✅ Captcha validation successful for email:', email);
     }
 
     // Validate email format
