@@ -35,12 +35,24 @@ const CheckoutPage = () => {
   const { sendOTP, verifyOTP, isLoading } = useOTPAuth(); // used only for guests
   const { cartItems, cartTotal, clearCart } = useProducts();
 
+  // Multi-step flow: 'info' | 'otp' for guests only, logged-in users stay on 'info'
+  const [step, setStep] = useState<'info' | 'otp'>('info');
+  
   // Simple auth logic - use AuthContext as single source of truth
   const isGuest = !user;
   const authReady = !authLoading; // Auth is ready when not loading
 
-  // Multi-step flow: 'info' | 'otp' for guests only, logged-in users stay on 'info'
-  const [step, setStep] = useState<'info' | 'otp'>('info');
+  // Debug authentication state in useEffect so it has access to step
+  useEffect(() => {
+    console.log('🔍 CheckoutPage Auth State:', {
+      user: !!user,
+      isGuest,
+      authLoading,
+      authReady,
+      step,
+      userEmail: user?.email
+    });
+  }, [user, isGuest, authLoading, authReady, step]);
   const [policyAgreed, setPolicyAgreed] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
@@ -505,8 +517,8 @@ const CheckoutPage = () => {
             </>
           )}
 
-          {/* OTP strictly for guests AND only when authReady confirms guest */}
-          {authReady && step === 'otp' && isGuest && (
+          {/* OTP SECTION: COMPLETELY BLOCKED for logged-in users */}
+          {authReady && step === 'otp' && isGuest && !user && (
             <>
               <div className="flex items-center gap-4 mb-4">
                 <Button variant="outline" size="sm" onClick={handleBackToInfo}>
