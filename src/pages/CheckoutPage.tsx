@@ -31,28 +31,13 @@ interface CustomerInfo {
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
-  const { user, profile, updateProfile } = useAuth();
+  const { user, profile, updateProfile, loading: authLoading } = useAuth();
   const { sendOTP, verifyOTP, isLoading } = useOTPAuth(); // used only for guests
   const { cartItems, cartTotal, clearCart } = useProducts();
 
-  // ------- NEW: auth readiness guard -------
-  const [authReady, setAuthReady] = useState(false);
-  const [sessionUser, setSessionUser] = useState<null | { email: string }>(null);
-
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      try {
-        const { data } = await supabase.auth.getSession();
-        if (!active) return;
-        setSessionUser(data.session?.user ? { email: data.session.user.email || '' } : null);
-      } finally {
-        if (active) setAuthReady(true);
-      }
-    })();
-    return () => { active = false; };
-  }, []);
-  // ----------------------------------------
+  // Simple auth logic - use AuthContext as single source of truth
+  const isGuest = !user;
+  const authReady = !authLoading; // Auth is ready when not loading
 
   // Multi-step flow: 'info' | 'otp' for guests only, logged-in users stay on 'info'
   const [step, setStep] = useState<'info' | 'otp'>('info');
@@ -64,11 +49,6 @@ const CheckoutPage = () => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [otpError, setOTPError] = useState('');
   const [isResending, setIsResending] = useState(false);
-
-  // ------- NEW: single source of truth for auth -------
-  const authedUser = user ?? sessionUser;
-  const isGuest = !authedUser;
-  // ----------------------------------------------------
 
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     firstName: "",
@@ -101,32 +81,32 @@ const CheckoutPage = () => {
 
   // ------- HARD RESET: if authenticated, never allow OTP -------
   useEffect(() => {
-    if (authedUser && step === 'otp') {
+    if (user && step === 'otp') {
       setStep('info');
       setOTP('');
       setOTPError('');
       setTimeLeft(0);
     }
-  }, [authedUser, step]);
+  }, [user, step]);
   // -------------------------------------------------------------
 
   // Prefill from profile/session
   useEffect(() => {
-    if (authedUser && profile) {
+    if (user && profile) {
       setCustomerInfo({
         firstName: profile.first_name || "",
         lastName: profile.last_name || "",
-        email: authedUser.email || "",
+        email: user.email || "",
         mobile: profile.phone_number || "",
         address: profile.address_line_1 || "",
         city: profile.city || "",
         postalCode: profile.postcode || "",
         country: profile.country || "",
       });
-    } else if (authedUser) {
-      setCustomerInfo(prev => ({ ...prev, email: authedUser.email || "" }));
+    } else if (user) {
+      setCustomerInfo(prev => ({ ...prev, email: user.email || "" }));
     }
-  }, [authedUser, profile]);
+  }, [user, profile]);
 
   useEffect(() => {
     if (customerInfo.address && customerInfo.city && customerInfo.country) {
@@ -153,7 +133,7 @@ const CheckoutPage = () => {
   };
 
   const saveUserProfile = async () => {
-    if (!authedUser || !updateProfile || !profile) return;
+    if (!user || !updateProfile || !profile) return;
     const hasChanges =
       customerInfo.firstName !== (profile.first_name || "") ||
       customerInfo.lastName !== (profile.last_name || "") ||
@@ -196,9 +176,8 @@ const CheckoutPage = () => {
     console.log('🔍 CheckoutPage QA: handleInfoSubmit called', {
       authReady,
       isGuest,
-      authedUser: !!authedUser,
-      sessionUser: !!sessionUser,
-      user: !!user
+      user: !!user,
+      authLoading
     });
     e.preventDefault();
     setOTPError('');
@@ -399,7 +378,7 @@ const CheckoutPage = () => {
         <Card className="mb-8">
           <CardHeader><CardTitle>Your Contact Information</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            {authedUser && profile && (profile.first_name || profile.phone_number || profile.address_line_1) && (
+            {user && profile && (profile.first_name || profile.phone_number || profile.address_line_1) && (
               <div className="p-4 bg-muted rounded-lg mb-4">
                 <p className="text-sm font-medium mb-2">Using your saved information:</p>
                 <div className="text-sm text-muted-foreground space-y-1">
