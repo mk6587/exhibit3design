@@ -46,6 +46,18 @@ const CheckoutPage = () => {
   const authedUser = user ?? sessionUser;
   const isGuest = !authedUser;
 
+  // COMPREHENSIVE LOGGING FOR DEBUG
+  console.log('🔍 CHECKOUT DEBUG - Authentication State:', {
+    user: user ? { email: user.email, id: user.id } : null,
+    sessionUser,
+    authedUser: authedUser ? { email: authedUser.email } : null,
+    isGuest,
+    authLoading,
+    authReady,
+    step,
+    timestamp: new Date().toISOString()
+  });
+
   const [policyAgreed, setPolicyAgreed] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
@@ -77,14 +89,22 @@ const CheckoutPage = () => {
 
   // Auth readiness: check session on mount
   useEffect(() => {
+    console.log('🔄 CHECKOUT DEBUG - Checking session on mount');
     let active = true;
     (async () => {
       try {
         const { data } = await supabase.auth.getSession();
+        console.log('📋 CHECKOUT DEBUG - Session check result:', {
+          hasSession: !!data.session,
+          sessionUser: data.session?.user ? { email: data.session.user.email, id: data.session.user.id } : null
+        });
         if (!active) return;
         setSessionUser(data.session?.user ?? null);
       } finally {
-        if (active) setAuthReady(true);
+        if (active) {
+          setAuthReady(true);
+          console.log('✅ CHECKOUT DEBUG - Auth ready set to true');
+        }
       }
     })();
     return () => { active = false; };
@@ -101,7 +121,13 @@ const CheckoutPage = () => {
 
   // ------- HARD RESET: if authenticated, never allow OTP -------
   useEffect(() => {
+    console.log('🛡️ CHECKOUT DEBUG - Hard reset check:', {
+      authedUser: authedUser ? { email: authedUser.email } : null,
+      step,
+      shouldReset: authedUser && step === 'otp'
+    });
     if (authedUser && step === 'otp') {
+      console.log('🔄 CHECKOUT DEBUG - HARD RESET: Authenticated user detected on OTP step, forcing back to info');
       setStep('info');
       setOTP('');
       setOTPError('');
@@ -196,6 +222,15 @@ const CheckoutPage = () => {
     e.preventDefault();
     setOTPError('');
 
+    console.log('🚀 CHECKOUT DEBUG - Info submit triggered:', {
+      authReady,
+      user: user ? { email: user.email, id: user.id } : null,
+      sessionUser: sessionUser ? { email: sessionUser.email } : null,
+      authedUser: authedUser ? { email: authedUser.email } : null,
+      isGuest,
+      willSkipOTP: !!(user || sessionUser)
+    });
+
     if (!authReady) {
       toast.error("Checking your login status… please try again in a second.");
       return;
@@ -210,6 +245,7 @@ const CheckoutPage = () => {
 
     // If user is logged in (either through auth context or session), skip OTP entirely
     if (user || sessionUser) {
+      console.log('✅ CHECKOUT DEBUG - User authenticated, skipping OTP and going directly to payment');
       setStep('processing');
       trackAddPaymentInfo(cartItems, cartTotal, 'Card');
       try {
@@ -220,6 +256,8 @@ const CheckoutPage = () => {
       }
       return;
     }
+
+    console.log('👤 CHECKOUT DEBUG - Guest user, proceeding to OTP step');
 
     // GUEST ONLY: Send OTP
     const tempPassword = Math.random().toString(36).slice(-12);
@@ -509,7 +547,19 @@ const CheckoutPage = () => {
           )}
 
           {/* OTP SECTION: Only show for guests (completely hidden if user is authenticated) */}
-          {authReady && step === 'otp' && !user && !sessionUser && !authedUser && (
+          {(() => {
+            const shouldShowOTP = authReady && step === 'otp' && !user && !sessionUser && !authedUser;
+            console.log('👁️ CHECKOUT DEBUG - OTP Section Render Check:', {
+              authReady,
+              step,
+              user: user ? { email: user.email } : null,
+              sessionUser: sessionUser ? { email: sessionUser.email } : null,
+              authedUser: authedUser ? { email: authedUser.email } : null,
+              shouldShowOTP,
+              renderCondition: `authReady:${authReady} && step:${step} === 'otp' && !user:${!user} && !sessionUser:${!sessionUser} && !authedUser:${!authedUser}`
+            });
+            return shouldShowOTP;
+          })() && (
             <>
               <div className="flex items-center gap-4 mb-4">
                 <Button variant="outline" size="sm" onClick={handleBackToInfo}>
