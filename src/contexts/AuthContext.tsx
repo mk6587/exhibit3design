@@ -124,10 +124,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   useEffect(() => {
+    console.log('🔧 AUTH CONTEXT DEBUG - Setting up auth state listener');
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email || 'No user');
+        console.log('🔄 AUTH CONTEXT DEBUG - Auth state changed:', {
+          event,
+          userEmail: session?.user?.email || 'No user',
+          userId: session?.user?.id || 'No ID',
+          hasSession: !!session,
+          hasUser: !!session?.user,
+          sessionExpiry: session?.expires_at ? new Date(session.expires_at * 1000).toISOString() : 'No expiry',
+          timestamp: new Date().toISOString()
+        });
         console.log('Session details:', { hasSession: !!session, hasUser: !!session?.user });
         setSession(session);
         setUser(session?.user ?? null);
@@ -167,7 +176,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     );
 
     // Check for existing session
+    console.log('🔍 AUTH CONTEXT DEBUG - Checking for existing session on mount');
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('🔍 AUTH CONTEXT DEBUG - Initial session check result:', {
+        hasSession: !!session,
+        userEmail: session?.user?.email || 'No user',
+        userId: session?.user?.id || 'No ID',
+        sessionExpiry: session?.expires_at ? new Date(session.expires_at * 1000).toISOString() : 'No expiry',
+        timestamp: new Date().toISOString()
+      });
       console.log('Initial session check:', session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
