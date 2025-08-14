@@ -300,13 +300,28 @@ const CheckoutPage = () => {
     // Optional magic link -> elevate to session
     if (result.magicLink) {
       try {
+        // Parse the magic link URL to extract the parameters
         const url = new URL(result.magicLink);
-        const tokenHash = url.searchParams.get('token_hash');
+        const token = url.searchParams.get('token');
         const type = url.searchParams.get('type');
-        if (!tokenHash || !type) throw new Error('Invalid authentication link received.');
+        
+        if (!token || !type) {
+          console.error('Missing token or type in magic link:', { token: !!token, type: !!type });
+          throw new Error('Invalid magic link format.');
+        }
 
-        const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: type as any });
-        if (error) throw error;
+        console.log('🔑 CHECKOUT DEBUG - Processing magic link with type:', type);
+        
+        // Use the magic link token to authenticate
+        const { error } = await supabase.auth.verifyOtp({ 
+          token_hash: token, 
+          type: type as any 
+        });
+        
+        if (error) {
+          console.error('Magic link verification error:', error);
+          throw error;
+        }
         
         // Wait briefly for auth state to update
         await new Promise(resolve => setTimeout(resolve, 1000));
