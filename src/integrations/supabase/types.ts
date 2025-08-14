@@ -68,7 +68,7 @@ export type Database = {
           status: string
           transaction_id: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
           yekpay_reference: string | null
         }
         Insert: {
@@ -91,7 +91,7 @@ export type Database = {
           status?: string
           transaction_id?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
           yekpay_reference?: string | null
         }
         Update: {
@@ -114,7 +114,7 @@ export type Database = {
           status?: string
           transaction_id?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
           yekpay_reference?: string | null
         }
         Relationships: [
