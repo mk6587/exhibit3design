@@ -132,6 +132,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setSession(session);
         setUser(session?.user ?? null);
         
+        // Dispatch custom event to trigger popup hiding
+        if (session?.user) {
+          window.dispatchEvent(new CustomEvent('authStateChanged'));
+          // Run popup hiding after a short delay to catch any delayed popups
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('authStateChanged'));
+          }, 1000);
+        }
+        
         if (session?.user) {
           // Handle profile fetching in background
           setTimeout(async () => {

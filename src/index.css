@@ -241,15 +241,23 @@ html, body {
   }
 }
 
-/* Hide external welcome modals and old auth forms */
+/* Hide external welcome modals, auth forms, and success popups */
 [data-testid*="welcome"],
 [class*="welcome-modal"],
 [class*="welcome-dialog"],
 [class*="congratulations"],
+[class*="success-modal"],
+[class*="login-success"],
+[class*="auth-success"],
 div[style*="position: fixed"]:has(*:contains("Welcome to Exhibit3Design")),
 div[style*="position: fixed"]:has(*:contains("Congratulations")),
+div[style*="position: fixed"]:has(*:contains("Login successful")),
+div[style*="position: fixed"]:has(*:contains("Authentication successful")),
+div[style*="position: fixed"]:has(*:contains("Successfully signed in")),
+div[style*="position: fixed"]:has(*:contains("Welcome back")),
 div[style*="position: fixed"]:has(*:contains("professional exhibition")),
 div[style*="position: absolute"]:has(*:contains("Welcome to Exhibit3Design")),
+div[style*="position: absolute"]:has(*:contains("Login successful")),
 div[style*="z-index"]:has(*:contains("Continue to Exhibit3Design")),
 form:has(input[placeholder*="email"], input[placeholder*="password"]):has(*:contains("Welcome to Exhibit3Design")),
 div:has(input[type="email"], input[type="password"]):has(*:contains("Enter your email and password")) {
@@ -259,12 +267,19 @@ div:has(input[type="email"], input[type="password"]):has(*:contains("Enter your 
   pointer-events: none !important;
 }
 
-/* Hide any modal overlays containing welcome text or old auth forms */
+/* Hide any modal overlays containing welcome text, auth forms, or success messages */
 .modal-overlay:has(*:contains("Welcome")),
+.modal-overlay:has(*:contains("Login successful")),
+.modal-overlay:has(*:contains("Authentication successful")),
 .overlay:has(*:contains("Congratulations")),
+.overlay:has(*:contains("Successfully signed in")),
 [role="dialog"]:has(*:contains("Welcome to Exhibit3Design")),
+[role="dialog"]:has(*:contains("Login successful")),
 [role="alertdialog"]:has(*:contains("Congratulations")),
-div:has(*:contains("Enter your email and password to sign in or register")) {
+[role="alertdialog"]:has(*:contains("Authentication successful")),
+div:has(*:contains("Enter your email and password to sign in or register")),
+div:has(*:contains("Welcome back")),
+div:has(*:contains("Account verified")) {
   display: none !important;
 }
 

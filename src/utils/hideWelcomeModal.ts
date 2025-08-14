@@ -1,19 +1,27 @@
 // Utility to hide external welcome modals that might be injected by scripts
 export const hideWelcomeModals = () => {
   const hideModal = () => {
-    // List of selectors that might contain the welcome modal
+    // List of selectors that might contain the welcome modal, auth forms, or success popups
     const selectors = [
       '[data-testid*="welcome"]',
       '[class*="welcome-modal"]', 
       '[class*="welcome-dialog"]',
       '[class*="congratulations"]',
+      '[class*="success-modal"]',
+      '[class*="login-success"]',
+      '[class*="auth-success"]',
       '[role="dialog"]',
       '[role="alertdialog"]',
+      '[class*="toast"]',
+      '[class*="notification"]',
+      '[class*="alert"]',
       'div[style*="position: fixed"]',
-      'div[style*="position: absolute"]'
+      'div[style*="position: absolute"]',
+      'div[style*="z-index: 999"]',
+      'div[style*="z-index: 9999"]'
     ];
 
-    // Keywords to identify the welcome modal content and old auth forms
+    // Keywords to identify the welcome modal content, auth forms, and success messages
     const keywords = [
       'Welcome to Exhibit3Design',
       'Congratulations',
@@ -22,7 +30,17 @@ export const hideWelcomeModals = () => {
       'Your email has been confirmed successfully',
       'Enter your email and password to sign in or register',
       'Enter your email and password',
-      'Forgot Password?'
+      'Forgot Password?',
+      'Login successful',
+      'Authentication successful',
+      'Sign in successful',
+      'Successfully signed in',
+      'Welcome back',
+      'Login complete',
+      'Authentication complete',
+      'You have successfully',
+      'Account verified',
+      'Profile created'
     ];
 
     selectors.forEach(selector => {
@@ -81,11 +99,21 @@ export const hideWelcomeModals = () => {
   });
 
   // Run periodically as backup
-  const interval = setInterval(hideModal, 1000);
+  const interval = setInterval(hideModal, 500); // Check more frequently
 
-  // Clean up after 30 seconds
+  // Clean up after 60 seconds (increased time to catch delayed popups)
   setTimeout(() => {
     observer.disconnect();
     clearInterval(interval);
-  }, 30000);
+  }, 60000);
+  
+  // Also run the hide function when auth state changes
+  window.addEventListener('authStateChanged', hideModal);
+  
+  // Run when page visibility changes (handles tab switching)
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      setTimeout(hideModal, 100);
+    }
+  });
 };
