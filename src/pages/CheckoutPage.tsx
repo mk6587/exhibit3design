@@ -193,6 +193,13 @@ const CheckoutPage = () => {
   };
 
   const handleInfoSubmit = async (e: React.FormEvent) => {
+    console.log('🔍 CheckoutPage QA: handleInfoSubmit called', {
+      authReady,
+      isGuest,
+      authedUser: !!authedUser,
+      sessionUser: !!sessionUser,
+      user: !!user
+    });
     e.preventDefault();
     setOTPError('');
 
@@ -258,8 +265,9 @@ const CheckoutPage = () => {
             const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: type as any });
             if (error) throw new Error('Failed to authenticate: ' + error.message);
             setTimeout(async () => {
-              try { await processPayment(); }
-              catch (paymentError: any) {
+              try { 
+                await processPayment(); 
+              } catch (paymentError: any) {
                 console.error('Payment error:', paymentError);
                 toast.error(paymentError.message || 'Failed to initiate payment. Please try again.');
                 setStep('otp');
@@ -275,8 +283,9 @@ const CheckoutPage = () => {
           setStep('otp');
         }
       } else {
-        try { await processPayment(); }
-        catch (error: any) {
+        try { 
+          await processPayment(); 
+        } catch (error: any) {
           console.error('Payment error:', error);
           toast.error(error.message || 'Failed to initiate payment. Please try again.');
           setStep('otp');
@@ -290,6 +299,14 @@ const CheckoutPage = () => {
   };
 
   const processPayment = async () => {
+    console.log('🔍 CheckoutPage QA: processPayment called', {
+      isGuest,
+      hasProfile: !!profile,
+      customerInfo: {
+        email: customerInfo.email,
+        hasAllRequiredFields: !!(customerInfo.firstName && customerInfo.lastName && customerInfo.email && customerInfo.mobile)
+      }
+    });
     if (!isGuest) await saveUserProfile();
 
     const paymentData = {
