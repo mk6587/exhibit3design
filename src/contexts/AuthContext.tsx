@@ -243,7 +243,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (error) {
         const duration = Date.now() - signinStartTime;
         console.error(`[${new Date().toISOString()}] ❌ AUTH: Signin failed after ${duration}ms:`, error.message);
-        return { error };
+        
+        // Convert technical errors to user-friendly messages
+        let userMessage = error.message;
+        if (error.message?.includes('Invalid login credentials')) {
+          userMessage = 'Incorrect email or password. Please check your credentials and try again.';
+        } else if (error.message?.includes('Email not confirmed')) {
+          userMessage = 'Please check your email and click the confirmation link before signing in.';
+        } else if (error.message?.includes('network')) {
+          userMessage = 'Network error. Please check your connection and try again.';
+        } else if (error.message?.includes('timeout')) {
+          userMessage = 'Request timed out. Please try again.';
+        }
+        
+        return { error: { ...error, message: userMessage } };
       }
 
       const duration = Date.now() - signinStartTime;
@@ -252,7 +265,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch (error) {
       const duration = Date.now() - signinStartTime;
       console.error(`[${new Date().toISOString()}] ❌ AUTH: Signin exception after ${duration}ms:`, error);
-      return { error };
+      return { error: { message: 'An unexpected error occurred. Please try again.' } };
     }
   };
 

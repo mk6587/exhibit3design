@@ -33,13 +33,31 @@ export function OTPAuthProvider({ children }: OTPAuthProviderProps) {
 
       if (error) {
         console.error('Send OTP error:', error);
-        return { success: false, error: error.message };
+        // Convert technical errors to user-friendly messages
+        let userMessage = 'Failed to send verification code';
+        if (error.message?.includes('non-2xx status code')) {
+          userMessage = 'Unable to send verification code. Please try again.';
+        } else if (error.message?.includes('timeout')) {
+          userMessage = 'Request timed out. Please try again.';
+        } else if (error.message?.includes('network')) {
+          userMessage = 'Network error. Please check your connection and try again.';
+        }
+        return { success: false, error: userMessage };
       }
 
       return { success: true };
     } catch (error: any) {
       console.error('Send OTP error:', error);
-      return { success: false, error: 'Failed to send verification code' };
+      // Convert technical errors to user-friendly messages
+      let userMessage = 'Failed to send verification code';
+      if (error.message?.includes('non-2xx status code')) {
+        userMessage = 'Unable to send verification code. Please try again.';
+      } else if (error.message?.includes('timeout')) {
+        userMessage = 'Request timed out. Please try again.';
+      } else if (error.message?.includes('network')) {
+        userMessage = 'Network error. Please check your connection and try again.';
+      }
+      return { success: false, error: userMessage };
     } finally {
       setIsLoading(false);
     }
@@ -54,11 +72,29 @@ export function OTPAuthProvider({ children }: OTPAuthProviderProps) {
 
       if (error) {
         console.error('Error verifying OTP:', error);
-        return { success: false, error: error.message || 'Failed to verify code' };
+        // Convert technical errors to user-friendly messages
+        let userMessage = 'Failed to verify code';
+        if (error.message?.includes('non-2xx status code')) {
+          userMessage = 'Invalid verification code. Please check the code and try again.';
+        } else if (error.message?.includes('timeout')) {
+          userMessage = 'Request timed out. Please try again.';
+        } else if (error.message?.includes('network')) {
+          userMessage = 'Network error. Please check your connection and try again.';
+        }
+        return { success: false, error: userMessage };
       }
 
       if (data?.error) {
-        return { success: false, error: data.error };
+        // Convert backend errors to user-friendly messages
+        let userMessage = data.error;
+        if (data.error.includes('No verification code found')) {
+          userMessage = 'Verification code has expired. Please request a new code.';
+        } else if (data.error.includes('Invalid')) {
+          userMessage = 'Invalid verification code. Please check and try again.';
+        } else if (data.error.includes('expired')) {
+          userMessage = 'Verification code has expired. Please request a new code.';
+        }
+        return { success: false, error: userMessage };
       }
 
       return { 
@@ -69,7 +105,16 @@ export function OTPAuthProvider({ children }: OTPAuthProviderProps) {
       };
     } catch (err: any) {
       console.error('Error verifying OTP:', err);
-      return { success: false, error: 'Failed to verify code' };
+      // Convert technical errors to user-friendly messages
+      let userMessage = 'Failed to verify code. Please try again.';
+      if (err.message?.includes('non-2xx status code')) {
+        userMessage = 'Invalid verification code. Please check the code and try again.';
+      } else if (err.message?.includes('timeout')) {
+        userMessage = 'Request timed out. Please try again.';
+      } else if (err.message?.includes('network')) {
+        userMessage = 'Network error. Please check your connection and try again.';
+      }
+      return { success: false, error: userMessage };
     } finally {
       setIsLoading(false);
     }

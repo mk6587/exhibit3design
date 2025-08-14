@@ -43,12 +43,12 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
     console.log("Creating order - step 2");
     if (authError) {
       console.error("Auth error in createOrder:", authError);
-      throw new Error(`Authentication failed: ${authError.message}`);
+      throw new Error("Please sign in to create an order");
     }
     
     if (!user) {
       console.error("No user in createOrder");
-      throw new Error("User must be authenticated to create an order");
+      throw new Error("You must be signed in to complete your purchase");
     }
     console.log("Creating order - step 3");
 
@@ -87,7 +87,7 @@ const createPendingOrder = async (paymentData: PaymentRequest, orderNumber: stri
       console.error("❌ Database error:", error);
       console.error("❌ Error message:", error.message);
       console.error("❌ Error details:", JSON.stringify(error, null, 2));
-      throw new Error(`Failed to create order: ${error.message}`);
+      throw new Error("Unable to create your order. Please try again or contact support.");
     }
     
     console.log("✅ Order created successfully:", data);
@@ -115,7 +115,7 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       console.error("❌ Auth failed:", authError);
-      throw new Error("Please log in to complete your purchase");
+      throw new Error("Please sign in to complete your purchase");
     }
     console.log("✅ Authentication successful for user:", user.email);
 
@@ -194,11 +194,11 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
       if (fetchError instanceof TypeError && fetchError.message.includes('fetch')) {
         // Network connectivity issue
         console.error("🌐 Network connectivity issue detected");
-        throw new Error("Network error: Unable to connect to payment gateway. This could be due to:\n• Payment gateway server is down\n• Network connectivity issues\n• CORS policy restrictions\n• Firewall blocking the connection\n\nPlease try again in a few minutes or contact support.");
+        throw new Error("Unable to connect to the payment system. Please check your internet connection and try again.");
       } else if (fetchError.name === 'AbortError') {
-        throw new Error("Request timeout: The payment gateway is taking too long to respond. Please try again.");
+        throw new Error("The payment request timed out. Please try again.");
       } else {
-        throw new Error(`Connection failed: ${fetchError instanceof Error ? fetchError.message : 'Unknown network error'}`);
+        throw new Error("Connection failed. Please check your internet connection and try again.");
       }
     }
 
@@ -212,7 +212,7 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
       }
       console.error("❌ HTTP error! Status:", response.status);
       console.error("❌ Response body:", errorText);
-      throw new Error(`Payment gateway returned error ${response.status}: ${errorText}`);
+      throw new Error("The payment system is temporarily unavailable. Please try again later.");
     }
 
     // Check content type before parsing
@@ -228,7 +228,7 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
       }
       console.error("❌ Unexpected response type:", contentType);
       console.error("❌ Response body:", responseText);
-      throw new Error(`Payment gateway returned unexpected format. Expected JSON but got: ${contentType || 'unknown'}`);
+      throw new Error("The payment system returned an unexpected response. Please try again.");
     }
 
     // Parse JSON response
@@ -240,7 +240,7 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
       console.error("❌ Failed to parse JSON response:", jsonError);
       const responseText = await response.text();
       console.error("❌ Raw response:", responseText);
-      throw new Error("Payment gateway returned invalid JSON response");
+      throw new Error("The payment system returned an invalid response. Please try again.");
     }
     
     // Check for redirect URL in response
@@ -258,9 +258,9 @@ export const initiatePayment = async (paymentData: PaymentRequest) => {
       };
     } else {
       // Handle error responses from YekPay
-      const errorMessage = result.message || result.error || result.status || 'No redirect URL received from payment gateway';
+      const errorMessage = result.message || result.error || result.status || 'Unable to process payment at this time';
       console.error("❌ Payment gateway error response:", result);
-      throw new Error(`Payment setup failed: ${errorMessage}`);
+      throw new Error(`Payment failed: ${errorMessage}. Please try again or contact support.`);
     }
     
   } catch (error) {
@@ -365,7 +365,7 @@ export const generateDownloadLink = async (productId: number, orderNumber: strin
     // Verify order is completed
     const order = await getOrderByNumber(orderNumber);
     if (!order || order.status !== 'completed') {
-      throw new Error("Order not found or not completed");
+      throw new Error("Your order is not ready for download. Please complete your purchase first.");
     }
 
     // Generate secure download link (implement based on your file storage system)
@@ -378,7 +378,7 @@ export const generateDownloadLink = async (productId: number, orderNumber: strin
     };
   } catch (error) {
     console.error("Failed to generate download link:", error);
-    toast.error("Failed to generate download link. Please contact support.");
+    toast.error("Unable to generate download link. Please contact our support team for assistance.");
     throw error;
   }
 };
