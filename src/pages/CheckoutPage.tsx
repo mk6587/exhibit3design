@@ -508,8 +508,8 @@ const CheckoutPage = () => {
             </>
           )}
 
-          {/* OTP SECTION: Only show for guests */}
-          {authReady && step === 'otp' && !user && !sessionUser && (
+          {/* OTP SECTION: Only show for guests (completely hidden if user is authenticated) */}
+          {authReady && step === 'otp' && !user && !sessionUser && !authedUser && (
             <>
               <div className="flex items-center gap-4 mb-4">
                 <Button variant="outline" size="sm" onClick={handleBackToInfo}>
