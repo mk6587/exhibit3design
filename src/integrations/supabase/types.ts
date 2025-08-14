@@ -278,12 +278,20 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      cleanup_old_otp_records: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       current_user_is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
       delete_otp_by_email: {
         Args: { search_email: string }
+        Returns: boolean
+      }
+      delete_used_otp: {
+        Args: { otp_id: string }
         Returns: boolean
       }
       encrypt_sensitive_data: {
@@ -342,6 +350,10 @@ export type Database = {
       }
       is_current_user_admin: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      mark_otp_verified_and_cleanup: {
+        Args: { otp_id: string }
         Returns: boolean
       }
       mask_sensitive_data: {
