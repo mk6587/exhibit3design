@@ -97,7 +97,7 @@ const FeaturedProducts = () => {
             textShadow: '1px 1px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 0, 0, 0.5)'
           }}>Get it done faster with affordable, ready-made designs.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-purple-600/30 text-white border-purple-400 hover:bg-purple-600/40">
+              <Button asChild size="lg" className="bg-purple-600/50 text-white border-purple-400 hover:bg-purple-600/60">
                 <Link to="/products">Explore Our Designs</Link>
               </Button>
               {!hasVideo && <div className="text-sm text-white/80 bg-black/20 px-4 py-2 rounded-lg backdrop-blur-sm">
