@@ -572,6 +572,16 @@ const CheckoutPage = () => {
                 <Button onClick={handleInfoSubmit} disabled={isLoading} className="w-full">
                   {isLoading ? "Processing..." : user ? "Complete Purchase" : "Continue to Verification"}
                 </Button>
+                
+                {/* Debug info - remove in production */}
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="mt-2 p-2 bg-gray-100 text-xs rounded">
+                    <strong>Debug Info:</strong><br/>
+                    User: {user ? 'Logged In' : 'Guest'}<br/>
+                    Step: {step}<br/>
+                    Button Text: {isLoading ? "Processing..." : user ? "Complete Purchase" : "Continue to Verification"}
+                  </div>
+                )}
               </>
             )}
 
