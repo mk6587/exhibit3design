@@ -30,8 +30,8 @@ interface CustomerInfo {
   country: string;
 }
 
-// Turnstile site key for testing (replace with your actual site key)
-const TURNSTILE_SITE_KEY = '1x00000000000000000000AA';
+// Turnstile site key
+const TURNSTILE_SITE_KEY = '0x4AAAAAABrwThKzyiXPx2_NxNLd8UkCcG8';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
