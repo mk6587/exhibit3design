@@ -60,23 +60,35 @@ const FeaturedProducts = () => {
       {/* Full-width hero section */}
       <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
         {hasVideo && videoUrl ? (
-          // Show video if available
+          // Show video directly without complex wrapper for debugging
           <>
-            <VideoStream
-              src={videoUrl}
+            <video
+              className="w-full h-full object-cover"
+              style={{ objectPosition: 'center center' }}
               autoPlay
               loop
               muted
               playsInline
-              className="object-cover"
-              style={{ objectPosition: 'center center' }}
-              onLoadStart={() => setIsVideoLoaded(false)}
-              onLoadedData={() => setIsVideoLoaded(true)}
-              onError={(error) => {
-                console.error('Video streaming error:', error);
-                // Video error - will fallback to the fallback image section
+              preload="metadata"
+              onLoadStart={() => {
+                console.log('Video load started');
+                setIsVideoLoaded(false);
               }}
-            />
+              onLoadedData={() => {
+                console.log('Video loaded successfully');
+                setIsVideoLoaded(true);
+              }}
+              onError={(error) => {
+                console.error('Video loading error:', error);
+                console.error('Video URL:', videoUrl);
+              }}
+              onCanPlay={() => {
+                console.log('Video can start playing');
+              }}
+            >
+              <source src={videoUrl} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
             <div className="absolute inset-0 bg-black/20" />
           </>
         ) : (
