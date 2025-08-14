@@ -27,28 +27,37 @@ export function OTPAuthProvider({ children }: OTPAuthProviderProps) {
   const sendOTP = async (email: string, passwordHash?: string) => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('send-otp', {
+      const response = await supabase.functions.invoke('send-otp', {
         body: { email, passwordHash }
       });
 
-      if (error) {
-        console.error('Send OTP error:', error);
-        // Convert technical errors to user-friendly messages
+      if (response.error) {
+        console.error('Send OTP error:', response.error);
+        
+        // Try to get the actual error message from the response
         let userMessage = 'Failed to send verification code';
-        if (error.message?.includes('non-2xx status code')) {
+        
+        // Check if there's response data with error details
+        if (response.data && response.data.error) {
+          if (response.data.error.includes('Please wait before requesting another code')) {
+            userMessage = 'You can only request a verification code once per minute. Please wait and try again.';
+          } else {
+            userMessage = response.data.error;
+          }
+        } else if (response.error.message?.includes('non-2xx status code')) {
           userMessage = 'Unable to send verification code. Please try again.';
-        } else if (error.message?.includes('timeout')) {
+        } else if (response.error.message?.includes('timeout')) {
           userMessage = 'Request timed out. Please try again.';
-        } else if (error.message?.includes('network')) {
+        } else if (response.error.message?.includes('network')) {
           userMessage = 'Network error. Please check your connection and try again.';
         }
+        
         return { success: false, error: userMessage };
       }
 
       return { success: true };
     } catch (error: any) {
       console.error('Send OTP error:', error);
-      // Convert technical errors to user-friendly messages
       let userMessage = 'Failed to send verification code';
       if (error.message?.includes('non-2xx status code')) {
         userMessage = 'Unable to send verification code. Please try again.';
