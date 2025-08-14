@@ -47,6 +47,51 @@ export type Database = {
         }
         Relationships: []
       }
+      guest_checkout_sessions: {
+        Row: {
+          created_at: string
+          customer_address: string | null
+          customer_city: string | null
+          customer_country: string | null
+          customer_email: string | null
+          customer_first_name: string | null
+          customer_last_name: string | null
+          customer_mobile: string | null
+          customer_postal_code: string | null
+          expires_at: string
+          id: string
+          session_token: string
+        }
+        Insert: {
+          created_at?: string
+          customer_address?: string | null
+          customer_city?: string | null
+          customer_country?: string | null
+          customer_email?: string | null
+          customer_first_name?: string | null
+          customer_last_name?: string | null
+          customer_mobile?: string | null
+          customer_postal_code?: string | null
+          expires_at?: string
+          id?: string
+          session_token: string
+        }
+        Update: {
+          created_at?: string
+          customer_address?: string | null
+          customer_city?: string | null
+          customer_country?: string | null
+          customer_email?: string | null
+          customer_first_name?: string | null
+          customer_last_name?: string | null
+          customer_mobile?: string | null
+          customer_postal_code?: string | null
+          expires_at?: string
+          id?: string
+          session_token?: string
+        }
+        Relationships: []
+      }
       guest_order_access_log: {
         Row: {
           access_granted: boolean
@@ -317,6 +362,10 @@ export type Database = {
         Args: { minutes_ago?: number; search_email: string }
         Returns: boolean
       }
+      cleanup_expired_guest_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cleanup_expired_guest_tokens: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -454,6 +503,20 @@ export type Database = {
         Args: { token: string }
         Returns: undefined
       }
+      store_guest_checkout_session: {
+        Args: {
+          p_address: string
+          p_city: string
+          p_country: string
+          p_email: string
+          p_first_name: string
+          p_last_name: string
+          p_mobile: string
+          p_postal_code: string
+          p_session_token: string
+        }
+        Returns: boolean
+      }
       transfer_guest_order_data: {
         Args: { p_email: string; p_user_id: string }
         Returns: {
@@ -466,6 +529,10 @@ export type Database = {
           postal_code: string
           success: boolean
         }[]
+      }
+      transfer_guest_session_to_profile: {
+        Args: { p_session_token: string; p_user_id: string }
+        Returns: boolean
       }
       validate_payment_update: {
         Args: Record<PropertyKey, never>

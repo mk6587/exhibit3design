@@ -197,6 +197,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               }
               
               setProfile(profileData);
+              
+              // Check for guest session data to transfer
+              const guestSessionToken = localStorage.getItem('guest_session_token');
+              if (guestSessionToken) {
+                console.log('🔄 Transferring guest session data to user profile');
+                const { error } = await supabase.rpc('transfer_guest_session_to_profile', {
+                  p_user_id: session.user.id,
+                  p_session_token: guestSessionToken
+                });
+                
+                if (error) {
+                  console.error('Error transferring guest session:', error);
+                } else {
+                  console.log('✅ Guest session data transferred successfully');
+                  localStorage.removeItem('guest_session_token');
+                  // Refresh profile to show updated data
+                  const updatedProfile = await fetchProfile(session.user.id);
+                  setProfile(updatedProfile);
+                }
+              }
             } catch (error) {
               console.error('Profile fetch error:', error);
               setProfile(null);
