@@ -42,9 +42,7 @@ const Header = () => {
           <Link to="/faq" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
             FAQ
           </Link>
-          <Link to="/order-lookup" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
-            Track Order
-          </Link>
+          
         </nav>
         
         {/* Actions */}
