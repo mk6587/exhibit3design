@@ -244,6 +244,9 @@ const CheckoutPage = () => {
       return;
     }
 
+    // Prevent double submission
+    if (step === 'processing') return;
+    
     trackAddPaymentInfo(cartItems, cartTotal, 'Card');
     setStep('processing');
 
@@ -265,7 +268,11 @@ const CheckoutPage = () => {
 
         const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: type as any });
         if (error) throw error;
+        
+        // Wait briefly for auth state to update
+        await new Promise(resolve => setTimeout(resolve, 1000));
       } catch (err: any) {
+        console.error('Authentication error:', err);
         toast.error('Authentication failed: ' + (err.message || 'Please try again.'));
         setStep('otp');
         return;
@@ -275,6 +282,7 @@ const CheckoutPage = () => {
     try {
       await processPayment();
     } catch (err: any) {
+      console.error('Payment error:', err);
       toast.error(err.message || 'Failed to initiate payment. Please try again.');
       setStep('otp');
     }
