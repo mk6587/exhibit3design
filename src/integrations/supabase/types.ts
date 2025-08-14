@@ -47,6 +47,39 @@ export type Database = {
         }
         Relationships: []
       }
+      guest_order_access_log: {
+        Row: {
+          access_granted: boolean
+          access_ip: string | null
+          access_timestamp: string
+          access_user_agent: string | null
+          failure_reason: string | null
+          id: string
+          order_id: string
+          order_token: string
+        }
+        Insert: {
+          access_granted?: boolean
+          access_ip?: string | null
+          access_timestamp?: string
+          access_user_agent?: string | null
+          failure_reason?: string | null
+          id?: string
+          order_id: string
+          order_token: string
+        }
+        Update: {
+          access_granted?: boolean
+          access_ip?: string | null
+          access_timestamp?: string
+          access_user_agent?: string | null
+          failure_reason?: string | null
+          id?: string
+          order_id?: string
+          order_token?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           amount: number
@@ -63,6 +96,7 @@ export type Database = {
           id: string
           order_number: string | null
           order_token: string | null
+          order_token_expires_at: string | null
           payment_description: string | null
           payment_method: string | null
           product_id: number
@@ -87,6 +121,7 @@ export type Database = {
           id?: string
           order_number?: string | null
           order_token?: string | null
+          order_token_expires_at?: string | null
           payment_description?: string | null
           payment_method?: string | null
           product_id: number
@@ -111,6 +146,7 @@ export type Database = {
           id?: string
           order_number?: string | null
           order_token?: string | null
+          order_token_expires_at?: string | null
           payment_description?: string | null
           payment_method?: string | null
           product_id?: number
@@ -273,9 +309,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_guest_order_access_rate_limit: {
+        Args: { client_ip?: string }
+        Returns: boolean
+      }
       check_recent_otp: {
         Args: { minutes_ago?: number; search_email: string }
         Returns: boolean
+      }
+      cleanup_expired_guest_tokens: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       cleanup_expired_otps: {
         Args: Record<PropertyKey, never>
@@ -316,6 +360,13 @@ export type Database = {
       generate_order_token: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      generate_secure_order_token: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          expires_at: string
+          token: string
+        }[]
       }
       get_decrypted_customer_data: {
         Args: { order_id: string }
@@ -403,6 +454,15 @@ export type Database = {
       }
       verify_guest_order_access: {
         Args: { order_id_param: string; order_token_param: string }
+        Returns: boolean
+      }
+      verify_guest_order_access_secure: {
+        Args: {
+          client_ip?: string
+          order_id_param: string
+          order_token_param: string
+          user_agent?: string
+        }
         Returns: boolean
       }
       verify_otp_code: {
