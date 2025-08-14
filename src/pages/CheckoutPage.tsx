@@ -55,6 +55,7 @@ const CheckoutPage = () => {
     authLoading,
     authReady,
     step,
+    cartItemsCount: cartItems.length,
     timestamp: new Date().toISOString()
   });
 
@@ -389,6 +390,19 @@ const CheckoutPage = () => {
   };
 
   if (cartItems.length === 0) return null;
+
+  // QA Mode - show debug component if URL contains qa=true
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('qa') === 'true') {
+    const { GuestCheckoutQA } = require('@/components/checkout/GuestCheckoutQA');
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <GuestCheckoutQA />
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
