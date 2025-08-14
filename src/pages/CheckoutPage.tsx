@@ -32,27 +32,20 @@ interface CustomerInfo {
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { user, profile, updateProfile, loading: authLoading } = useAuth();
-  const { sendOTP, verifyOTP, isLoading } = useOTPAuth(); // used only for guests
+  const { sendOTP, verifyOTP, isLoading } = useOTPAuth();
   const { cartItems, cartTotal, clearCart } = useProducts();
 
-  // Multi-step flow: 'info' | 'otp' for guests only, logged-in users stay on 'info'
-  const [step, setStep] = useState<'info' | 'otp'>('info');
-  
-  // Simple auth logic - use AuthContext as single source of truth
-  const isGuest = !user;
-  const authReady = !authLoading; // Auth is ready when not loading
+  // Auth readiness and session state
+  const [authReady, setAuthReady] = useState(false);
+  const [sessionUser, setSessionUser] = useState<null | { email?: string }>(null);
 
-  // Debug authentication state in useEffect so it has access to step
-  useEffect(() => {
-    console.log('🔍 CheckoutPage Auth State:', {
-      user: !!user,
-      isGuest,
-      authLoading,
-      authReady,
-      step,
-      userEmail: user?.email
-    });
-  }, [user, isGuest, authLoading, authReady, step]);
+  // Multi-step flow: 'info' | 'otp' | 'processing'
+  const [step, setStep] = useState<'info' | 'otp' | 'processing'>('info');
+  
+  // Single source of truth for authenticated user
+  const authedUser = user ?? sessionUser;
+  const isGuest = !authedUser;
+
   const [policyAgreed, setPolicyAgreed] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
@@ -82,6 +75,21 @@ const CheckoutPage = () => {
     return () => clearTimeout(timer);
   }, [timeLeft, step]);
 
+  // Auth readiness: check session on mount
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!active) return;
+        setSessionUser(data.session?.user ?? null);
+      } finally {
+        if (active) setAuthReady(true);
+      }
+    })();
+    return () => { active = false; };
+  }, []);
+
   useEffect(() => {
     if (cartItems.length === 0) {
       navigate("/cart");
@@ -93,13 +101,13 @@ const CheckoutPage = () => {
 
   // ------- HARD RESET: if authenticated, never allow OTP -------
   useEffect(() => {
-    if (user && step === 'otp') {
+    if (authedUser && step === 'otp') {
       setStep('info');
       setOTP('');
       setOTPError('');
       setTimeLeft(0);
     }
-  }, [user, step]);
+  }, [authedUser, step]);
   // -------------------------------------------------------------
 
   // Prefill from profile/session
@@ -185,12 +193,6 @@ const CheckoutPage = () => {
   };
 
   const handleInfoSubmit = async (e: React.FormEvent) => {
-    console.log('🔍 CheckoutPage QA: handleInfoSubmit called', {
-      authReady,
-      isGuest,
-      user: !!user,
-      authLoading
-    });
     e.preventDefault();
     setOTPError('');
 
@@ -198,7 +200,6 @@ const CheckoutPage = () => {
       toast.error("Checking your login status… please try again in a second.");
       return;
     }
-
     if (!validateForm()) return;
     if (!policyAgreed) {
       toast.error("You must agree to our Privacy Policy to proceed with the payment");
@@ -207,22 +208,24 @@ const CheckoutPage = () => {
 
     trackAddShippingInfo(cartItems, cartTotal, 'Digital');
 
-    // ✅ Authenticated path: straight to payment
     if (!isGuest) {
+      // LOGGED-IN: No OTP
+      setStep('processing');
+      trackAddPaymentInfo(cartItems, cartTotal, 'Card');
       try {
         await processPayment();
-      } catch (error: any) {
-        console.error('Payment error for logged-in user:', error);
-        toast.error(error.message || 'Failed to initiate payment. Please try again.');
+      } catch (err: any) {
+        toast.error(err.message || 'Failed to initiate payment. Please try again.');
+        setStep('info');
       }
       return;
     }
 
-    // Guest path: OTP
+    // GUEST: Send OTP
     const tempPassword = Math.random().toString(36).slice(-12);
     const passwordHash = await hashPassword(tempPassword);
-
     const result = await sendOTP(customerInfo.email, passwordHash);
+
     if (result.success) {
       setStep('otp');
       setTimeLeft(120);
@@ -234,8 +237,7 @@ const CheckoutPage = () => {
 
   const handleOTPSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isGuest) return; // absolute guard
-    setOTPError('');
+    if (!isGuest) return; // safety
 
     if (!otp || otp.length !== 4) {
       setOTPError('Please enter a 4-digit code');
@@ -243,61 +245,42 @@ const CheckoutPage = () => {
     }
 
     trackAddPaymentInfo(cartItems, cartTotal, 'Card');
+    setStep('processing');
 
     const result = await verifyOTP(customerInfo.email, otp);
-    if (result.success) {
-      toast.success('Verification successful! Processing your payment...');
-      if (result.magicLink) {
-        try {
-          const url = new URL(result.magicLink);
-          const tokenHash = url.searchParams.get('token_hash');
-          const type = url.searchParams.get('type');
-          if (tokenHash && type) {
-            const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: type as any });
-            if (error) throw new Error('Failed to authenticate: ' + error.message);
-            setTimeout(async () => {
-              try { 
-                await processPayment(); 
-              } catch (paymentError: any) {
-                console.error('Payment error:', paymentError);
-                toast.error(paymentError.message || 'Failed to initiate payment. Please try again.');
-                setStep('otp');
-              }
-            }, 1000);
-          } else {
-            toast.error('Invalid authentication link received.');
-            setStep('otp');
-          }
-        } catch (authError: any) {
-          console.error('Authentication failed:', authError);
-          toast.error('Authentication failed: ' + (authError.message || 'Please try again.'));
-          setStep('otp');
-        }
-      } else {
-        try { 
-          await processPayment(); 
-        } catch (error: any) {
-          console.error('Payment error:', error);
-          toast.error(error.message || 'Failed to initiate payment. Please try again.');
-          setStep('otp');
-        }
-      }
-    } else {
+    if (!result.success) {
       setOTPError(result.error || 'Invalid verification code');
       setStep('otp');
       setOTP('');
+      return;
+    }
+
+    // Optional magic link -> elevate to session
+    if (result.magicLink) {
+      try {
+        const url = new URL(result.magicLink);
+        const tokenHash = url.searchParams.get('token_hash');
+        const type = url.searchParams.get('type');
+        if (!tokenHash || !type) throw new Error('Invalid authentication link received.');
+
+        const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: type as any });
+        if (error) throw error;
+      } catch (err: any) {
+        toast.error('Authentication failed: ' + (err.message || 'Please try again.'));
+        setStep('otp');
+        return;
+      }
+    }
+
+    try {
+      await processPayment();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to initiate payment. Please try again.');
+      setStep('otp');
     }
   };
 
   const processPayment = async () => {
-    console.log('🔍 CheckoutPage QA: processPayment called', {
-      isGuest,
-      hasProfile: !!profile,
-      customerInfo: {
-        email: customerInfo.email,
-        hasAllRequiredFields: !!(customerInfo.firstName && customerInfo.lastName && customerInfo.email && customerInfo.mobile)
-      }
-    });
     if (!isGuest) await saveUserProfile();
 
     const paymentData = {
@@ -589,7 +572,7 @@ const CheckoutPage = () => {
         </div>
       </div>
 
-      <PaymentRedirectModal isOpen={isLoading} />
+      <PaymentRedirectModal isOpen={step === 'processing' || isLoading} />
     </Layout>
   );
 };
