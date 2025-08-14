@@ -106,10 +106,10 @@ const FeaturedProducts = () => {
         {/* Hero content overlay */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center text-white px-4">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4" style={{ textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6)' }}>
               Premium Exhibition Stands
             </h1>
-            <p className="text-xl md:text-2xl mb-8 drop-shadow-lg max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto" style={{ textShadow: '1px 1px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 0, 0, 0.5)' }}>
               Transform your brand presence with our cutting-edge exhibition stand designs
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
