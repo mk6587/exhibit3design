@@ -42,8 +42,72 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('🧹 Cleaning up expired OTPs');
     await supabase.rpc('cleanup_expired_otps');
 
-    // Find valid OTP using secure helper function
-    console.log('🔍 Verifying OTP code');
+    // First, let's check if any OTP record exists for this email
+    console.log('🔍 Checking for OTP record with email:', email);
+    const { data: existingOTPs, error: findError } = await supabase.rpc('find_otp_by_email', {
+      search_email: email
+    });
+
+    console.log('📝 Found OTP records:', { 
+      count: existingOTPs ? existingOTPs.length : 0,
+      findError: findError ? findError.message : 'none'
+    });
+
+    if (findError) {
+      console.error('❌ Error finding OTP records:', findError);
+      return new Response(JSON.stringify({ 
+        error: 'Database error during OTP lookup' 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!existingOTPs || existingOTPs.length === 0) {
+      console.error('❌ No OTP record found for email:', email);
+      return new Response(JSON.stringify({ 
+        error: 'No verification code found for this email. Please request a new code.' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Log the first OTP record details (without showing sensitive data)
+    const firstOTP = existingOTPs[0];
+    console.log('📝 OTP record details:', {
+      id: firstOTP.id,
+      verified: firstOTP.verified,
+      expires_at: firstOTP.expires_at,
+      created_at: firstOTP.created_at,
+      has_password_hash: !!firstOTP.password_hash,
+      expired: new Date(firstOTP.expires_at) < new Date()
+    });
+
+    // Check if OTP is expired
+    if (new Date(firstOTP.expires_at) < new Date()) {
+      console.error('❌ OTP has expired at:', firstOTP.expires_at);
+      return new Response(JSON.stringify({ 
+        error: 'Verification code has expired. Please request a new code.' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Check if OTP was already verified
+    if (firstOTP.verified) {
+      console.error('❌ OTP was already verified');
+      return new Response(JSON.stringify({ 
+        error: 'Verification code has already been used. Please request a new code.' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Now verify the OTP code using the database function
+    console.log('🔍 Verifying OTP code with input:', otp);
     const { data: otpRecords, error: fetchError } = await supabase.rpc('verify_otp_code', {
       search_email: email,
       input_otp: otp
@@ -54,12 +118,24 @@ const handler = async (req: Request): Promise<Response> => {
       error: fetchError?.message || 'none' 
     });
 
-    if (fetchError || !otpRecords || otpRecords.length === 0) {
-      console.error('❌ Invalid or expired OTP:', fetchError?.message);
-      return new Response(
-        JSON.stringify({ error: 'Invalid or expired verification code' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    if (fetchError) {
+      console.error('❌ Database error during OTP verification:', fetchError);
+      return new Response(JSON.stringify({ 
+        error: 'Database verification error' 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!otpRecords || otpRecords.length === 0) {
+      console.error('❌ OTP code does not match. Input OTP:', otp);
+      return new Response(JSON.stringify({ 
+        error: 'Invalid verification code. Please check the code and try again.' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const otpRecord = otpRecords[0];
