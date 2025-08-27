@@ -156,6 +156,17 @@ export const VideoStream = ({
       // Fallback to regular MP4
       video.src = src;
       handleLoadStart();
+      
+      if (autoPlay) {
+        video.addEventListener('loadeddata', () => {
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch((error) => {
+              console.log('MP4 autoplay prevented:', error);
+            });
+          }
+        }, { once: true });
+      }
     }
 
     // Video event listeners
@@ -205,10 +216,11 @@ export const VideoStream = ({
         ref={videoRef}
         className={`w-full h-full ${className}`}
         poster={poster}
+        autoPlay={autoPlay}
         muted={muted}
         loop={loop}
         playsInline={playsInline}
-        preload="none"
+        preload={autoPlay ? 'auto' : 'metadata'}
         style={style}
       >
         {!isIntersecting && (
