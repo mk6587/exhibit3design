@@ -152,10 +152,20 @@ export const VideoStream = ({
       // Native HLS support (Safari)
       video.src = streamUrl;
       handleLoadStart();
+      
+      if (autoPlay) {
+        video.addEventListener('loadeddata', () => {
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch((error) => {
+              console.log('HLS autoplay prevented:', error);
+            });
+          }
+        }, { once: true });
+      }
     } else {
       // Fallback to regular MP4
       video.src = src;
-      handleLoadStart();
       
       if (autoPlay) {
         video.addEventListener('loadeddata', () => {
@@ -169,15 +179,13 @@ export const VideoStream = ({
       }
     }
 
-    // Video event listeners
+    // Video event listeners (avoid duplicate handleLoadStart)
     video.addEventListener('loadeddata', handleLoadedData);
     video.addEventListener('error', handleError);
-    video.addEventListener('loadstart', handleLoadStart);
 
     return () => {
       video.removeEventListener('loadeddata', handleLoadedData);
       video.removeEventListener('error', handleError);
-      video.removeEventListener('loadstart', handleLoadStart);
       
       if (hlsRef.current) {
         hlsRef.current.destroy();
