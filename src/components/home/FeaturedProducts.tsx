@@ -56,28 +56,32 @@ const FeaturedProducts = () => {
   return <>
       {/* Full-width hero section */}
       <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
-        {hasVideo && videoUrl ?
-      // Show video directly without complex wrapper for debugging
-      <>
-            <video className="w-full h-full object-cover" style={{
-          objectPosition: 'center center'
-        }} autoPlay loop muted playsInline preload="metadata" onLoadStart={() => {
-          console.log('Video load started');
-          setIsVideoLoaded(false);
-        }} onLoadedData={() => {
-          console.log('Video loaded successfully');
-          setIsVideoLoaded(true);
-        }} onError={error => {
-          console.error('Video loading error:', error);
-          console.error('Video URL:', videoUrl);
-        }} onCanPlay={() => {
-          console.log('Video can start playing');
-        }}>
-              <source src={videoUrl} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+        {hasVideo && videoUrl ? (
+          <>
+            <VideoStream
+              src={videoUrl}
+              className="w-full h-full object-cover"
+              style={{ objectPosition: 'center center' }}
+              autoPlay
+              loop
+              muted
+              playsInline
+              onLoadStart={() => {
+                console.log('Video load started');
+                setIsVideoLoaded(false);
+              }}
+              onLoadedData={() => {
+                console.log('Video loaded successfully');
+                setIsVideoLoaded(true);
+              }}
+              onError={(error) => {
+                console.error('Video loading error:', error);
+                console.error('Video URL:', videoUrl);
+              }}
+            />
             <div className="absolute inset-0 bg-black/20" />
-          </> :
+          </>
+        ) :
       // Fallback to beautiful hero image
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
         backgroundImage: `url("https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=600&fit=crop&crop=center&auto=format&q=80")`
