@@ -29,6 +29,7 @@ const AdminProductCreatePage = () => {
   });
   
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [specificImageUrl, setSpecificImageUrl] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
   if (!isAuthenticated) {
@@ -144,8 +145,8 @@ const AdminProductCreatePage = () => {
                 <ProductImagesTab 
                   imageUrls={imageUrls}
                   onImageUrlsChange={setImageUrls}
-                  specificImageUrl=""
-                  onSpecificImageUrlChange={() => {}}
+                  specificImageUrl={specificImageUrl}
+                  onSpecificImageUrlChange={setSpecificImageUrl}
                 />
               </TabsContent>
             </Tabs>
