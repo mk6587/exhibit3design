@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, ReactNode, useState, useCallback } from 'react';
-import { useSupabaseProducts, Product } from '@/hooks/useSupabaseProducts';
+import { useSupabaseProducts } from '@/hooks/useSupabaseProducts';
+import { Product } from '@/types/product';
 import { toast } from 'sonner';
 
 export interface CartItem {

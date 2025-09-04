@@ -2,19 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-export interface Product {
-  id: number;
-  title: string;
-  price: number;
-  memo?: string;
-  specifications: string;
-  images: string[];
-  tags: string[];
-  featured: boolean;
-  created_at?: string;
-  updated_at?: string;
-}
+import { Product } from '@/types/product';
 
 // Simple fallback data
 const fallbackProducts: Product[] = [
