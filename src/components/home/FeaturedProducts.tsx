@@ -16,8 +16,8 @@ const FeaturedProducts = () => {
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
 
-  // Your specific video URL
-  const videoUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/sign/video/veo3.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lYzgzYjYzNC0xYmM0LTQyNDktOTE5OS03Y2ZhMWViZTRhNmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlby92ZW8zLm1wNCIsImlhdCI6MTc1NTE4NDM5MCwiZXhwIjoyMDcwNTQ0MzkwfQ.dblLLoiM3qAh9QYveO0a4e9FbDiKjBVvard_Yvslado";
+  // Your specific video URL - now using public bucket for faster loading
+  const videoUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos-public/veo3.mp4";
   const hasVideo = true; // Since we have a direct video URL
 
   if (loading) {
