@@ -123,9 +123,19 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
     });
   };
 
+  const convertGoogleDriveUrl = (url: string): string => {
+    // Convert Google Drive sharing URL to direct image URL
+    const driveMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (driveMatch) {
+      return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+    }
+    return url;
+  };
+
   const handleAddSpecificUrl = () => {
     if (specificImageUrl.trim()) {
-      onImageUrlsChange([...imageUrls, specificImageUrl.trim()]);
+      const processedUrl = convertGoogleDriveUrl(specificImageUrl.trim());
+      onImageUrlsChange([...imageUrls, processedUrl]);
       onSpecificImageUrlChange('');
       
       toast({
