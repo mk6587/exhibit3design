@@ -27,7 +27,6 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signInWithGoogle: () => Promise<{ error: any }>;
-  signInWithApple: () => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
@@ -376,29 +375,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const signInWithApple = async () => {
-    console.log(`[${new Date().toISOString()}] 🔑 AUTH: Starting Apple OAuth signin`);
-    
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'apple',
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        }
-      });
-
-      if (error) {
-        console.error(`[${new Date().toISOString()}] ❌ AUTH: Apple signin failed:`, error);
-        return { error };
-      }
-
-      console.log(`[${new Date().toISOString()}] ✅ AUTH: Apple OAuth initiated successfully`);
-      return { error: null };
-    } catch (error) {
-      console.error(`[${new Date().toISOString()}] ❌ AUTH: Apple signin exception:`, error);
-      return { error: { message: 'Failed to sign in with Apple. Please try again.' } };
-    }
-  };
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -460,7 +436,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signUp,
     signIn,
     signInWithGoogle,
-    signInWithApple,
     signOut,
     resetPassword,
     updateProfile,
