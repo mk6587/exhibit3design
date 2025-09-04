@@ -27,15 +27,15 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
 
 
   const addTag = (tag: string) => {
-    if (tag.trim() && !(product.tags || []).includes(tag.trim())) {
-      onProductChange({...product, tags: [...(product.tags || []), tag.trim()]});
+    if (tag.trim() && !product.tags.includes(tag.trim())) {
+      onProductChange({...product, tags: [...product.tags, tag.trim()]});
     }
     setTagInput('');
     setShowSuggestions(false);
   };
 
   const removeTag = (tagToRemove: string) => {
-    onProductChange({...product, tags: (product.tags || []).filter(tag => tag !== tagToRemove)});
+    onProductChange({...product, tags: product.tags.filter(tag => tag !== tagToRemove)});
   };
 
   const handleTagInputKeyPress = (e: React.KeyboardEvent) => {
@@ -64,9 +64,8 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
           <Input
             id="price"
             type="number"
-            step="0.01"
             value={product.price}
-            onChange={(e) => onProductChange({...product, price: parseFloat(e.target.value) || 0})}
+            onChange={(e) => onProductChange({...product, price: parseInt(e.target.value)})}
           />
         </div>
         <div>
@@ -83,9 +82,9 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
           <Label htmlFor="tags">Tags</Label>
           
           {/* Current Tags Display */}
-          {(product.tags || []).length > 0 && (
+          {product.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {(product.tags || []).map((tag) => (
+              {product.tags.map((tag) => (
                 <Badge key={tag} variant="secondary" className="flex items-center gap-1">
                   {tag}
                   <X 

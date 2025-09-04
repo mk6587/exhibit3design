@@ -33,25 +33,8 @@ const ProductSpecificationsTab: React.FC<ProductSpecificationsTabProps> = ({
   onProductChange
 }) => {
   // Parse existing specifications or use defaults
-  const parseSpecifications = (specs: string | null): StandSpecifications => {
+  const parseSpecifications = (specs: string): StandSpecifications => {
     try {
-      if (!specs) {
-        return {
-          dimensions: '',
-          height: '',
-          layout: '',
-          lighting: '',
-          specifications: {
-            infoDesk: false,
-            storage: false,
-            screen: false,
-            kitchen: false,
-            seatingArea: false,
-            meetingRoom: false,
-            hangingBanner: false,
-          }
-        };
-      }
       return JSON.parse(specs);
     } catch {
       return {

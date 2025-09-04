@@ -123,54 +123,15 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
     });
   };
 
-  const convertGoogleDriveUrl = (url: string): string => {
-    // Convert Google Drive sharing URL to direct image URL
-    const driveMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (driveMatch) {
-      // Try the thumbnail version for better compatibility
-      return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1000`;
-    }
-    return url;
-  };
-
-  const validateImageUrl = async (url: string): Promise<boolean> => {
-    try {
-      const response = await fetch(url, { method: 'HEAD' });
-      const contentType = response.headers.get('content-type');
-      return response.ok && contentType?.startsWith('image/');
-    } catch {
-      return false;
-    }
-  };
-
-  const handleAddSpecificUrl = async () => {
+  const handleAddSpecificUrl = () => {
     if (specificImageUrl.trim()) {
-      const processedUrl = convertGoogleDriveUrl(specificImageUrl.trim());
+      onImageUrlsChange([...imageUrls, specificImageUrl.trim()]);
+      onSpecificImageUrlChange('');
       
-      // Show loading state
       toast({
-        title: "Validating Image",
-        description: "Checking if the URL is accessible...",
+        title: "Image URL Added",
+        description: "Image URL has been added to the gallery.",
       });
-
-      // Validate the URL
-      const isValid = await validateImageUrl(processedUrl);
-      
-      if (isValid) {
-        onImageUrlsChange([...imageUrls, processedUrl]);
-        onSpecificImageUrlChange('');
-        
-        toast({
-          title: "Image URL Added",
-          description: "Image URL has been validated and added to the gallery.",
-        });
-      } else {
-        toast({
-          title: "Invalid Image URL",
-          description: "The URL doesn't point to a valid image or isn't publicly accessible. Please check the sharing permissions or try a different URL.",
-          variant: "destructive",
-        });
-      }
     }
   };
 

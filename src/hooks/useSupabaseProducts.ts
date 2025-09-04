@@ -2,7 +2,19 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Product } from '@/types/product';
+
+export interface Product {
+  id: number;
+  title: string;
+  price: number;
+  memo?: string;
+  specifications: string;
+  images: string[];
+  tags: string[];
+  featured: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
 
 // Simple fallback data
 const fallbackProducts: Product[] = [
@@ -143,27 +155,22 @@ export const useSupabaseProducts = () => {
     try {
       console.log('🔄 Creating product with data:', newProduct);
       
-      // Ensure proper data types for database insertion
-      const productData = {
-        title: newProduct.title,
-        price: Number(newProduct.price),
-        memo: newProduct.memo || null,
-        specifications: newProduct.specifications || null,
-        images: newProduct.images || [],
-        tags: newProduct.tags || [],
-        featured: newProduct.featured || false
-      };
-      
-      console.log('🔄 Processed product data for DB:', productData);
-      
       const { data, error } = await supabase
         .from('products')
-        .insert(productData)
+        .insert({
+          title: newProduct.title,
+          price: newProduct.price,
+          memo: newProduct.memo,
+          specifications: newProduct.specifications,
+          images: newProduct.images,
+          tags: newProduct.tags,
+          featured: newProduct.featured
+        })
         .select();
 
       if (error) {
-        console.error('❌ Supabase error details:', error.message, error.details, error.hint);
-        throw new Error(`Database error: ${error.message}`);
+        console.error('❌ Supabase error:', error);
+        throw error;
       }
 
       if (!data || data.length === 0) {
@@ -183,10 +190,9 @@ export const useSupabaseProducts = () => {
       return createdProduct;
     } catch (error) {
       console.error('💥 Error creating product:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       toast({
         title: "Error",
-        description: `Failed to create product: ${errorMessage}`,
+        description: "Failed to create product",
         variant: "destructive",
       });
       throw error;

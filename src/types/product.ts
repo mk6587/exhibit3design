@@ -3,13 +3,13 @@ export interface Product {
   id: number;
   title: string;
   price: number;
-  memo?: string | null;
-  specifications?: string | null;
-  images?: string[] | null;
-  tags?: string[] | null;
-  featured?: boolean | null;
-  created_at?: string | null;
-  updated_at?: string | null;
+  memo?: string;
+  specifications: string;
+  images: string[];
+  tags: string[];
+  featured: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface StandSpecifications {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useProducts } from '@/contexts/ProductsContext';
-import { Product } from '@/types/product';
+import { Product } from '@/hooks/useSupabaseProducts';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -22,14 +22,13 @@ const AdminProductCreatePage = () => {
     title: '',
     price: 0,
     memo: '',
-    specifications: null,
+    specifications: '',
     images: [],
     tags: [],
     featured: false
   });
   
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [specificImageUrl, setSpecificImageUrl] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
   if (!isAuthenticated) {
@@ -52,17 +51,11 @@ const AdminProductCreatePage = () => {
         return;
       }
 
-      // Prepare product data with proper structure
+      // Update product with current image URLs
       const productToSave = {
         ...product,
-        images: imageUrls,
-        specifications: product.specifications || null,
-        memo: product.memo || null,
-        tags: product.tags || [],
-        featured: product.featured || false
+        images: imageUrls
       };
-
-      console.log('🔄 Creating product with data:', productToSave);
 
       const createdProduct = await createProduct(productToSave);
       
@@ -73,10 +66,8 @@ const AdminProductCreatePage = () => {
         navigate('/admin/dashboard');
       }
     } catch (error) {
-      console.error('💥 Error creating product - Full error:', error);
-      console.error('💥 Error message:', error?.message || 'Unknown error');
-      console.error('💥 Error details:', JSON.stringify(error, null, 2));
-      toast.error(`Failed to create product: ${error?.message || 'Unknown error'}`);
+      console.error('Error creating product:', error);
+      toast.error('Failed to create product');
     } finally {
       setIsSaving(false);
     }
@@ -153,8 +144,8 @@ const AdminProductCreatePage = () => {
                 <ProductImagesTab 
                   imageUrls={imageUrls}
                   onImageUrlsChange={setImageUrls}
-                  specificImageUrl={specificImageUrl}
-                  onSpecificImageUrlChange={setSpecificImageUrl}
+                  specificImageUrl=""
+                  onSpecificImageUrlChange={() => {}}
                 />
               </TabsContent>
             </Tabs>
