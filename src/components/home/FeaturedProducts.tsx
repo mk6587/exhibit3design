@@ -17,7 +17,7 @@ const FeaturedProducts = () => {
   const featuredProducts = products.filter(product => product.featured);
 
   // Your specific video URL - now using public bucket for faster loading
-  const videoUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos-public/veo3.mp4";
+  const videoUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos-public/exhibit_hp_video.mp4";
   const hasVideo = true; // Since we have a direct video URL
 
   if (loading) {
