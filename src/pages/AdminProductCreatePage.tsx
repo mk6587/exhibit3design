@@ -52,11 +52,17 @@ const AdminProductCreatePage = () => {
         return;
       }
 
-      // Update product with current image URLs
+      // Prepare product data with proper structure
       const productToSave = {
         ...product,
-        images: imageUrls
+        images: imageUrls,
+        specifications: product.specifications || '{}', // Ensure valid JSON string
+        memo: product.memo || '',
+        tags: product.tags || [],
+        featured: product.featured || false
       };
+
+      console.log('🔄 Creating product with data:', productToSave);
 
       const createdProduct = await createProduct(productToSave);
       
@@ -67,8 +73,10 @@ const AdminProductCreatePage = () => {
         navigate('/admin/dashboard');
       }
     } catch (error) {
-      console.error('Error creating product:', error);
-      toast.error('Failed to create product');
+      console.error('💥 Error creating product - Full error:', error);
+      console.error('💥 Error message:', error?.message || 'Unknown error');
+      console.error('💥 Error details:', JSON.stringify(error, null, 2));
+      toast.error(`Failed to create product: ${error?.message || 'Unknown error'}`);
     } finally {
       setIsSaving(false);
     }

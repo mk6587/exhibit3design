@@ -64,8 +64,9 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
           <Input
             id="price"
             type="number"
+            step="0.01"
             value={product.price}
-            onChange={(e) => onProductChange({...product, price: parseInt(e.target.value)})}
+            onChange={(e) => onProductChange({...product, price: parseFloat(e.target.value) || 0})}
           />
         </div>
         <div>
