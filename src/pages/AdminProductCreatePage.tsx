@@ -22,7 +22,7 @@ const AdminProductCreatePage = () => {
     title: '',
     price: 0,
     memo: '',
-    specifications: '',
+    specifications: null,
     images: [],
     tags: [],
     featured: false
@@ -56,8 +56,8 @@ const AdminProductCreatePage = () => {
       const productToSave = {
         ...product,
         images: imageUrls,
-        specifications: product.specifications || '{}', // Ensure valid JSON string
-        memo: product.memo || '',
+        specifications: product.specifications || null,
+        memo: product.memo || null,
         tags: product.tags || [],
         featured: product.featured || false
       };

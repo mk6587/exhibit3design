@@ -143,22 +143,27 @@ export const useSupabaseProducts = () => {
     try {
       console.log('🔄 Creating product with data:', newProduct);
       
+      // Ensure proper data types for database insertion
+      const productData = {
+        title: newProduct.title,
+        price: Number(newProduct.price),
+        memo: newProduct.memo || null,
+        specifications: newProduct.specifications || null,
+        images: newProduct.images || [],
+        tags: newProduct.tags || [],
+        featured: newProduct.featured || false
+      };
+      
+      console.log('🔄 Processed product data for DB:', productData);
+      
       const { data, error } = await supabase
         .from('products')
-        .insert({
-          title: newProduct.title,
-          price: newProduct.price,
-          memo: newProduct.memo,
-          specifications: newProduct.specifications,
-          images: newProduct.images,
-          tags: newProduct.tags,
-          featured: newProduct.featured
-        })
+        .insert(productData)
         .select();
 
       if (error) {
-        console.error('❌ Supabase error:', error);
-        throw error;
+        console.error('❌ Supabase error details:', error.message, error.details, error.hint);
+        throw new Error(`Database error: ${error.message}`);
       }
 
       if (!data || data.length === 0) {
@@ -178,9 +183,10 @@ export const useSupabaseProducts = () => {
       return createdProduct;
     } catch (error) {
       console.error('💥 Error creating product:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       toast({
         title: "Error",
-        description: "Failed to create product",
+        description: `Failed to create product: ${errorMessage}`,
         variant: "destructive",
       });
       throw error;
