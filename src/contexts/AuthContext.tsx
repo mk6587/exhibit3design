@@ -355,10 +355,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     console.log(`[${new Date().toISOString()}] 🔑 AUTH: Starting Google OAuth signin`);
     
     try {
+      // If on checkout page, redirect back to checkout to preserve cart
+      const isOnCheckout = window.location.pathname === '/checkout';
+      const redirectUrl = isOnCheckout 
+        ? `${window.location.origin}/checkout`
+        : `${window.location.origin}/`;
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo: redirectUrl,
         }
       });
 
