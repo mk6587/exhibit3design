@@ -47,6 +47,48 @@ export type Database = {
         }
         Relationships: []
       }
+      designers: {
+        Row: {
+          bio: string | null
+          business_name: string | null
+          commission_rate: number | null
+          created_at: string
+          id: string
+          is_active: boolean
+          is_approved: boolean
+          portfolio_url: string | null
+          specialties: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          business_name?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_approved?: boolean
+          portfolio_url?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          business_name?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_approved?: boolean
+          portfolio_url?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       guest_checkout_sessions: {
         Row: {
           created_at: string
@@ -526,6 +568,14 @@ export type Database = {
       }
       is_current_user_admin: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_current_user_designer: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_designer: {
+        Args: { user_id_param: string }
         Returns: boolean
       }
       mark_otp_verified_and_cleanup: {

@@ -19,10 +19,25 @@ interface Profile {
   updated_at: string;
 }
 
+interface DesignerProfile {
+  id: string;
+  user_id: string;
+  business_name?: string;
+  portfolio_url?: string;
+  bio?: string;
+  specialties?: string[];
+  commission_rate: number;
+  is_active: boolean;
+  is_approved: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   profile: Profile | null;
+  designerProfile: DesignerProfile | null;
   loading: boolean;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
@@ -33,6 +48,10 @@ interface AuthContextType {
   refreshProfile: () => Promise<void>;
   // SSO Methods
   generateSSOToken: (redirectUrl?: string) => Promise<{ error: any; redirectUrl?: string }>;
+  // Designer Methods
+  becomeDesigner: (designerData: Partial<DesignerProfile>) => Promise<{ error: any }>;
+  updateDesignerProfile: (updates: Partial<DesignerProfile>) => Promise<{ error: any }>;
+  isDesigner: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -53,6 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [designerProfile, setDesignerProfile] = useState<DesignerProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Get user's location based on IP
@@ -100,6 +120,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return data;
     } catch (error) {
       console.error('Error fetching profile:', error);
+      return null;
+    }
+  };
+
+  // Fetch designer profile
+  const fetchDesignerProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('designers')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching designer profile:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error fetching designer profile:', error);
       return null;
     }
   };
@@ -158,6 +199,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (user) {
       const profileData = await fetchProfile(user.id);
       setProfile(profileData);
+      const designerData = await fetchDesignerProfile(user.id);
+      setDesignerProfile(designerData);
     }
   };
 
@@ -222,6 +265,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               }
               
               setProfile(profileData);
+
+              // Fetch designer profile
+              const designerData = await fetchDesignerProfile(session.user.id);
+              setDesignerProfile(designerData);
               
               // Check for guest session data to transfer
               const guestSessionToken = localStorage.getItem('guest_session_token');
@@ -245,10 +292,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             } catch (error) {
               console.error('Profile fetch error:', error);
               setProfile(null);
+              setDesignerProfile(null);
             }
           }, 0);
         } else {
           setProfile(null);
+          setDesignerProfile(null);
         }
         
         setLoading(false);
@@ -411,6 +460,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(null);
     setSession(null);
     setProfile(null);
+    setDesignerProfile(null);
   };
 
   const resetPassword = async (email: string) => {
@@ -500,11 +550,69 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  // Designer Methods
+  const becomeDesigner = async (designerData: Partial<DesignerProfile>) => {
+    if (!user) {
+      return { error: { message: 'User not authenticated' } };
+    }
+
+    try {
+      const { error } = await supabase
+        .from('designers')
+        .insert({
+          user_id: user.id,
+          ...designerData
+        });
+
+      if (error) {
+        console.error('Error creating designer profile:', error);
+        return { error };
+      }
+
+      // Refresh designer profile
+      const designerData_response = await fetchDesignerProfile(user.id);
+      setDesignerProfile(designerData_response);
+      return { error: null };
+    } catch (error) {
+      console.error('Error in becomeDesigner:', error);
+      return { error };
+    }
+  };
+
+  const updateDesignerProfile = async (updates: Partial<DesignerProfile>) => {
+    if (!user || !designerProfile) {
+      return { error: { message: 'User not authenticated or not a designer' } };
+    }
+
+    try {
+      const { error } = await supabase
+        .from('designers')
+        .update(updates)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error updating designer profile:', error);
+        return { error };
+      }
+
+      // Refresh designer profile
+      const designerData = await fetchDesignerProfile(user.id);
+      setDesignerProfile(designerData);
+      return { error: null };
+    } catch (error) {
+      console.error('Error in updateDesignerProfile:', error);
+      return { error };
+    }
+  };
+
+
+  const isDesigner = designerProfile?.is_active === true && designerProfile?.is_approved === true;
 
   const value = {
     user,
     session,
     profile,
+    designerProfile,
     loading,
     signUp,
     signIn,
@@ -514,6 +622,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     updateProfile,
     refreshProfile,
     generateSSOToken,
+    becomeDesigner,
+    updateDesignerProfile,
+    isDesigner,
   };
 
   return (

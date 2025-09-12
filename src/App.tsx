@@ -40,6 +40,7 @@ import AdminProductEditPage from "./pages/AdminProductEditPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
 import AdminSetupPage from "./pages/AdminSetupPage";
+import DesignerPage from "./pages/DesignerPage";
 
 import NotFound from "./pages/NotFound";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
@@ -116,6 +117,7 @@ const App = () => {
                         </ProtectedAdminRoute>
                       } />
                       <Route path="/admin-setup" element={<AdminSetupPage />} />
+                      <Route path="/designer" element={<DesignerPage />} />
                       <Route path="/sitemap.xml" element={<SitemapPage />} />
                       <Route path="/sso/login" element={<SSOLoginPage />} />
                       
