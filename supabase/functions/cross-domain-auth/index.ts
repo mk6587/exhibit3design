@@ -70,17 +70,48 @@ serve(async (req) => {
 
       // Create the redirect URL with token
       const targetUrl = new URL(redirectUrl || 'https://designers.exhibit3design.com')
+      
+      // Validate the target URL
+      if (!targetUrl.hostname || targetUrl.hostname === 'blank') {
+        console.error('Invalid redirect URL provided:', redirectUrl)
+        return new Response(
+          JSON.stringify({ error: 'Invalid redirect URL provided' }),
+          { status: 400, headers: corsHeaders }
+        )
+      }
+      
       targetUrl.searchParams.set('sso_token', crossDomainToken)
       targetUrl.searchParams.set('sso_user', user.id)
       targetUrl.searchParams.set('sso_email', user.email || '')
       targetUrl.searchParams.set('sso_expires', Math.floor(expiresAt.getTime() / 1000).toString())
 
-      console.log('Generated cross-domain token:', { token: crossDomainToken, userId: user.id, redirectUrl: targetUrl.toString() })
+      const finalRedirectUrl = targetUrl.toString()
+      
+      // Final validation of the complete URL
+      try {
+        const validateUrl = new URL(finalRedirectUrl)
+        if (!validateUrl.protocol.startsWith('http') || !validateUrl.hostname) {
+          throw new Error('Invalid final redirect URL')
+        }
+      } catch (validationError) {
+        console.error('Final URL validation failed:', finalRedirectUrl, validationError)
+        return new Response(
+          JSON.stringify({ error: 'Generated redirect URL is invalid' }),
+          { status: 500, headers: corsHeaders }
+        )
+      }
+
+      console.log('Generated cross-domain token:', { 
+        token: crossDomainToken, 
+        userId: user.id, 
+        redirectUrl: finalRedirectUrl,
+        originalRedirectUrl: redirectUrl 
+      })
 
       return new Response(
         JSON.stringify({ 
           success: true, 
-          redirectUrl: targetUrl.toString(),
+          redirectUrl: finalRedirectUrl,
           token: crossDomainToken,
           expiresAt: expiresAt.toISOString()
         }),
