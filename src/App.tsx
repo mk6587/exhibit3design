@@ -120,6 +120,7 @@ const App = () => {
                       <Route path="/designer" element={<DesignerPage />} />
                       <Route path="/sitemap.xml" element={<SitemapPage />} />
                       <Route path="/sso/login" element={<SSOLoginPage />} />
+                      <Route path="/sso-login" element={<SSOLoginPage />} />
                       
                       <Route path="*" element={<NotFound />} />
                     </Routes>
