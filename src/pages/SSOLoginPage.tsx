@@ -15,8 +15,8 @@ const SSOLoginPage = () => {
   const returnUrl = searchParams.get('return_url') || 'https://designers.exhibit3design.com';
 
   useEffect(() => {
-    // If not logged in, skip interstitial and go straight to login
-    if (!user) {
+    // If not logged in, immediately redirect to auth - no intermediate page
+    if (user === null) {
       console.log('🔐 SSO: No user - redirecting directly to /auth with stored return URL', { returnUrl });
       try {
         sessionStorage.setItem('sso_return_url', returnUrl);
@@ -26,9 +26,16 @@ const SSOLoginPage = () => {
     }
 
     // If user is already logged in, immediately redirect with SSO token
-    console.log('🔗 SSO: User detected, starting SSO redirect process', { user: user.email, returnUrl });
-    handleSSORedirect();
+    if (user) {
+      console.log('🔗 SSO: User detected, starting SSO redirect process', { user: user.email, returnUrl });
+      handleSSORedirect();
+    }
   }, [user]);
+
+  // Don't render anything if we're about to redirect
+  if (user === null) {
+    return null;
+  }
 
   const handleSSORedirect = async () => {
     if (!user) {
