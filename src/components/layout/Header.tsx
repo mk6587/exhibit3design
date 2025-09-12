@@ -45,7 +45,8 @@ const Header = () => {
           </Link>
           <a 
             href="https://designers.exhibit3design.com" 
-            className="text-sm font-medium text-primary hover:text-primary/80 transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full bg-primary/10 px-3 rounded-md"
+            className="text-sm font-medium text-white hover:text-white/90 transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full px-4 py-2 rounded-md font-semibold"
+            style={{ backgroundColor: '#2ed9f7' }}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -116,7 +117,8 @@ const Header = () => {
           </Link>
           <a 
             href="https://designers.exhibit3design.com" 
-            className="mobile-nav-item hover:bg-flat-hover transition-colors text-primary font-medium"
+            className="mobile-nav-item hover:bg-flat-hover transition-colors font-semibold text-white rounded-md mx-4 my-1 text-center"
+            style={{ backgroundColor: '#2ed9f7' }}
             onClick={() => setIsMenuOpen(false)}
             target="_blank"
             rel="noopener noreferrer"
