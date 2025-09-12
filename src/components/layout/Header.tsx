@@ -43,6 +43,14 @@ const Header = () => {
           <Link to="/faq" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
             FAQ
           </Link>
+          <a 
+            href="https://designers.exhibit3design.com" 
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full bg-primary/10 px-3 rounded-md"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Upload & Sell
+          </a>
           
         </nav>
         
@@ -106,6 +114,15 @@ const Header = () => {
           <Link to="/faq" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
             FAQ
           </Link>
+          <a 
+            href="https://designers.exhibit3design.com" 
+            className="mobile-nav-item hover:bg-flat-hover transition-colors text-primary font-medium"
+            onClick={() => setIsMenuOpen(false)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Upload & Sell
+          </a>
           
           
           {user ? <>
