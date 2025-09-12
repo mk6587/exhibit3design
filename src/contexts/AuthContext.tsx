@@ -31,6 +31,8 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<{ error: any }>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
   refreshProfile: () => Promise<void>;
+  // SSO Methods
+  generateSSOToken: (redirectUrl?: string) => Promise<{ error: any; redirectUrl?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -433,6 +435,38 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  // SSO Methods
+  const generateSSOToken = async (redirectUrl?: string) => {
+    console.log(`[${new Date().toISOString()}] 🔗 SSO: Generating cross-domain token`);
+    
+    if (!session?.access_token) {
+      return { error: { message: 'No active session found' } };
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('cross-domain-auth', {
+        body: { 
+          action: 'generate',
+          redirectUrl: redirectUrl || 'https://designers.exhibit3design.com'
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) {
+        console.error(`[${new Date().toISOString()}] ❌ SSO: Token generation failed:`, error);
+        return { error };
+      }
+
+      console.log(`[${new Date().toISOString()}] ✅ SSO: Token generated successfully`);
+      return { error: null, redirectUrl: data.redirectUrl };
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] ❌ SSO: Token generation exception:`, error);
+      return { error: { message: 'Failed to generate SSO token. Please try again.' } };
+    }
+  };
+
 
   const value = {
     user,
@@ -446,6 +480,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     resetPassword,
     updateProfile,
     refreshProfile,
+    generateSSOToken,
   };
 
   return (
