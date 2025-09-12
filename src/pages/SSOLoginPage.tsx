@@ -17,12 +17,14 @@ const SSOLoginPage = () => {
   useEffect(() => {
     // If user is already logged in, immediately redirect with SSO token
     if (user) {
+      console.log('🔗 SSO: User detected, starting SSO redirect process', { user: user.email, returnUrl });
       handleSSORedirect();
     }
   }, [user]);
 
   const handleSSORedirect = async () => {
     if (!user) {
+      console.log('❌ SSO: No user found, redirecting to auth');
       toast({
         title: "Authentication Required",
         description: "Please log in first to access the portal.",
@@ -32,30 +34,47 @@ const SSOLoginPage = () => {
       return;
     }
 
+    console.log('🚀 SSO: Starting token generation for user:', user.email);
     setLoading(true);
+    
     try {
       const { error, redirectUrl } = await generateSSOToken(returnUrl);
       
+      console.log('🔗 SSO: Token generation result:', { error, redirectUrl, hasRedirectUrl: !!redirectUrl });
+      
       if (error) {
+        console.error('❌ SSO: Token generation failed:', error);
         toast({
           title: "SSO Error",
           description: error.message || "Failed to generate SSO token. Please try again.",
           variant: "destructive",
         });
+        setLoading(false);
         return;
       }
 
       if (redirectUrl) {
-        // Redirect to the target site with SSO token
-        window.location.href = redirectUrl;
+        console.log('✅ SSO: Redirecting to:', redirectUrl);
+        // Add a small delay to ensure state updates
+        setTimeout(() => {
+          window.location.href = redirectUrl;
+        }, 100);
+      } else {
+        console.error('❌ SSO: No redirect URL returned');
+        toast({
+          title: "SSO Error",
+          description: "No redirect URL received. Please try again.",
+          variant: "destructive",
+        });
+        setLoading(false);
       }
     } catch (error) {
+      console.error('❌ SSO: Exception during token generation:', error);
       toast({
         title: "SSO Error", 
         description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
     }
   };
@@ -86,15 +105,14 @@ const SSOLoginPage = () => {
                 <div className="flex items-center justify-center">
                   <Loader2 className="h-6 w-6 animate-spin" />
                 </div>
-                {loading && (
-                  <Button 
-                    onClick={handleSSORedirect}
-                    disabled={loading}
-                    className="w-full"
-                  >
-                    Continue to Portal
-                  </Button>
-                )}
+                <Button 
+                  onClick={handleSSORedirect}
+                  disabled={loading}
+                  className="w-full"
+                  variant={loading ? "secondary" : "default"}
+                >
+                  {loading ? "Generating Token..." : "Continue to Portal"}
+                </Button>
               </div>
             ) : (
               <div className="space-y-4">
