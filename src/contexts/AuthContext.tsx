@@ -193,10 +193,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           const ssoReturnUrl = sessionStorage.getItem('sso_return_url');
           if (ssoReturnUrl) {
             sessionStorage.removeItem('sso_return_url');
-            // Redirect to SSO login page with return URL
-            setTimeout(() => {
-              window.location.href = `/sso/login?return_url=${encodeURIComponent(ssoReturnUrl)}`;
-            }, 1000);
+            // Generate SSO token immediately and redirect without interstitial
+            setTimeout(async () => {
+              try {
+                const { error, redirectUrl } = await generateSSOToken(ssoReturnUrl);
+                if (error) {
+                  console.error('❌ SSO: Auto-redirect after login failed:', error);
+                  toast({ title: 'SSO Error', description: error.message || 'Failed to continue to portal.', variant: 'destructive' });
+                  return;
+                }
+                if (redirectUrl) {
+                  window.location.href = redirectUrl;
+                }
+              } catch (e) {
+                console.error('❌ SSO: Exception during auto-redirect after login:', e);
+              }
+            }, 200);
           }
           
           // Handle profile fetching in background
