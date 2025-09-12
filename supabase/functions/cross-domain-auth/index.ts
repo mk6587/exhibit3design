@@ -49,18 +49,24 @@ serve(async (req) => {
       const crossDomainToken = crypto.randomUUID() + '-' + Date.now()
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
 
-      // Store token temporarily (you could use a dedicated table for this)
-      const tokenData = {
-        token: crossDomainToken,
-        user_id: user.id,
-        user_email: user.email,
-        expires_at: expiresAt.toISOString(),
-        redirect_url: redirectUrl || 'https://designers.exhibit3design.com',
-        created_at: new Date().toISOString()
-      }
+      // Store token in database
+      const { error: insertError } = await supabase
+        .from('sso_tokens')
+        .insert({
+          token: crossDomainToken,
+          user_id: user.id,
+          user_email: user.email || '',
+          redirect_url: redirectUrl || 'https://designers.exhibit3design.com',
+          expires_at: expiresAt.toISOString()
+        })
 
-      // For now, we'll store in a simple way - in production you might want a dedicated table
-      console.log('Generated cross-domain token:', { token: crossDomainToken, userId: user.id })
+      if (insertError) {
+        console.error('Failed to store SSO token:', insertError)
+        return new Response(
+          JSON.stringify({ error: 'Failed to generate SSO token' }),
+          { status: 500, headers: corsHeaders }
+        )
+      }
 
       // Create the redirect URL with token
       const targetUrl = new URL(redirectUrl || 'https://designers.exhibit3design.com')
@@ -68,6 +74,8 @@ serve(async (req) => {
       targetUrl.searchParams.set('sso_user', user.id)
       targetUrl.searchParams.set('sso_email', user.email || '')
       targetUrl.searchParams.set('sso_expires', Math.floor(expiresAt.getTime() / 1000).toString())
+
+      console.log('Generated cross-domain token:', { token: crossDomainToken, userId: user.id, redirectUrl: targetUrl.toString() })
 
       return new Response(
         JSON.stringify({ 
@@ -81,7 +89,10 @@ serve(async (req) => {
     }
 
     if (action === 'verify') {
-      // Verify cross-domain token and create session
+      // Clean up expired tokens first
+      await supabase.rpc('cleanup_expired_sso_tokens')
+
+      // Verify cross-domain token
       if (!token) {
         return new Response(
           JSON.stringify({ error: 'Token required' }),
@@ -89,28 +100,34 @@ serve(async (req) => {
         )
       }
 
-      // In a real implementation, you'd verify this against stored token data
-      // For now, we'll do basic validation
-      const [uuid, timestamp] = token.split('-')
-      if (!uuid || !timestamp) {
+      // Verify token against database
+      const { data: tokenData, error: tokenError } = await supabase
+        .from('sso_tokens')
+        .select('*')
+        .eq('token', token)
+        .eq('used', false)
+        .gt('expires_at', new Date().toISOString())
+        .single()
+
+      if (tokenError || !tokenData) {
+        console.error('Token verification failed:', tokenError)
         return new Response(
-          JSON.stringify({ error: 'Invalid token format' }),
+          JSON.stringify({ error: 'Invalid or expired token' }),
           { status: 400, headers: corsHeaders }
         )
       }
 
-      const tokenAge = Date.now() - parseInt(timestamp)
-      if (tokenAge > 10 * 60 * 1000) { // 10 minutes
-        return new Response(
-          JSON.stringify({ error: 'Token expired' }),
-          { status: 400, headers: corsHeaders }
-        )
-      }
+      // Mark token as used
+      await supabase
+        .from('sso_tokens')
+        .update({ used: true })
+        .eq('token', token)
 
-      // This is a simplified verification - in production you'd check against stored data
       return new Response(
         JSON.stringify({ 
           success: true, 
+          user_id: tokenData.user_id,
+          user_email: tokenData.user_email,
           message: 'Token verified successfully' 
         }),
         { headers: corsHeaders }
