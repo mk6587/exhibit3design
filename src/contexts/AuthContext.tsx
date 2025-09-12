@@ -461,7 +461,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const generateSSOToken = async (redirectUrl?: string) => {
     console.log(`[${new Date().toISOString()}] 🔗 SSO: Generating cross-domain token`);
     
-    if (!session?.access_token) {
+    let accessToken = session?.access_token;
+    if (!accessToken) {
+      // Try to rehydrate session to avoid race conditions on first load
+      const { data } = await supabase.auth.getSession();
+      if (data?.session?.access_token) {
+        setSession(data.session);
+        setUser(data.session.user);
+        accessToken = data.session.access_token;
+      }
+    }
+
+    if (!accessToken) {
       return { error: { message: 'No active session found' } };
     }
 
@@ -472,7 +483,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           redirectUrl: redirectUrl || 'https://designers.exhibit3design.com'
         },
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       });
 
