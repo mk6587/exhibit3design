@@ -70,10 +70,26 @@ const SSOLoginPage = () => {
 
       if (redirectUrl) {
         console.log('✅ SSO: Redirecting to:', redirectUrl);
-        // Add a small delay to ensure state updates
-        setTimeout(() => {
-          window.location.href = redirectUrl;
-        }, 100);
+        
+        // Validate the URL before redirecting
+        try {
+          const url = new URL(redirectUrl);
+          if (url.protocol === 'https:' || url.protocol === 'http:') {
+            console.log('✅ SSO: Valid URL, proceeding with redirect');
+            window.location.href = redirectUrl;
+          } else {
+            console.error('❌ SSO: Invalid URL protocol:', url.protocol);
+            throw new Error('Invalid redirect URL protocol');
+          }
+        } catch (urlError) {
+          console.error('❌ SSO: Invalid redirect URL:', redirectUrl, urlError);
+          toast({
+            title: "SSO Error",
+            description: "Invalid redirect URL received. Please try again.",
+            variant: "destructive",
+          });
+          setLoading(false);
+        }
       } else {
         console.error('❌ SSO: No redirect URL returned');
         toast({
