@@ -44,6 +44,7 @@ import AdminSetupPage from "./pages/AdminSetupPage";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import SitemapPage from "./pages/SitemapPage";
+import SSOLoginPage from "./pages/SSOLoginPage";
 import { hideWelcomeModals } from "./utils/hideWelcomeModal";
 
 const queryClient = new QueryClient();
@@ -114,6 +115,7 @@ const App = () => {
                       } />
                       <Route path="/admin-setup" element={<AdminSetupPage />} />
                       <Route path="/sitemap.xml" element={<SitemapPage />} />
+                      <Route path="/sso/login" element={<SSOLoginPage />} />
                       
                       <Route path="*" element={<NotFound />} />
                     </Routes>

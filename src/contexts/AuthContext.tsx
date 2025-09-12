@@ -189,6 +189,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
         
         if (session?.user) {
+          // Check for SSO return URL after login
+          const ssoReturnUrl = sessionStorage.getItem('sso_return_url');
+          if (ssoReturnUrl) {
+            sessionStorage.removeItem('sso_return_url');
+            // Redirect to SSO login page with return URL
+            setTimeout(() => {
+              window.location.href = `/sso/login?return_url=${encodeURIComponent(ssoReturnUrl)}`;
+            }, 1000);
+          }
+          
           // Handle profile fetching in background
           setTimeout(async () => {
             try {
