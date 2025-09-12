@@ -43,16 +43,10 @@ const Header = () => {
           <Link to="/faq" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
             FAQ
           </Link>
-          <Link 
-            to="/designer"
-            className="text-sm font-medium text-white hover:text-white/90 transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full px-4 py-2 rounded-md font-semibold backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-xl"
-            style={{ 
-              background: 'linear-gradient(135deg, #1cb5d1 0%, #0ea5e9 100%)',
-              boxShadow: '0 4px 15px rgba(46, 217, 247, 0.3)'
-            }}
-          >
-            Become a Designer
-          </Link>
+          <Link to="/designer" className="text-sm font-medium text-white hover:text-white/90 transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full px-4 py-2 rounded-md font-semibold backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-xl" style={{
+          background: 'linear-gradient(135deg, #1cb5d1 0%, #0ea5e9 100%)',
+          boxShadow: '0 4px 15px rgba(46, 217, 247, 0.3)'
+        }}>Upload &amp; Sell</Link>
           
         </nav>
         
@@ -70,11 +64,7 @@ const Header = () => {
                   <User className="h-5 w-5" />
                 </Link>
               </Button>
-              <SSOButton 
-                variant="outline" 
-                label="Designers"
-                targetDomain="https://designers.exhibit3design.com"
-              />
+              <SSOButton variant="outline" label="Designers" targetDomain="https://designers.exhibit3design.com" />
               <Button variant="ghost" size="icon" onClick={handleSignOut} className="hidden md:flex">
                 <LogOut className="h-5 w-5" />
               </Button>
@@ -116,15 +106,10 @@ const Header = () => {
           <Link to="/faq" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
             FAQ
           </Link>
-          <Link 
-            to="/designer"
-            className="mobile-nav-item transition-colors font-semibold text-white rounded-md mx-4 my-1 text-center backdrop-blur-sm border border-white/20 shadow-lg"
-            style={{ 
-              background: 'linear-gradient(135deg, #1cb5d1 0%, #0ea5e9 100%)',
-              boxShadow: '0 4px 15px rgba(46, 217, 247, 0.3)'
-            }}
-            onClick={() => setIsMenuOpen(false)}
-          >
+          <Link to="/designer" className="mobile-nav-item transition-colors font-semibold text-white rounded-md mx-4 my-1 text-center backdrop-blur-sm border border-white/20 shadow-lg" style={{
+          background: 'linear-gradient(135deg, #1cb5d1 0%, #0ea5e9 100%)',
+          boxShadow: '0 4px 15px rgba(46, 217, 247, 0.3)'
+        }} onClick={() => setIsMenuOpen(false)}>
             Become a Designer
           </Link>
           
@@ -136,11 +121,7 @@ const Header = () => {
               </Link>
               <div className="mobile-nav-item hover:bg-flat-hover transition-colors flex items-center w-full">
                 <ExternalLink className="h-5 w-5 mr-3" />
-                <SSOButton 
-                  variant="ghost" 
-                  label="Designers Portal"
-                  targetDomain="https://designers.exhibit3design.com"
-                />
+                <SSOButton variant="ghost" label="Designers Portal" targetDomain="https://designers.exhibit3design.com" />
               </div>
               <button onClick={handleSignOut} className="mobile-nav-item hover:bg-flat-hover transition-colors text-left flex items-center w-full">
                 <LogOut className="h-5 w-5 mr-3" />
