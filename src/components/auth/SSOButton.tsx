@@ -20,11 +20,12 @@ export const SSOButton = ({
 
   const handleSSORedirect = async () => {
     if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in first to access the designers portal.",
-        variant: "destructive",
-      });
+      // Store the target domain as referer for after login
+      sessionStorage.setItem('sso_referer', targetDomain);
+      
+      // Redirect to login page with referer
+      const loginUrl = `/auth?returnUrl=${encodeURIComponent(window.location.href)}&referer=${encodeURIComponent(targetDomain)}`;
+      window.location.href = loginUrl;
       return;
     }
 

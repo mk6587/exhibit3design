@@ -30,6 +30,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   
   const { signIn, signUp, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
+  
+  // Check for SSO referer parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const ssoReferer = urlParams.get('referer') || sessionStorage.getItem('sso_referer');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +53,17 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         } else {
           toast.success('Welcome back!');
           onSuccess?.();
-          navigate(redirectTo);
+          
+          // Check for SSO referer redirect
+          if (ssoReferer) {
+            // Clear the stored referer
+            sessionStorage.removeItem('sso_referer');
+            // Generate SSO token and redirect to referer domain
+            const ssoUrl = `/sso-login?return_url=${encodeURIComponent(ssoReferer)}`;
+            navigate(ssoUrl);
+          } else {
+            navigate(redirectTo);
+          }
         }
       } else {
         const { error } = await signUp(email, password);
@@ -58,6 +72,15 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         } else {
           toast.success('Account created! Please check your email to verify your account.');
           onSuccess?.();
+          
+          // Check for SSO referer redirect
+          if (ssoReferer) {
+            // Clear the stored referer
+            sessionStorage.removeItem('sso_referer');
+            // Generate SSO token and redirect to referer domain
+            const ssoUrl = `/sso-login?return_url=${encodeURIComponent(ssoReferer)}`;
+            navigate(ssoUrl);
+          }
         }
       }
     } catch (error) {
@@ -70,6 +93,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
+      // Store SSO referer for Google auth callback
+      if (ssoReferer) {
+        sessionStorage.setItem('sso_referer', ssoReferer);
+      }
+      
       const { error } = await signInWithGoogle();
       if (error) {
         toast.error(error.message);

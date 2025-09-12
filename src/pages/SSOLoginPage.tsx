@@ -12,7 +12,7 @@ const SSOLoginPage = () => {
   const { user, generateSSOToken } = useAuth();
   const [loading, setLoading] = useState(false);
   
-  const returnUrl = searchParams.get('return_url') || 'https://designers.exhibit3design.com';
+  const returnUrl = searchParams.get('return_url') || searchParams.get('referer') || 'https://designers.exhibit3design.com';
 
   useEffect(() => {
     // If not logged in, immediately redirect to auth - no intermediate page
