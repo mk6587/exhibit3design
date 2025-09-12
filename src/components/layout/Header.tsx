@@ -45,8 +45,11 @@ const Header = () => {
           </Link>
           <a 
             href="https://designers.exhibit3design.com" 
-            className="text-sm font-medium text-white hover:text-white/90 transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full px-4 py-2 rounded-md font-semibold"
-            style={{ backgroundColor: '#2ed9f7' }}
+            className="text-sm font-medium text-white hover:text-white/90 transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full px-4 py-2 rounded-md font-semibold backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-xl"
+            style={{ 
+              background: 'linear-gradient(135deg, #1cb5d1 0%, #0ea5e9 100%)',
+              boxShadow: '0 4px 15px rgba(46, 217, 247, 0.3)'
+            }}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -117,8 +120,11 @@ const Header = () => {
           </Link>
           <a 
             href="https://designers.exhibit3design.com" 
-            className="mobile-nav-item hover:bg-flat-hover transition-colors font-semibold text-white rounded-md mx-4 my-1 text-center"
-            style={{ backgroundColor: '#2ed9f7' }}
+            className="mobile-nav-item transition-colors font-semibold text-white rounded-md mx-4 my-1 text-center backdrop-blur-sm border border-white/20 shadow-lg"
+            style={{ 
+              background: 'linear-gradient(135deg, #1cb5d1 0%, #0ea5e9 100%)',
+              boxShadow: '0 4px 15px rgba(46, 217, 247, 0.3)'
+            }}
             onClick={() => setIsMenuOpen(false)}
             target="_blank"
             rel="noopener noreferrer"
