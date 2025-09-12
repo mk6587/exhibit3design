@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SSO Bridge</title>
+  <meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+  <script>
+    // This page acts as a bridge for cross-domain SSO communication
+    console.log('🌉 SSO Bridge: Loaded on', window.location.origin);
+    
+    // Function to check login status from main site
+    async function checkMainSiteLoginStatus() {
+      return new Promise((resolve) => {
+        const requestId = Math.random().toString(36).substr(2, 9);
+        const timeout = setTimeout(() => {
+          resolve({ authenticated: false, message: 'Timeout' });
+        }, 5000);
+        
+        // Listen for response
+        const responseHandler = (event) => {
+          if (event.origin !== 'https://exhibit3design.com') return;
+          if (event.data.type !== 'SSO_STATUS_RESPONSE') return;
+          if (event.data.requestId !== requestId) return;
+          
+          clearTimeout(timeout);
+          window.removeEventListener('message', responseHandler);
+          resolve(event.data);
+        };
+        
+        window.addEventListener('message', responseHandler);
+        
+        // Send request to main site
+        try {
+          const mainSiteFrame = window.parent;
+          if (mainSiteFrame) {
+            mainSiteFrame.postMessage({
+              type: 'SSO_STATUS_CHECK',
+              requestId: requestId
+            }, 'https://exhibit3design.com');
+          } else {
+            // Try to open main site temporarily
+            const mainSiteWindow = window.open('https://exhibit3design.com', '_blank', 'width=1,height=1');
+            if (mainSiteWindow) {
+              setTimeout(() => {
+                mainSiteWindow.postMessage({
+                  type: 'SSO_STATUS_CHECK',
+                  requestId: requestId
+                }, 'https://exhibit3design.com');
+              }, 1000);
+              
+              setTimeout(() => {
+                if (!mainSiteWindow.closed) {
+                  mainSiteWindow.close();
+                }
+              }, 6000);
+            }
+          }
+        } catch (error) {
+          clearTimeout(timeout);
+          window.removeEventListener('message', responseHandler);
+          resolve({ authenticated: false, message: 'Cross-origin error' });
+        }
+      });
+    }
+    
+    // Make function available globally
+    window.checkMainSiteLoginStatus = checkMainSiteLoginStatus;
+    
+    // Auto-check on load if requested
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('autoCheck') === 'true') {
+      checkMainSiteLoginStatus().then(result => {
+        console.log('🔍 SSO Bridge: Auto-check result:', result);
+        
+        // Post result to parent
+        if (window.parent !== window) {
+          window.parent.postMessage({
+            type: 'SSO_AUTO_CHECK_RESULT',
+            ...result
+          }, '*');
+        }
+        
+        // If authenticated and has auto-login URL, redirect
+        if (result.authenticated && result.autoLoginUrl) {
+          console.log('🔗 SSO Bridge: Redirecting to auto-login URL');
+          window.location.href = result.autoLoginUrl;
+        }
+      });
+    }
+  </script>
+</body>
+</html>

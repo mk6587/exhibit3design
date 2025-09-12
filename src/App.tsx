@@ -46,6 +46,7 @@ import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import SitemapPage from "./pages/SitemapPage";
 import SSOLoginPage from "./pages/SSOLoginPage";
 import { hideWelcomeModals } from "./utils/hideWelcomeModal";
+import { SSOSync } from "@/components/auth/SSOSync";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ const App = () => {
                     <ScrollToTop />
                     <Toaster />
                     <Sonner />
+                    <SSOSync />
                     <Routes>
                       <Route path="/" element={
                         <>
