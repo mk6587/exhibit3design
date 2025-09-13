@@ -56,12 +56,25 @@ const SSOLoginPage = () => {
     }
 
     console.log('🚀 SSO: Starting token generation for user:', user.email);
+    console.log('🔍 SSO: Input parameters:', { 
+      returnUrl, 
+      hasUser: !!user, 
+      userEmail: user.email,
+      userId: user.id 
+    });
     setLoading(true);
     
     try {
+      console.log('📞 SSO: Calling generateSSOToken...');
       const { error, redirectUrl } = await generateSSOToken(returnUrl);
       
-      console.log('🔗 SSO: Token generation result:', { error, redirectUrl, hasRedirectUrl: !!redirectUrl });
+      console.log('🔗 SSO: Token generation result:', { 
+        error: error ? error.message : null, 
+        redirectUrl, 
+        hasRedirectUrl: !!redirectUrl,
+        redirectUrlLength: redirectUrl ? redirectUrl.length : 0,
+        redirectUrlType: typeof redirectUrl
+      });
       
       if (error) {
         console.error('❌ SSO: Token generation failed:', error);
@@ -74,62 +87,62 @@ const SSOLoginPage = () => {
         return;
       }
 
-      if (redirectUrl) {
-        console.log('✅ SSO: Redirecting to:', redirectUrl);
-        
-        // Validate the URL before redirecting
-        try {
-          const url = new URL(redirectUrl);
-          console.log('🔍 SSO: URL validation:', { 
-            protocol: url.protocol, 
-            hostname: url.hostname, 
-            pathname: url.pathname,
-            search: url.search,
-            fullUrl: url.toString()
-          });
-          
-          // Check for valid protocols
-          if (url.protocol !== 'https:' && url.protocol !== 'http:') {
-            throw new Error(`Invalid protocol: ${url.protocol}`);
-          }
-          
-          // Check for valid hostname (not empty, not about:blank, etc.)
-          if (!url.hostname || url.hostname === 'blank' || url.hostname === 'localhost') {
-            throw new Error(`Invalid hostname: ${url.hostname}`);
-          }
-          
-          console.log('✅ SSO: Valid URL, proceeding with redirect');
-          
-          // Use top-level window for redirect to prevent about:blank
-          console.log('✅ SSO: Initiating redirect to:', redirectUrl);
-          
-          // Add a small delay to ensure token generation is complete
-          setTimeout(() => {
-            // Ensure we're using the top-level window and prevent about:blank
-            try {
-              // Use a more direct approach that prevents about:blank
-              window.top!.location.href = redirectUrl;
-            } catch (e) {
-              console.warn('❌ SSO: Top-level redirect failed, using direct assignment:', e);
-              // Fallback to direct assignment
-              window.location.assign(redirectUrl);
-            }
-          }, 100);
-          
-        } catch (urlError) {
-          console.error('❌ SSO: Invalid redirect URL:', redirectUrl, urlError);
-          toast({
-            title: "SSO Error",
-            description: `Invalid redirect URL: ${urlError.message}. Please try again.`,
-            variant: "destructive",
-          });
-          setLoading(false);
-        }
-      } else {
-        console.error('❌ SSO: No redirect URL returned');
+      if (!redirectUrl || redirectUrl === '') {
+        console.error('❌ SSO: Empty redirect URL received');
         toast({
           title: "SSO Error",
-          description: "No redirect URL received. Please try again.",
+          description: "No redirect URL received from server. Please try again.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
+      console.log('✅ SSO: About to redirect to:', redirectUrl);
+      console.log('🔍 SSO: URL validation check before redirect...');
+      
+      // Validate the URL before redirecting
+      try {
+        const url = new URL(redirectUrl);
+        console.log('🔍 SSO: URL validation:', { 
+          protocol: url.protocol, 
+          hostname: url.hostname, 
+          pathname: url.pathname,
+          search: url.search,
+          fullUrl: url.toString()
+        });
+        
+        // Check for valid protocols
+        if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+          throw new Error(`Invalid protocol: ${url.protocol}`);
+        }
+        
+        // Check for valid hostname (not empty, not about:blank, etc.)
+        if (!url.hostname || url.hostname === 'blank' || url.hostname === 'localhost') {
+          throw new Error(`Invalid hostname: ${url.hostname}`);
+        }
+        
+        console.log('✅ SSO: Valid URL confirmed, performing redirect NOW');
+        
+        // Use the anchor element method to prevent about:blank
+        const anchor = document.createElement('a');
+        anchor.href = redirectUrl;
+        anchor.style.display = 'none';
+        document.body.appendChild(anchor);
+        
+        console.log('🚀 SSO: Anchor created, clicking now...');
+        anchor.click();
+        
+        // Clean up
+        setTimeout(() => {
+          document.body.removeChild(anchor);
+        }, 1000);
+        
+      } catch (urlError) {
+        console.error('❌ SSO: Invalid redirect URL:', redirectUrl, urlError);
+        toast({
+          title: "SSO Error",
+          description: `Invalid redirect URL: ${urlError.message}. Please try again.`,
           variant: "destructive",
         });
         setLoading(false);
