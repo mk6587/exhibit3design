@@ -542,10 +542,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return { error };
       }
 
-      console.log(`[${new Date().toISOString()}] ✅ SSO: Token generated successfully`, { data, redirectUrl: data?.redirectUrl });
+      console.log(`[${new Date().toISOString()}] 🔍 SSO: Full response received:`, { 
+        data, 
+        dataType: typeof data,
+        hasRedirectUrl: !!data?.redirectUrl,
+        redirectUrl: data?.redirectUrl,
+        keys: data ? Object.keys(data) : 'no data'
+      });
       
       if (!data?.redirectUrl) {
-        console.error(`[${new Date().toISOString()}] ❌ SSO: No redirectUrl in response`, { data });
+        console.error(`[${new Date().toISOString()}] ❌ SSO: No redirectUrl in response`, { 
+          data,
+          stringified: JSON.stringify(data, null, 2)
+        });
         return { error: { message: 'No redirect URL received from server' } };
       }
       
