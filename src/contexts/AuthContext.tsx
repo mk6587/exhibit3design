@@ -234,11 +234,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (session?.user) {
           // Check for SSO return URL after login
           const ssoReturnUrl = sessionStorage.getItem('sso_return_url');
+          console.log('🔍 SSO: Checking for return URL after login:', { 
+            ssoReturnUrl, 
+            userEmail: session.user.email,
+            hasReturnUrl: !!ssoReturnUrl
+          });
+          
           if (ssoReturnUrl) {
             sessionStorage.removeItem('sso_return_url');
+            console.log('🚀 SSO: Starting auto-redirect to portal after login:', ssoReturnUrl);
+            
             // Generate SSO token immediately and redirect without interstitial
             setTimeout(async () => {
               try {
+                console.log('🔗 SSO: Generating token for auto-redirect...');
                 const { error, redirectUrl } = await generateSSOToken(ssoReturnUrl);
                 if (error) {
                   console.error('❌ SSO: Auto-redirect after login failed:', error);
@@ -246,7 +255,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                   return;
                 }
                 if (redirectUrl) {
+                  console.log('✅ SSO: Auto-redirecting to:', redirectUrl);
                   window.location.href = redirectUrl;
+                } else {
+                  console.error('❌ SSO: No redirect URL received for auto-redirect');
                 }
               } catch (e) {
                 console.error('❌ SSO: Exception during auto-redirect after login:', e);
