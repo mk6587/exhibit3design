@@ -521,24 +521,47 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // SSO Methods
   const generateSSOToken = async (redirectUrl?: string) => {
-    console.log(`[${new Date().toISOString()}] 🔗 SSO: Generating cross-domain token`);
+    console.log(`[${new Date().toISOString()}] 🔗 SSO: Starting token generation process`);
+    console.log(`[${new Date().toISOString()}] 🔍 SSO: Current state check:`, {
+      hasSession: !!session,
+      hasUser: !!user,
+      sessionAccessToken: session?.access_token ? 'present' : 'missing',
+      userEmail: user?.email || 'no user',
+      userId: user?.id || 'no id',
+      requestedRedirectUrl: redirectUrl
+    });
     
     let accessToken = session?.access_token;
     if (!accessToken) {
+      console.log(`[${new Date().toISOString()}] 🔄 SSO: No access token in current session, attempting to rehydrate...`);
+      
       // Try to rehydrate session to avoid race conditions on first load
-      const { data } = await supabase.auth.getSession();
+      const { data, error: sessionError } = await supabase.auth.getSession();
+      console.log(`[${new Date().toISOString()}] 🔍 SSO: Session rehydration result:`, {
+        hasData: !!data,
+        hasSession: !!data?.session,
+        hasAccessToken: !!data?.session?.access_token,
+        userFromSession: data?.session?.user?.email || 'no user',
+        sessionError: sessionError?.message || 'no error'
+      });
+      
       if (data?.session?.access_token) {
         setSession(data.session);
         setUser(data.session.user);
         accessToken = data.session.access_token;
+        console.log(`[${new Date().toISOString()}] ✅ SSO: Session rehydrated successfully`);
       }
     }
 
     if (!accessToken) {
-      return { error: { message: 'No active session found' } };
+      console.error(`[${new Date().toISOString()}] ❌ SSO: No access token available after rehydration attempt`);
+      return { error: { message: 'No active session found. Please log in again.' } };
     }
 
+    console.log(`[${new Date().toISOString()}] ✅ SSO: Access token available, proceeding with token generation`);
+
     try {
+      console.log(`[${new Date().toISOString()}] 📡 SSO: Calling cross-domain-auth function...`);
       const { data, error } = await supabase.functions.invoke('cross-domain-auth', {
         body: { 
           action: 'generate',
@@ -547,6 +570,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
+      });
+
+      console.log(`[${new Date().toISOString()}] 📡 SSO: Function response received:`, {
+        hasData: !!data,
+        hasError: !!error,
+        errorMessage: error?.message || 'no error',
+        dataKeys: data ? Object.keys(data) : 'no data'
       });
 
       if (error) {
