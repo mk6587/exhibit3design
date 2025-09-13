@@ -15,6 +15,12 @@ const SSOLoginPage = () => {
   const returnUrl = searchParams.get('return_url') || searchParams.get('referer') || 'https://designers.exhibit3design.com';
 
   useEffect(() => {
+    console.log('🔐 SSO: Page loaded, checking authentication state', { 
+      user: user ? `${user.email} (${user.id})` : 'null', 
+      userType: typeof user,
+      returnUrl 
+    });
+    
     // If not logged in, immediately redirect to auth - no intermediate page
     if (user === null) {
       console.log('🔐 SSO: No user - redirecting directly to /auth with stored return URL', { returnUrl });
