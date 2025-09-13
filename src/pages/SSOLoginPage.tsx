@@ -100,33 +100,21 @@ const SSOLoginPage = () => {
           
           console.log('✅ SSO: Valid URL, proceeding with redirect');
           
-          // Multiple redirect strategies for browser compatibility
-          const performRedirect = () => {
-            try {
-              // Strategy 1: Direct assignment (most reliable)
-              window.location.href = redirectUrl;
-            } catch (e) {
-              console.warn('❌ SSO: Direct redirect failed, trying replace:', e);
-              try {
-                // Strategy 2: Location replace (bypasses history)
-                window.location.replace(redirectUrl);
-              } catch (e2) {
-                console.warn('❌ SSO: Replace redirect failed, trying assign:', e2);
-                // Strategy 3: Location assign (explicit method)
-                window.location.assign(redirectUrl);
-              }
-            }
-          };
+          // Use top-level window for redirect to prevent about:blank
+          console.log('✅ SSO: Initiating redirect to:', redirectUrl);
           
-          // Give browser time to complete any pending operations
-          if (document.readyState === 'complete') {
-            performRedirect();
-          } else {
-            // Wait for document to be ready
-            document.addEventListener('DOMContentLoaded', performRedirect, { once: true });
-            // Fallback timeout in case DOMContentLoaded already fired
-            setTimeout(performRedirect, 100);
-          }
+          // Add a small delay to ensure token generation is complete
+          setTimeout(() => {
+            // Ensure we're using the top-level window and prevent about:blank
+            try {
+              // Use a more direct approach that prevents about:blank
+              window.top!.location.href = redirectUrl;
+            } catch (e) {
+              console.warn('❌ SSO: Top-level redirect failed, using direct assignment:', e);
+              // Fallback to direct assignment
+              window.location.assign(redirectUrl);
+            }
+          }, 100);
           
         } catch (urlError) {
           console.error('❌ SSO: Invalid redirect URL:', redirectUrl, urlError);
