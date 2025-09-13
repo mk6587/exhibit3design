@@ -124,19 +124,9 @@ const SSOLoginPage = () => {
         
         console.log('✅ SSO: Valid URL confirmed, performing redirect NOW');
         
-        // Use the anchor element method to prevent about:blank
-        const anchor = document.createElement('a');
-        anchor.href = redirectUrl;
-        anchor.style.display = 'none';
-        document.body.appendChild(anchor);
-        
-        console.log('🚀 SSO: Anchor created, clicking now...');
-        anchor.click();
-        
-        // Clean up
-        setTimeout(() => {
-          document.body.removeChild(anchor);
-        }, 1000);
+        // Direct redirect to avoid about:blank issues
+        console.log('🚀 SSO: Redirecting directly to:', redirectUrl);
+        window.location.href = redirectUrl;
         
       } catch (urlError) {
         console.error('❌ SSO: Invalid redirect URL:', redirectUrl, urlError);
