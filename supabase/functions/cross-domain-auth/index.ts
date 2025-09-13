@@ -68,7 +68,7 @@ serve(async (req) => {
             token: crossDomainToken,
             user_id: user.id,
             user_email: user.email || '',
-            redirect_url: redirectUrl || 'https://designers.exhibit3design.com',
+            redirect_url: redirectUrl || 'https://designers.exhibit3design.com/sso-callback',
             expires_at: expiresAt.toISOString()
           })
 
@@ -83,7 +83,7 @@ serve(async (req) => {
         console.log('🔗 SSO: Token stored successfully')
 
         // Create the redirect URL with token
-        const targetUrl = new URL(redirectUrl || 'https://designers.exhibit3design.com')
+        const targetUrl = new URL(redirectUrl || 'https://designers.exhibit3design.com/sso-callback')
         
         // Validate the target URL
         if (!targetUrl.hostname || targetUrl.hostname === 'blank') {

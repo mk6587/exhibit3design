@@ -45,7 +45,8 @@ import DesignerPage from "./pages/DesignerPage";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import SitemapPage from "./pages/SitemapPage";
-import SSOLoginPage from "./pages/SSOLoginPage";
+import SSOLoginPage from './pages/SSOLoginPage';
+import SSOCallbackPage from './pages/SSOCallbackPage';
 import { hideWelcomeModals } from "./utils/hideWelcomeModal";
 import { SSOSync } from "@/components/auth/SSOSync";
 
@@ -121,6 +122,7 @@ const App = () => {
                       <Route path="/sitemap.xml" element={<SitemapPage />} />
                       <Route path="/sso/login" element={<SSOLoginPage />} />
                       <Route path="/sso-login" element={<SSOLoginPage />} />
+                      <Route path="/sso-callback" element={<SSOCallbackPage />} />
                       
                       <Route path="*" element={<NotFound />} />
                     </Routes>
