@@ -589,7 +589,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         dataType: typeof data,
         hasRedirectUrl: !!data?.redirectUrl,
         redirectUrl: data?.redirectUrl,
-        keys: data ? Object.keys(data) : 'no data'
+        redirectUrlLength: data?.redirectUrl ? data.redirectUrl.length : 0,
+        keys: data ? Object.keys(data) : 'no data',
+        rawResponse: JSON.stringify(data, null, 2)
       });
       
       if (!data?.redirectUrl) {

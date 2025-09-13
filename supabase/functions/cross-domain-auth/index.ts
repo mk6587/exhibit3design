@@ -124,13 +124,17 @@ serve(async (req) => {
           originalRedirectUrl: redirectUrl 
         })
 
+        // Log the exact response being returned
+        const responseData = { 
+          success: true, 
+          redirectUrl: finalRedirectUrl,
+          token: crossDomainToken,
+          expiresAt: expiresAt.toISOString()
+        };
+        console.log('🔗 SSO: Returning response:', JSON.stringify(responseData, null, 2));
+
         return new Response(
-          JSON.stringify({ 
-            success: true, 
-            redirectUrl: finalRedirectUrl,
-            token: crossDomainToken,
-            expiresAt: expiresAt.toISOString()
-          }),
+          JSON.stringify(responseData),
           { headers: corsHeaders }
         )
       } catch (error) {
