@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { LogOut, Edit, Eye, Trash2 } from 'lucide-react';
-import { SSODebug } from '@/components/debug/SSODebug';
 
 const AdminPage = () => {
   const { isAuthenticated, logout } = useAdmin();
@@ -138,12 +137,6 @@ const AdminPage = () => {
               </CardContent>
             </Card>
           ))}
-        </div>
-
-        {/* SSO Debug Section */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">SSO Debug & QA</h2>
-          <SSODebug />
         </div>
       </main>
     </div>

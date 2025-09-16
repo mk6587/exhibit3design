@@ -20,6 +20,3 @@ verify_jwt = false
 
 [functions.verify-stripe-payment]
 verify_jwt = false
-
-[functions.cross-domain-auth]
-verify_jwt = true

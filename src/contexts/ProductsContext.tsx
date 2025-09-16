@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, ReactNode, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode, useState, useCallback } from 'react';
 import { useSupabaseProducts, Product } from '@/hooks/useSupabaseProducts';
 import { toast } from 'sonner';
 
@@ -44,26 +44,7 @@ interface ProductsProviderProps {
 
 export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) => {
   const supabaseProducts = useSupabaseProducts();
-  
-  // Load cart from localStorage on mount
-  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    try {
-      const saved = localStorage.getItem('exhibit3design-cart');
-      return saved ? JSON.parse(saved) : [];
-    } catch (error) {
-      console.error('Failed to load cart from localStorage:', error);
-      return [];
-    }
-  });
-
-  // Save cart to localStorage whenever it changes
-  useEffect(() => {
-    try {
-      localStorage.setItem('exhibit3design-cart', JSON.stringify(cartItems));
-    } catch (error) {
-      console.error('Failed to save cart to localStorage:', error);
-    }
-  }, [cartItems]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   // Cart functionality
   const addToCart = useCallback((product: Product, quantity = 1, showToast = true) => {

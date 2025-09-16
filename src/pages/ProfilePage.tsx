@@ -12,11 +12,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, User, ShoppingBag, LogOut, Download, ShoppingCart, Palette } from "lucide-react";
+import { Loader2, User, ShoppingBag, LogOut, Download, ShoppingCart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { toast as sonnerToast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
-import { DesignerDashboard } from "@/components/designer/DesignerDashboard";
 
 interface Order {
   id: string;
@@ -33,7 +32,7 @@ interface Order {
 }
 
 const ProfilePage = () => {
-  const { user, profile, designerProfile, isDesigner, loading: authLoading, updateProfile, signOut } = useAuth();
+  const { user, profile, loading: authLoading, updateProfile, signOut } = useAuth();
   const { addToCart, products } = useProducts();
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
@@ -208,7 +207,7 @@ const ProfilePage = () => {
           </div>
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className={`grid w-full ${designerProfile ? 'grid-cols-3' : 'grid-cols-2'}`}>
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="profile" className="flex items-center gap-2">
                 <User className="h-4 w-4" />
                 Profile
@@ -217,12 +216,6 @@ const ProfilePage = () => {
                 <ShoppingBag className="h-4 w-4" />
                 Order History
               </TabsTrigger>
-              {designerProfile && (
-                <TabsTrigger value="designer" className="flex items-center gap-2">
-                  <Palette className="h-4 w-4" />
-                  Designer
-                </TabsTrigger>
-              )}
             </TabsList>
 
             {/* Profile Tab */}
@@ -449,33 +442,6 @@ const ProfilePage = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-
-            {/* Designer Tab */}
-            {designerProfile && (
-              <TabsContent value="designer">
-                <DesignerDashboard />
-              </TabsContent>
-            )}
-
-            {/* Add suggestion to become a designer if not already one */}
-            {!designerProfile && (
-              <Card className="mt-6">
-                <CardContent className="flex items-center justify-between p-6">
-                  <div>
-                    <h3 className="font-semibold">Become a Designer</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Share your exhibition stand designs and earn commission on sales
-                    </p>
-                  </div>
-                  <Button asChild>
-                    <Link to="/designer">
-                      <Palette className="mr-2 h-4 w-4" />
-                      Join Now
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
           </Tabs>
         </div>
       </div>

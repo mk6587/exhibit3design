@@ -19,25 +19,10 @@ interface Profile {
   updated_at: string;
 }
 
-interface DesignerProfile {
-  id: string;
-  user_id: string;
-  business_name?: string;
-  portfolio_url?: string;
-  bio?: string;
-  specialties?: string[];
-  commission_rate: number;
-  is_active: boolean;
-  is_approved: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   profile: Profile | null;
-  designerProfile: DesignerProfile | null;
   loading: boolean;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
@@ -46,12 +31,6 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<{ error: any }>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
   refreshProfile: () => Promise<void>;
-  // SSO Methods
-  generateSSOToken: (redirectUrl?: string) => Promise<{ error: any; redirectUrl?: string }>;
-  // Designer Methods
-  becomeDesigner: (designerData: Partial<DesignerProfile>) => Promise<{ error: any }>;
-  updateDesignerProfile: (updates: Partial<DesignerProfile>) => Promise<{ error: any }>;
-  isDesigner: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -72,7 +51,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [designerProfile, setDesignerProfile] = useState<DesignerProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Get user's location based on IP
@@ -120,27 +98,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return data;
     } catch (error) {
       console.error('Error fetching profile:', error);
-      return null;
-    }
-  };
-
-  // Fetch designer profile
-  const fetchDesignerProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('designers')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching designer profile:', error);
-        return null;
-      }
-
-      return data;
-    } catch (error) {
-      console.error('Error fetching designer profile:', error);
       return null;
     }
   };
@@ -199,8 +156,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (user) {
       const profileData = await fetchProfile(user.id);
       setProfile(profileData);
-      const designerData = await fetchDesignerProfile(user.id);
-      setDesignerProfile(designerData);
     }
   };
 
@@ -232,40 +187,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
         
         if (session?.user) {
-          // Check for SSO return URL after login
-          const ssoReturnUrl = sessionStorage.getItem('sso_return_url');
-          console.log('🔍 SSO: Checking for return URL after login:', { 
-            ssoReturnUrl, 
-            userEmail: session.user.email,
-            hasReturnUrl: !!ssoReturnUrl
-          });
-          
-          if (ssoReturnUrl) {
-            sessionStorage.removeItem('sso_return_url');
-            console.log('🚀 SSO: Starting auto-redirect to portal after login:', ssoReturnUrl);
-            
-            // Generate SSO token immediately and redirect without interstitial
-            setTimeout(async () => {
-              try {
-                console.log('🔗 SSO: Generating token for auto-redirect...');
-                const { error, redirectUrl } = await generateSSOToken(ssoReturnUrl);
-                if (error) {
-                  console.error('❌ SSO: Auto-redirect after login failed:', error);
-                  toast({ title: 'SSO Error', description: error.message || 'Failed to continue to portal.', variant: 'destructive' });
-                  return;
-                }
-                if (redirectUrl) {
-                  console.log('✅ SSO: Auto-redirecting to:', redirectUrl);
-                  window.location.href = redirectUrl;
-                } else {
-                  console.error('❌ SSO: No redirect URL received for auto-redirect');
-                }
-              } catch (e) {
-                console.error('❌ SSO: Exception during auto-redirect after login:', e);
-              }
-            }, 200);
-          }
-          
           // Handle profile fetching in background
           setTimeout(async () => {
             try {
@@ -277,10 +198,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               }
               
               setProfile(profileData);
-
-              // Fetch designer profile
-              const designerData = await fetchDesignerProfile(session.user.id);
-              setDesignerProfile(designerData);
               
               // Check for guest session data to transfer
               const guestSessionToken = localStorage.getItem('guest_session_token');
@@ -304,12 +221,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             } catch (error) {
               console.error('Profile fetch error:', error);
               setProfile(null);
-              setDesignerProfile(null);
             }
           }, 0);
         } else {
           setProfile(null);
-          setDesignerProfile(null);
         }
         
         setLoading(false);
@@ -440,16 +355,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     console.log(`[${new Date().toISOString()}] 🔑 AUTH: Starting Google OAuth signin`);
     
     try {
-      // If on checkout page, redirect back to checkout to preserve cart
-      const isOnCheckout = window.location.pathname === '/checkout';
-      const redirectUrl = isOnCheckout 
-        ? `${window.location.origin}/checkout`
-        : `${window.location.origin}/`;
-
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUrl,
+          redirectTo: `${window.location.origin}/`,
         }
       });
 
@@ -472,7 +381,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(null);
     setSession(null);
     setProfile(null);
-    setDesignerProfile(null);
   };
 
   const resetPassword = async (email: string) => {
@@ -519,159 +427,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // SSO Methods
-  const generateSSOToken = async (redirectUrl?: string) => {
-    console.log(`[${new Date().toISOString()}] 🔗 SSO: Starting token generation process`);
-    console.log(`[${new Date().toISOString()}] 🔍 SSO: Current state check:`, {
-      hasSession: !!session,
-      hasUser: !!user,
-      sessionAccessToken: session?.access_token ? 'present' : 'missing',
-      userEmail: user?.email || 'no user',
-      userId: user?.id || 'no id',
-      requestedRedirectUrl: redirectUrl
-    });
-    
-    let accessToken = session?.access_token;
-    if (!accessToken) {
-      console.log(`[${new Date().toISOString()}] 🔄 SSO: No access token in current session, attempting to rehydrate...`);
-      
-      // Try to rehydrate session to avoid race conditions on first load
-      const { data, error: sessionError } = await supabase.auth.getSession();
-      console.log(`[${new Date().toISOString()}] 🔍 SSO: Session rehydration result:`, {
-        hasData: !!data,
-        hasSession: !!data?.session,
-        hasAccessToken: !!data?.session?.access_token,
-        userFromSession: data?.session?.user?.email || 'no user',
-        sessionError: sessionError?.message || 'no error'
-      });
-      
-      if (data?.session?.access_token) {
-        setSession(data.session);
-        setUser(data.session.user);
-        accessToken = data.session.access_token;
-        console.log(`[${new Date().toISOString()}] ✅ SSO: Session rehydrated successfully`);
-      }
-    }
-
-    if (!accessToken) {
-      console.error(`[${new Date().toISOString()}] ❌ SSO: No access token available after rehydration attempt`);
-      return { error: { message: 'No active session found. Please log in again.' } };
-    }
-
-    console.log(`[${new Date().toISOString()}] ✅ SSO: Access token available, proceeding with token generation`);
-
-    try {
-      console.log(`[${new Date().toISOString()}] 📡 SSO: Calling cross-domain-auth function...`);
-      const { data, error } = await supabase.functions.invoke('cross-domain-auth', {
-        body: { 
-          action: 'generate',
-          redirectUrl: redirectUrl || 'https://designers.exhibit3design.com'
-        },
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      console.log(`[${new Date().toISOString()}] 📡 SSO: Function response received:`, {
-        hasData: !!data,
-        hasError: !!error,
-        errorMessage: error?.message || 'no error',
-        dataKeys: data ? Object.keys(data) : 'no data'
-      });
-
-      if (error) {
-        console.error(`[${new Date().toISOString()}] ❌ SSO: Token generation failed:`, error);
-        return { error };
-      }
-
-      console.log(`[${new Date().toISOString()}] 🔍 SSO: Full response received:`, { 
-        data, 
-        dataType: typeof data,
-        hasRedirectUrl: !!data?.redirectUrl,
-        redirectUrl: data?.redirectUrl,
-        redirectUrlLength: data?.redirectUrl ? data.redirectUrl.length : 0,
-        keys: data ? Object.keys(data) : 'no data',
-        rawResponse: JSON.stringify(data, null, 2)
-      });
-      
-      if (!data?.redirectUrl) {
-        console.error(`[${new Date().toISOString()}] ❌ SSO: No redirectUrl in response`, { 
-          data,
-          stringified: JSON.stringify(data, null, 2)
-        });
-        return { error: { message: 'No redirect URL received from server' } };
-      }
-      
-      return { error: null, redirectUrl: data.redirectUrl };
-    } catch (error) {
-      console.error(`[${new Date().toISOString()}] ❌ SSO: Token generation exception:`, error);
-      return { error: { message: 'Failed to generate SSO token. Please try again.' } };
-    }
-  };
-
-  // Designer Methods
-  const becomeDesigner = async (designerData: Partial<DesignerProfile>) => {
-    if (!user) {
-      return { error: { message: 'User not authenticated' } };
-    }
-
-    try {
-      const { error } = await supabase
-        .from('designers')
-        .insert({
-          user_id: user.id,
-          ...designerData
-        });
-
-      if (error) {
-        console.error('Error creating designer profile:', error);
-        return { error };
-      }
-
-      // Refresh designer profile
-      const designerData_response = await fetchDesignerProfile(user.id);
-      setDesignerProfile(designerData_response);
-      return { error: null };
-    } catch (error) {
-      console.error('Error in becomeDesigner:', error);
-      return { error };
-    }
-  };
-
-  const updateDesignerProfile = async (updates: Partial<DesignerProfile>) => {
-    if (!user || !designerProfile) {
-      return { error: { message: 'User not authenticated or not a designer' } };
-    }
-
-    try {
-      const { error } = await supabase
-        .from('designers')
-        .update(updates)
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Error updating designer profile:', error);
-        return { error };
-      }
-
-      // Refresh designer profile
-      const designerData = await fetchDesignerProfile(user.id);
-      setDesignerProfile(designerData);
-      return { error: null };
-    } catch (error) {
-      console.error('Error in updateDesignerProfile:', error);
-      return { error };
-    }
-  };
-
-
-  const isDesigner = designerProfile?.is_active === true && designerProfile?.is_approved === true;
 
   const value = {
     user,
     session,
     profile,
-    designerProfile,
     loading,
     signUp,
     signIn,
@@ -680,10 +440,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     resetPassword,
     updateProfile,
     refreshProfile,
-    generateSSOToken,
-    becomeDesigner,
-    updateDesignerProfile,
-    isDesigner,
   };
 
   return (

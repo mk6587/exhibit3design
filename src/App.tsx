@@ -40,14 +40,11 @@ import AdminProductEditPage from "./pages/AdminProductEditPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
 import AdminSetupPage from "./pages/AdminSetupPage";
-import DesignerPage from "./pages/DesignerPage";
 
 import NotFound from "./pages/NotFound";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import SitemapPage from "./pages/SitemapPage";
-import SSOLoginPage from './pages/SSOLoginPage';
 import { hideWelcomeModals } from "./utils/hideWelcomeModal";
-import { SSOSync } from "@/components/auth/SSOSync";
 
 const queryClient = new QueryClient();
 
@@ -70,7 +67,6 @@ const App = () => {
                     <ScrollToTop />
                     <Toaster />
                     <Sonner />
-                    <SSOSync />
                     <Routes>
                       <Route path="/" element={
                         <>
@@ -117,10 +113,7 @@ const App = () => {
                         </ProtectedAdminRoute>
                       } />
                       <Route path="/admin-setup" element={<AdminSetupPage />} />
-                      <Route path="/designer" element={<DesignerPage />} />
                       <Route path="/sitemap.xml" element={<SitemapPage />} />
-                      <Route path="/sso/login" element={<SSOLoginPage />} />
-                      <Route path="/sso-login" element={<SSOLoginPage />} />
                       
                       <Route path="*" element={<NotFound />} />
                     </Routes>
