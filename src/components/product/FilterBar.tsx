@@ -56,16 +56,16 @@ export const FilterBar = ({
 
       {/* Active Filters Chips */}
       {selectedTags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1">
           {selectedTags.map(tag => (
             <Badge 
               key={tag} 
               variant="secondary" 
-              className="cursor-pointer bg-orange-100 text-orange-800 border border-orange-200 hover:bg-orange-200 flex items-center gap-1 text-xs h-6 px-2 rounded-full"
+              className="cursor-pointer bg-orange-100 text-orange-800 border border-orange-200 hover:bg-orange-200 flex items-center gap-1 text-xs h-5 px-1.5 rounded-full"
               onClick={() => onTagToggle(tag)}
             >
               {tag}
-              <X className="h-3 w-3" />
+              <X className="h-2.5 w-2.5" />
             </Badge>
           ))}
         </div>

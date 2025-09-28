@@ -45,36 +45,36 @@ export const CategoryFilter = ({
       <Button 
         variant="outline" 
         onClick={() => setIsOpen(!isOpen)}
-        className={`h-8 px-3 rounded-full text-sm transition-colors ${
+        className={`h-6 px-2 rounded-full text-xs transition-colors ${
           activeCount > 0 || isOpen
             ? 'border-orange-500 bg-orange-50 text-orange-700 hover:bg-orange-100' 
             : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
         }`}
       >
-        <span className="flex items-center gap-1.5">
+        <span className="flex items-center gap-1">
           {category.name}
           {activeCount > 0 && (
-            <Badge className="h-4 px-1 text-xs bg-orange-500 text-white border-0">
+            <Badge className="h-3 px-1 text-xs bg-orange-500 text-white border-0 text-[10px] min-w-3 flex items-center justify-center">
               {activeCount}
             </Badge>
           )}
         </span>
         {isOpen ? (
-          <ChevronUp className="h-3 w-3 ml-1 opacity-60" />
+          <ChevronUp className="h-2.5 w-2.5 ml-0.5 opacity-60" />
         ) : (
-          <ChevronDown className="h-3 w-3 ml-1 opacity-60" />
+          <ChevronDown className="h-2.5 w-2.5 ml-0.5 opacity-60" />
         )}
       </Button>
 
       {/* Dropdown Content - Positioned below the button */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-64 max-w-80">
-          <div className="p-3">
-            <div className="text-sm font-medium mb-2 text-gray-900">
+        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-48 max-w-72">
+          <div className="p-2">
+            <div className="text-xs font-medium mb-1.5 text-gray-900">
               {category.name}
             </div>
             
-            <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+            <div className="grid grid-cols-2 gap-1.5 max-h-40 overflow-y-auto">
               {category.tags.length > 0 ? (
                 category.tags.map(tag => {
                   const isSelected = selectedTags.some(selectedTag => 
@@ -84,21 +84,21 @@ export const CategoryFilter = ({
                   return (
                     <label 
                       key={tag} 
-                      className="flex items-center space-x-2 py-1 cursor-pointer hover:bg-gray-50 rounded px-1"
+                      className="flex items-center space-x-1.5 py-0.5 cursor-pointer hover:bg-gray-50 rounded px-1"
                     >
                       <Checkbox 
                         checked={isSelected}
                         onCheckedChange={() => onTagToggle(tag)}
-                        className="h-4 w-4"
+                        className="h-3 w-3"
                       />
-                      <span className="text-sm text-gray-700 flex-1">
+                      <span className="text-xs text-gray-700 flex-1">
                         {tag}
                       </span>
                     </label>
                   );
                 })
               ) : (
-                <div className="text-sm text-gray-500 italic py-2 col-span-2">
+                <div className="text-xs text-gray-500 italic py-1.5 col-span-2">
                   No options available
                 </div>
               )}
