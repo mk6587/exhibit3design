@@ -9,15 +9,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+interface FilterCategory {
+  name: string;
+  tags: string[];
+}
+
 interface FilterDropdownProps {
-  availableTags: string[];
+  filterCategories: FilterCategory[];
   selectedTags: string[];
   onTagToggle: (tag: string) => void;
   onClear: () => void;
 }
 
 export const FilterDropdown = ({ 
-  availableTags, 
+  filterCategories, 
   selectedTags, 
   onTagToggle, 
   onClear 
@@ -36,7 +41,7 @@ export const FilterDropdown = ({
               <Filter className="h-4 w-4" />
               <span>
                 {selectedTags.length === 0 
-                  ? "Filter by format" 
+                  ? "Filter designs" 
                   : `${selectedTags.length} filter${selectedTags.length > 1 ? 's' : ''}`
                 }
               </span>
@@ -51,7 +56,7 @@ export const FilterDropdown = ({
         >
           <div className="p-3">
             <div className="text-sm font-medium mb-3 text-foreground">
-              Filter by format:
+              Filter designs:
             </div>
             
             {/* Selected filters display */}
@@ -74,26 +79,35 @@ export const FilterDropdown = ({
               </div>
             )}
             
-            {/* Available filters */}
-            <div className="space-y-2 max-h-60 overflow-y-auto">
-              {availableTags.map(tag => (
-                <div 
-                  key={tag} 
-                  className="flex items-center space-x-2 p-1 rounded hover:bg-accent cursor-pointer"
-                  onClick={() => onTagToggle(tag)}
-                >
-                  <Checkbox 
-                    id={tag}
-                    checked={selectedTags.includes(tag)}
-                    onChange={() => onTagToggle(tag)}
-                    className="pointer-events-none"
-                  />
-                  <label 
-                    htmlFor={tag} 
-                    className="text-sm font-normal cursor-pointer flex-1 text-foreground"
-                  >
-                    {tag}
-                  </label>
+            {/* Available filters by category */}
+            <div className="space-y-4 max-h-60 overflow-y-auto">
+              {filterCategories.map(category => (
+                <div key={category.name}>
+                  <div className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
+                    {category.name}
+                  </div>
+                  <div className="space-y-1">
+                    {category.tags.map(tag => (
+                      <div 
+                        key={tag} 
+                        className="flex items-center space-x-2 p-1 rounded hover:bg-accent cursor-pointer"
+                        onClick={() => onTagToggle(tag)}
+                      >
+                        <Checkbox 
+                          id={tag}
+                          checked={selectedTags.includes(tag)}
+                          onChange={() => onTagToggle(tag)}
+                          className="pointer-events-none"
+                        />
+                        <label 
+                          htmlFor={tag} 
+                          className="text-sm font-normal cursor-pointer flex-1 text-foreground"
+                        >
+                          {tag}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>

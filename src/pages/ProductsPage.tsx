@@ -35,8 +35,35 @@ const ProductsPage = () => {
     tags: product.tags
   }));
 
-  // Get unique tags from products
+  // Get unique tags from products and organize into categories
   const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags)));
+  
+  const filterCategories = [
+    {
+      name: "Stand Type",
+      tags: allTags.filter(tag => 
+        ["Modern", "Corner", "Island", "Minimalist", "Tech", "Luxury"].includes(tag)
+      )
+    },
+    {
+      name: "Budget Level", 
+      tags: allTags.filter(tag => 
+        ["Budget", "Premium"].includes(tag)
+      )
+    },
+    {
+      name: "Features",
+      tags: allTags.filter(tag => 
+        ["Innovation", "Interactive", "Brand"].includes(tag)
+      )
+    },
+    {
+      name: "File Formats",
+      tags: allTags.filter(tag => 
+        ["SKP", "3DS", "MAX", "PDF"].includes(tag)
+      )
+    }
+  ].filter(category => category.tags.length > 0); // Only show categories that have tags
   
   // Filter and sort products
   const filteredProducts = allProducts
@@ -152,7 +179,7 @@ const ProductsPage = () => {
           {/* Filter Dropdown */}
           <div className="flex items-center justify-between">
             <FilterDropdown
-              availableTags={allTags}
+              filterCategories={filterCategories}
               selectedTags={selectedTags}
               onTagToggle={handleTagSelect}
               onClear={() => {
