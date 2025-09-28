@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import ProductCard, { Product } from "@/components/product/ProductCard";
 import { useProducts } from "@/contexts/ProductsContext";
+import { products as staticProducts } from "@/data/products";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,10 @@ import { trackViewItemList, trackSearch, trackFilterApplied, trackSortChanged, t
 import { FilterDropdown } from "@/components/product/FilterDropdown";
 
 const ProductsPage = () => {
-  const { products } = useProducts();
+  const { products: contextProducts } = useProducts();
+  
+  // Use context products if available, otherwise use static products
+  const products = contextProducts && contextProducts.length > 0 ? contextProducts : staticProducts;
 
   // Track view_item_list when products load
   useEffect(() => {
@@ -24,6 +28,8 @@ const ProductsPage = () => {
   const [sort, setSort] = useState("latest");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
+  console.log('Raw products from context:', products); // Debug log
+  
   // Convert products to match ProductCard interface
   const allProducts: Product[] = products.map(product => ({
     id: product.id,
@@ -32,38 +38,43 @@ const ProductsPage = () => {
     image: (product.images[0] && !product.images[0].startsWith('blob:')) 
       ? product.images[0] 
       : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
-    tags: product.tags
+    tags: product.tags || [] // Ensure tags is always an array
   }));
+
+  console.log('Converted products:', allProducts); // Debug log
 
   // Get unique tags from products and organize into categories
   const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags || [])));
+  console.log('All available tags:', allTags); // Debug log
   
   const filterCategories = [
     {
       name: "Stand Type",
       tags: allTags.filter(tag => 
-        ["Modern", "Corner", "Island", "Minimalist", "Tech", "Luxury", "Premium"].includes(tag)
+        ["Modern", "Corner", "Island", "Minimalist", "Tech", "Luxury"].includes(tag)
       )
     },
     {
       name: "Budget Level", 
       tags: allTags.filter(tag => 
-        ["Budget", "Economy", "Standard", "Premium", "Luxury"].includes(tag)
+        ["Budget", "Premium"].includes(tag)
       )
     },
     {
-      name: "Size/Format",
+      name: "Features",
       tags: allTags.filter(tag => 
-        ["Small", "Medium", "Large", "2-sided", "4-sided", "Hanging-banner", "Wooden-green"].includes(tag)
+        ["Innovation", "Interactive", "Brand"].includes(tag)
       )
     },
     {
       name: "File Formats",
       tags: allTags.filter(tag => 
-        ["SKP", "3DS", "MAX", "PDF", "DWG", "OBJ"].includes(tag)
+        ["SKP", "3DS", "MAX", "PDF"].includes(tag)
       )
     }
   ];
+  
+  console.log('Filter categories with tags:', filterCategories); // Debug log
   
   // Filter and sort products
   const filteredProducts = allProducts
