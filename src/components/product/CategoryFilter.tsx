@@ -72,13 +72,13 @@ export const CategoryFilter = ({
 
       {/* Dropdown Content - Positioned below the button */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-48 max-w-72">
+        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-56 w-max max-w-80">
           <div className="p-2">
             <div className="text-xs font-medium mb-1.5 text-gray-900">
               {category.name}
             </div>
             
-            <div className="grid grid-cols-2 gap-1.5 max-h-40 overflow-y-auto">
+            <div className="flex flex-col gap-1.5 max-h-40 overflow-y-auto">
               {category.tags.length > 0 ? (
                 category.tags.map(tag => {
                   const isSelected = selectedTags.some(selectedTag => 
@@ -102,7 +102,7 @@ export const CategoryFilter = ({
                   );
                 })
               ) : (
-                <div className="text-xs text-gray-500 italic py-1.5 col-span-2">
+                <div className="text-xs text-gray-500 italic py-1.5">
                   No options available
                 </div>
               )}
