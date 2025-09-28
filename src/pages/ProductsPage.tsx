@@ -37,6 +37,7 @@ const ProductsPage = () => {
 
   // Get unique tags from products and organize into categories
   const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags)));
+  console.log('All available tags:', allTags);
   
   const filterCategories = [
     {
@@ -63,7 +64,9 @@ const ProductsPage = () => {
         ["SKP", "3DS", "MAX", "PDF"].includes(tag)
       )
     }
-  ].filter(category => category.tags.length > 0); // Only show categories that have tags
+  ]; // Show all categories regardless of whether they have tags
+  
+  console.log('Filter categories:', filterCategories);
   
   // Filter and sort products
   const filteredProducts = allProducts

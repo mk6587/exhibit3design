@@ -87,26 +87,32 @@ export const FilterDropdown = ({
                     {category.name}
                   </div>
                   <div className="space-y-1">
-                    {category.tags.map(tag => (
-                      <div 
-                        key={tag} 
-                        className="flex items-center space-x-2 p-1 rounded hover:bg-accent cursor-pointer"
-                        onClick={() => onTagToggle(tag)}
-                      >
-                        <Checkbox 
-                          id={tag}
-                          checked={selectedTags.includes(tag)}
-                          onChange={() => onTagToggle(tag)}
-                          className="pointer-events-none"
-                        />
-                        <label 
-                          htmlFor={tag} 
-                          className="text-sm font-normal cursor-pointer flex-1 text-foreground"
+                    {category.tags.length > 0 ? (
+                      category.tags.map(tag => (
+                        <div 
+                          key={tag} 
+                          className="flex items-center space-x-2 p-1 rounded hover:bg-accent cursor-pointer"
+                          onClick={() => onTagToggle(tag)}
                         >
-                          {tag}
-                        </label>
+                          <Checkbox 
+                            id={tag}
+                            checked={selectedTags.includes(tag)}
+                            onChange={() => onTagToggle(tag)}
+                            className="pointer-events-none"
+                          />
+                          <label 
+                            htmlFor={tag} 
+                            className="text-sm font-normal cursor-pointer flex-1 text-foreground"
+                          >
+                            {tag}
+                          </label>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-sm text-muted-foreground italic p-1">
+                        No filters available
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               ))}
