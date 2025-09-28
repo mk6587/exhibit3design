@@ -61,7 +61,7 @@ export const FilterBar = ({
             <Badge 
               key={tag} 
               variant="secondary" 
-              className="cursor-pointer bg-orange-100 text-orange-800 border border-orange-200 hover:bg-orange-200 flex items-center gap-0.5 text-xs h-[20px] min-h-[20px] max-h-[20px] px-2 py-0 rounded-full leading-none"
+              className="cursor-pointer bg-purple-100 text-purple-800 border border-purple-200 hover:bg-purple-200 flex items-center gap-0.5 text-xs h-[20px] min-h-[20px] max-h-[20px] px-2 py-0 rounded-full leading-none"
               onClick={() => onTagToggle(tag)}
               style={{ height: '20px', minHeight: '20px', maxHeight: '20px', lineHeight: 'normal' }}
             >
