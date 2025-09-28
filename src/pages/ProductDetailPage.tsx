@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import ProductGallery from "@/components/product/ProductGallery";
 import AddToCartButton from "@/components/product/AddToCartButton";
@@ -250,7 +250,7 @@ const ProductDetailPage = () => {
                 <li>Creating a competing product using these designs</li>
               </ul>
               <p>
-                For extended license options, please <a href="/contact" className="text-primary hover:underline">contact us</a>.
+                For extended license options, please <Link to="/contact" className="text-primary hover:underline">contact us</Link>.
               </p>
             </TabsContent>
           </div>
