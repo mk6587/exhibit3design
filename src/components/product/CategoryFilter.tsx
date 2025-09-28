@@ -35,34 +35,34 @@ export const CategoryFilter = ({
       <PopoverTrigger asChild>
         <Button 
           variant="outline" 
-          className={`justify-between h-10 min-w-[140px] ${
+          className={`justify-between h-8 w-full text-sm ${
             activeCount > 0 
               ? 'border-primary bg-primary/10 text-primary' 
               : 'border-border bg-background text-foreground'
           }`}
         >
-          <span className="flex items-center gap-2">
-            {category.name}
+          <span className="flex items-center gap-1.5 truncate">
+            <span className="truncate">{category.name}</span>
             {activeCount > 0 && (
-              <Badge variant="secondary" className="h-5 px-1.5 text-xs">
+              <Badge variant="secondary" className="h-4 px-1 text-xs min-w-4 flex items-center justify-center">
                 {activeCount}
               </Badge>
             )}
           </span>
-          <ChevronDown className="h-4 w-4 opacity-50" />
+          <ChevronDown className="h-3 w-3 opacity-50 flex-shrink-0" />
         </Button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-64 max-h-80 overflow-y-auto bg-background border shadow-lg p-0" 
+        className="w-56 max-h-72 overflow-y-auto bg-background border shadow-lg p-0" 
         align="start"
         sideOffset={4}
       >
-        <div className="p-3">
-          <div className="text-sm font-medium mb-3 text-foreground">
+        <div className="p-2">
+          <div className="text-sm font-medium mb-2 text-foreground">
             {category.name}
           </div>
           
-          <div className="space-y-2 max-h-60 overflow-y-auto">
+          <div className="space-y-1 max-h-52 overflow-y-auto">
             {category.tags.length > 0 ? (
               category.tags.map(tag => {
                 const isSelected = selectedTags.some(selectedTag => 
@@ -72,7 +72,7 @@ export const CategoryFilter = ({
                 return (
                   <div 
                     key={tag} 
-                    className="flex items-center space-x-2 p-2 rounded hover:bg-accent cursor-pointer"
+                    className="flex items-center space-x-2 px-2 py-1.5 rounded hover:bg-accent cursor-pointer"
                     onClick={() => onTagToggle(tag)}
                   >
                     <Checkbox 
@@ -91,7 +91,7 @@ export const CategoryFilter = ({
                 );
               })
             ) : (
-              <div className="text-sm text-muted-foreground italic p-2">
+              <div className="text-sm text-muted-foreground italic px-2 py-1.5">
                 No options available
               </div>
             )}

@@ -20,44 +20,47 @@ export const FilterBar = ({
   const totalActiveFilters = selectedTags.length;
 
   return (
-    <div className="flex flex-col gap-4 mb-6">
-      {/* Filter Categories Row */}
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="text-sm font-medium text-foreground whitespace-nowrap">
-          Filter by:
-        </span>
+    <div className="space-y-3 mb-4">
+      {/* Filter Categories Grid - Compact Layout */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-foreground">
+            Filter by:
+          </span>
+          {totalActiveFilters > 0 && (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={onClear}
+              className="text-muted-foreground hover:text-foreground text-xs h-7"
+            >
+              <X className="h-3 w-3 mr-1" />
+              Clear ({totalActiveFilters})
+            </Button>
+          )}
+        </div>
         
-        {filterCategories.map(category => (
-          <CategoryFilter
-            key={category.key}
-            category={category}
-            selectedTags={selectedTags}
-            onTagToggle={onTagToggle}
-          />
-        ))}
-        
-        {totalActiveFilters > 0 && (
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={onClear}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <X className="h-4 w-4 mr-1" />
-            Clear all ({totalActiveFilters})
-          </Button>
-        )}
+        {/* Responsive Grid Layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
+          {filterCategories.map(category => (
+            <CategoryFilter
+              key={category.key}
+              category={category}
+              selectedTags={selectedTags}
+              onTagToggle={onTagToggle}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* Active Filters Display */}
+      {/* Active Filters Display - More Compact */}
       {selectedTags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          <span className="text-sm text-muted-foreground">Active filters:</span>
+        <div className="flex flex-wrap gap-1.5 pt-2 border-t">
           {selectedTags.map(tag => (
             <Badge 
               key={tag} 
               variant="secondary" 
-              className="cursor-pointer hover:bg-secondary/80 flex items-center gap-1"
+              className="cursor-pointer hover:bg-secondary/80 flex items-center gap-1 text-xs h-6 px-2"
               onClick={() => onTagToggle(tag)}
             >
               {tag}
