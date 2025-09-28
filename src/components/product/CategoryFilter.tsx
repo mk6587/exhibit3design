@@ -47,7 +47,7 @@ export const CategoryFilter = ({
         onClick={() => setIsOpen(!isOpen)}
         className={`h-[20px] min-h-[20px] max-h-[20px] px-2 py-0 rounded-full text-xs transition-colors border leading-none ${
           activeCount > 0 || isOpen
-            ? 'border-orange-500 bg-orange-50 text-orange-700 hover:bg-orange-100' 
+            ? 'border-purple-500 bg-purple-50 text-purple-700 hover:bg-purple-100' 
             : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
         }`}
         style={{ height: '20px', minHeight: '20px', maxHeight: '20px', lineHeight: 'normal' }}
@@ -56,7 +56,7 @@ export const CategoryFilter = ({
           <span className="text-xs leading-none">{category.name}</span>
           {activeCount > 0 && (
             <Badge 
-              className="h-[14px] px-1 text-[10px] leading-none bg-orange-500 text-white border-0 min-w-[14px] flex items-center justify-center rounded-full"
+              className="h-[14px] px-1 text-[10px] leading-none bg-purple-500 text-white border-0 min-w-[14px] flex items-center justify-center rounded-full"
               style={{ height: '14px', minHeight: '14px', maxHeight: '14px' }}
             >
               {activeCount}

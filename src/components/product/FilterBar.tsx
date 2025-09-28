@@ -25,8 +25,8 @@ export const FilterBar = ({
       {totalActiveFilters > 0 && (
         <div className="flex items-center justify-between py-2 border-b border-gray-100">
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-orange-600" />
-            <span className="text-sm text-orange-600 font-medium">
+            <Filter className="h-4 w-4 text-purple-600" />
+            <span className="text-sm text-purple-600 font-medium">
               Filtrele ({totalActiveFilters})
             </span>
           </div>
