@@ -5,10 +5,10 @@ import ProductCard, { Product } from "@/components/product/ProductCard";
 import { useProducts } from "@/contexts/ProductsContext";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { X, Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { trackViewItemList, trackSearch, trackFilterApplied, trackSortChanged, trackFiltersCleared } from "@/services/ga4Analytics";
+import { FilterDropdown } from "@/components/product/FilterDropdown";
 
 const ProductsPage = () => {
   const { products } = useProducts();
@@ -119,7 +119,7 @@ const ProductsPage = () => {
         
         {/* Filters */}
         <div className="mb-8 space-y-4">
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4 items-center">
             <div className="flex-1 min-w-[300px] flex gap-2">
               <Input
                 placeholder="Search designs..."
@@ -149,33 +149,31 @@ const ProductsPage = () => {
             </Select>
           </div>
           
-          <div>
-            <p className="text-sm font-medium mb-2">Filter by format:</p>
-            <div className="flex flex-wrap gap-2">
-              {allTags.map(tag => (
-                <Badge 
-                  key={tag}
-                  variant={selectedTags.includes(tag) ? "default" : "outline"}
-                  className="cursor-pointer"
-                  onClick={() => handleTagSelect(tag)}
-                >
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+          {/* Filter Dropdown */}
+          <div className="flex items-center justify-between">
+            <FilterDropdown
+              availableTags={allTags}
+              selectedTags={selectedTags}
+              onTagToggle={handleTagSelect}
+              onClear={() => {
+                setSelectedTags([]);
+                trackFiltersCleared(selectedTags.length, allProducts.length);
+              }}
+            />
+            
+            {/* Clear all filters button - only show when any filter is active */}
+            {(activeSearchText || selectedTags.length > 0 || sort !== "latest") && (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={clearFilters}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4 mr-1" />
+                Clear all filters
+              </Button>
+            )}
           </div>
-          
-          {(activeSearchText || selectedTags.length > 0 || sort !== "latest") && (
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={clearFilters}
-              className="text-muted-foreground"
-            >
-              <X className="h-4 w-4 mr-1" />
-              Clear filters
-            </Button>
-          )}
         </div>
         
         {filteredProducts.length > 0 ? (
