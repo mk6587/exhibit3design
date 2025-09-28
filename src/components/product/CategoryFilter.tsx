@@ -45,28 +45,28 @@ export const CategoryFilter = ({
       <Button 
         variant="outline" 
         onClick={() => setIsOpen(!isOpen)}
-        className={`h-[20px] min-h-[20px] max-h-[20px] px-2 py-0 rounded-full text-xs transition-colors border leading-none ${
+        className={`h-[10px] min-h-[10px] max-h-[10px] px-1.5 py-0 rounded-full text-xs transition-colors border leading-none ${
           activeCount > 0 || isOpen
             ? 'border-purple-500 bg-purple-50 text-purple-700 hover:bg-purple-100' 
             : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
         }`}
-        style={{ height: '20px', minHeight: '20px', maxHeight: '20px', lineHeight: 'normal' }}
+        style={{ height: '10px', minHeight: '10px', maxHeight: '10px', lineHeight: 'normal' }}
       >
-        <span className="flex items-center gap-1 leading-none">
-          <span className="text-xs leading-none">{category.name}</span>
+        <span className="flex items-center gap-0.5 leading-none">
+          <span className="text-[9px] leading-none">{category.name}</span>
           {activeCount > 0 && (
             <Badge 
-              className="h-[14px] px-1 text-[10px] leading-none bg-purple-500 text-white border-0 min-w-[14px] flex items-center justify-center rounded-full"
-              style={{ height: '14px', minHeight: '14px', maxHeight: '14px' }}
+              className="h-[8px] px-0.5 text-[7px] leading-none bg-purple-500 text-white border-0 min-w-[8px] flex items-center justify-center rounded-full"
+              style={{ height: '8px', minHeight: '8px', maxHeight: '8px' }}
             >
               {activeCount}
             </Badge>
           )}
         </span>
         {isOpen ? (
-          <ChevronUp className="h-2.5 w-2.5 ml-0.5 opacity-60" />
+          <ChevronUp className="h-1.5 w-1.5 ml-0.5 opacity-60" />
         ) : (
-          <ChevronDown className="h-2.5 w-2.5 ml-0.5 opacity-60" />
+          <ChevronDown className="h-1.5 w-1.5 ml-0.5 opacity-60" />
         )}
       </Button>
 
