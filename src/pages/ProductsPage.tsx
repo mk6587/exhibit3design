@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
 import { trackViewItemList, trackSearch, trackFilterApplied, trackSortChanged, trackFiltersCleared } from "@/services/ga4Analytics";
-import { FilterDropdown } from "@/components/product/FilterDropdown";
+import { FilterBar } from "@/components/product/FilterBar";
+import { getFilterCategories, doesTagMatch } from "@/utils/tagMapping";
 
 const ProductsPage = () => {
   const { products: contextProducts } = useProducts();
@@ -43,36 +44,11 @@ const ProductsPage = () => {
 
   console.log('Converted products:', allProducts); // Debug log
 
-  // Get unique tags from products and organize into categories
+  // Get unique tags from products and organize into categories using the new mapping system
   const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags || [])));
   console.log('All available tags:', allTags); // Debug log
   
-  const filterCategories = [
-    {
-      name: "Stand Type",
-      tags: allTags.filter(tag => 
-        ["Modern", "Corner", "Island", "Minimalist", "Tech", "Luxury"].includes(tag)
-      )
-    },
-    {
-      name: "Budget Level", 
-      tags: allTags.filter(tag => 
-        ["Budget", "Premium"].includes(tag)
-      )
-    },
-    {
-      name: "Features",
-      tags: allTags.filter(tag => 
-        ["Innovation", "Interactive", "Brand"].includes(tag)
-      )
-    },
-    {
-      name: "File Formats",
-      tags: allTags.filter(tag => 
-        ["SKP", "3DS", "MAX", "PDF"].includes(tag)
-      )
-    }
-  ];
+  const filterCategories = getFilterCategories(allTags);
   
   console.log('Filter categories with tags:', filterCategories); // Debug log
   
@@ -83,9 +59,11 @@ const ProductsPage = () => {
       const matchesSearch = activeSearchText === "" || 
         product.title.toLowerCase().includes(activeSearchText.toLowerCase());
       
-      // Tag filter
+      // Tag filter using smart matching
       const matchesTags = selectedTags.length === 0 || 
-        selectedTags.some(tag => product.tags.includes(tag));
+        selectedTags.some(filterTag => 
+          product.tags.some(productTag => doesTagMatch(productTag, filterTag))
+        );
         
       return matchesSearch && matchesTags;
     })
@@ -99,11 +77,13 @@ const ProductsPage = () => {
   const handleSearch = () => {
     setActiveSearchText(searchText);
     if (searchText.trim()) {
-      // Calculate results count after applying the search
+    // Calculate results count after applying the search
       const searchResults = allProducts.filter(product => {
         const matchesSearch = product.title.toLowerCase().includes(searchText.toLowerCase());
         const matchesTags = selectedTags.length === 0 || 
-          selectedTags.some(tag => product.tags.includes(tag));
+          selectedTags.some(filterTag => 
+            product.tags.some(productTag => doesTagMatch(productTag, filterTag))
+          );
         return matchesSearch && matchesTags;
       });
       trackSearch(searchText, searchResults.length);
@@ -129,7 +109,9 @@ const ProductsPage = () => {
       const matchesSearch = activeSearchText === "" || 
         product.title.toLowerCase().includes(activeSearchText.toLowerCase());
       const matchesTags = newSelectedTags.length === 0 || 
-        newSelectedTags.some(selectedTag => product.tags.includes(selectedTag));
+        newSelectedTags.some(filterTag => 
+          product.tags.some(productTag => doesTagMatch(productTag, filterTag))
+        );
       return matchesSearch && matchesTags;
     });
     
@@ -187,31 +169,16 @@ const ProductsPage = () => {
             </Select>
           </div>
           
-          {/* Filter Dropdown */}
-          <div className="flex items-center justify-between">
-            <FilterDropdown
-              filterCategories={filterCategories}
-              selectedTags={selectedTags}
-              onTagToggle={handleTagSelect}
-              onClear={() => {
-                setSelectedTags([]);
-                trackFiltersCleared(selectedTags.length, allProducts.length);
-              }}
-            />
-            
-            {/* Clear all filters button - only show when any filter is active */}
-            {(activeSearchText || selectedTags.length > 0 || sort !== "latest") && (
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={clearFilters}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4 mr-1" />
-                Clear all filters
-              </Button>
-            )}
-          </div>
+          {/* New Filter Bar */}
+          <FilterBar
+            filterCategories={filterCategories}
+            selectedTags={selectedTags}
+            onTagToggle={handleTagSelect}
+            onClear={() => {
+              setSelectedTags([]);
+              trackFiltersCleared(selectedTags.length, allProducts.length);
+            }}
+          />
         </div>
         
         {filteredProducts.length > 0 ? (

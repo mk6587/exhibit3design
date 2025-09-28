@@ -19,7 +19,7 @@ export const products: Product[] = [
     title: "Modern Exhibition Stand",
     price: 149,
     image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
-    tags: ["Modern", "SKP", "3DS", "MAX", "PDF"],
+    tags: ["Modern", "4-sided", "Large", "Innovation", "SKP", "3DS", "MAX", "PDF"],
     description: "A modern exhibition stand design perfect for showcasing your products at trade shows and exhibitions.",
     longDescription: `
       <p>This modern exhibition stand design is perfect for businesses looking to make an impact at trade shows and exhibitions. The design features a clean, contemporary aesthetic with ample display space.</p>
@@ -56,7 +56,7 @@ export const products: Product[] = [
     title: "Corner Exhibition Booth",
     price: 199,
     image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
-    tags: ["Corner", "Premium", "SKP", "MAX"],
+    tags: ["2-sided", "Modern", "Large", "Meeting-room", "Premium", "SKP", "MAX"],
     description: "Corner exhibition booth design maximizing visibility from multiple angles.",
     longDescription: `
       <p>This corner exhibition booth design is specifically crafted to maximize visibility and engagement from multiple angles. Perfect for corner spaces at trade shows.</p>
@@ -91,7 +91,7 @@ export const products: Product[] = [
     title: "Island Exhibition Design",
     price: 249,
     image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
-    tags: ["Island", "Premium", "3DS", "MAX"],
+    tags: ["4-sided", "Luxury", "Large", "Interactive", "Premium", "3DS", "MAX"],
     description: "Premium island exhibition design for maximum impact and visitor engagement.",
     longDescription: `
       <p>Our premium island exhibition design offers maximum impact and visitor engagement with 360-degree access and stunning visual appeal.</p>
@@ -126,7 +126,7 @@ export const products: Product[] = [
     title: "Minimalist Trade Show Stand",
     price: 99,
     image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop",
-    tags: ["Minimalist", "Budget", "SKP", "PDF"],
+    tags: ["1-sided", "Minimal", "Small", "Economy", "SKP", "PDF"],
     description: "Clean minimalist design perfect for startups and small businesses.",
     longDescription: `
       <p>A clean, minimalist exhibition stand design that's perfect for startups and small businesses looking to make a professional impression without breaking the budget.</p>
@@ -159,7 +159,7 @@ export const products: Product[] = [
     title: "Tech Innovation Booth",
     price: 299,
     image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop",
-    tags: ["Tech", "Innovation", "Interactive", "MAX"],
+    tags: ["3-sided", "Futuristic", "Medium", "Interactive", "Innovation", "MAX"],
     description: "High-tech exhibition booth with interactive displays and modern aesthetics.",
     longDescription: `
       <p>A cutting-edge exhibition booth designed specifically for technology companies and innovation showcases. Features integrated interactive displays and modern aesthetics.</p>
@@ -195,7 +195,7 @@ export const products: Product[] = [
     title: "Luxury Brand Pavilion",
     price: 399,
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
-    tags: ["Luxury", "Premium", "Brand", "MAX", "3DS"],
+    tags: ["4-sided", "Luxury", "Large", "Wood", "Premium", "Brand", "Meeting-room", "MAX", "3DS"],
     description: "Elegant luxury pavilion design for high-end brands and premium products.",
     longDescription: `
       <p>An elegant luxury pavilion design crafted for high-end brands and premium products. This design emphasizes sophistication and exclusivity.</p>
