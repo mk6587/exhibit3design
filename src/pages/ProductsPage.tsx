@@ -36,37 +36,34 @@ const ProductsPage = () => {
   }));
 
   // Get unique tags from products and organize into categories
-  const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags)));
-  console.log('All available tags:', allTags);
+  const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags || [])));
   
   const filterCategories = [
     {
       name: "Stand Type",
       tags: allTags.filter(tag => 
-        ["Modern", "Corner", "Island", "Minimalist", "Tech", "Luxury"].includes(tag)
+        ["Modern", "Corner", "Island", "Minimalist", "Tech", "Luxury", "Premium"].includes(tag)
       )
     },
     {
       name: "Budget Level", 
       tags: allTags.filter(tag => 
-        ["Budget", "Premium"].includes(tag)
+        ["Budget", "Economy", "Standard", "Premium", "Luxury"].includes(tag)
       )
     },
     {
-      name: "Features",
+      name: "Size/Format",
       tags: allTags.filter(tag => 
-        ["Innovation", "Interactive", "Brand"].includes(tag)
+        ["Small", "Medium", "Large", "2-sided", "4-sided", "Hanging-banner", "Wooden-green"].includes(tag)
       )
     },
     {
       name: "File Formats",
       tags: allTags.filter(tag => 
-        ["SKP", "3DS", "MAX", "PDF"].includes(tag)
+        ["SKP", "3DS", "MAX", "PDF", "DWG", "OBJ"].includes(tag)
       )
     }
-  ]; // Show all categories regardless of whether they have tags
-  
-  console.log('Filter categories:', filterCategories);
+  ];
   
   // Filter and sort products
   const filteredProducts = allProducts
