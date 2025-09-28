@@ -45,19 +45,19 @@ export const CategoryFilter = ({
       <Button 
         variant="outline" 
         onClick={() => setIsOpen(!isOpen)}
-        className={`h-[18px] min-h-[18px] max-h-[18px] px-2 py-0 rounded-full text-xs transition-colors border leading-none ${
+        className={`h-[20px] min-h-[20px] max-h-[20px] px-2 py-0 rounded-full text-xs transition-colors border leading-none ${
           activeCount > 0 || isOpen
             ? 'border-orange-500 bg-orange-50 text-orange-700 hover:bg-orange-100' 
             : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
         }`}
-        style={{ height: '18px', minHeight: '18px', maxHeight: '18px', lineHeight: 'normal' }}
+        style={{ height: '20px', minHeight: '20px', maxHeight: '20px', lineHeight: 'normal' }}
       >
         <span className="flex items-center gap-1 leading-none">
-          <span className="text-[11px] leading-none">{category.name}</span>
+          <span className="text-xs leading-none">{category.name}</span>
           {activeCount > 0 && (
             <Badge 
-              className="h-[12px] px-1 text-[9px] leading-none bg-orange-500 text-white border-0 min-w-[12px] flex items-center justify-center rounded-full"
-              style={{ height: '12px', minHeight: '12px', maxHeight: '12px' }}
+              className="h-[14px] px-1 text-[10px] leading-none bg-orange-500 text-white border-0 min-w-[14px] flex items-center justify-center rounded-full"
+              style={{ height: '14px', minHeight: '14px', maxHeight: '14px' }}
             >
               {activeCount}
             </Badge>
