@@ -30,12 +30,12 @@ export const FilterBar = ({
               Filtrele ({totalActiveFilters})
             </span>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={onClear}
-            className="text-gray-500 hover:text-gray-700 text-xs h-6 px-2"
-          >
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={onClear}
+              className="text-gray-500 hover:text-gray-700 text-xs h-5 px-2"
+            >
             <X className="h-3 w-3 mr-1" />
             Clear
           </Button>
@@ -61,11 +61,11 @@ export const FilterBar = ({
             <Badge 
               key={tag} 
               variant="secondary" 
-              className="cursor-pointer bg-orange-100 text-orange-800 border border-orange-200 hover:bg-orange-200 flex items-center gap-1 text-xs h-5 px-1.5 rounded-full"
+              className="cursor-pointer bg-orange-100 text-orange-800 border border-orange-200 hover:bg-orange-200 flex items-center gap-0.5 text-xs h-4 px-1.5 rounded-full"
               onClick={() => onTagToggle(tag)}
             >
               {tag}
-              <X className="h-2.5 w-2.5" />
+              <X className="h-2 w-2" />
             </Badge>
           ))}
         </div>
