@@ -45,24 +45,24 @@ export const CategoryFilter = ({
       <Button 
         variant="outline" 
         onClick={() => setIsOpen(!isOpen)}
-        className={`h-5 px-2 rounded-full text-xs transition-colors ${
+        className={`h-7 px-2.5 rounded-full text-xs transition-colors border ${
           activeCount > 0 || isOpen
             ? 'border-orange-500 bg-orange-50 text-orange-700 hover:bg-orange-100' 
             : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
         }`}
       >
-        <span className="flex items-center gap-0.5">
-          {category.name}
+        <span className="flex items-center gap-1">
+          <span className="text-xs leading-none">{category.name}</span>
           {activeCount > 0 && (
-            <Badge className="h-2.5 px-0.5 text-[10px] bg-orange-500 text-white border-0 min-w-2.5 flex items-center justify-center">
+            <Badge className="h-3.5 px-1 text-[10px] leading-none bg-orange-500 text-white border-0 min-w-3.5 flex items-center justify-center rounded-full">
               {activeCount}
             </Badge>
           )}
         </span>
         {isOpen ? (
-          <ChevronUp className="h-2 w-2 ml-0.5 opacity-60" />
+          <ChevronUp className="h-3 w-3 ml-1 opacity-60" />
         ) : (
-          <ChevronDown className="h-2 w-2 ml-0.5 opacity-60" />
+          <ChevronDown className="h-3 w-3 ml-1 opacity-60" />
         )}
       </Button>
 
