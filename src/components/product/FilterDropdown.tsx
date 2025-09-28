@@ -60,15 +60,15 @@ export const FilterDropdown = ({
                 <div className="text-xs text-muted-foreground mb-2">Selected:</div>
                 <div className="flex flex-wrap gap-1">
                   {selectedTags.map(tag => (
-                    <Badge 
-                      key={tag} 
-                      variant="default" 
-                      className="text-xs cursor-pointer hover:bg-primary/80"
-                      onClick={() => onTagToggle(tag)}
-                    >
-                      {tag}
-                      <X className="h-3 w-3 ml-1" />
-                    </Badge>
+                     <Badge 
+                       key={tag} 
+                       variant="secondary" 
+                       className="text-xs cursor-pointer hover:bg-secondary/80"
+                       onClick={() => onTagToggle(tag)}
+                     >
+                       {tag}
+                       <X className="h-3 w-3 ml-1" />
+                     </Badge>
                   ))}
                 </div>
               </div>
