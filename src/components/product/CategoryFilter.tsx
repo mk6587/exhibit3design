@@ -1,13 +1,8 @@
-import { useState } from "react";
-import { ChevronDown, X } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { ChevronDown, X, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 interface CategoryFilterProps {
   category: {
@@ -25,79 +20,92 @@ export const CategoryFilter = ({
   onTagToggle 
 }: CategoryFilterProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   
   const activeCount = selectedTags.filter(tag => 
     category.tags.some(categoryTag => categoryTag.toLowerCase() === tag.toLowerCase())
   ).length;
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen]);
+
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <Button 
-          variant="outline" 
-          className={`justify-between h-8 w-full text-sm ${
-            activeCount > 0 
-              ? 'border-primary bg-primary/10 text-primary' 
-              : 'border-border bg-background text-foreground'
-          }`}
-        >
-          <span className="flex items-center gap-1.5 truncate">
-            <span className="truncate">{category.name}</span>
-            {activeCount > 0 && (
-              <Badge variant="secondary" className="h-4 px-1 text-xs min-w-4 flex items-center justify-center">
-                {activeCount}
-              </Badge>
-            )}
-          </span>
-          <ChevronDown className="h-3 w-3 opacity-50 flex-shrink-0" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent 
-        className="w-56 max-h-72 overflow-y-auto bg-background border shadow-lg p-0" 
-        align="start"
-        sideOffset={4}
+    <div ref={containerRef} className="relative">
+      <Button 
+        variant="outline" 
+        onClick={() => setIsOpen(!isOpen)}
+        className={`h-8 px-3 rounded-full text-sm transition-colors ${
+          activeCount > 0 || isOpen
+            ? 'border-orange-500 bg-orange-50 text-orange-700 hover:bg-orange-100' 
+            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+        }`}
       >
-        <div className="p-2">
-          <div className="text-sm font-medium mb-2 text-foreground">
-            {category.name}
-          </div>
-          
-          <div className="space-y-1 max-h-52 overflow-y-auto">
-            {category.tags.length > 0 ? (
-              category.tags.map(tag => {
-                const isSelected = selectedTags.some(selectedTag => 
-                  selectedTag.toLowerCase() === tag.toLowerCase()
-                );
-                
-                return (
-                  <div 
-                    key={tag} 
-                    className="flex items-center space-x-2 px-2 py-1.5 rounded hover:bg-accent cursor-pointer"
-                    onClick={() => onTagToggle(tag)}
-                  >
-                    <Checkbox 
-                      id={`${category.key}-${tag}`}
-                      checked={isSelected}
-                      onChange={() => onTagToggle(tag)}
-                      className="pointer-events-none"
-                    />
+        <span className="flex items-center gap-1.5">
+          {category.name}
+          {activeCount > 0 && (
+            <Badge className="h-4 px-1 text-xs bg-orange-500 text-white border-0">
+              {activeCount}
+            </Badge>
+          )}
+        </span>
+        {isOpen ? (
+          <ChevronUp className="h-3 w-3 ml-1 opacity-60" />
+        ) : (
+          <ChevronDown className="h-3 w-3 ml-1 opacity-60" />
+        )}
+      </Button>
+
+      {/* Dropdown Content - Positioned below the button */}
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-64 max-w-80">
+          <div className="p-3">
+            <div className="text-sm font-medium mb-2 text-gray-900">
+              {category.name}
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+              {category.tags.length > 0 ? (
+                category.tags.map(tag => {
+                  const isSelected = selectedTags.some(selectedTag => 
+                    selectedTag.toLowerCase() === tag.toLowerCase()
+                  );
+                  
+                  return (
                     <label 
-                      htmlFor={`${category.key}-${tag}`} 
-                      className="text-sm font-normal cursor-pointer flex-1 text-foreground"
+                      key={tag} 
+                      className="flex items-center space-x-2 py-1 cursor-pointer hover:bg-gray-50 rounded px-1"
                     >
-                      {tag}
+                      <Checkbox 
+                        checked={isSelected}
+                        onCheckedChange={() => onTagToggle(tag)}
+                        className="h-4 w-4"
+                      />
+                      <span className="text-sm text-gray-700 flex-1">
+                        {tag}
+                      </span>
                     </label>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="text-sm text-muted-foreground italic px-2 py-1.5">
-                No options available
-              </div>
-            )}
+                  );
+                })
+              ) : (
+                <div className="text-sm text-gray-500 italic py-2 col-span-2">
+                  No options available
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </PopoverContent>
-    </Popover>
+      )}
+    </div>
   );
 };

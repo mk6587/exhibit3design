@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { Filter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CategoryFilter } from "./CategoryFilter";
@@ -20,47 +20,48 @@ export const FilterBar = ({
   const totalActiveFilters = selectedTags.length;
 
   return (
-    <div className="space-y-3 mb-4">
-      {/* Filter Categories Grid - Compact Layout */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-foreground">
-            Filter by:
-          </span>
-          {totalActiveFilters > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={onClear}
-              className="text-muted-foreground hover:text-foreground text-xs h-7"
-            >
-              <X className="h-3 w-3 mr-1" />
-              Clear ({totalActiveFilters})
-            </Button>
-          )}
+    <div className="space-y-2 mb-4">
+      {/* Compact Filter Header */}
+      {totalActiveFilters > 0 && (
+        <div className="flex items-center justify-between py-2 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-orange-600" />
+            <span className="text-sm text-orange-600 font-medium">
+              Filtrele ({totalActiveFilters})
+            </span>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={onClear}
+            className="text-gray-500 hover:text-gray-700 text-xs h-6 px-2"
+          >
+            <X className="h-3 w-3 mr-1" />
+            Clear
+          </Button>
         </div>
-        
-        {/* Responsive Grid Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
-          {filterCategories.map(category => (
-            <CategoryFilter
-              key={category.key}
-              category={category}
-              selectedTags={selectedTags}
-              onTagToggle={onTagToggle}
-            />
-          ))}
-        </div>
+      )}
+      
+      {/* Filter Chips Row */}
+      <div className="flex flex-wrap items-center gap-2">
+        {filterCategories.map(category => (
+          <CategoryFilter
+            key={category.key}
+            category={category}
+            selectedTags={selectedTags}
+            onTagToggle={onTagToggle}
+          />
+        ))}
       </div>
 
-      {/* Active Filters Display - More Compact */}
+      {/* Active Filters Chips */}
       {selectedTags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 pt-2 border-t">
+        <div className="flex flex-wrap gap-1.5">
           {selectedTags.map(tag => (
             <Badge 
               key={tag} 
               variant="secondary" 
-              className="cursor-pointer hover:bg-secondary/80 flex items-center gap-1 text-xs h-6 px-2"
+              className="cursor-pointer bg-orange-100 text-orange-800 border border-orange-200 hover:bg-orange-200 flex items-center gap-1 text-xs h-6 px-2 rounded-full"
               onClick={() => onTagToggle(tag)}
             >
               {tag}
