@@ -5,6 +5,7 @@ interface VideoStreamProps {
   src: string;
   hlsUrl?: string;
   poster?: string;
+  fallbackImage?: string;
   className?: string;
   autoPlay?: boolean;
   muted?: boolean;
@@ -20,6 +21,7 @@ export const VideoStream = ({
   src,
   hlsUrl,
   poster,
+  fallbackImage,
   className = "",
   autoPlay = false,
   muted = true,
@@ -206,18 +208,29 @@ export const VideoStream = ({
         </div>
       )}
 
-      {/* Error overlay */}
+      {/* Error state - show fallback image or error overlay */}
       {hasError && (
-        <div className="absolute inset-0 bg-secondary/90 flex items-center justify-center z-10">
-          <div className="text-center p-4">
-            <div className="w-12 h-12 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-3">
-              <svg className="w-6 h-6 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+        <>
+          {fallbackImage ? (
+            <div 
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat z-10"
+              style={{ backgroundImage: `url("${fallbackImage}")` }}
+            >
+              <div className="absolute inset-0 bg-black/20" />
             </div>
-            <p className="text-sm text-muted-foreground">Failed to load video</p>
-          </div>
-        </div>
+          ) : (
+            <div className="absolute inset-0 bg-secondary/90 flex items-center justify-center z-10">
+              <div className="text-center p-4">
+                <div className="w-12 h-12 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-3">
+                  <svg className="w-6 h-6 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <p className="text-sm text-muted-foreground">Failed to load video</p>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       <video

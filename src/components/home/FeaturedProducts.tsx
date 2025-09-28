@@ -60,6 +60,7 @@ const FeaturedProducts = () => {
           <>
             <VideoStream
               src={videoUrl}
+              fallbackImage="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg"
               className="w-full h-full object-cover"
               style={{ objectPosition: 'center center' }}
               autoPlay
