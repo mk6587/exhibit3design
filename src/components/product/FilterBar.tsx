@@ -61,11 +61,11 @@ export const FilterBar = ({
             <Badge 
               key={tag} 
               variant="secondary" 
-              className="cursor-pointer bg-orange-100 text-orange-800 border border-orange-200 hover:bg-orange-200 flex items-center gap-1 text-xs h-6 px-2 rounded-full"
+              className="cursor-pointer bg-orange-100 text-orange-800 border border-orange-200 hover:bg-orange-200 flex items-center gap-1 text-xs h-[14px] px-2 rounded-full"
               onClick={() => onTagToggle(tag)}
             >
               <span className="text-xs leading-none">{tag}</span>
-              <X className="h-3 w-3" />
+              <X className="h-2.5 w-2.5" />
             </Badge>
           ))}
         </div>
