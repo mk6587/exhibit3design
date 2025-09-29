@@ -11,51 +11,49 @@ const AboutPage = () => {
           
           <div className="prose max-w-none">
             <p className="lead text-lg mb-6">
-              Exhibit3Design delivers premium exhibition stand designs from a seasoned professional with over 15 years 
-              of industry expertise, serving Fortune 500 companies and leading trade show exhibitors worldwide.
+              Exhibit3Design offers a curated collection of professional exhibition stand designs, 
+              ready for immediate download and use in your next trade show project.
             </p>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Our Expertise</h2>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">What We Offer</h2>
             <p>
-              With over 15 years in the exhibition industry, our design team has successfully delivered over 500 exhibition projects, helping clients increase their trade show ROI by an average of 40%. We've worked with industry leaders across automotive, technology, healthcare, and manufacturing sectors, consistently meeting tight deadlines and exceeding client expectations.
+              Our design library features modern, professional exhibition stand concepts created specifically for the trade show industry. 
+              Each design comes as a complete package with multiple file formats, allowing you to adapt and customize them for your specific needs.
             </p>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Strategic Design Library</h2>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">Professional Design Collection</h2>
             <p>
-              Our extensive design library represents years of research, innovation, and proven success in the exhibition industry. 
-              Each design has been strategically developed using industry best practices, optimal traffic flow principles, and 
-              conversion-focused layouts that have delivered measurable results for our clients.
+              Every design in our collection has been carefully crafted with practical exhibition requirements in mind. 
+              We focus on clean aesthetics, functional layouts, and designs that work well in real exhibition environments. 
+              Our designs consider visitor flow, product display areas, and meeting spaces that are essential for successful trade shows.
             </p>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Proven Value for Professionals</h2>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">Who Benefits from Our Designs</h2>
             <p>
-              Our comprehensive design solutions are trusted by:
+              Our design library serves various professionals in the exhibition industry:
             </p>
             <ul className="list-disc pl-6 mb-6">
-              <li><strong>Exhibition contractors</strong> who need battle-tested designs that guarantee project success</li>
-              <li><strong>Design professionals</strong> looking to accelerate project timelines while maintaining quality standards</li>
-              <li><strong>Corporate marketing teams</strong> who require cost-effective solutions without compromising on professional impact</li>
-              <li><strong>Trade show managers</strong> seeking designs with proven conversion rates and visitor engagement metrics</li>
+              <li><strong>Exhibition contractors</strong> who need ready-to-use designs for client projects</li>
+              <li><strong>Design professionals</strong> looking for inspiration or starting points for custom work</li>
+              <li><strong>Marketing teams</strong> who need professional designs without the high cost of custom development</li>
+              <li><strong>Small businesses</strong> participating in trade shows who want professional-looking stands</li>
             </ul>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Why Choose Our Design Library</h2>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">File Formats and Usage</h2>
             <p>
-              Every design in our collection has been developed using data-driven insights from real exhibition environments. 
-              Our designs incorporate optimal visitor flow patterns, strategic product placement zones, and engagement-focused 
-              layouts that have consistently delivered measurable results for our clients. With our proven track record of 
-              on-time delivery and 98% client satisfaction rate, you're investing in designs that work.
+              Each design purchase includes multiple file formats (SKP, 3DS) that can be opened in most 3D software applications. 
+              This flexibility allows you to modify colors, materials, dimensions, and other elements to match your brand and 
+              specific requirements. The designs are created to be easily customizable while maintaining their professional appearance.
             </p>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Custom Design Services</h2>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">Instant Access</h2>
             <p>
-              Beyond our design library, we offer bespoke exhibition design services for clients requiring unique solutions. 
-              Our custom projects have helped clients achieve up to 60% increases in lead generation and have won multiple 
-              industry awards for innovation and effectiveness. We guarantee delivery within agreed timelines and provide 
-              ongoing support throughout your exhibition journey.
+              All designs are available for immediate download after purchase. No waiting, no custom development time - 
+              simply choose your design, complete the purchase, and start working with professional exhibition stand concepts right away.
             </p>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Professional Service Guarantee</h2>
-            <p>Access our professionally crafted designs instantly. Each purchase includes comprehensive file packages (SKP, 3DS formats), detailed specifications, and our signature rapid delivery service. With over 15 years of industry expertise backing every design, you're choosing solutions that deliver results.</p>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">Our Commitment</h2>
+            <p>We focus on providing practical, professional designs that save you time and effort. Each design is created with attention to detail and real-world exhibition requirements, giving you a solid foundation for your next trade show project.</p>
           </div>
         </div>
       </div>
