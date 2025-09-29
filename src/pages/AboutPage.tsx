@@ -12,7 +12,7 @@ const AboutPage = () => {
           <div className="prose max-w-none">
             <p className="lead text-lg mb-6">
               Exhibit3Design offers a curated collection of professional exhibition stand designs, 
-              ready for immediate download and use in your next trade show project.
+              available for purchase and delivery for your next trade show project.
             </p>
             
             <h2 className="text-2xl font-semibold mt-8 mb-4">What We Offer</h2>
@@ -46,10 +46,10 @@ const AboutPage = () => {
               specific requirements. The designs are created to be easily customizable while maintaining their professional appearance.
             </p>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Instant Access</h2>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">Delivery Process</h2>
             <p>
-              All designs are available for immediate download after purchase. No waiting, no custom development time - 
-              simply choose your design, complete the purchase, and start working with professional exhibition stand concepts right away.
+              After purchase, your design files are prepared and processed for delivery. This process typically takes several hours 
+              to ensure you receive complete, high-quality files. You will be notified when your design files are ready for download.
             </p>
             
             <h2 className="text-2xl font-semibold mt-8 mb-4">Our Commitment</h2>
