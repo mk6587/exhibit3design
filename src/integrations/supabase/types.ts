@@ -47,6 +47,48 @@ export type Database = {
         }
         Relationships: []
       }
+      designers: {
+        Row: {
+          bio: string | null
+          business_name: string | null
+          commission_rate: number | null
+          created_at: string
+          id: string
+          is_active: boolean
+          is_approved: boolean
+          portfolio_url: string | null
+          specialties: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          business_name?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_approved?: boolean
+          portfolio_url?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          business_name?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_approved?: boolean
+          portfolio_url?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       guest_checkout_sessions: {
         Row: {
           created_at: string
@@ -283,6 +325,7 @@ export type Database = {
       profiles: {
         Row: {
           address_line_1: string | null
+          ai_tokens_used: number
           city: string | null
           country: string | null
           created_at: string
@@ -298,6 +341,7 @@ export type Database = {
         }
         Insert: {
           address_line_1?: string | null
+          ai_tokens_used?: number
           city?: string | null
           country?: string | null
           created_at?: string
@@ -313,6 +357,7 @@ export type Database = {
         }
         Update: {
           address_line_1?: string | null
+          ai_tokens_used?: number
           city?: string | null
           country?: string | null
           created_at?: string
@@ -324,6 +369,39 @@ export type Database = {
           postcode?: string | null
           state_region?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sso_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          redirect_url: string
+          token: string
+          used: boolean | null
+          user_email: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          redirect_url: string
+          token: string
+          used?: boolean | null
+          user_email: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          redirect_url?: string
+          token?: string
+          used?: boolean | null
+          user_email?: string
           user_id?: string
         }
         Relationships: []
@@ -371,6 +449,10 @@ export type Database = {
         Returns: undefined
       }
       cleanup_expired_otps: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      cleanup_expired_sso_tokens: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
@@ -489,6 +571,14 @@ export type Database = {
       }
       is_current_user_admin: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_current_user_designer: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_designer: {
+        Args: { user_id_param: string }
         Returns: boolean
       }
       mark_otp_verified_and_cleanup: {
