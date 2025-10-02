@@ -122,9 +122,17 @@ const Header = () => {
             variant="ghost" 
             size="icon" 
             onClick={handleAIStudioClick}
-            className="md:hidden relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            className="md:hidden relative hover:bg-muted [&_svg]:stroke-[url(#ai-gradient)]"
           >
-            <Sparkles className="h-5 w-5" />
+            <svg width="0" height="0">
+              <defs>
+                <linearGradient id="ai-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{ stopColor: '#9333ea', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: '#ec4899', stopOpacity: 1 }} />
+                </linearGradient>
+              </defs>
+            </svg>
+            <Sparkles className="h-5 w-5" style={{ stroke: 'url(#ai-gradient)', fill: 'url(#ai-gradient)' }} />
           </Button>
 
           {/* Mobile Menu Button */}
