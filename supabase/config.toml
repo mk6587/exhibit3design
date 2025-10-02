@@ -20,3 +20,12 @@ verify_jwt = false
 
 [functions.verify-stripe-payment]
 verify_jwt = false
+
+[functions.check-ai-tokens]
+verify_jwt = false
+
+[functions.increment-ai-tokens]
+verify_jwt = false
+
+[functions.generate-ai-token]
+verify_jwt = false

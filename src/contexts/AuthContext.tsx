@@ -15,6 +15,7 @@ interface Profile {
   state_region: string | null;
   postcode: string | null;
   email_confirmed: boolean;
+  ai_tokens_used: number;
   created_at: string;
   updated_at: string;
 }

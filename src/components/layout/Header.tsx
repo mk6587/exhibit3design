@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Search, User, Menu, X, LogOut } from "lucide-react";
+import { ShoppingCart, Search, User, Menu, X, LogOut, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/contexts/ProductsContext";
+import { openAIStudio } from "@/utils/aiStudioAuth";
+import { toast } from "@/hooks/use-toast";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -23,6 +25,32 @@ const Header = () => {
     await signOut();
     navigate("/");
     setIsMenuOpen(false);
+  };
+
+  const handleAIStudioClick = async () => {
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please login to access AI Studio",
+        variant: "destructive"
+      });
+      navigate("/auth");
+      return;
+    }
+
+    try {
+      await openAIStudio(user.id, user.email || '');
+      toast({
+        title: "Opening AI Studio",
+        description: "A new window will open with your AI Studio access",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to open AI Studio. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
   return <header className="bg-background border-b border-border fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between min-h-16">
@@ -50,6 +78,17 @@ const Header = () => {
           {/* Search Toggle */}
           <Button variant="ghost" size="icon" onClick={toggleSearch} className="hidden md:flex">
             <Search className="h-5 w-5" />
+          </Button>
+
+          {/* AI Studio Button */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleAIStudioClick}
+            className="hidden md:flex items-center gap-2"
+          >
+            <Sparkles className="h-4 w-4" />
+            AI Studio
           </Button>
 
           {/* User Menu */}
@@ -101,6 +140,16 @@ const Header = () => {
             FAQ
           </Link>
           
+          <button 
+            onClick={() => {
+              handleAIStudioClick();
+              setIsMenuOpen(false);
+            }} 
+            className="mobile-nav-item hover:bg-flat-hover transition-colors text-left flex items-center w-full"
+          >
+            <Sparkles className="h-5 w-5 mr-3" />
+            AI Studio
+          </button>
           
           {user ? <>
               <Link to="/profile" className="mobile-nav-item hover:bg-flat-hover transition-colors flex items-center" onClick={() => setIsMenuOpen(false)}>
