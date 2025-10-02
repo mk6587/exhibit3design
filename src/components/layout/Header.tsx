@@ -122,9 +122,9 @@ const Header = () => {
             variant="ghost" 
             size="icon" 
             onClick={handleAIStudioClick}
-            className="md:hidden relative hover:bg-muted [&_svg]:stroke-[url(#ai-gradient)]"
+            className="md:hidden relative hover:bg-muted flex items-center justify-center"
           >
-            <svg width="0" height="0">
+            <svg width="0" height="0" className="absolute">
               <defs>
                 <linearGradient id="ai-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" style={{ stopColor: '#9333ea', stopOpacity: 1 }} />
