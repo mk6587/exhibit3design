@@ -82,10 +82,10 @@ const Header = () => {
 
           {/* AI Studio Button */}
           <Button 
-            variant="outline" 
+            variant="default" 
             size="sm" 
             onClick={handleAIStudioClick}
-            className="hidden md:flex items-center gap-2"
+            className="hidden md:flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg hover:shadow-xl transition-all"
           >
             <Sparkles className="h-4 w-4" />
             AI Studio
@@ -145,7 +145,7 @@ const Header = () => {
               handleAIStudioClick();
               setIsMenuOpen(false);
             }} 
-            className="mobile-nav-item hover:bg-flat-hover transition-colors text-left flex items-center w-full"
+            className="mobile-nav-item bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 transition-all text-left flex items-center w-full font-semibold"
           >
             <Sparkles className="h-5 w-5 mr-3" />
             AI Studio
