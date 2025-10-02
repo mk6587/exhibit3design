@@ -117,6 +117,16 @@ const Header = () => {
             </Link>
           </Button>
 
+          {/* AI Studio Mobile Icon */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleAIStudioClick}
+            className="md:hidden relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+          >
+            <Sparkles className="h-5 w-5" />
+          </Button>
+
           {/* Mobile Menu Button */}
           <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleMenu}>
             {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
