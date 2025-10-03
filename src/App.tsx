@@ -39,7 +39,6 @@ import AdminProductCreatePage from "./pages/AdminProductCreatePage";
 import AdminProductEditPage from "./pages/AdminProductEditPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
-import AdminSetupPage from "./pages/AdminSetupPage";
 
 import NotFound from "./pages/NotFound";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
@@ -112,7 +111,6 @@ const App = () => {
                           <AdminProductEditPage />
                         </ProtectedAdminRoute>
                       } />
-                      <Route path="/admin-setup" element={<AdminSetupPage />} />
                       <Route path="/sitemap.xml" element={<SitemapPage />} />
                       
                       <Route path="*" element={<NotFound />} />
