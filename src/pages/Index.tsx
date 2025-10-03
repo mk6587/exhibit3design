@@ -8,9 +8,9 @@ import CheckoutDebug from "@/components/CheckoutDebug";
 const Index = () => {
   return (
     <Layout
-      title="Exhibit3Design - Premium Exhibition Stand Design Services"
-      description="Professional exhibition stand design and custom services. Modern, innovative designs for trade shows and exhibitions. From economy to premium options."
-      keywords="exhibition stand design, trade show booth, custom exhibition design, exhibition services, stand builder, trade show design"
+      title="Exhibit3Design - AI-Powered Exhibition Stand Design & Trade Show Solutions"
+      description="Transform your trade show presence with AI-powered exhibition stand design. Professional custom booth designs, 3D visualization, and instant design iterations for exhibition designers and companies. From concept to reality."
+      keywords="AI exhibition stand design, trade show booth design, AI-powered stand builder, exhibition stand designer, custom trade show displays, 3D exhibition visualization, modular exhibition stands, trade show design services, exhibition booth builder, stand design AI tool, exhibition design software, trade show marketing solutions"
       url="https://exhibit3design.com/"
     >
       <FeaturedProducts />
