@@ -22,9 +22,21 @@ const Header = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
   const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-    setIsMenuOpen(false);
+    try {
+      await signOut();
+      toast({
+        title: "Signed out successfully",
+        description: "You have been logged out of your account.",
+      });
+      setIsMenuOpen(false);
+      navigate("/");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleAIStudioClick = async () => {

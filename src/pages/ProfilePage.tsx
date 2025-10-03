@@ -51,7 +51,7 @@ const ProfilePage = () => {
   // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate("/login");
+      navigate("/auth");
     }
   }, [authLoading, user, navigate]);
 
