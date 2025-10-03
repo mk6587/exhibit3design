@@ -17,25 +17,41 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
-  // Check if current user is an admin using user_roles table
+  // Check if current user is an admin using both user_roles AND admins table
   const checkAdminStatus = async (): Promise<boolean> => {
     try {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (!currentUser) return false;
 
-      const { data: roleRecord, error } = await supabase
+      // Check if user has admin role in user_roles table
+      const { data: roleRecord, error: roleError } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', currentUser.id)
         .eq('role', 'admin')
         .maybeSingle();
 
-      if (error) {
-        console.error('Error checking admin status:', error);
+      if (roleError) {
+        console.error('Error checking admin role:', roleError);
         return false;
       }
 
-      return !!roleRecord;
+      if (!roleRecord) return false;
+
+      // Also verify user exists in admins table and is active
+      const { data: adminRecord, error: adminError } = await supabase
+        .from('admins')
+        .select('is_active')
+        .eq('user_id', currentUser.id)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (adminError) {
+        console.error('Error checking admin record:', adminError);
+        return false;
+      }
+
+      return !!adminRecord;
     } catch (error) {
       console.error('Error in checkAdminStatus:', error);
       return false;
