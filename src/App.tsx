@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React from "react";
+import { useEffect } from "react";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 import { HelmetProvider } from 'react-helmet-async';
 import { AdminProvider } from "@/contexts/AdminContext";
@@ -49,7 +49,7 @@ const queryClient = new QueryClient();
 
 const App = () => {
   // Hide any external welcome modals on app load
-  React.useEffect(() => {
+  useEffect(() => {
     hideWelcomeModals();
   }, []);
 
