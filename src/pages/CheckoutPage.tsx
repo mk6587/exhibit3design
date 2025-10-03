@@ -51,19 +51,6 @@ const CheckoutPage = () => {
   const authedUser = user ?? sessionUser;
   const isGuest = !authedUser;
 
-  // COMPREHENSIVE LOGGING FOR DEBUG
-  console.log('🔍 CHECKOUT DEBUG - Authentication State:', {
-    user: user ? { email: user.email, id: user.id } : null,
-    sessionUser,
-    authedUser: authedUser ? { email: authedUser.email } : null,
-    isGuest,
-    authLoading,
-    authReady,
-    step,
-    cartItemsCount: cartItems.length,
-    timestamp: new Date().toISOString()
-  });
-
   const [policyAgreed, setPolicyAgreed] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
@@ -107,21 +94,15 @@ const CheckoutPage = () => {
 
   // Auth readiness: check session on mount
   useEffect(() => {
-    console.log('🔄 CHECKOUT DEBUG - Checking session on mount');
     let active = true;
     (async () => {
       try {
         const { data } = await supabase.auth.getSession();
-        console.log('📋 CHECKOUT DEBUG - Session check result:', {
-          hasSession: !!data.session,
-          sessionUser: data.session?.user ? { email: data.session.user.email, id: data.session.user.id } : null
-        });
         if (!active) return;
         setSessionUser(data.session?.user ?? null);
       } finally {
         if (active) {
           setAuthReady(true);
-          console.log('✅ CHECKOUT DEBUG - Auth ready set to true');
         }
       }
     })();
@@ -139,13 +120,7 @@ const CheckoutPage = () => {
 
   // ------- HARD RESET: if authenticated, never allow OTP -------
   useEffect(() => {
-    console.log('🛡️ CHECKOUT DEBUG - Hard reset check:', {
-      authedUser: authedUser ? { email: authedUser.email } : null,
-      step,
-      shouldReset: authedUser && step === 'otp'
-    });
     if (authedUser && step === 'otp') {
-      console.log('🔄 CHECKOUT DEBUG - HARD RESET: Authenticated user detected on OTP step, forcing back to info');
       setStep('info');
       setOTP('');
       setOTPError('');
@@ -241,15 +216,6 @@ const CheckoutPage = () => {
     e.preventDefault();
     setOTPError('');
 
-    console.log('🚀 CHECKOUT DEBUG - Info submit triggered:', {
-      authReady,
-      user: user ? { email: user.email, id: user.id } : null,
-      sessionUser: sessionUser ? { email: sessionUser.email } : null,
-      authedUser: authedUser ? { email: authedUser.email } : null,
-      isGuest,
-      willSkipOTP: !!(user || sessionUser)
-    });
-
     if (!authReady) {
       toast.error("Checking your login status… please try again in a second.");
       return;
@@ -264,7 +230,6 @@ const CheckoutPage = () => {
 
     // If user is logged in (either through auth context or session), skip OTP entirely
     if (user || sessionUser) {
-      console.log('✅ CHECKOUT DEBUG - User authenticated, skipping OTP and going directly to payment');
       setStep('processing');
       trackAddPaymentInfo(cartItems, cartTotal, 'Card');
       try {
@@ -275,8 +240,6 @@ const CheckoutPage = () => {
       }
       return;
     }
-
-    console.log('👤 CHECKOUT DEBUG - Guest user, proceeding to OTP step');
 
     // GUEST ONLY: Send OTP
     if (!captchaToken) {
@@ -314,8 +277,6 @@ const CheckoutPage = () => {
 
     // Prevent double submission
     if (step === 'processing') return;
-
-    console.log('🔐 CHECKOUT DEBUG - Starting OTP verification for guest:', customerInfo.email);
     
     const result = await verifyOTP(customerInfo.email, otp);
     if (!result.success) {
@@ -323,8 +284,6 @@ const CheckoutPage = () => {
       setOTP('');
       return;
     }
-
-    console.log('✅ CHECKOUT DEBUG - OTP verified successfully, proceeding to payment');
 
     // Optional magic link -> elevate to session
     if (result.magicLink) {
@@ -338,8 +297,6 @@ const CheckoutPage = () => {
           console.error('Missing token or type in magic link:', { token: !!token, type: !!type });
           throw new Error('Invalid magic link format.');
         }
-
-        console.log('🔑 CHECKOUT DEBUG - Processing magic link with type:', type);
         
         // Use the magic link token to authenticate
         const { error } = await supabase.auth.verifyOtp({ 
@@ -354,7 +311,6 @@ const CheckoutPage = () => {
         
         // Wait briefly for auth state to update
         await new Promise(resolve => setTimeout(resolve, 1000));
-        console.log('🔑 CHECKOUT DEBUG - Magic link authentication successful');
       } catch (err: any) {
         console.error('Authentication error:', err);
         toast.error('Authentication failed: ' + (err.message || 'Please try again.'));
@@ -398,8 +354,6 @@ const CheckoutPage = () => {
         
         if (storeError) {
           console.error('Error storing guest session:', storeError);
-        } else {
-          console.log('✅ Guest checkout data stored in session');
         }
       } catch (error) {
         console.error('Error creating guest session:', error);
@@ -679,15 +633,6 @@ const CheckoutPage = () => {
           {/* OTP SECTION: Only show for guests (completely hidden if user is authenticated) */}
           {(() => {
             const shouldShowOTP = authReady && step === 'otp' && !user && !sessionUser && !authedUser;
-            console.log('👁️ CHECKOUT DEBUG - OTP Section Render Check:', {
-              authReady,
-              step,
-              user: user ? { email: user.email } : null,
-              sessionUser: sessionUser ? { email: sessionUser.email } : null,
-              authedUser: authedUser ? { email: authedUser.email } : null,
-              shouldShowOTP,
-              renderCondition: `authReady:${authReady} && step:${step} === 'otp' && !user:${!user} && !sessionUser:${!sessionUser} && !authedUser:${!authedUser}`
-            });
             return shouldShowOTP;
           })() && (
             <>

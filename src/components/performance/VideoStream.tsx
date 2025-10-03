@@ -105,18 +105,17 @@ export const VideoStream = ({
 
       // HLS event handlers
       hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-        console.log('HLS: Media attached');
+        // Media attached successfully
       });
 
       hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-        console.log('HLS: Manifest parsed, found', data.levels.length, 'quality levels');
         handleLoadedData();
         
         if (autoPlay) {
           const playPromise = video.play();
           if (playPromise !== undefined) {
-            playPromise.catch((error) => {
-              console.log('Autoplay prevented:', error);
+            playPromise.catch(() => {
+              // Autoplay prevented by browser
             });
           }
         }
@@ -126,15 +125,12 @@ export const VideoStream = ({
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
-              console.log('HLS: Fatal network error, trying to recover');
               hls.startLoad();
               break;
             case Hls.ErrorTypes.MEDIA_ERROR:
-              console.log('HLS: Fatal media error, trying to recover');
               hls.recoverMediaError();
               break;
             default:
-              console.log('HLS: Fatal error, destroying HLS');
               hls.destroy();
               handleError(data);
               break;
@@ -159,8 +155,8 @@ export const VideoStream = ({
         video.addEventListener('loadeddata', () => {
           const playPromise = video.play();
           if (playPromise !== undefined) {
-            playPromise.catch((error) => {
-              console.log('HLS autoplay prevented:', error);
+            playPromise.catch(() => {
+              // Autoplay prevented by browser
             });
           }
         }, { once: true });
@@ -173,8 +169,8 @@ export const VideoStream = ({
         video.addEventListener('loadeddata', () => {
           const playPromise = video.play();
           if (playPromise !== undefined) {
-            playPromise.catch((error) => {
-              console.log('MP4 autoplay prevented:', error);
+            playPromise.catch(() => {
+              // Autoplay prevented by browser
             });
           }
         }, { once: true });

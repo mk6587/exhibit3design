@@ -35,7 +35,6 @@ const ProductImagesTab: React.FC<ProductImagesTabProps> = ({
 
     try {
       const compressedFile = await imageCompression(file, options);
-      console.log(`Original size: ${(file.size / 1024 / 1024).toFixed(2)}MB, Compressed size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
       return compressedFile;
     } catch (error) {
       console.error('Error compressing image:', error);

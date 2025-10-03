@@ -67,17 +67,10 @@ const FeaturedProducts = () => {
               loop
               muted
               playsInline
-              onLoadStart={() => {
-                console.log('Video load started');
-                setIsVideoLoaded(false);
-              }}
-              onLoadedData={() => {
-                console.log('Video loaded successfully');
-                setIsVideoLoaded(true);
-              }}
+              onLoadStart={() => setIsVideoLoaded(false)}
+              onLoadedData={() => setIsVideoLoaded(true)}
               onError={(error) => {
                 console.error('Video loading error:', error);
-                console.error('Video URL:', videoUrl);
               }}
             />
             <div className="absolute inset-0 bg-black/20" />

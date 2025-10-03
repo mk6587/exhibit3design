@@ -242,8 +242,6 @@ export const trackFilterApplied = (filterType: string, filterValue: string, resu
       engagement_time_msec: 100
     }
   });
-
-  console.log('GA4: filter_applied tracked', { filterType, filterValue, resultsCount });
 };
 
 // Track sort changes
@@ -257,8 +255,6 @@ export const trackSortChanged = (sortType: string, resultsCount: number) => {
       engagement_time_msec: 100
     }
   });
-
-  console.log('GA4: sort_changed tracked', { sortType, resultsCount });
 };
 
 // Track filters cleared
@@ -272,8 +268,6 @@ export const trackFiltersCleared = (previousFiltersCount: number, resultsCount: 
       engagement_time_msec: 100
     }
   });
-
-  console.log('GA4: filters_cleared tracked', { previousFiltersCount, resultsCount });
 };
 
 // Declare gtag function for TypeScript

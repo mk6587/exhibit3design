@@ -29,8 +29,6 @@ const ProductsPage = () => {
   const [sort, setSort] = useState("latest");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
-  console.log('Raw products from context:', products); // Debug log
-  
   // Convert products to match ProductCard interface
   const allProducts: Product[] = products.map(product => ({
     id: product.id,
@@ -42,15 +40,10 @@ const ProductsPage = () => {
     tags: product.tags || [] // Ensure tags is always an array
   }));
 
-  console.log('Converted products:', allProducts); // Debug log
-
   // Get unique tags from products and organize into categories using the new mapping system
   const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags || [])));
-  console.log('All available tags:', allTags); // Debug log
   
   const filterCategories = getFilterCategories(allTags);
-  
-  console.log('Filter categories with tags:', filterCategories); // Debug log
   
   // Filter and sort products
   const filteredProducts = allProducts

@@ -161,20 +161,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   useEffect(() => {
-    console.log('🔧 AUTH CONTEXT DEBUG - Setting up auth state listener');
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('🔄 AUTH CONTEXT DEBUG - Auth state changed:', {
-          event,
-          userEmail: session?.user?.email || 'No user',
-          userId: session?.user?.id || 'No ID',
-          hasSession: !!session,
-          hasUser: !!session?.user,
-          sessionExpiry: session?.expires_at ? new Date(session.expires_at * 1000).toISOString() : 'No expiry',
-          timestamp: new Date().toISOString()
-        });
-        console.log('Session details:', { hasSession: !!session, hasUser: !!session?.user });
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -203,7 +192,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               // Check for guest session data to transfer
               const guestSessionToken = localStorage.getItem('guest_session_token');
               if (guestSessionToken) {
-                console.log('🔄 Transferring guest session data to user profile');
                 const { error } = await supabase.rpc('transfer_guest_session_to_profile', {
                   p_user_id: session.user.id,
                   p_session_token: guestSessionToken
@@ -212,7 +200,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 if (error) {
                   console.error('Error transferring guest session:', error);
                 } else {
-                  console.log('✅ Guest session data transferred successfully');
                   localStorage.removeItem('guest_session_token');
                   // Refresh profile to show updated data
                   const updatedProfile = await fetchProfile(session.user.id);
@@ -233,16 +220,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     );
 
     // Check for existing session
-    console.log('🔍 AUTH CONTEXT DEBUG - Checking for existing session on mount');
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('🔍 AUTH CONTEXT DEBUG - Initial session check result:', {
-        hasSession: !!session,
-        userEmail: session?.user?.email || 'No user',
-        userId: session?.user?.id || 'No ID',
-        sessionExpiry: session?.expires_at ? new Date(session.expires_at * 1000).toISOString() : 'No expiry',
-        timestamp: new Date().toISOString()
-      });
-      console.log('Initial session check:', session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -280,12 +258,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const signUp = async (email: string, password: string) => {
-    console.log(`[${new Date().toISOString()}] 🚀 AUTH: Starting signup process for ${email}`);
-    
     // Validate email before proceeding
     const emailValidation = validateEmail(email);
     if (!emailValidation.isValid) {
-      console.error(`[${new Date().toISOString()}] ❌ AUTH: Email validation failed: ${emailValidation.error}`);
       return { error: { message: emailValidation.error } };
     }
     
@@ -299,34 +274,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        console.error(`[${new Date().toISOString()}] ❌ AUTH: Signup failed:`, error);
+        console.error('Signup failed:', error);
         return { error };
       }
 
-      console.log(`[${new Date().toISOString()}] ✅ AUTH: Account created successfully`);
-
       return { error: null };
     } catch (error) {
-      console.error(`[${new Date().toISOString()}] ❌ AUTH: Signup exception:`, error);
+      console.error('Signup exception:', error);
       return { error };
     }
   };
 
   const signIn = async (email: string, password: string) => {
-    const signinStartTime = Date.now();
-    console.log(`[${new Date().toISOString()}] 🔑 AUTH: Starting signin process for ${email}`);
-    
     try {
-      console.log(`[${new Date().toISOString()}] 🔐 AUTH: Attempting Supabase authentication`);
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
-        const duration = Date.now() - signinStartTime;
-        console.error(`[${new Date().toISOString()}] ❌ AUTH: Signin failed after ${duration}ms:`, error.message);
-        
         // Convert technical errors to user-friendly messages
         let userMessage = error.message;
         if (error.message?.includes('Invalid login credentials')) {
@@ -342,19 +308,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return { error: { ...error, message: userMessage } };
       }
 
-      const duration = Date.now() - signinStartTime;
-      console.log(`[${new Date().toISOString()}] ✅ AUTH: Signin successful in ${duration}ms`);
       return { error: null };
     } catch (error) {
-      const duration = Date.now() - signinStartTime;
-      console.error(`[${new Date().toISOString()}] ❌ AUTH: Signin exception after ${duration}ms:`, error);
+      console.error('Signin exception:', error);
       return { error: { message: 'An unexpected error occurred. Please try again.' } };
     }
   };
 
   const signInWithGoogle = async () => {
-    console.log(`[${new Date().toISOString()}] 🔑 AUTH: Starting Google OAuth signin`);
-    
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -364,14 +325,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        console.error(`[${new Date().toISOString()}] ❌ AUTH: Google signin failed:`, error);
+        console.error('Google signin failed:', error);
         return { error };
       }
 
-      console.log(`[${new Date().toISOString()}] ✅ AUTH: Google OAuth initiated successfully`);
       return { error: null };
     } catch (error) {
-      console.error(`[${new Date().toISOString()}] ❌ AUTH: Google signin exception:`, error);
+      console.error('Google signin exception:', error);
       return { error: { message: 'Failed to sign in with Google. Please try again.' } };
     }
   };
@@ -385,23 +345,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const resetPassword = async (email: string) => {
-    console.log(`[${new Date().toISOString()}] 🔄 AUTH: Starting password reset for ${email}`);
-    
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 
       if (error) {
-        console.error(`[${new Date().toISOString()}] ❌ AUTH: Password reset failed:`, error);
+        console.error('Password reset failed:', error);
         return { error };
       }
 
-      console.log(`[${new Date().toISOString()}] ✅ AUTH: Password reset email sent successfully`);
-
       return { error: null };
     } catch (error) {
-      console.error(`[${new Date().toISOString()}] ❌ AUTH: Password reset exception:`, error);
+      console.error('Password reset exception:', error);
       return { error };
     }
   };
