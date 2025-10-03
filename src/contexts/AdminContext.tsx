@@ -17,17 +17,17 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
-  // Check if current user is an admin
+  // Check if current user is an admin using user_roles table
   const checkAdminStatus = async (): Promise<boolean> => {
     try {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (!currentUser) return false;
 
-      const { data: adminRecord, error } = await supabase
-        .from('admins')
-        .select('is_active')
+      const { data: roleRecord, error } = await supabase
+        .from('user_roles')
+        .select('role')
         .eq('user_id', currentUser.id)
-        .eq('is_active', true)
+        .eq('role', 'admin')
         .maybeSingle();
 
       if (error) {
@@ -35,7 +35,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
         return false;
       }
 
-      return !!adminRecord;
+      return !!roleRecord;
     } catch (error) {
       console.error('Error in checkAdminStatus:', error);
       return false;
