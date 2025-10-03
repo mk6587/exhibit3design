@@ -16,6 +16,7 @@ import { Loader2, User, ShoppingBag, LogOut, Download, ShoppingCart } from "luci
 import { toast } from "@/hooks/use-toast";
 import { toast as sonnerToast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
+import { profileUpdateSchema } from "@/lib/validationSchemas";
 
 interface Order {
   id: string;
@@ -111,15 +112,28 @@ const ProfilePage = () => {
     setUpdating(true);
 
     try {
+      // Validate input with Zod
+      const profileData = {
+        firstName,
+        lastName,
+        phoneNumber,
+        addressLine1,
+        city,
+        postcode,
+        country
+      };
+
+      const validatedData = profileUpdateSchema.parse(profileData);
+
       const { error } = await updateProfile({
-        first_name: firstName,
-        last_name: lastName,
-        country: country,
-        city: city,
-        phone_number: phoneNumber,
-        address_line_1: addressLine1,
+        first_name: validatedData.firstName,
+        last_name: validatedData.lastName,
+        country: validatedData.country,
+        city: validatedData.city,
+        phone_number: validatedData.phoneNumber,
+        address_line_1: validatedData.addressLine1,
         state_region: stateRegion,
-        postcode: postcode,
+        postcode: validatedData.postcode,
       });
 
       if (error) {
@@ -129,12 +143,22 @@ const ProfilePage = () => {
           variant: "destructive",
         });
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred.",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      if (error.errors) {
+        // Zod validation error
+        const errorMessage = error.errors.map((err: any) => err.message).join(', ');
+        toast({
+          title: "Validation Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setUpdating(false);
     }

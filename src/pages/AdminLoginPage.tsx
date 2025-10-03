@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useToast } from '@/hooks/use-toast';
+import { adminLoginSchema } from '@/lib/validationSchemas';
 
 const AdminLoginPage = () => {
   const [email, setEmail] = useState('');
@@ -20,20 +21,41 @@ const AdminLoginPage = () => {
     e.preventDefault();
     setLoading(true);
 
-    const result = await login(email, password);
-    
-    if (result.success) {
-      toast({
-        title: "Login successful",
-        description: "Welcome back!",
-      });
-      navigate('/admin');
-    } else {
-      toast({
-        title: "Login failed",
-        description: result.error || "Invalid credentials or insufficient privileges",
-        variant: "destructive",
-      });
+    try {
+      // Validate credentials with Zod
+      const validatedData = adminLoginSchema.parse({ email, password });
+
+      const result = await login(validatedData.email, validatedData.password);
+      
+      if (result.success) {
+        toast({
+          title: "Login successful",
+          description: "Welcome back!",
+        });
+        navigate('/admin');
+      } else {
+        toast({
+          title: "Login failed",
+          description: result.error || "Invalid credentials or insufficient privileges",
+          variant: "destructive",
+        });
+      }
+    } catch (validationError: any) {
+      if (validationError.errors) {
+        // Zod validation error
+        const errorMessage = validationError.errors.map((err: any) => err.message).join(', ');
+        toast({
+          title: "Validation Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred.",
+          variant: "destructive",
+        });
+      }
     }
 
     setLoading(false);

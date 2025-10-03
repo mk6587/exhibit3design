@@ -14,6 +14,7 @@ import SEOHead from '@/components/SEO/SEOHead';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { otpSchema } from '@/lib/validationSchemas';
 
 // Turnstile site key
 const TURNSTILE_SITE_KEY = '0x4AAAAAABrwTuOgXHn1AdM8';
@@ -56,8 +57,15 @@ const OTPAuthPage = () => {
     e.preventDefault();
     setError('');
 
-    if (!email) {
-      setError('Email is required');
+    try {
+      // Validate email with Zod (we only validate email, not OTP at this stage)
+      const emailValidation = otpSchema.pick({ email: true }).parse({ email });
+    } catch (validationError: any) {
+      if (validationError.errors) {
+        setError(validationError.errors[0]?.message || 'Invalid email address');
+      } else {
+        setError('Invalid email address');
+      }
       return;
     }
 
@@ -90,8 +98,24 @@ const OTPAuthPage = () => {
     e.preventDefault();
     setError('');
 
-    if (!otp || otp.length !== 4) {
-      setError('Please enter a 4-digit code');
+    try {
+      // Validate both email and OTP with Zod
+      // Note: OTP schema expects 6 digits, but we're using 4-digit OTPs
+      // So we'll validate manually for the 4-digit requirement
+      if (!otp || otp.length !== 4) {
+        setError('Please enter a 4-digit code');
+        return;
+      }
+      if (!/^\d{4}$/.test(otp)) {
+        setError('OTP must contain only numbers');
+        return;
+      }
+    } catch (validationError: any) {
+      if (validationError.errors) {
+        setError(validationError.errors[0]?.message || 'Invalid input');
+      } else {
+        setError('Invalid input');
+      }
       return;
     }
 

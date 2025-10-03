@@ -18,6 +18,7 @@ import { trackBeginCheckout, trackAddShippingInfo, trackAddPaymentInfo } from "@
 import PaymentRedirectModal from "@/components/checkout/PaymentRedirectModal";
 import SEOHead from "@/components/SEO/SEOHead";
 import { ArrowLeft } from "lucide-react";
+import { checkoutFormSchema } from "@/lib/validationSchemas";
 
 interface CustomerInfo {
   firstName: string;
@@ -178,21 +179,22 @@ const CheckoutPage = () => {
   }, [customerInfo.address, customerInfo.city, customerInfo.country, cartItems, cartTotal]);
 
   const validateForm = () => {
-    const errors: Record<string, string> = {};
-    if (!customerInfo.firstName.trim()) errors.firstName = "First name is required";
-    if (!customerInfo.lastName.trim()) errors.lastName = "Last name is required";
-    if (!customerInfo.email.trim()) errors.email = "Email address is required";
-    if (!customerInfo.mobile.trim()) errors.mobile = "Mobile number is required";
-    if (!customerInfo.address.trim()) errors.address = "Address is required";
-    if (!customerInfo.city.trim()) errors.city = "City is required";
-    if (!customerInfo.postalCode.trim()) errors.postalCode = "Postal code is required";
-    if (!customerInfo.country.trim()) errors.country = "Country is required";
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (customerInfo.email && !emailRegex.test(customerInfo.email)) {
-      errors.email = "Please enter a valid email address";
+    try {
+      checkoutFormSchema.parse(customerInfo);
+      setValidationErrors({});
+      return true;
+    } catch (error: any) {
+      const errors: Record<string, string> = {};
+      if (error.errors) {
+        error.errors.forEach((err: any) => {
+          if (err.path && err.path.length > 0) {
+            errors[err.path[0]] = err.message;
+          }
+        });
+      }
+      setValidationErrors(errors);
+      return false;
     }
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
   };
 
   const saveUserProfile = async () => {
