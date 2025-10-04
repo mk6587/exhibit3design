@@ -25,15 +25,16 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Use security definer function that bypasses RLS
       const { data, error } = await supabase
-        .rpc('check_user_admin_status', { check_user_id: currentUser.id })
-        .single();
+        .rpc('check_user_admin_status', { check_user_id: currentUser.id });
 
       if (error) {
         console.error('Error checking admin status:', error);
         return false;
       }
 
-      return data?.is_admin && data?.is_active;
+      // RPC returns an array, get the first result
+      const result = Array.isArray(data) ? data[0] : data;
+      return result?.is_admin && result?.is_active;
     } catch (error) {
       console.error('Error in checkAdminStatus:', error);
       return false;
