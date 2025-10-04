@@ -3,12 +3,14 @@ import { useProducts } from "@/contexts/ProductsContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useState } from "react";
 import "@/components/ui/rich-text-editor.css";
 const FeaturedProducts = () => {
   const {
     products,
     loading
   } = useProducts();
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
@@ -52,20 +54,29 @@ const FeaturedProducts = () => {
   }
   return <>
       {/* Full-width hero section */}
-      <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden">
-        {/* Instant-loading gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-purple-800 to-blue-900" />
-        
+      <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
         {hasVideo && videoUrl ? (
           <>
-            {/* Video loads with gradient showing underneath */}
+            {/* Poster image - shows until video is loaded */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
+              style={{
+                backgroundImage: `url("https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg")`,
+                opacity: videoLoaded ? 0 : 1,
+                pointerEvents: videoLoaded ? 'none' : 'auto'
+              }}
+            />
+            
+            {/* Video - hidden until fully loaded */}
             <video
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-opacity duration-500"
+              style={{ opacity: videoLoaded ? 1 : 0 }}
               autoPlay
               loop
               muted
               playsInline
               preload="auto"
+              onCanPlayThrough={() => setVideoLoaded(true)}
               onError={(e) => {
                 console.error('Video loading error:', e);
               }}
