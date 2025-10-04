@@ -20,12 +20,28 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   // Check if current user is an admin using security definer function
   const checkAdminStatus = async (): Promise<boolean> => {
     try {
+      console.log('Starting admin status check...');
       const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (!currentUser) return false;
+      console.log('Current user:', currentUser?.id);
+      
+      if (!currentUser) {
+        console.log('No current user found');
+        return false;
+      }
 
-      // Use security definer function that bypasses RLS
-      const { data, error } = await supabase
+      console.log('Calling check_user_admin_status RPC...');
+      
+      // Add timeout to prevent infinite hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Admin check timeout')), 5000)
+      );
+      
+      const rpcPromise = supabase
         .rpc('check_user_admin_status', { check_user_id: currentUser.id });
+
+      const { data, error } = await Promise.race([rpcPromise, timeoutPromise]) as any;
+
+      console.log('RPC response:', { data, error });
 
       if (error) {
         console.error('Error checking admin status:', error);
@@ -34,6 +50,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
 
       // RPC returns an array, get the first result
       const result = Array.isArray(data) ? data[0] : data;
+      console.log('Admin check result:', result);
       return result?.is_admin && result?.is_active;
     } catch (error) {
       console.error('Error in checkAdminStatus:', error);
