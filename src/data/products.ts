@@ -1,3 +1,5 @@
+import exhibitionPlaceholder from '@/assets/exhibition-placeholder.jpg';
+
 export interface Product {
   id: number;
   title: string;
@@ -18,7 +20,7 @@ export const products: Product[] = [
     id: 1,
     title: "Modern Exhibition Stand",
     price: 149,
-    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
+    image: exhibitionPlaceholder,
     tags: ["Modern", "4-sided", "Large", "Innovation", "SKP", "3DS", "MAX", "PDF"],
     description: "A modern exhibition stand design perfect for showcasing your products at trade shows and exhibitions.",
     longDescription: `
@@ -44,8 +46,8 @@ export const products: Product[] = [
       </ul>
     `,
     images: [
-      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop"
+      exhibitionPlaceholder,
+      exhibitionPlaceholder
     ],
     fileFormats: ["SKP", "3DS", "MAX", "PDF"],
     fileSize: "258 MB",
@@ -55,7 +57,7 @@ export const products: Product[] = [
     id: 2,
     title: "Corner Exhibition Booth",
     price: 199,
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
+    image: exhibitionPlaceholder,
     tags: ["2-sided", "Modern", "Large", "Meeting-room", "Premium", "SKP", "MAX"],
     description: "Corner exhibition booth design maximizing visibility from multiple angles.",
     longDescription: `
@@ -79,8 +81,8 @@ export const products: Product[] = [
       </ul>
     `,
     images: [
-      "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop"
+      exhibitionPlaceholder,
+      exhibitionPlaceholder
     ],
     fileFormats: ["SKP", "MAX", "PDF"],
     fileSize: "312 MB",
@@ -90,7 +92,7 @@ export const products: Product[] = [
     id: 3,
     title: "Island Exhibition Design",
     price: 249,
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
+    image: exhibitionPlaceholder,
     tags: ["4-sided", "Luxury", "Large", "Interactive", "Premium", "3DS", "MAX"],
     description: "Premium island exhibition design for maximum impact and visitor engagement.",
     longDescription: `
@@ -114,8 +116,8 @@ export const products: Product[] = [
       </ul>
     `,
     images: [
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop"
+      exhibitionPlaceholder,
+      exhibitionPlaceholder
     ],
     fileFormats: ["3DS", "MAX", "PDF"],
     fileSize: "445 MB",
@@ -125,7 +127,7 @@ export const products: Product[] = [
     id: 4,
     title: "Minimalist Trade Show Stand",
     price: 99,
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop",
+    image: exhibitionPlaceholder,
     tags: ["1-sided", "Minimal", "Small", "Economy", "SKP", "PDF"],
     description: "Clean minimalist design perfect for startups and small businesses.",
     longDescription: `
@@ -149,7 +151,7 @@ export const products: Product[] = [
       </ul>
     `,
     images: [
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop"
+      exhibitionPlaceholder
     ],
     fileFormats: ["SKP", "PDF"],
     fileSize: "89 MB"
@@ -158,7 +160,7 @@ export const products: Product[] = [
     id: 5,
     title: "Tech Innovation Booth",
     price: 299,
-    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop",
+    image: exhibitionPlaceholder,
     tags: ["3-sided", "Futuristic", "Medium", "Interactive", "Innovation", "MAX"],
     description: "High-tech exhibition booth with interactive displays and modern aesthetics.",
     longDescription: `
@@ -184,8 +186,8 @@ export const products: Product[] = [
       </ul>
     `,
     images: [
-      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop"
+      exhibitionPlaceholder,
+      exhibitionPlaceholder
     ],
     fileFormats: ["MAX", "3DS", "PDF"],
     fileSize: "678 MB"
@@ -194,7 +196,7 @@ export const products: Product[] = [
     id: 6,
     title: "Luxury Brand Pavilion",
     price: 399,
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+    image: exhibitionPlaceholder,
     tags: ["4-sided", "Luxury", "Large", "Wood", "Premium", "Brand", "Meeting-room", "MAX", "3DS"],
     description: "Elegant luxury pavilion design for high-end brands and premium products.",
     longDescription: `
@@ -220,8 +222,8 @@ export const products: Product[] = [
       </ul>
     `,
     images: [
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop"
+      exhibitionPlaceholder,
+      exhibitionPlaceholder
     ],
     fileFormats: ["MAX", "3DS", "SKP", "PDF"],
     fileSize: "892 MB"

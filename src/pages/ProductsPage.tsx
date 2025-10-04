@@ -11,6 +11,7 @@ import { Search, X } from "lucide-react";
 import { trackViewItemList, trackSearch, trackFilterApplied, trackSortChanged, trackFiltersCleared } from "@/services/ga4Analytics";
 import { FilterBar } from "@/components/product/FilterBar";
 import { getFilterCategories, doesTagMatch } from "@/utils/tagMapping";
+import exhibitionPlaceholder from "@/assets/exhibition-placeholder.jpg";
 
 const ProductsPage = () => {
   const { products: contextProducts } = useProducts();
@@ -33,15 +34,26 @@ const ProductsPage = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
   // Convert products to match ProductCard interface
-  const allProducts: Product[] = products.map(product => ({
-    id: product.id,
-    title: product.title,
-    price: product.price,
-    image: (product.images[0] && !product.images[0].startsWith('blob:')) 
-      ? product.images[0] 
-      : "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
-    tags: product.tags || [] // Ensure tags is always an array
-  }));
+  const allProducts: Product[] = products.map(product => {
+    const hasValidImage = product.images && 
+                         Array.isArray(product.images) && 
+                         product.images.length > 0 && 
+                         product.images[0] && 
+                         !product.images[0].startsWith('blob:');
+    
+    // Debug logging (remove after testing)
+    if (!hasValidImage) {
+      console.log('Product missing image:', product.id, product.title, product.images);
+    }
+    
+    return {
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: hasValidImage ? product.images[0] : exhibitionPlaceholder,
+      tags: product.tags || [] // Ensure tags is always an array
+    };
+  });
 
   // Get unique tags from products and organize into categories using the new mapping system
   const allTags = Array.from(new Set(allProducts.flatMap(product => product.tags || [])));

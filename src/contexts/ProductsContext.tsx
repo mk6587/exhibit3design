@@ -2,6 +2,7 @@
 import React, { createContext, useContext, ReactNode, useState, useCallback } from 'react';
 import { useSupabaseProducts, Product } from '@/hooks/useSupabaseProducts';
 import { toast } from 'sonner';
+import exhibitionPlaceholder from '@/assets/exhibition-placeholder.jpg';
 
 export interface CartItem {
   id: number;
@@ -50,7 +51,7 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({ children }) 
   const addToCart = useCallback((product: Product, quantity = 1, showToast = true) => {
     const image = Array.isArray(product.images) && product.images.length > 0 
       ? product.images[0] 
-      : 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop';
+      : exhibitionPlaceholder;
     
     setCartItems(prev => {
       const existingItem = prev.find(item => item.id === product.id);
