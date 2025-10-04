@@ -94,8 +94,12 @@ const App = () => {
                       <Route path="/reset-password" element={<ResetPasswordPage />} />
                       <Route path="/confirm-email" element={<EmailConfirmationPage />} />
                       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-                      <Route path="/admin" element={<AdminLoginPage />} />
                       <Route path="/admin/login" element={<AdminLoginPage />} />
+                      <Route path="/admin" element={
+                        <ProtectedAdminRoute>
+                          <AdminPage />
+                        </ProtectedAdminRoute>
+                      } />
                       <Route path="/admin/dashboard" element={
                         <ProtectedAdminRoute>
                           <AdminPage />

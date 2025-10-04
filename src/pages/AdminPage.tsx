@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useProducts } from '@/contexts/ProductsContext';
@@ -9,16 +9,10 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { LogOut, Edit, Eye, Trash2 } from 'lucide-react';
 
 const AdminPage = () => {
-  const { isAuthenticated, logout } = useAdmin();
+  const { logout } = useAdmin();
   const { products, loading, deleteProduct } = useProducts();
   const navigate = useNavigate();
   const [deletingProductId, setDeletingProductId] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/admin/login');
-    }
-  }, [isAuthenticated, navigate]);
 
   const handleLogout = () => {
     logout();
@@ -35,10 +29,6 @@ const AdminPage = () => {
       setDeletingProductId(null);
     }
   };
-
-  if (!isAuthenticated) {
-    return null;
-  }
 
   if (loading) {
     return (
