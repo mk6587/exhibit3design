@@ -61,7 +61,7 @@ const FeaturedProducts = () => {
             <div 
               className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
               style={{
-                backgroundImage: `url("https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg")`,
+                backgroundImage: `url("https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&h=1080&fit=crop&crop=center&auto=format&q=80")`,
                 opacity: videoLoaded ? 0 : 1,
                 pointerEvents: videoLoaded ? 'none' : 'auto'
               }}
