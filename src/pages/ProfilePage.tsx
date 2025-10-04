@@ -165,8 +165,27 @@ const ProfilePage = () => {
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
+    console.log('ProfilePage: Logout button clicked');
+    try {
+      console.log('ProfilePage: Calling signOut...');
+      await signOut();
+      console.log('ProfilePage: SignOut successful, navigating...');
+      toast({
+        title: "Signed out successfully",
+      });
+      navigate("/", { replace: true });
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    } catch (error) {
+      console.error('ProfilePage: Sign out error:', error);
+      toast({
+        title: "Signed out",
+        description: "Logging you out...",
+      });
+      navigate("/", { replace: true });
+      window.location.reload();
+    }
   };
 
   const handleRepurchase = (order: Order) => {
@@ -199,16 +218,23 @@ const ProfilePage = () => {
   };
 
   if (authLoading) {
+    console.log('ProfilePage: Auth loading...');
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-16 flex justify-center">
-          <Loader2 className="h-8 w-8 animate-spin" />
+        <div className="container mx-auto px-4 py-16 flex justify-center items-center">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+            <p className="text-muted-foreground">Loading your profile...</p>
+          </div>
         </div>
       </Layout>
     );
   }
 
+  console.log('ProfilePage: User:', user?.email, 'Profile:', !!profile);
+
   if (!user || !profile) {
+    console.log('ProfilePage: No user or profile, redirecting to auth');
     return null;
   }
 

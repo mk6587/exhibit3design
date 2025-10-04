@@ -360,18 +360,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
 
   const signOut = async () => {
+    console.log('AuthContext: signOut called');
     try {
+      console.log('AuthContext: Calling Supabase signOut');
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      console.log('AuthContext: Supabase signOut completed', error ? 'with error' : 'successfully');
       
+      if (error) {
+        console.error('AuthContext: Supabase signOut error:', error);
+        throw error;
+      }
+      
+      // Clear state
+      console.log('AuthContext: Clearing local state');
       setUser(null);
       setSession(null);
       setProfile(null);
       
       // Clear any stored tokens
       localStorage.removeItem('guest_session_token');
+      console.log('AuthContext: SignOut complete');
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error('AuthContext: Error in signOut:', error);
       // Force clear state even if API call fails
       setUser(null);
       setSession(null);
