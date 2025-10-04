@@ -141,7 +141,7 @@ const ProductsPage = () => {
                 onKeyDown={handleSearchKeyDown}
                 className="flex-1"
               />
-              <Button onClick={handleSearch} size="icon">
+              <Button onClick={handleSearch} size="icon" className="h-[30px] w-[30px]">
                 <Search className="h-4 w-4" />
               </Button>
             </div>
