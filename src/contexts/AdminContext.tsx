@@ -8,7 +8,7 @@ interface AdminContextType {
   user: User | null;
   login: (email: string, password: string, captchaToken?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
-  checkAdminStatus: () => Promise<boolean>;
+  checkAdminStatus: (userId: string) => Promise<boolean>;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -18,30 +18,10 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   // Check if current user is an admin using security definer function
-  const checkAdminStatus = async (): Promise<boolean> => {
+  const checkAdminStatus = async (userId: string): Promise<boolean> => {
     try {
-      console.log('Starting admin status check...');
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      console.log('Current user:', currentUser?.id);
-      
-      if (!currentUser) {
-        console.log('No current user found');
-        return false;
-      }
-
-      console.log('Calling check_user_admin_status RPC...');
-      
-      // Add timeout to prevent infinite hanging
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Admin check timeout')), 5000)
-      );
-      
-      const rpcPromise = supabase
-        .rpc('check_user_admin_status', { check_user_id: currentUser.id });
-
-      const { data, error } = await Promise.race([rpcPromise, timeoutPromise]) as any;
-
-      console.log('RPC response:', { data, error });
+      const { data, error } = await supabase
+        .rpc('check_user_admin_status', { check_user_id: userId });
 
       if (error) {
         console.error('Error checking admin status:', error);
@@ -50,8 +30,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
 
       // RPC returns an array, get the first result
       const result = Array.isArray(data) ? data[0] : data;
-      console.log('Admin check result:', result);
-      return result?.is_admin && result?.is_active;
+      return !!(result?.is_admin && result?.is_active);
     } catch (error) {
       console.error('Error in checkAdminStatus:', error);
       return false;
@@ -64,19 +43,23 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (currentUser) {
         setUser(currentUser);
-        const isAdmin = await checkAdminStatus();
+        const isAdmin = await checkAdminStatus(currentUser.id);
         setIsAuthenticated(isAdmin);
       }
     };
 
     initAuth();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    // Listen for auth changes - avoid async operations directly in callback
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         setUser(session.user);
-        const isAdmin = await checkAdminStatus();
-        setIsAuthenticated(isAdmin);
+        // Defer async operation to prevent deadlock
+        setTimeout(() => {
+          checkAdminStatus(session.user.id).then(isAdmin => {
+            setIsAuthenticated(isAdmin);
+          });
+        }, 0);
       } else {
         setUser(null);
         setIsAuthenticated(false);
@@ -102,7 +85,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (data.user) {
         setUser(data.user);
-        const isAdmin = await checkAdminStatus();
+        const isAdmin = await checkAdminStatus(data.user.id);
         
         if (!isAdmin) {
           await supabase.auth.signOut();
