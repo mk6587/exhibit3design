@@ -71,6 +71,8 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (email: string, password: string, captchaToken?: string): Promise<{ success: boolean; error?: string }> => {
     try {
+      console.log('AdminContext: Starting login for', email);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -79,25 +81,35 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
         } : undefined
       });
 
+      console.log('AdminContext: Supabase auth result', { user: data?.user?.id, error: error?.message });
+
       if (error) {
+        console.error('AdminContext: Auth error', error);
         return { success: false, error: error.message };
       }
 
       if (data.user) {
+        console.log('AdminContext: User authenticated, checking admin status...');
         setUser(data.user);
+        
         const isAdmin = await checkAdminStatus(data.user.id);
+        console.log('AdminContext: Admin status check result:', isAdmin);
         
         if (!isAdmin) {
+          console.log('AdminContext: User is not admin, signing out');
           await supabase.auth.signOut();
           return { success: false, error: 'Access denied: Admin privileges required' };
         }
 
+        console.log('AdminContext: Login successful');
         setIsAuthenticated(true);
         return { success: true };
       }
 
+      console.log('AdminContext: No user data returned');
       return { success: false, error: 'Login failed' };
     } catch (error: any) {
+      console.error('AdminContext: Unexpected error', error);
       return { success: false, error: error.message || 'An unexpected error occurred' };
     }
   };

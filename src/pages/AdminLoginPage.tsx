@@ -38,10 +38,15 @@ const AdminLoginPage = () => {
     setLoading(true);
 
     try {
+      console.log('Starting admin login...');
+      
       // Validate credentials with Zod
       const validatedData = adminLoginSchema.parse({ email, password });
+      console.log('Credentials validated');
 
+      console.log('Calling login function...');
       const result = await login(validatedData.email, validatedData.password, captchaToken);
+      console.log('Login result:', result);
       
       if (result.success) {
         toast({
@@ -60,6 +65,7 @@ const AdminLoginPage = () => {
         setCaptchaToken('');
       }
     } catch (validationError: any) {
+      console.error('Login error:', validationError);
       if (validationError.errors) {
         // Zod validation error
         const errorMessage = validationError.errors.map((err: any) => err.message).join(', ');
@@ -71,13 +77,17 @@ const AdminLoginPage = () => {
       } else {
         toast({
           title: "Error",
-          description: "An unexpected error occurred.",
+          description: validationError.message || "An unexpected error occurred.",
           variant: "destructive",
         });
       }
+      // Reset captcha on error
+      captchaRef.current?.reset();
+      setCaptchaToken('');
+    } finally {
+      console.log('Login process completed, setting loading to false');
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
