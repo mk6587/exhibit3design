@@ -60,9 +60,11 @@ const FeaturedProducts = () => {
           <>
             <VideoStream
               src={videoUrl}
+              poster="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg"
               fallbackImage="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg"
               className="w-full h-full object-cover"
               style={{ objectPosition: 'center center' }}
+              priority={true}
               autoPlay
               loop
               muted

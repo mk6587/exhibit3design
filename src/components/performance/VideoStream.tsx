@@ -11,6 +11,7 @@ interface VideoStreamProps {
   muted?: boolean;
   loop?: boolean;
   playsInline?: boolean;
+  priority?: boolean; // New: Skip lazy loading for critical videos
   onLoadStart?: () => void;
   onLoadedData?: () => void;
   onError?: (error: any) => void;
@@ -27,6 +28,7 @@ export const VideoStream = ({
   muted = true,
   loop = true,
   playsInline = true,
+  priority = false, // Default to lazy loading
   onLoadStart,
   onLoadedData,
   onError,
@@ -36,10 +38,12 @@ export const VideoStream = ({
   const hlsRef = useRef<Hls | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [isIntersecting, setIsIntersecting] = useState(false);
+  const [isIntersecting, setIsIntersecting] = useState(priority); // Start immediately if priority
 
-  // Intersection Observer for lazy loading
+  // Intersection Observer for lazy loading (skip if priority)
   useEffect(() => {
+    if (priority) return; // Skip lazy loading for priority videos
+    
     const video = videoRef.current;
     if (!video) return;
 
@@ -56,7 +60,7 @@ export const VideoStream = ({
 
     observer.observe(video);
     return () => observer.disconnect();
-  }, []);
+  }, [priority]);
 
   const handleLoadStart = useCallback(() => {
     setIsLoading(true);
@@ -237,10 +241,10 @@ export const VideoStream = ({
         muted={muted}
         loop={loop}
         playsInline={playsInline}
-        preload={autoPlay ? 'auto' : 'metadata'}
+        preload={priority || autoPlay ? 'auto' : 'metadata'}
         style={style}
       >
-        {!isIntersecting && (
+        {!isIntersecting && !priority && (
           <source src={src} type="video/mp4" />
         )}
         Your browser does not support the video tag.
