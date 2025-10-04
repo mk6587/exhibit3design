@@ -22,31 +22,33 @@ const Header = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
   const handleSignOut = async () => {
+    console.log('Logout button clicked');
+    setIsMenuOpen(false);
+    
     try {
-      setIsMenuOpen(false);
+      console.log('Calling signOut...');
       await signOut();
+      console.log('SignOut successful');
       
       toast({
         title: "Signed out successfully",
         description: "You have been logged out of your account.",
       });
       
-      // Force navigation after successful logout
-      setTimeout(() => {
-        navigate("/", { replace: true });
-        window.location.reload(); // Force reload to clear all state
-      }, 100);
+      // Navigate to home and reload
+      navigate("/", { replace: true });
+      window.location.reload();
     } catch (error) {
       console.error('Sign out error:', error);
+      
+      // Still show success message and reload since local state is cleared
       toast({
         title: "Signed out",
         description: "You have been logged out.",
       });
-      // Navigate anyway even if there's an error
-      setTimeout(() => {
-        navigate("/", { replace: true });
-        window.location.reload();
-      }, 100);
+      
+      navigate("/", { replace: true });
+      window.location.reload();
     }
   };
 
