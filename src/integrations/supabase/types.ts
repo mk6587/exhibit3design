@@ -440,6 +440,13 @@ export type Database = {
         Args: { minutes_ago?: number; search_email: string }
         Returns: boolean
       }
+      check_user_admin_status: {
+        Args: { check_user_id: string }
+        Returns: {
+          is_active: boolean
+          is_admin: boolean
+        }[]
+      }
       cleanup_expired_guest_sessions: {
         Args: Record<PropertyKey, never>
         Returns: undefined

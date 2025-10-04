@@ -17,41 +17,23 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
-  // Check if current user is an admin using both user_roles AND admins table
+  // Check if current user is an admin using security definer function
   const checkAdminStatus = async (): Promise<boolean> => {
     try {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (!currentUser) return false;
 
-      // Check if user has admin role in user_roles table
-      const { data: roleRecord, error: roleError } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', currentUser.id)
-        .eq('role', 'admin')
-        .maybeSingle();
+      // Use security definer function that bypasses RLS
+      const { data, error } = await supabase
+        .rpc('check_user_admin_status', { check_user_id: currentUser.id })
+        .single();
 
-      if (roleError) {
-        console.error('Error checking admin role:', roleError);
+      if (error) {
+        console.error('Error checking admin status:', error);
         return false;
       }
 
-      if (!roleRecord) return false;
-
-      // Also verify user exists in admins table and is active
-      const { data: adminRecord, error: adminError } = await supabase
-        .from('admins')
-        .select('is_active')
-        .eq('user_id', currentUser.id)
-        .eq('is_active', true)
-        .maybeSingle();
-
-      if (adminError) {
-        console.error('Error checking admin record:', adminError);
-        return false;
-      }
-
-      return !!adminRecord;
+      return data?.is_admin && data?.is_active;
     } catch (error) {
       console.error('Error in checkAdminStatus:', error);
       return false;
