@@ -52,13 +52,15 @@ const FeaturedProducts = () => {
   }
   return <>
       {/* Full-width hero section */}
-      <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
+      <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden">
+        {/* Instant-loading gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-purple-800 to-blue-900" />
+        
         {hasVideo && videoUrl ? (
           <>
-            {/* Simple video with poster - no loading overlay for better UX */}
+            {/* Video loads with gradient showing underneath */}
             <video
               className="w-full h-full object-cover"
-              poster="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg"
               autoPlay
               loop
               muted
