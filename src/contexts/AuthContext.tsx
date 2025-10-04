@@ -360,34 +360,35 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
 
   const signOut = async () => {
-    console.log('AuthContext: signOut called');
+    console.log('AuthContext: signOut called - forcing complete logout');
+    
+    // Immediately clear all state - don't wait for API
+    setUser(null);
+    setSession(null);
+    setProfile(null);
+    
+    // Clear all possible localStorage items
+    localStorage.removeItem('guest_session_token');
+    localStorage.removeItem('sb-access-token');
+    localStorage.removeItem('sb-refresh-token');
+    
+    // Clear all Supabase auth storage
     try {
-      console.log('AuthContext: Calling Supabase signOut');
-      const { error } = await supabase.auth.signOut();
-      console.log('AuthContext: Supabase signOut completed', error ? 'with error' : 'successfully');
-      
-      if (error) {
-        console.error('AuthContext: Supabase signOut error:', error);
-        throw error;
-      }
-      
-      // Clear state
-      console.log('AuthContext: Clearing local state');
-      setUser(null);
-      setSession(null);
-      setProfile(null);
-      
-      // Clear any stored tokens
-      localStorage.removeItem('guest_session_token');
-      console.log('AuthContext: SignOut complete');
+      await supabase.auth.signOut({ scope: 'local' });
+      console.log('AuthContext: Local signOut complete');
     } catch (error) {
-      console.error('AuthContext: Error in signOut:', error);
-      // Force clear state even if API call fails
-      setUser(null);
-      setSession(null);
-      setProfile(null);
-      throw error;
+      console.error('AuthContext: Local signOut error:', error);
     }
+    
+    // Also try global signOut to revoke tokens on server
+    try {
+      await supabase.auth.signOut({ scope: 'global' });
+      console.log('AuthContext: Global signOut complete');
+    } catch (error) {
+      console.error('AuthContext: Global signOut error:', error);
+    }
+    
+    console.log('AuthContext: SignOut complete - all auth cleared');
   };
 
   const resetPassword = async (email: string) => {
