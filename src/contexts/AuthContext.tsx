@@ -165,11 +165,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         if (!mounted) return;
 
         console.log('Auth state changed:', event, session?.user?.email);
         
+        // Only synchronous state updates here
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -181,8 +182,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           }, 1000);
         }
         
+        // Defer all Supabase calls with setTimeout to prevent deadlock
         if (session?.user) {
-          // Handle profile fetching in background
           setTimeout(async () => {
             if (!mounted) return;
             
