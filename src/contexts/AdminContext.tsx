@@ -50,19 +50,15 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
 
     initAuth();
 
-    // Listen for auth changes - avoid async operations directly in callback
+    // Listen for auth changes - only handle logout, not login
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
-        setUser(session.user);
-        // Defer async operation to prevent deadlock
-        setTimeout(() => {
-          checkAdminStatus(session.user.id).then(isAdmin => {
-            setIsAuthenticated(isAdmin);
-          });
-        }, 0);
-      } else {
+      // Only handle sign out events
+      if (event === 'SIGNED_OUT') {
         setUser(null);
         setIsAuthenticated(false);
+      } else if (event === 'SIGNED_IN' && session?.user) {
+        // Just set the user, admin check is handled by login function
+        setUser(session.user);
       }
     });
 
