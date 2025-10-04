@@ -78,14 +78,35 @@ serve(async (req) => {
       )
     }
 
+    // Add admin role to user_roles table
+    const { error: roleError } = await supabaseAdmin
+      .from('user_roles')
+      .insert({
+        user_id: authUser.user.id,
+        role: 'admin'
+      })
+
+    if (roleError) {
+      console.error('User roles table error:', roleError)
+      // Cleanup: delete admin record and auth user if role creation failed
+      await supabaseAdmin.from('admins').delete().eq('user_id', authUser.user.id)
+      await supabaseAdmin.auth.admin.deleteUser(authUser.user.id)
+      
+      return new Response(
+        JSON.stringify({ error: 'Failed to create admin role', details: roleError.message }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Admin user created successfully',
+        message: 'Admin user created successfully with admin role',
         admin: {
           id: adminData.id,
           username: adminData.username,
-          email: adminData.email
+          email: adminData.email,
+          role: 'admin'
         }
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
