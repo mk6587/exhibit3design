@@ -3,15 +3,12 @@ import { useProducts } from "@/contexts/ProductsContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { VideoStream } from "@/components/performance/VideoStream";
-import { useState } from "react";
 import "@/components/ui/rich-text-editor.css";
 const FeaturedProducts = () => {
   const {
     products,
     loading
   } = useProducts();
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
@@ -58,23 +55,22 @@ const FeaturedProducts = () => {
       <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
         {hasVideo && videoUrl ? (
           <>
-            <VideoStream
-              src={videoUrl}
-              poster="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg"
-              fallbackImage="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg"
+            {/* Simple video with poster - no loading overlay for better UX */}
+            <video
               className="w-full h-full object-cover"
-              style={{ objectPosition: 'center center' }}
-              priority={true}
+              poster="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg"
               autoPlay
               loop
               muted
               playsInline
-              onLoadStart={() => setIsVideoLoaded(false)}
-              onLoadedData={() => setIsVideoLoaded(true)}
-              onError={(error) => {
-                console.error('Video loading error:', error);
+              preload="auto"
+              onError={(e) => {
+                console.error('Video loading error:', e);
               }}
-            />
+            >
+              <source src={videoUrl} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
             <div className="absolute inset-0 bg-black/20" />
           </>
         ) :
