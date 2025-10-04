@@ -161,16 +161,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   useEffect(() => {
+    let mounted = true;
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
+        if (!mounted) return;
+
+        console.log('Auth state changed:', event, session?.user?.email);
+        
         setSession(session);
         setUser(session?.user ?? null);
         
         // Dispatch custom event to trigger popup hiding
         if (session?.user) {
           window.dispatchEvent(new CustomEvent('authStateChanged'));
-          // Run popup hiding after a short delay to catch any delayed popups
           setTimeout(() => {
             window.dispatchEvent(new CustomEvent('authStateChanged'));
           }, 1000);
@@ -179,6 +184,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (session?.user) {
           // Handle profile fetching in background
           setTimeout(async () => {
+            if (!mounted) return;
+            
             try {
               let profileData = await fetchProfile(session.user.id);
               
@@ -187,7 +194,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 profileData = await createInitialProfile(session.user.id, session.user.email);
               }
               
-              setProfile(profileData);
+              if (mounted) {
+                setProfile(profileData);
+              }
               
               // Check for guest session data to transfer
               const guestSessionToken = localStorage.getItem('guest_session_token');
@@ -203,30 +212,42 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                   localStorage.removeItem('guest_session_token');
                   // Refresh profile to show updated data
                   const updatedProfile = await fetchProfile(session.user.id);
-                  setProfile(updatedProfile);
+                  if (mounted) {
+                    setProfile(updatedProfile);
+                  }
                 }
               }
             } catch (error) {
               console.error('Profile fetch error:', error);
-              setProfile(null);
+              if (mounted) {
+                setProfile(null);
+              }
             }
           }, 0);
         } else {
           setProfile(null);
         }
         
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     );
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      if (mounted) {
+        console.log('Initial session check:', session?.user?.email);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Email validation function
@@ -338,10 +359,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    setProfile(null);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+      
+      // Clear any stored tokens
+      localStorage.removeItem('guest_session_token');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      // Force clear state even if API call fails
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+      throw error;
+    }
   };
 
   const resetPassword = async (email: string) => {
