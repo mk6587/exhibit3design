@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,24 +8,40 @@ import { Label } from '@/components/ui/label';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useToast } from '@/hooks/use-toast';
 import { adminLoginSchema } from '@/lib/validationSchemas';
+import { TurnstileCaptcha, TurnstileCaptchaRef } from '@/components/ui/turnstile-captcha';
+
+// Test site key - replace with your actual key in production
+const TURNSTILE_SITE_KEY = '1x00000000000000000000AA';
 
 const AdminLoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string>('');
+  const captchaRef = useRef<TurnstileCaptchaRef>(null);
   const { login } = useAdmin();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!captchaToken) {
+      toast({
+        title: "Verification required",
+        description: "Please complete the security verification",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
       // Validate credentials with Zod
       const validatedData = adminLoginSchema.parse({ email, password });
 
-      const result = await login(validatedData.email, validatedData.password);
+      const result = await login(validatedData.email, validatedData.password, captchaToken);
       
       if (result.success) {
         toast({
@@ -39,6 +55,9 @@ const AdminLoginPage = () => {
           description: result.error || "Invalid credentials or insufficient privileges",
           variant: "destructive",
         });
+        // Reset captcha on failure
+        captchaRef.current?.reset();
+        setCaptchaToken('');
       }
     } catch (validationError: any) {
       if (validationError.errors) {
@@ -92,7 +111,30 @@ const AdminLoginPage = () => {
                 disabled={loading}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <div className="space-y-2">
+              <TurnstileCaptcha
+                ref={captchaRef}
+                siteKey={TURNSTILE_SITE_KEY}
+                onVerify={(token) => setCaptchaToken(token)}
+                onError={() => {
+                  toast({
+                    title: "Verification error",
+                    description: "Failed to load security verification. Please refresh the page.",
+                    variant: "destructive",
+                  });
+                }}
+                onExpire={() => {
+                  setCaptchaToken('');
+                  toast({
+                    title: "Verification expired",
+                    description: "Please verify again",
+                    variant: "destructive",
+                  });
+                }}
+                className="flex justify-center"
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={loading || !captchaToken}>
               {loading ? 'Logging in...' : 'Login'}
             </Button>
           </form>

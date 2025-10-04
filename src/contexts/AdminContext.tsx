@@ -6,7 +6,7 @@ import { User } from '@supabase/supabase-js';
 interface AdminContextType {
   isAuthenticated: boolean;
   user: User | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string, captchaToken?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   checkAdminStatus: () => Promise<boolean>;
 }
@@ -86,11 +86,14 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (email: string, password: string, captchaToken?: string): Promise<{ success: boolean; error?: string }> => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
+        options: captchaToken ? {
+          captchaToken
+        } : undefined
       });
 
       if (error) {
