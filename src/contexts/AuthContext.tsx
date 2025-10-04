@@ -16,6 +16,7 @@ interface Profile {
   postcode: string | null;
   email_confirmed: boolean;
   ai_tokens_used: number;
+  ai_tokens_limit: number;
   created_at: string;
   updated_at: string;
 }

@@ -325,6 +325,7 @@ export type Database = {
       profiles: {
         Row: {
           address_line_1: string | null
+          ai_tokens_limit: number
           ai_tokens_used: number
           city: string | null
           country: string | null
@@ -341,6 +342,7 @@ export type Database = {
         }
         Insert: {
           address_line_1?: string | null
+          ai_tokens_limit?: number
           ai_tokens_used?: number
           city?: string | null
           country?: string | null
@@ -357,6 +359,7 @@ export type Database = {
         }
         Update: {
           address_line_1?: string | null
+          ai_tokens_limit?: number
           ai_tokens_used?: number
           city?: string | null
           country?: string | null
