@@ -33,6 +33,16 @@ export interface GAEcommerceEvent {
   item_list_name?: string;
 }
 
+// Debounce utility to prevent rapid-fire events
+const debounceTimers: { [key: string]: NodeJS.Timeout } = {};
+
+const debounce = (key: string, func: () => void, delay: number = 500) => {
+  if (debounceTimers[key]) {
+    clearTimeout(debounceTimers[key]);
+  }
+  debounceTimers[key] = setTimeout(func, delay);
+};
+
 // Helper function to check if gtag is available
 const isGtagAvailable = (): boolean => {
   return typeof window !== 'undefined' && typeof window.gtag === 'function';
@@ -230,31 +240,37 @@ export const trackSearch = (searchTerm: string, resultsCount: number) => {
   console.log('GA4: search tracked', { searchTerm, resultsCount });
 };
 
-// Track filter application
+// Track filter application (debounced to prevent rapid-fire events)
 export const trackFilterApplied = (filterType: string, filterValue: string, resultsCount: number) => {
   if (!isGtagAvailable()) return;
 
-  window.gtag('event', 'filter_applied', {
-    filter_type: filterType,
-    filter_value: filterValue,
-    results_count: resultsCount,
-    custom_parameters: {
-      engagement_time_msec: 100
-    }
-  });
+  debounce('filter_applied', () => {
+    window.gtag('event', 'filter_applied', {
+      filter_type: filterType,
+      filter_value: filterValue,
+      results_count: resultsCount,
+      custom_parameters: {
+        engagement_time_msec: 100
+      }
+    });
+    console.log('GA4: filter_applied tracked', { filterType, filterValue, resultsCount });
+  }, 1000);
 };
 
-// Track sort changes
+// Track sort changes (debounced)
 export const trackSortChanged = (sortType: string, resultsCount: number) => {
   if (!isGtagAvailable()) return;
 
-  window.gtag('event', 'sort_changed', {
-    sort_type: sortType,
-    results_count: resultsCount,
-    custom_parameters: {
-      engagement_time_msec: 100
-    }
-  });
+  debounce('sort_changed', () => {
+    window.gtag('event', 'sort_changed', {
+      sort_type: sortType,
+      results_count: resultsCount,
+      custom_parameters: {
+        engagement_time_msec: 100
+      }
+    });
+    console.log('GA4: sort_changed tracked', { sortType, resultsCount });
+  }, 500);
 };
 
 // Track filters cleared

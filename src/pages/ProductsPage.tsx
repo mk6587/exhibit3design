@@ -18,12 +18,15 @@ const ProductsPage = () => {
   // Use context products if available, otherwise use static products
   const products = contextProducts && contextProducts.length > 0 ? contextProducts : staticProducts;
 
-  // Track view_item_list when products load
+  // Track view_item_list when products load (only once)
   useEffect(() => {
     if (products && products.length > 0) {
-      trackViewItemList(products, 'All Exhibition Stands');
+      const timer = setTimeout(() => {
+        trackViewItemList(products, 'All Exhibition Stands');
+      }, 1000);
+      return () => clearTimeout(timer);
     }
-  }, [products]);
+  }, []); // Only run once on mount
   const [searchText, setSearchText] = useState("");
   const [activeSearchText, setActiveSearchText] = useState("");
   const [sort, setSort] = useState("latest");
