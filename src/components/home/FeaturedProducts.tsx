@@ -3,7 +3,7 @@ import { useProducts } from "@/contexts/ProductsContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "@/components/ui/rich-text-editor.css";
 const FeaturedProducts = () => {
   const {
@@ -11,13 +11,32 @@ const FeaturedProducts = () => {
     loading
   } = useProducts();
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [posterLoaded, setPosterLoaded] = useState(false);
+  const [posterError, setPosterError] = useState(false);
+  const [minDisplayTime, setMinDisplayTime] = useState(false);
 
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
 
   // Your specific video URL - now using public bucket for faster loading
   const videoUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos-public/exhibit_hp_video.mp4";
+  const posterUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg";
   const hasVideo = true; // Since we have a direct video URL
+
+  // Ensure poster displays for at least 1 second
+  const handleVideoCanPlay = () => {
+    if (minDisplayTime) {
+      setVideoLoaded(true);
+    }
+  };
+
+  // Set minimum display time after 1 second
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinDisplayTime(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (loading) {
     return <>
@@ -57,26 +76,38 @@ const FeaturedProducts = () => {
       <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
         {hasVideo && videoUrl ? (
           <>
-            {/* Poster image - shows until video is loaded */}
-            <div 
-              className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
+            {/* Poster image - using img tag for better control */}
+            <img 
+              src={posterUrl}
+              alt="Exhibition Stand Hero"
+              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
               style={{
-                backgroundImage: `url("https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg")`,
-                opacity: videoLoaded ? 0 : 1,
-                pointerEvents: videoLoaded ? 'none' : 'auto'
+                opacity: (videoLoaded && minDisplayTime) ? 0 : 1,
+                pointerEvents: (videoLoaded && minDisplayTime) ? 'none' : 'auto'
+              }}
+              onLoad={() => {
+                setPosterLoaded(true);
+                console.log('Poster image loaded successfully');
+              }}
+              onError={(e) => {
+                setPosterError(true);
+                console.error('Poster image loading error:', e);
               }}
             />
             
-            {/* Video - hidden until fully loaded */}
+            {/* Video - hidden until fully loaded and minimum time passed */}
             <video
               className="w-full h-full object-cover transition-opacity duration-500"
-              style={{ opacity: videoLoaded ? 1 : 0 }}
+              style={{ opacity: (videoLoaded && minDisplayTime) ? 1 : 0 }}
               autoPlay
               loop
               muted
               playsInline
               preload="auto"
-              onCanPlayThrough={() => setVideoLoaded(true)}
+              onCanPlayThrough={handleVideoCanPlay}
+              onLoadedData={() => {
+                console.log('Video loaded and ready');
+              }}
               onError={(e) => {
                 console.error('Video loading error:', e);
               }}
@@ -84,7 +115,14 @@ const FeaturedProducts = () => {
               <source src={videoUrl} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
+            
+            {/* Overlay */}
             <div className="absolute inset-0 bg-black/20" />
+            
+            {/* Error fallback - show if poster fails to load */}
+            {posterError && !posterLoaded && (
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-900 to-purple-700" />
+            )}
           </>
         ) :
       // Fallback to beautiful hero image
