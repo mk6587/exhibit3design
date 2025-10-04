@@ -52,26 +52,20 @@ const FeaturedProducts = () => {
   }
   return <>
       {/* Full-width hero section */}
-      <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-gradient-to-br from-purple-900 via-purple-800 to-pink-800">
+      <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
         {hasVideo && videoUrl ? (
           <>
-            {/* Video loads in background, gradient shows instantly */}
+            {/* Simple video with poster - no loading overlay for better UX */}
             <video
               className="w-full h-full object-cover"
+              poster="https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg"
               autoPlay
               loop
               muted
               playsInline
-              preload="none"
-              style={{ opacity: 1 }}
-              onLoadedData={(e) => {
-                // Smoothly fade in video when ready
-                e.currentTarget.style.opacity = '1';
-              }}
+              preload="auto"
               onError={(e) => {
                 console.error('Video loading error:', e);
-                // Keep showing gradient on error
-                e.currentTarget.style.display = 'none';
               }}
             >
               <source src={videoUrl} type="video/mp4" />
