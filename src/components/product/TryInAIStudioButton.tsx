@@ -44,7 +44,6 @@ export const TryInAIStudioButton = ({
       className={className}
       onClick={handleTryInAIStudio}
     >
-      <Sparkles className="mr-2 h-4 w-4" />
       Get Premium
     </Button>
   );
