@@ -135,15 +135,15 @@ const FeaturedProducts = () => {
         {/* Hero content overlay */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center text-white px-4">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4" style={{
+            <h1 className="text-3xl md:text-5xl font-bold mb-4" style={{
             textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6)'
           }}>
-              Do You Want to Create Videos Like This?
+              Design Faster with Ready-Made Files & AI
             </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto" style={{
+            <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto" style={{
             textShadow: '1px 1px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 0, 0, 0.5)'
           }}>
-              Exhibit3Design AI Studio can do it for you. Use your 5 free tokens!
+              Professional exhibition stand templates. Instant AI customization. Get 5 free tokens.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
@@ -163,7 +163,7 @@ const FeaturedProducts = () => {
               </Button>
             </div>
             {!hasVideo && <div className="text-sm text-white/80 bg-black/20 px-4 py-2 rounded-lg backdrop-blur-sm mt-4">
-                💡 Upload a video to the 'videos' storage bucket to replace this image
+                💡 Upload a video to the videos storage bucket to replace this image
               </div>}
           </div>
         </div>

@@ -97,13 +97,6 @@ const Header = () => {
           <Link to="/contact" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
             Custom Services
           </Link>
-          <Link to="/about" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
-            About
-          </Link>
-          <Link to="/faq" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
-            FAQ
-          </Link>
-          
         </nav>
         
         {/* Actions */}
