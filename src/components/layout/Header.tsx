@@ -104,7 +104,7 @@ const Header = () => {
             <Search className="h-5 w-5" />
           </Button>
 
-          {/* AI Studio Button */}
+          {/* AI Studio Button with Token Balance */}
           <Button 
             variant="default" 
             size="sm" 
@@ -112,24 +112,13 @@ const Header = () => {
             className="hidden md:flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg hover:shadow-xl transition-all"
           >
             <Sparkles className="h-4 w-4" />
-            AI Studio
+            <span>AI Studio</span>
+            {user && profile && (
+              <Badge variant="secondary" className="ml-1 bg-white/20 text-white border-0 hover:bg-white/30">
+                {aiTokens}
+              </Badge>
+            )}
           </Button>
-
-          {/* Token Counter - Desktop */}
-          {user && profile && (
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20">
-              <Coins className="h-4 w-4 text-primary" />
-              <div className="flex items-center gap-3 text-xs font-medium">
-                <span className="text-primary">{aiTokens} tokens</span>
-                {videoSeconds > 0 && (
-                  <>
-                    <span className="text-muted-foreground">|</span>
-                    <span className="text-primary">{videoSeconds}s video</span>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
 
           {/* User Menu */}
           {user ? <div className="flex items-center space-x-2">
@@ -149,7 +138,7 @@ const Header = () => {
 
           {/* Cart removed - subscription model */}
 
-          {/* AI Studio Mobile Icon */}
+          {/* AI Studio Mobile Icon with Token Badge */}
           <Button 
             variant="ghost" 
             size="icon" 
@@ -159,6 +148,14 @@ const Header = () => {
             <span className="text-lg font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
               AI
             </span>
+            {user && profile && aiTokens > 0 && (
+              <Badge 
+                variant="secondary" 
+                className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0"
+              >
+                {aiTokens}
+              </Badge>
+            )}
           </Button>
 
           {/* Mobile Menu Button */}
