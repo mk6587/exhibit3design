@@ -39,6 +39,10 @@ import AdminPage from "./pages/AdminPage";
 import AdminProductCreatePage from "./pages/AdminProductCreatePage";
 import AdminProductEditPage from "./pages/AdminProductEditPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AdminSubscriptionsPage from "./pages/AdminSubscriptionsPage";
+import AdminUsersPage from "./pages/AdminUsersPage";
+import AdminOrdersPage from "./pages/AdminOrdersPage";
+import AdminPlansPage from "./pages/AdminPlansPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
 import PricingPage from "./pages/PricingPage";
@@ -117,6 +121,26 @@ const App = () => {
                       <Route path="/admin/product/:id/edit" element={
                         <ProtectedAdminRoute>
                           <AdminProductEditPage />
+                        </ProtectedAdminRoute>
+                      } />
+                      <Route path="/admin/subscriptions" element={
+                        <ProtectedAdminRoute>
+                          <AdminSubscriptionsPage />
+                        </ProtectedAdminRoute>
+                      } />
+                      <Route path="/admin/users" element={
+                        <ProtectedAdminRoute>
+                          <AdminUsersPage />
+                        </ProtectedAdminRoute>
+                      } />
+                      <Route path="/admin/orders" element={
+                        <ProtectedAdminRoute>
+                          <AdminOrdersPage />
+                        </ProtectedAdminRoute>
+                      } />
+                      <Route path="/admin/plans" element={
+                        <ProtectedAdminRoute>
+                          <AdminPlansPage />
                         </ProtectedAdminRoute>
                       } />
                       <Route path="/sitemap.xml" element={<SitemapPage />} />

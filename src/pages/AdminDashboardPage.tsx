@@ -1,18 +1,14 @@
-import { useState } from "react";
-import Layout from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { RecentOrders } from "@/components/admin/RecentOrders";
 import { SubscriptionsManagement } from "@/components/admin/SubscriptionsManagement";
 import { UsersManagement } from "@/components/admin/UsersManagement";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 import { LayoutDashboard, Crown, Users, ShoppingBag } from "lucide-react";
 
 export default function AdminDashboardPage() {
   return (
-    <Layout
-      title="Admin Dashboard - Exhibit3Design"
-      description="Manage subscriptions, orders, and users"
-    >
+    <AdminLayout>
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
@@ -59,6 +55,6 @@ export default function AdminDashboardPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </Layout>
+    </AdminLayout>
   );
 }
