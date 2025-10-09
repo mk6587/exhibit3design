@@ -35,6 +35,7 @@ export default function AISamplesPage() {
         .order('display_order', { ascending: true });
 
       if (error) throw error;
+      console.log('Fetched AI samples:', data);
       setSamples(data || []);
     } catch (error) {
       console.error('Error fetching AI samples:', error);
@@ -44,6 +45,13 @@ export default function AISamplesPage() {
   };
 
   const currentSample = samples[currentIndex];
+  
+  console.log('Current state:', { 
+    samplesCount: samples.length, 
+    currentIndex, 
+    currentSample: currentSample?.title,
+    loading 
+  });
 
   const nextSample = () => {
     setCurrentIndex((prev) => (prev + 1) % samples.length);
@@ -118,17 +126,26 @@ export default function AISamplesPage() {
               {/* Left: Image */}
               <div className="space-y-4">
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-muted shadow-xl">
-                  <img
-                    src={showAfter ? currentSample.after_image_url : currentSample.before_image_url}
-                    alt={currentSample.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <Badge 
-                    className="absolute top-4 left-4 text-sm"
-                    variant={showAfter ? "default" : "secondary"}
-                  >
-                    {showAfter ? "After" : "Before"}
-                  </Badge>
+                  {currentSample && (
+                    <>
+                      <img
+                        src={showAfter ? currentSample.after_image_url : currentSample.before_image_url}
+                        alt={currentSample.title}
+                        className="w-full h-full object-cover"
+                        loading="eager"
+                        onError={(e) => {
+                          console.error('Image failed to load:', e.currentTarget.src);
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80';
+                        }}
+                      />
+                      <Badge 
+                        className="absolute top-4 left-4 text-sm"
+                        variant={showAfter ? "default" : "secondary"}
+                      >
+                        {showAfter ? "After" : "Before"}
+                      </Badge>
+                    </>
+                  )}
                 </div>
                 
                 <Button
@@ -143,26 +160,30 @@ export default function AISamplesPage() {
 
               {/* Right: Details */}
               <div className="space-y-6">
-                <div>
-                  <Badge variant="outline" className="mb-3">
-                    {currentSample.category.replace('_', ' ')}
-                  </Badge>
-                  <h2 className="text-3xl font-bold mb-4">
-                    {currentSample.title}
-                  </h2>
-                </div>
+                {currentSample && (
+                  <>
+                    <div>
+                      <Badge variant="outline" className="mb-3">
+                        {currentSample.category.replace('_', ' ')}
+                      </Badge>
+                      <h2 className="text-3xl font-bold mb-4">
+                        {currentSample.title}
+                      </h2>
+                    </div>
 
-                {/* Prompt Used */}
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-2">
-                    AI Prompt Used:
-                  </p>
-                  <div className="p-4 bg-muted/50 rounded-lg border">
-                    <p className="italic text-sm">
-                      "{currentSample.prompt_used}"
-                    </p>
-                  </div>
-                </div>
+                    {/* Prompt Used */}
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-2">
+                        AI Prompt Used:
+                      </p>
+                      <div className="p-4 bg-muted/50 rounded-lg border">
+                        <p className="italic text-sm">
+                          "{currentSample.prompt_used}"
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 {/* Features */}
                 <div className="space-y-3">
