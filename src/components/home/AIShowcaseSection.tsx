@@ -86,7 +86,7 @@ export const AIShowcaseSection = () => {
           <CardContent className="p-0">
             <div className="grid md:grid-cols-2 gap-0">
               {/* Before/After Media */}
-              <div className="relative aspect-[4/3] bg-muted">
+              <div className="relative aspect-[16/10] bg-muted">
                 {showAfter && currentSample.afterVideo ? (
                   <video
                     src={currentSample.afterVideo}
