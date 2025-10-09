@@ -31,26 +31,9 @@ const ProductCard = ({
     }
   };
 
-  // Get tier display name - all products require a subscription
-  const getTierDisplayName = (tier?: string) => {
-    switch (tier) {
-      case 'basic': return 'Starter Plan';
-      case 'standard': return 'Pro Plan';
-      case 'premium': return 'Studio Plan';
-      default: return null; // No badge if tier not specified
-    }
-  };
-
-  // Get tier badge color
-  const getTierBadgeVariant = (tier?: string) => {
-    if (tier === 'basic') return 'secondary';
-    if (tier === 'standard') return 'default';
-    if (tier === 'premium') return 'default';
-    return 'default';
-  };
-
-  const tierName = getTierDisplayName(product.subscription_tier_required);
-  const badgeVariant = getTierBadgeVariant(product.subscription_tier_required);
+  // No tier badges needed - all designs available to subscribers
+  const tierName = null;
+  const badgeVariant = 'default';
   return <Card className="group overflow-hidden transition-all duration-200 hover:shadow-md aspect-[4/3] bg-background animate-fade-in border border-border rounded-none hover:border-primary/20">
       {/* Image Container */}
       <div className="relative h-5/6 overflow-hidden">
@@ -93,14 +76,12 @@ const ProductCard = ({
           </div>
         )}
 
-        {/* Lock Icon for Premium Content */}
-        {product.subscription_tier_required && (
-          <div className="absolute top-2 right-14 z-10">
-            <div className="bg-black/60 backdrop-blur-sm px-2 py-1 rounded-sm">
-              <Lock className="h-3 w-3 text-white" />
-            </div>
+        {/* Lock Icon - All designs require subscription */}
+        <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-0">
+          <div className="bg-black/60 backdrop-blur-sm px-2 py-1 rounded-sm">
+            <Lock className="h-3 w-3 text-white" />
           </div>
-        )}
+        </div>
       </div>
 
       {/* Bottom Frame for Product Name */}

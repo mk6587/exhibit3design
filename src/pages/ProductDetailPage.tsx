@@ -121,38 +121,23 @@ const ProductDetailPage = () => {
               ))}
             </div>
             
-            {/* Subscription Tier Requirement */}
-            {product.subscription_tier_required ? (
-              <div className="mb-6">
-                <div className="flex items-center gap-2 mb-3">
-                  <Lock className="h-5 w-5 text-primary" />
-                  <span className="text-lg font-semibold">
-                    {product.subscription_tier_required === 'basic' ? 'Requires Starter Plan' :
-                     product.subscription_tier_required === 'standard' ? 'Requires Pro Plan' :
-                     product.subscription_tier_required === 'premium' ? 'Requires Studio Plan' :
-                     'Subscription Required'}
-                  </span>
-                </div>
-                <p className="text-muted-foreground mb-4">
-                  This design is available with {
-                    product.subscription_tier_required === 'basic' ? 'a Starter Plan' :
-                    product.subscription_tier_required === 'standard' ? 'a Pro Plan' :
-                    product.subscription_tier_required === 'premium' ? 'a Studio Plan' :
-                    'a subscription'
-                  } or higher.
-                </p>
+            {/* Subscription Access Info */}
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Lock className="h-5 w-5 text-primary" />
+                <span className="text-lg font-semibold">
+                  Available with Any Subscription
+                </span>
               </div>
-            ) : (
-              <div className="mb-6">
-                <Badge className="mb-3" variant="secondary">
-                  <Lock className="h-4 w-4 mr-1" />
-                  Subscription Required
-                </Badge>
-                <p className="text-muted-foreground">
-                  This design requires an active subscription plan to access.
-                </p>
-              </div>
-            )}
+              <p className="text-muted-foreground mb-4">
+                This design is available to all subscribers. The number of designs you can access depends on your subscription tier:
+              </p>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-6 list-disc">
+                <li>Starter Plan: Limited design files</li>
+                <li>Pro Plan: More design files</li>
+                <li>Studio Plan: Maximum design files</li>
+              </ul>
+            </div>
             
             {product.memo && (
               <div className="mb-6">
