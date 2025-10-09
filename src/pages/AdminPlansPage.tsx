@@ -21,7 +21,7 @@ interface Plan {
   price: number;
   billing_period: string;
   initial_ai_tokens: number;
-  video_seconds: number;
+  video_results: number;
   max_files: number;
   file_access_tier: string;
   is_active: boolean;
@@ -43,7 +43,7 @@ export default function AdminPlansPage() {
     price: 0,
     billing_period: "monthly",
     initial_ai_tokens: 0,
-    video_seconds: 0,
+    video_results: 0,
     max_files: 0,
     file_access_tier: "sample",
     is_active: true,
@@ -91,7 +91,7 @@ export default function AdminPlansPage() {
       price: plan.price,
       billing_period: plan.billing_period,
       initial_ai_tokens: plan.initial_ai_tokens,
-      video_seconds: plan.video_seconds,
+      video_results: plan.video_results,
       max_files: plan.max_files,
       file_access_tier: plan.file_access_tier,
       is_active: plan.is_active,
@@ -110,7 +110,7 @@ export default function AdminPlansPage() {
       price: 0,
       billing_period: "monthly",
       initial_ai_tokens: 0,
-      video_seconds: 0,
+      video_results: 0,
       max_files: 0,
       file_access_tier: "sample",
       is_active: true,
@@ -134,7 +134,7 @@ export default function AdminPlansPage() {
         price: formData.price,
         billing_period: formData.billing_period,
         initial_ai_tokens: formData.initial_ai_tokens,
-        video_seconds: formData.video_seconds,
+        video_results: formData.video_results,
         max_files: formData.max_files,
         file_access_tier: formData.file_access_tier,
         is_active: formData.is_active,
@@ -332,12 +332,12 @@ export default function AdminPlansPage() {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="video_seconds">Video Seconds</Label>
+                  <Label htmlFor="video_results">Video Results</Label>
                   <Input
-                    id="video_seconds"
+                    id="video_results"
                     type="number"
-                    value={formData.video_seconds}
-                    onChange={(e) => setFormData({ ...formData, video_seconds: parseInt(e.target.value) })}
+                    value={formData.video_results}
+                    onChange={(e) => setFormData({ ...formData, video_results: parseInt(e.target.value) })}
                   />
                 </div>
 

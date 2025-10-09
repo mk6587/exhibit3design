@@ -15,14 +15,14 @@ interface SubscriptionData {
   plan_price: number;
   file_access_tier: string;
   ai_tokens_included: number;
-  video_seconds_included: number;
+  video_results_included: number;
   status: string;
   current_period_end: string;
 }
 
 interface TokenBalance {
   ai_tokens: number;
-  video_seconds: number;
+  video_results: number;
   free_tokens_claimed: boolean;
 }
 
@@ -179,11 +179,11 @@ export function SubscriptionPanel() {
               <div className="p-4 rounded-lg bg-muted">
                 <div className="flex items-center gap-2 mb-2">
                   <Video className="h-4 w-4 text-primary" />
-                  <p className="text-sm font-medium">AI Video</p>
+                  <p className="text-sm font-medium">AI Video Results</p>
                 </div>
-                <p className="text-2xl font-bold">{tokenBalance.video_seconds}s</p>
+                <p className="text-2xl font-bold">{tokenBalance.video_results}</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {subscription.video_seconds_included}s included/month
+                  {subscription.video_results_included} included/month
                 </p>
               </div>
             </div>

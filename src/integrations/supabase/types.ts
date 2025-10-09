@@ -389,8 +389,8 @@ export type Database = {
           state_region: string | null
           updated_at: string
           user_id: string
-          video_seconds_balance: number | null
-          video_seconds_used: number | null
+          video_results_balance: number | null
+          video_results_used: number | null
         }
         Insert: {
           address_line_1?: string | null
@@ -410,8 +410,8 @@ export type Database = {
           state_region?: string | null
           updated_at?: string
           user_id: string
-          video_seconds_balance?: number | null
-          video_seconds_used?: number | null
+          video_results_balance?: number | null
+          video_results_used?: number | null
         }
         Update: {
           address_line_1?: string | null
@@ -431,8 +431,8 @@ export type Database = {
           state_region?: string | null
           updated_at?: string
           user_id?: string
-          video_seconds_balance?: number | null
-          video_seconds_used?: number | null
+          video_results_balance?: number | null
+          video_results_used?: number | null
         }
         Relationships: []
       }
@@ -485,7 +485,7 @@ export type Database = {
           name: string
           price: number
           updated_at: string
-          video_seconds: number
+          video_results: number
         }
         Insert: {
           billing_period?: string
@@ -502,7 +502,7 @@ export type Database = {
           name: string
           price: number
           updated_at?: string
-          video_seconds?: number
+          video_results?: number
         }
         Update: {
           billing_period?: string
@@ -519,7 +519,7 @@ export type Database = {
           name?: string
           price?: number
           updated_at?: string
-          video_seconds?: number
+          video_results?: number
         }
         Relationships: []
       }
@@ -682,8 +682,8 @@ export type Database = {
         Args: { p_amount: number; p_user_id: string }
         Returns: boolean
       }
-      deduct_video_seconds: {
-        Args: { p_seconds: number; p_user_id: string }
+      deduct_video_results: {
+        Args: { p_count: number; p_user_id: string }
         Returns: boolean
       }
       delete_otp_by_email: {
@@ -732,7 +732,7 @@ export type Database = {
           plan_price: number
           status: string
           subscription_id: string
-          video_seconds_included: number
+          video_results_included: number
         }[]
       }
       get_decrypted_customer_data: {
@@ -780,7 +780,7 @@ export type Database = {
         Returns: {
           ai_tokens: number
           free_tokens_claimed: boolean
-          video_seconds: number
+          video_results: number
         }[]
       }
       grant_free_tokens: {

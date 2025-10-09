@@ -25,7 +25,7 @@ const Header = () => {
 
   // Get token balances from profile
   const aiTokens = profile?.ai_tokens_balance || 0;
-  const videoSeconds = profile?.video_seconds_balance || 0;
+  const videoResults = profile?.video_results_balance || 0;
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
   const handleSignOut = async () => {
@@ -194,10 +194,10 @@ const Header = () => {
                 </div>
                 <div className="flex items-center gap-3 text-sm font-semibold">
                   <span className="text-primary">{aiTokens} tokens</span>
-                  {videoSeconds > 0 && (
+                  {videoResults > 0 && (
                     <>
                       <span className="text-muted-foreground">•</span>
-                      <span className="text-primary">{videoSeconds}s</span>
+                      <span className="text-primary">{videoResults} videos</span>
                     </>
                   )}
                 </div>

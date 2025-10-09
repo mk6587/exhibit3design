@@ -14,7 +14,7 @@ interface UserData {
   first_name: string;
   last_name: string;
   ai_tokens_balance: number;
-  video_seconds_balance: number;
+  video_results_balance: number;
   created_at: string;
   has_subscription: boolean;
 }
@@ -54,7 +54,7 @@ export function UsersManagement() {
         first_name: profile.first_name || '',
         last_name: profile.last_name || '',
         ai_tokens_balance: profile.ai_tokens_balance || 0,
-        video_seconds_balance: profile.video_seconds_balance || 0,
+        video_results_balance: profile.video_results_balance || 0,
         created_at: profile.created_at,
         has_subscription: subscribedUserIds.has(profile.user_id),
       }));
@@ -157,7 +157,7 @@ export function UsersManagement() {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Video className="h-4 w-4 text-primary" />
-                      <span>{user.video_seconds_balance}s</span>
+                      <span>{user.video_results_balance}</span>
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">

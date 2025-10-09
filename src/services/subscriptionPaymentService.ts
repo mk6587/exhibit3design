@@ -131,7 +131,7 @@ export const activateSubscription = async (
       .update({
         ai_tokens_balance: plan.initial_ai_tokens,
         ai_tokens_limit: plan.initial_ai_tokens,
-        video_seconds_balance: plan.video_seconds
+        video_results_balance: plan.video_results
       })
       .eq('user_id', user.id);
 

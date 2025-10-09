@@ -19,8 +19,8 @@ interface Profile {
   ai_tokens_limit: number;
   ai_tokens_balance: number;
   free_tokens_claimed: boolean;
-  video_seconds_used: number;
-  video_seconds_balance: number;
+  video_results_used: number;
+  video_results_balance: number;
   created_at: string;
   updated_at: string;
 }

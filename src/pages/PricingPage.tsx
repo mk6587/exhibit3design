@@ -14,7 +14,7 @@ interface SubscriptionPlan {
   price: number;
   billing_period: string;
   initial_ai_tokens: number;
-  video_seconds: number;
+  video_results: number;
   file_access_tier: string;
   max_files: number;
   features: any; // Will be parsed from JSONB
@@ -153,10 +153,10 @@ export default function PricingPage() {
                             <span className="text-muted-foreground">AI Image Edits:</span>
                             <span className="font-semibold">{plan.initial_ai_tokens}</span>
                           </div>
-                          {plan.video_seconds > 0 && (
+                          {plan.video_results > 0 && (
                             <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">AI Video:</span>
-                              <span className="font-semibold">{plan.video_seconds}s</span>
+                              <span className="text-muted-foreground">AI Videos:</span>
+                              <span className="font-semibold">{plan.video_results}</span>
                             </div>
                           )}
                         </div>
