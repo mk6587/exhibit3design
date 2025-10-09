@@ -141,21 +141,22 @@ const Header = () => {
 
           {/* Cart removed - subscription model */}
 
-          {/* AI Studio Mobile Icon with Token Badge or Simple Icon */}
+          {/* AI Studio Mobile Button */}
           {user ? (
             <Button 
               variant="ghost" 
-              size="icon" 
+              size="sm" 
               onClick={handleAIStudioClick}
-              className="md:hidden relative hover:bg-muted flex items-center justify-center"
+              className="md:hidden relative hover:bg-muted flex items-center gap-1 px-2"
             >
-              <span className="text-lg font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-                AI
+              <Sparkles className="h-4 w-4 text-purple-600" />
+              <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+                AI Studio
               </span>
               {profile && aiTokens > 0 && (
                 <Badge 
                   variant="secondary" 
-                  className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0"
+                  className="ml-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0"
                 >
                   {aiTokens}
                 </Badge>
@@ -164,13 +165,14 @@ const Header = () => {
           ) : (
             <Button 
               variant="ghost" 
-              size="icon" 
+              size="sm" 
               asChild
-              className="md:hidden relative hover:bg-muted flex items-center justify-center"
+              className="md:hidden relative hover:bg-muted flex items-center gap-1 px-2"
             >
               <Link to="/auth">
-                <span className="text-lg font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
-                  AI
+                <Sparkles className="h-4 w-4 text-purple-600 animate-pulse" />
+                <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+                  AI Studio
                 </span>
               </Link>
             </Button>
