@@ -86,11 +86,11 @@ export const AIShowcaseSection = () => {
           <CardContent className="p-0">
             <div className="grid md:grid-cols-2 gap-0">
               {/* Before/After Media */}
-              <div className="relative aspect-[16/10] bg-muted">
+              <div className="relative aspect-[16/10] bg-black overflow-hidden">
                 {showAfter && currentSample.afterVideo ? (
                   <video
                     src={currentSample.afterVideo}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover"
                     autoPlay
                     loop
                     muted
@@ -100,18 +100,18 @@ export const AIShowcaseSection = () => {
                   <img
                     src={currentSample.afterImage}
                     alt="After AI edit"
-                    className="w-full h-full object-contain transition-opacity duration-300"
+                    className="w-full h-full object-cover transition-opacity duration-300"
                   />
                 ) : !showAfter && currentSample.beforeImage ? (
                   <img
                     src={currentSample.beforeImage}
                     alt="Before AI edit"
-                    className="w-full h-full object-contain transition-opacity duration-300"
+                    className="w-full h-full object-cover transition-opacity duration-300"
                   />
                 ) : (
                   <video
                     src={currentSample.beforeVideo}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover"
                     autoPlay
                     loop
                     muted
