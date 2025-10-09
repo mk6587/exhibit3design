@@ -121,7 +121,7 @@ const FeaturedProducts = () => {
             </h1>
             
             <div className="flex justify-center">
-              <Button asChild size="lg" variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">
+              <Button asChild size="lg" variant="outline" className="bg-purple-600/20 text-white border-purple-400/50 hover:bg-purple-600/30">
                 <Link to="/pricing">Try AI Studio Now</Link>
               </Button>
             </div>
