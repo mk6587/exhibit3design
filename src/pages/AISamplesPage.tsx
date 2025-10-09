@@ -123,21 +123,32 @@ export default function AISamplesPage() {
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-7xl">
             <div className="grid lg:grid-cols-2 gap-8 items-start">
-              {/* Left: Image */}
+              {/* Left: Image/Video */}
               <div className="space-y-4">
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-muted shadow-xl">
                   {currentSample && (
                     <>
-                      <img
-                        src={showAfter ? currentSample.after_image_url : currentSample.before_image_url}
-                        alt={currentSample.title}
-                        className="w-full h-full object-cover"
-                        loading="eager"
-                        onError={(e) => {
-                          console.error('Image failed to load:', e.currentTarget.src);
-                          e.currentTarget.src = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80';
-                        }}
-                      />
+                      {showAfter && currentSample.after_image_url.endsWith('.mp4') ? (
+                        <video
+                          src={currentSample.after_image_url}
+                          className="w-full h-full object-cover"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                        />
+                      ) : (
+                        <img
+                          src={showAfter ? currentSample.after_image_url : currentSample.before_image_url}
+                          alt={currentSample.title}
+                          className="w-full h-full object-cover"
+                          loading="eager"
+                          onError={(e) => {
+                            console.error('Image failed to load:', e.currentTarget.src);
+                            e.currentTarget.src = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80';
+                          }}
+                        />
+                      )}
                       <Badge 
                         className="absolute top-4 left-4 text-sm"
                         variant={showAfter ? "default" : "secondary"}
