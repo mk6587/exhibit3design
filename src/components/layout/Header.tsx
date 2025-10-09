@@ -104,24 +104,39 @@ const Header = () => {
             <Search className="h-5 w-5" />
           </Button>
 
-          {/* AI Studio Button with Token Balance */}
-          <Button 
-            variant="default" 
-            size="sm" 
-            onClick={handleAIStudioClick}
-            className="hidden md:flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg hover:shadow-xl transition-all"
-          >
-            <Sparkles className="h-4 w-4" />
-            <span>AI Studio</span>
-            {user && profile && (
-              <Badge variant="secondary" className="ml-1 bg-white/20 text-white border-0 hover:bg-white/30">
-                {aiTokens}
-              </Badge>
-            )}
-          </Button>
+          {/* AI Studio Button with Token Balance or CTA */}
+          {user ? (
+            <Button 
+              variant="default" 
+              size="sm" 
+              onClick={handleAIStudioClick}
+              className="hidden md:flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg hover:shadow-xl transition-all"
+            >
+              <Sparkles className="h-4 w-4" />
+              <span>AI Studio</span>
+              {profile && (
+                <Badge variant="secondary" className="ml-1 bg-white/20 text-white border-0 hover:bg-white/30">
+                  {aiTokens}
+                </Badge>
+              )}
+            </Button>
+          ) : (
+            <Button 
+              variant="default" 
+              size="sm" 
+              asChild
+              className="hidden md:flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg hover:shadow-xl transition-all animate-pulse"
+            >
+              <Link to="/auth">
+                <Sparkles className="h-4 w-4" />
+                <span>Get 5 Free AI Tokens</span>
+              </Link>
+            </Button>
+          )}
 
           {/* User Menu */}
-          {user ? <div className="flex items-center space-x-2">
+          {user && (
+            <div className="flex items-center space-x-2">
               <Button variant="ghost" size="icon" asChild>
                 <Link to="/profile">
                   <User className="h-5 w-5" />
@@ -130,33 +145,51 @@ const Header = () => {
               <Button variant="ghost" size="icon" onClick={handleSignOut} className="hidden md:flex">
                 <LogOut className="h-5 w-5" />
               </Button>
-            </div> : <div className="hidden md:flex items-center space-x-2">
-              <Button size="sm" asChild>
-                <Link to="/pricing">Get 5 Free Tokens</Link>
-              </Button>
-            </div>}
+            </div>
+          )}
 
           {/* Cart removed - subscription model */}
 
-          {/* AI Studio Mobile Icon with Token Badge */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleAIStudioClick}
-            className="md:hidden relative hover:bg-muted flex items-center justify-center"
-          >
-            <span className="text-lg font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-              AI
-            </span>
-            {user && profile && aiTokens > 0 && (
-              <Badge 
-                variant="secondary" 
-                className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0"
-              >
-                {aiTokens}
-              </Badge>
-            )}
-          </Button>
+          {/* AI Studio Mobile Icon with Token Badge or Free Badge */}
+          {user ? (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleAIStudioClick}
+              className="md:hidden relative hover:bg-muted flex items-center justify-center"
+            >
+              <span className="text-lg font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+                AI
+              </span>
+              {profile && aiTokens > 0 && (
+                <Badge 
+                  variant="secondary" 
+                  className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0"
+                >
+                  {aiTokens}
+                </Badge>
+              )}
+            </Button>
+          ) : (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              asChild
+              className="md:hidden relative hover:bg-muted flex items-center justify-center"
+            >
+              <Link to="/auth">
+                <span className="text-lg font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+                  AI
+                </span>
+                <Badge 
+                  variant="secondary" 
+                  className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-green-600 text-white border-0 animate-pulse"
+                >
+                  FREE
+                </Badge>
+              </Link>
+            </Button>
+          )}
 
           {/* Mobile Menu Button */}
           <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleMenu}>
