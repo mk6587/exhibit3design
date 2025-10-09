@@ -18,27 +18,11 @@ interface AISample {
 const aiSamples: AISample[] = [
   {
     id: "1",
-    title: "Color Transformation",
-    category: "Style Change",
-    beforeImage: "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png",
-    afterImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
-    prompt: "Change the booth colors to modern blue and white corporate theme"
-  },
-  {
-    id: "2",
-    title: "Lighting Enhancement",
-    category: "Render Quality",
-    beforeImage: "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png",
-    afterImage: "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png",
-    prompt: "Add professional studio lighting with soft shadows"
-  },
-  {
-    id: "3",
-    title: "Material Update",
-    category: "Surface Finish",
-    beforeImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
-    afterImage: "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png",
-    prompt: "Replace materials with premium wood and glass finish"
+    title: "Portrait Enhancement",
+    category: "Image Magic Edit",
+    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg",
+    afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpeg",
+    prompt: "Apply professional image magic edit with enhanced lighting and composition"
   }
 ];
 
