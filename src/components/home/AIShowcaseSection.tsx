@@ -164,7 +164,7 @@ export const AIShowcaseSection = () => {
                 {/* Navigation & CTA */}
                 <div className="space-y-2">
                   {/* Carousel Navigation */}
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center justify-center gap-3">
                     <Button
                       onClick={prevSlide}
                       variant="outline"
@@ -174,7 +174,7 @@ export const AIShowcaseSection = () => {
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
                     
-                    <div className="flex gap-2 flex-1 justify-center">
+                    <div className="flex gap-2 items-center">
                       {aiSamples.map((_, index) => (
                         <button
                           key={index}
