@@ -86,6 +86,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_generation_history: {
+        Row: {
+          created_at: string
+          id: string
+          input_image_url: string | null
+          output_image_url: string
+          prompt: string
+          service_type: string
+          tokens_used: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          input_image_url?: string | null
+          output_image_url: string
+          prompt: string
+          service_type: string
+          tokens_used?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          input_image_url?: string | null
+          output_image_url?: string
+          prompt?: string
+          service_type?: string
+          tokens_used?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       designers: {
         Row: {
           bio: string | null

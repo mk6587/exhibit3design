@@ -1,95 +1,80 @@
 import { useState, useEffect } from "react";
-import { Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Sparkles, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate, Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
-interface AISample {
+interface AIGeneration {
   id: string;
-  title: string;
-  description: string;
-  before_image_url: string;
-  after_image_url: string;
-  prompt_used: string;
-  category: string;
-  is_featured: boolean;
+  prompt: string;
+  service_type: string;
+  input_image_url: string | null;
+  output_image_url: string;
+  tokens_used: number;
+  created_at: string;
 }
 
 export default function AISamplesPage() {
-  const [samples, setSamples] = useState<AISample[]>([]);
+  const [generations, setGenerations] = useState<AIGeneration[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [showAfter, setShowAfter] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchSamples();
-  }, []);
+    if (!user) {
+      navigate('/');
+      return;
+    }
+    fetchGenerations();
+  }, [user, navigate]);
 
-  const fetchSamples = async () => {
+  const fetchGenerations = async () => {
     try {
       const { data, error } = await supabase
-        .from('ai_edit_samples')
+        .from('ai_generation_history')
         .select('*')
-        .order('display_order', { ascending: true });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-      console.log('Fetched AI samples:', data);
-      setSamples(data || []);
+      setGenerations(data || []);
     } catch (error) {
-      console.error('Error fetching AI samples:', error);
+      console.error('Error fetching AI generations:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const currentSample = samples[currentIndex];
-  
-  console.log('Current state:', { 
-    samplesCount: samples.length, 
-    currentIndex, 
-    currentSample: currentSample?.title,
-    loading 
-  });
-
-  const nextSample = () => {
-    setCurrentIndex((prev) => (prev + 1) % samples.length);
-    setShowAfter(false);
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
-  const prevSample = () => {
-    setCurrentIndex((prev) => (prev - 1 + samples.length) % samples.length);
-    setShowAfter(false);
+  const formatServiceType = (type: string) => {
+    return type
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   };
 
   if (loading) {
     return (
       <Layout
-        title="AI Examples - See What's Possible | Exhibit3Design"
-        description="Browse real examples of AI-powered exhibition stand design transformations. See before and after comparisons using Runware AI tools."
-        keywords="AI design examples, exhibition stand AI, design transformation, AI editing samples"
-      >
-        <div className="min-h-screen flex items-center justify-center">
-          <p className="text-muted-foreground">Loading AI examples...</p>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (samples.length === 0) {
-    return (
-      <Layout
-        title="AI Examples - See What's Possible | Exhibit3Design"
-        description="Browse real examples of AI-powered exhibition stand design transformations. See before and after comparisons using Runware AI tools."
-        keywords="AI design examples, exhibition stand AI, design transformation, AI editing samples"
+        title="My AI History | Exhibit3Design"
+        description="View your AI-powered design generation history and results."
+        keywords="AI history, generated designs, AI results"
       >
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <p className="text-muted-foreground mb-4">No examples available yet.</p>
-            <Button asChild variant="outline">
-              <Link to="/products">Browse Designs</Link>
-            </Button>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading your AI generations...</p>
           </div>
         </div>
       </Layout>
@@ -98,182 +83,112 @@ export default function AISamplesPage() {
 
   return (
     <Layout
-      title="AI Examples - See What's Possible | Exhibit3Design"
-      description="Browse real examples of AI-powered exhibition stand design transformations. See before and after comparisons using Runware AI tools."
-      keywords="AI design examples, exhibition stand AI, design transformation, AI editing samples"
+      title="My AI History | Exhibit3Design"
+      description="View your AI-powered design generation history and results."
+      keywords="AI history, generated designs, AI results"
     >
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-        {/* Header */}
+        {/* Hero Section */}
         <section className="py-12 px-4 bg-gradient-to-r from-primary/10 to-primary/5">
           <div className="container mx-auto max-w-6xl text-center">
             <Badge className="mb-4" variant="outline">
               <Sparkles className="h-3 w-3 mr-1" />
-              AI-Powered Editing
+              AI Generation History
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              AI Transforms Your Designs
+              Your AI Creations
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Instantly customize exhibition stands with simple text prompts. No design skills needed.
+              Browse all your AI-generated designs and transformations
             </p>
           </div>
         </section>
 
-        {/* Before/After Comparison */}
+        {/* Grid Section */}
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-7xl">
-            <div className="grid lg:grid-cols-2 gap-8 items-start">
-              {/* Left: Image/Video */}
-              <div className="space-y-4">
-                <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-muted shadow-xl">
-                  {currentSample && (
-                    <>
-                      {showAfter && currentSample.after_image_url.endsWith('.mp4') ? (
-                        <video
-                          src={currentSample.after_image_url}
-                          className="w-full h-full object-cover"
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                        />
-                      ) : (
-                        <img
-                          src={showAfter ? currentSample.after_image_url : currentSample.before_image_url}
-                          alt={currentSample.title}
-                          className="w-full h-full object-cover"
-                          loading="eager"
-                          onError={(e) => {
-                            console.error('Image failed to load:', e.currentTarget.src);
-                            e.currentTarget.src = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80';
-                          }}
-                        />
-                      )}
-                      <Badge 
-                        className="absolute top-4 left-4 text-sm"
-                        variant={showAfter ? "default" : "secondary"}
-                      >
-                        {showAfter ? "After" : "Before"}
-                      </Badge>
-                    </>
-                  )}
-                </div>
-                
-                <Button
-                  onClick={() => setShowAfter(!showAfter)}
-                  variant="outline"
-                  size="lg"
-                  className="w-full max-w-xs mx-auto block"
-                >
-                  {showAfter ? "Show Before" : "Show After"}
-                </Button>
-              </div>
-
-              {/* Right: Details */}
-              <div className="space-y-6">
-                {currentSample && (
-                  <>
-                    <div>
-                      <Badge variant="outline" className="mb-3">
-                        {currentSample.category.replace('_', ' ')}
-                      </Badge>
-                      <h2 className="text-3xl font-bold mb-4">
-                        {currentSample.title}
-                      </h2>
-                    </div>
-
-                    {/* Prompt Used */}
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground mb-2">
-                        AI Prompt Used:
-                      </p>
-                      <div className="p-4 bg-muted/50 rounded-lg border">
-                        <p className="italic text-sm">
-                          "{currentSample.prompt_used}"
-                        </p>
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {/* Features */}
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <Sparkles className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <p className="text-sm">Advanced AI-powered editing</p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Sparkles className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <p className="text-sm">Instant results in seconds</p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Sparkles className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <p className="text-sm">No design experience needed</p>
-                  </div>
-                </div>
-
-                {/* Navigation */}
-                <div className="flex items-center justify-between pt-6">
-                  <Button
-                    onClick={prevSample}
-                    variant="outline"
-                    size="icon"
-                    disabled={samples.length <= 1}
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </Button>
-
-                  <div className="flex gap-2">
-                    {samples.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => {
-                          setCurrentIndex(index);
-                          setShowAfter(false);
-                        }}
-                        className={`h-2 rounded-full transition-all ${
-                          index === currentIndex 
-                            ? "w-8 bg-primary" 
-                            : "w-2 bg-muted-foreground/30"
-                        }`}
-                        aria-label={`Go to example ${index + 1}`}
-                      />
-                    ))}
-                  </div>
-
-                  <Button
-                    onClick={nextSample}
-                    variant="outline"
-                    size="icon"
-                    disabled={samples.length <= 1}
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-16 px-4">
-          <div className="container mx-auto max-w-4xl">
-            <div className="bg-primary text-primary-foreground rounded-2xl p-8 md:p-12 text-center shadow-2xl">
-              <h2 className="text-3xl font-bold mb-4">
-                Try AI for Free
-              </h2>
-              <p className="text-lg mb-8 opacity-90">
-                Get 5 free AI tokens to explore
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button asChild size="lg" variant="secondary">
-                  <Link to="/pricing">Get Started</Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10">
+            {generations.length === 0 ? (
+              <div className="text-center py-16">
+                <Sparkles className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No generations yet</h3>
+                <p className="text-muted-foreground mb-6">
+                  Start creating AI designs to see them here
+                </p>
+                <Button asChild>
                   <Link to="/products">Browse Designs</Link>
                 </Button>
               </div>
-            </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {generations.map((generation) => (
+                  <div
+                    key={generation.id}
+                    className="group relative bg-card rounded-lg overflow-hidden border shadow-sm hover:shadow-lg transition-all"
+                  >
+                    {/* Result Image */}
+                    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                      {generation.output_image_url.endsWith('.mp4') ? (
+                        <video
+                          src={generation.output_image_url}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          muted
+                          loop
+                          playsInline
+                          onMouseEnter={(e) => e.currentTarget.play()}
+                          onMouseLeave={(e) => e.currentTarget.pause()}
+                        />
+                      ) : (
+                        <img
+                          src={generation.output_image_url}
+                          alt="AI Generated Result"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                      )}
+                      <Badge className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm">
+                        {generation.tokens_used} {generation.tokens_used === 1 ? 'token' : 'tokens'}
+                      </Badge>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-4 space-y-3">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Calendar className="h-3 w-3" />
+                        <span>{formatDate(generation.created_at)}</span>
+                      </div>
+
+                      <Badge variant="outline" className="text-xs">
+                        {formatServiceType(generation.service_type)}
+                      </Badge>
+
+                      <div className="bg-muted/50 p-3 rounded-md">
+                        <p className="text-xs text-muted-foreground font-medium mb-1 flex items-center gap-1">
+                          <Sparkles className="h-3 w-3" />
+                          Prompt
+                        </p>
+                        <p className="text-sm line-clamp-3 italic">
+                          "{generation.prompt}"
+                        </p>
+                      </div>
+
+                      {generation.input_image_url && (
+                        <div className="pt-2 border-t">
+                          <p className="text-xs text-muted-foreground mb-2">Before:</p>
+                          <div className="relative aspect-video rounded overflow-hidden">
+                            <img
+                              src={generation.input_image_url}
+                              alt="Original input"
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       </div>
