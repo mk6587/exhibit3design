@@ -3,8 +3,9 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import ImageViewer from "@/components/ui/image-viewer";
-import { Eye, MousePointer2, Lock } from "lucide-react";
+import { Eye, MousePointer2, Lock, Sparkles } from "lucide-react";
 import "@/components/ui/rich-text-editor.css";
+import { TryInAIStudioButton } from "./TryInAIStudioButton";
 
 export interface Product {
   id: number;
@@ -60,6 +61,17 @@ const ProductCard = ({
           (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
         }} />
         </Link>
+        
+        {/* Hover Overlay with AI Studio Button */}
+        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-20">
+          <TryInAIStudioButton 
+            productId={product.id}
+            productTitle={product.title}
+            variant="default"
+            size="sm"
+            className="shadow-lg"
+          />
+        </div>
         
         {/* Hover Indicator Icons */}
         <div className="absolute top-2 right-2 flex gap-1 z-10">

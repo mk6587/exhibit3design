@@ -21,6 +21,7 @@ import {
 import { Check, X, FileText, Calendar, HardDrive, Download } from "lucide-react";
 import "@/components/ui/rich-text-editor.css";
 import { trackViewItem } from "@/services/ga4Analytics";
+import { TryInAIStudioButton } from "@/components/product/TryInAIStudioButton";
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -160,6 +161,13 @@ const ProductDetailPage = () => {
             
             {/* CTA Buttons */}
             <div className="space-y-3">
+              <TryInAIStudioButton 
+                productId={product.id}
+                productTitle={product.title}
+                variant="default"
+                size="lg"
+                className="w-full"
+              />
               <Button asChild size="lg" className="w-full">
                 <Link to="/pricing">
                   {product.subscription_tier_required && product.subscription_tier_required !== 'sample' 
