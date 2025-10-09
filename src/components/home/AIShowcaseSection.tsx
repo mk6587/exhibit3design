@@ -21,15 +21,6 @@ interface AISample {
 const aiSamples: AISample[] = [
   {
     id: "1",
-    title: "Portrait Enhancement",
-    category: "Image Magic Edit",
-    type: 'image',
-    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg",
-    afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg",
-    prompt: "straighten her hair and change her sweater to a green t-shirt"
-  },
-  {
-    id: "2",
     title: "Scene Transformation",
     category: "Image Magic Edit",
     type: 'image',
@@ -38,13 +29,22 @@ const aiSamples: AISample[] = [
     prompt: "change the background to a modern office setting"
   },
   {
-    id: "3",
+    id: "2",
     title: "Video Generation",
     category: "AI Video Creation",
     type: 'video',
     beforeVideo: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos/sample-before.mp4",
     afterVideo: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos/sample-after.mp4",
     prompt: "create a cinematic video with smooth camera movement"
+  },
+  {
+    id: "3",
+    title: "Portrait Enhancement",
+    category: "Image Magic Edit",
+    type: 'image',
+    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg",
+    afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg",
+    prompt: "straighten her hair and change her sweater to a green t-shirt"
   }
 ];
 
