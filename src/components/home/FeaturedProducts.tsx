@@ -37,7 +37,6 @@ const FeaturedProducts = () => {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
-
   if (loading) {
     return <>
         {/* Full-width video section - Loading State */}
@@ -74,44 +73,27 @@ const FeaturedProducts = () => {
   return <>
       {/* Full-width hero section */}
       <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
-        {hasVideo && videoUrl ? (
-          <>
+        {hasVideo && videoUrl ? <>
             {/* Poster image - using img tag for better control */}
-            <img 
-              src={posterUrl}
-              alt="Exhibition Stand Hero"
-              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
-              style={{
-                opacity: (videoLoaded && minDisplayTime) ? 0 : 1,
-                pointerEvents: (videoLoaded && minDisplayTime) ? 'none' : 'auto'
-              }}
-              onLoad={() => {
-                setPosterLoaded(true);
-                console.log('Poster image loaded successfully');
-              }}
-              onError={(e) => {
-                setPosterError(true);
-                console.error('Poster image loading error:', e);
-              }}
-            />
+            <img src={posterUrl} alt="Exhibition Stand Hero" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" style={{
+          opacity: videoLoaded && minDisplayTime ? 0 : 1,
+          pointerEvents: videoLoaded && minDisplayTime ? 'none' : 'auto'
+        }} onLoad={() => {
+          setPosterLoaded(true);
+          console.log('Poster image loaded successfully');
+        }} onError={e => {
+          setPosterError(true);
+          console.error('Poster image loading error:', e);
+        }} />
             
             {/* Video - hidden until fully loaded and minimum time passed */}
-            <video
-              className="w-full h-full object-cover transition-opacity duration-500"
-              style={{ opacity: (videoLoaded && minDisplayTime) ? 1 : 0 }}
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              onCanPlayThrough={handleVideoCanPlay}
-              onLoadedData={() => {
-                console.log('Video loaded and ready');
-              }}
-              onError={(e) => {
-                console.error('Video loading error:', e);
-              }}
-            >
+            <video className="w-full h-full object-cover transition-opacity duration-500" style={{
+          opacity: videoLoaded && minDisplayTime ? 1 : 0
+        }} autoPlay loop muted playsInline preload="auto" onCanPlayThrough={handleVideoCanPlay} onLoadedData={() => {
+          console.log('Video loaded and ready');
+        }} onError={e => {
+          console.error('Video loading error:', e);
+        }}>
               <source src={videoUrl} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
@@ -120,11 +102,8 @@ const FeaturedProducts = () => {
             <div className="absolute inset-0 bg-black/20" />
             
             {/* Error fallback - show if poster fails to load */}
-            {posterError && !posterLoaded && (
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-900 to-purple-700" />
-            )}
-          </>
-        ) :
+            {posterError && !posterLoaded && <div className="absolute inset-0 bg-gradient-to-br from-purple-900 to-purple-700" />}
+          </> :
       // Fallback to beautiful hero image
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
         backgroundImage: `url("https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=600&fit=crop&crop=center&auto=format&q=80")`
@@ -140,25 +119,12 @@ const FeaturedProducts = () => {
           }}>
               Design Faster with Ready-Made Files & AI
             </h1>
-            <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto" style={{
-            textShadow: '1px 1px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 0, 0, 0.5)'
-          }}>
-              Professional exhibition stand templates. Instant AI customization. Get 5 free tokens.
-            </p>
+            
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                asChild 
-                size="lg" 
-                className="bg-purple-600 text-white border-purple-400 hover:bg-purple-700"
-              >
+              <Button asChild size="lg" className="bg-purple-600 text-white border-purple-400 hover:bg-purple-700">
                 <Link to="/pricing">Try AI Studio Now</Link>
               </Button>
-              <Button 
-                asChild 
-                size="lg" 
-                variant="outline"
-                className="bg-white/10 text-white border-white/50 hover:bg-white/20"
-              >
+              <Button asChild size="lg" variant="outline" className="bg-white/10 text-white border-white/50 hover:bg-white/20">
                 <Link to="/products">Browse Designs</Link>
               </Button>
             </div>
