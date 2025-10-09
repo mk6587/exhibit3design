@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { Sparkles, Grid3x3, Filter } from "lucide-react";
+import { Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,25 +20,19 @@ interface AISample {
 export default function AISamplesPage() {
   const [samples, setSamples] = useState<AISample[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [showAfter, setShowAfter] = useState<Record<string, boolean>>({});
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [showAfter, setShowAfter] = useState(false);
 
   useEffect(() => {
     fetchSamples();
-  }, [selectedCategory]);
+  }, []);
 
   const fetchSamples = async () => {
     try {
-      let query = supabase
+      const { data, error } = await supabase
         .from('ai_edit_samples')
         .select('*')
         .order('display_order', { ascending: true });
-
-      if (selectedCategory !== 'all') {
-        query = query.eq('category', selectedCategory);
-      }
-
-      const { data, error } = await query;
 
       if (error) throw error;
       setSamples(data || []);
@@ -50,21 +43,50 @@ export default function AISamplesPage() {
     }
   };
 
-  const categories = [
-    { value: 'all', label: 'All Examples' },
-    { value: 'color_change', label: 'Color Changes' },
-    { value: 'style_transfer', label: 'Style Transfer' },
-    { value: 'render_quality', label: 'Render Quality' },
-    { value: 'material_update', label: 'Material Updates' },
-    { value: 'video_creation', label: 'Video Creation' }
-  ];
+  const currentSample = samples[currentIndex];
 
-  const toggleImage = (sampleId: string) => {
-    setShowAfter(prev => ({
-      ...prev,
-      [sampleId]: !prev[sampleId]
-    }));
+  const nextSample = () => {
+    setCurrentIndex((prev) => (prev + 1) % samples.length);
+    setShowAfter(false);
   };
+
+  const prevSample = () => {
+    setCurrentIndex((prev) => (prev - 1 + samples.length) % samples.length);
+    setShowAfter(false);
+  };
+
+  if (loading) {
+    return (
+      <Layout
+        title="AI Examples - See What's Possible | Exhibit3Design"
+        description="Browse real examples of AI-powered exhibition stand design transformations. See before and after comparisons using Runware AI tools."
+        keywords="AI design examples, exhibition stand AI, design transformation, AI editing samples"
+      >
+        <div className="min-h-screen flex items-center justify-center">
+          <p className="text-muted-foreground">Loading AI examples...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (samples.length === 0) {
+    return (
+      <Layout
+        title="AI Examples - See What's Possible | Exhibit3Design"
+        description="Browse real examples of AI-powered exhibition stand design transformations. See before and after comparisons using Runware AI tools."
+        keywords="AI design examples, exhibition stand AI, design transformation, AI editing samples"
+      >
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-muted-foreground mb-4">No examples available yet.</p>
+            <Button asChild variant="outline">
+              <Link to="/products">Browse Designs</Link>
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout
@@ -74,138 +96,151 @@ export default function AISamplesPage() {
     >
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
         {/* Header */}
-        <section className="py-16 px-4 bg-gradient-to-r from-primary/10 to-primary/5">
+        <section className="py-12 px-4 bg-gradient-to-r from-primary/10 to-primary/5">
           <div className="container mx-auto max-w-6xl text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-4">
-              <Sparkles className="h-4 w-4" />
-              <span className="text-sm font-medium">AI Showcase</span>
-            </div>
+            <Badge className="mb-4" variant="outline">
+              <Sparkles className="h-3 w-3 mr-1" />
+              AI-Powered Editing
+            </Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              See AI in Action
+              AI Transforms Your Designs
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-              Real examples of instant design transformations powered by Runware Gemini Flash 2.5 and Kling 2.5 Turbo Pro
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Instantly customize exhibition stands with simple text prompts. No design skills needed.
             </p>
-
-            {/* Category Filter */}
-            <div className="flex flex-wrap justify-center gap-2 mb-6">
-              {categories.map((cat) => (
-                <Button
-                  key={cat.value}
-                  onClick={() => setSelectedCategory(cat.value)}
-                  variant={selectedCategory === cat.value ? "default" : "outline"}
-                  size="sm"
-                >
-                  {cat.label}
-                </Button>
-              ))}
-            </div>
           </div>
         </section>
 
-        {/* Samples Grid */}
+        {/* Before/After Comparison */}
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-7xl">
-            {loading ? (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">Loading AI examples...</p>
-              </div>
-            ) : samples.length === 0 ? (
-              <div className="text-center py-12">
-                <Grid3x3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">No examples found in this category yet.</p>
+            <div className="grid lg:grid-cols-2 gap-8 items-start">
+              {/* Left: Image */}
+              <div className="space-y-4">
+                <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-muted shadow-xl">
+                  <img
+                    src={showAfter ? currentSample.after_image_url : currentSample.before_image_url}
+                    alt={currentSample.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <Badge 
+                    className="absolute top-4 left-4 text-sm"
+                    variant={showAfter ? "default" : "secondary"}
+                  >
+                    {showAfter ? "After" : "Before"}
+                  </Badge>
+                </div>
+                
                 <Button
-                  onClick={() => setSelectedCategory('all')}
+                  onClick={() => setShowAfter(!showAfter)}
                   variant="outline"
-                  className="mt-4"
+                  size="lg"
+                  className="w-full max-w-xs mx-auto block"
                 >
-                  View All Examples
+                  {showAfter ? "Show Before" : "Show After"}
                 </Button>
               </div>
-            ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {samples.map((sample) => (
-                  <Card key={sample.id} className="overflow-hidden group hover:shadow-lg transition-shadow">
-                    <CardContent className="p-0">
-                      {/* Image Container */}
-                      <div className="relative aspect-square overflow-hidden bg-muted">
-                        <img
-                          src={showAfter[sample.id] ? sample.after_image_url : sample.before_image_url}
-                          alt={sample.title}
-                          className="w-full h-full object-cover transition-opacity duration-300"
-                        />
-                        <Badge 
-                          className="absolute top-3 left-3"
-                          variant={showAfter[sample.id] ? "default" : "secondary"}
-                        >
-                          {showAfter[sample.id] ? "After" : "Before"}
-                        </Badge>
-                        
-                        {sample.is_featured && (
-                          <Badge className="absolute top-3 right-3 bg-amber-500">
-                            Featured
-                          </Badge>
-                        )}
 
-                        {/* Toggle Button Overlay */}
-                        <Button
-                          onClick={() => toggleImage(sample.id)}
-                          className="absolute bottom-3 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
-                          size="sm"
-                        >
-                          {showAfter[sample.id] ? "Show Before" : "Show After"}
-                        </Button>
-                      </div>
+              {/* Right: Details */}
+              <div className="space-y-6">
+                <div>
+                  <Badge variant="outline" className="mb-3">
+                    {currentSample.category.replace('_', ' ')}
+                  </Badge>
+                  <h2 className="text-3xl font-bold mb-4">
+                    {currentSample.title}
+                  </h2>
+                </div>
 
-                      {/* Info Section */}
-                      <div className="p-5">
-                        <Badge variant="outline" className="mb-3">
-                          {sample.category.replace('_', ' ')}
-                        </Badge>
-                        <h3 className="font-bold text-lg mb-2">
-                          {sample.title}
-                        </h3>
-                        {sample.description && (
-                          <p className="text-sm text-muted-foreground mb-3">
-                            {sample.description}
-                          </p>
-                        )}
-                        
-                        {/* Prompt Display */}
-                        {sample.prompt_used && (
-                          <div className="p-3 bg-muted/50 rounded-lg border text-xs">
-                            <p className="font-medium mb-1 text-muted-foreground">
-                              Prompt:
-                            </p>
-                            <p className="italic">"{sample.prompt_used}"</p>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                {/* Prompt Used */}
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">
+                    AI Prompt Used:
+                  </p>
+                  <div className="p-4 bg-muted/50 rounded-lg border">
+                    <p className="italic text-sm">
+                      "{currentSample.prompt_used}"
+                    </p>
+                  </div>
+                </div>
+
+                {/* Features */}
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <Sparkles className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <p className="text-sm">Advanced AI-powered editing</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Sparkles className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <p className="text-sm">Instant results in seconds</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Sparkles className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <p className="text-sm">No design experience needed</p>
+                  </div>
+                </div>
+
+                {/* Navigation */}
+                <div className="flex items-center justify-between pt-6">
+                  <Button
+                    onClick={prevSample}
+                    variant="outline"
+                    size="icon"
+                    disabled={samples.length <= 1}
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </Button>
+
+                  <div className="flex gap-2">
+                    {samples.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          setCurrentIndex(index);
+                          setShowAfter(false);
+                        }}
+                        className={`h-2 rounded-full transition-all ${
+                          index === currentIndex 
+                            ? "w-8 bg-primary" 
+                            : "w-2 bg-muted-foreground/30"
+                        }`}
+                        aria-label={`Go to example ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+
+                  <Button
+                    onClick={nextSample}
+                    variant="outline"
+                    size="icon"
+                    disabled={samples.length <= 1}
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </Button>
+                </div>
               </div>
-            )}
+            </div>
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 px-4 bg-muted/30">
-          <div className="container mx-auto max-w-4xl text-center">
-            <Sparkles className="h-12 w-12 text-primary mx-auto mb-4" />
-            <h2 className="text-3xl font-bold mb-4">
-              Ready to Try AI Yourself?
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Get 5 free AI tokens and start transforming exhibition stand designs instantly
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg">
-                <Link to="/pricing">Get 5 Free Tokens</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link to="/products">Browse Designs</Link>
-              </Button>
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <div className="bg-primary text-primary-foreground rounded-2xl p-8 md:p-12 text-center shadow-2xl">
+              <h2 className="text-3xl font-bold mb-4">
+                Try AI for Free
+              </h2>
+              <p className="text-lg mb-8 opacity-90">
+                Get 5 free AI tokens to explore
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button asChild size="lg" variant="secondary">
+                  <Link to="/pricing">Get Started</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10">
+                  <Link to="/products">Browse Designs</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </section>
