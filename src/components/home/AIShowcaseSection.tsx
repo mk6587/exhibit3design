@@ -91,7 +91,7 @@ export const AIShowcaseSection = () => {
                   <img
                     src={showAfter ? currentSample.afterImage : currentSample.beforeImage}
                     alt={showAfter ? "After AI edit" : "Before AI edit"}
-                    className="w-full h-full object-contain bg-muted transition-opacity duration-300"
+                    className="w-full h-full object-cover transition-opacity duration-300"
                   />
                 ) : (
                   <video
