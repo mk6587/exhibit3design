@@ -114,18 +114,15 @@ const FeaturedProducts = () => {
         {/* Hero content overlay */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center text-white px-4">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4" style={{
+            <h1 className="text-2xl md:text-3xl font-bold mb-4" style={{
             textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6)'
           }}>
               Design Faster with Ready-Made Files & AI
             </h1>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-purple-600 text-white border-purple-400 hover:bg-purple-700">
+            <div className="flex justify-center">
+              <Button asChild size="lg" variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">
                 <Link to="/pricing">Try AI Studio Now</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="bg-white/10 text-white border-white/50 hover:bg-white/20">
-                <Link to="/products">Browse Designs</Link>
               </Button>
             </div>
             {!hasVideo && <div className="text-sm text-white/80 bg-black/20 px-4 py-2 rounded-lg backdrop-blur-sm mt-4">
