@@ -22,7 +22,7 @@ const aiSamples: AISample[] = [
     category: "Image Magic Edit",
     beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg",
     afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg",
-    prompt: "Apply professional image magic edit with enhanced lighting and composition"
+    prompt: "straighten her hair and change her sweater to a green t-shirt"
   }
 ];
 
@@ -109,7 +109,7 @@ export const AIShowcaseSection = () => {
                   <div className="space-y-2 mb-6">
                     <div className="flex items-center gap-2 text-sm">
                       <Sparkles className="h-4 w-4 text-primary" />
-                      <span>Powered by Runware Gemini Flash 2.5</span>
+                      <span>Advanced AI-powered editing</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Sparkles className="h-4 w-4 text-primary" />
@@ -181,7 +181,7 @@ export const AIShowcaseSection = () => {
         {/* Bottom Badge */}
         <div className="text-center mt-8">
           <p className="text-sm text-muted-foreground">
-            Powered by <span className="font-semibold">Runware Gemini Flash 2.5</span> + <span className="font-semibold">Kling 2.5 Turbo Pro</span>
+            Powered by cutting-edge AI technology
           </p>
         </div>
       </div>
