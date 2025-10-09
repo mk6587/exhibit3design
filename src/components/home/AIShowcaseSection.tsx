@@ -136,51 +136,51 @@ export const AIShowcaseSection = () => {
               </div>
 
               {/* Info Panel */}
-              <div className="p-8 flex flex-col justify-between bg-card">
+              <div className="p-6 flex flex-col justify-between bg-card">
                 <div>
-                  <Badge variant="outline" className="mb-4">
+                  <Badge variant="outline" className="mb-3 text-xs">
                     {currentSample.category}
                   </Badge>
-                  <h3 className="text-2xl font-bold mb-4">
+                  <h3 className="text-xl font-bold mb-3">
                     {currentSample.title}
                   </h3>
                   
                   {/* Prompt Display */}
-                  <div className="mb-6">
-                    <p className="text-sm text-muted-foreground mb-2">AI Prompt Used:</p>
-                    <div className="p-4 bg-muted/50 rounded-lg border">
-                      <p className="text-sm italic">"{currentSample.prompt}"</p>
+                  <div className="mb-4">
+                    <p className="text-xs text-muted-foreground mb-1.5">AI Prompt Used:</p>
+                    <div className="p-3 bg-muted/50 rounded-lg border">
+                      <p className="text-xs italic">"{currentSample.prompt}"</p>
                     </div>
                   </div>
 
                   {/* Features */}
-                  <div className="space-y-2 mb-6">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Sparkles className="h-4 w-4 text-primary" />
+                  <div className="space-y-1.5 mb-4">
+                    <div className="flex items-center gap-2 text-xs">
+                      <Sparkles className="h-3.5 w-3.5 text-primary" />
                       <span>Advanced AI-powered editing</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Sparkles className="h-4 w-4 text-primary" />
+                    <div className="flex items-center gap-2 text-xs">
+                      <Sparkles className="h-3.5 w-3.5 text-primary" />
                       <span>Instant results in seconds</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Sparkles className="h-4 w-4 text-primary" />
+                    <div className="flex items-center gap-2 text-xs">
+                      <Sparkles className="h-3.5 w-3.5 text-primary" />
                       <span>No design experience needed</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Navigation & CTA */}
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {/* Carousel Navigation */}
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center justify-between gap-3">
                     <Button
                       onClick={prevSlide}
                       variant="outline"
                       size="icon"
-                      className="h-12 w-12 flex-shrink-0"
+                      className="h-9 w-9 flex-shrink-0"
                     >
-                      <ChevronLeft className="h-6 w-6" />
+                      <ChevronLeft className="h-4 w-4" />
                     </Button>
                     
                     <div className="flex gap-2 flex-1 justify-center">
@@ -191,10 +191,10 @@ export const AIShowcaseSection = () => {
                             setCurrentIndex(index);
                             setShowAfter(false);
                           }}
-                          className={`h-2 rounded-full transition-all ${
+                          className={`h-1.5 rounded-full transition-all ${
                             index === currentIndex 
-                              ? "w-8 bg-primary" 
-                              : "w-2 bg-muted-foreground/30"
+                              ? "w-6 bg-primary" 
+                              : "w-1.5 bg-muted-foreground/30"
                           }`}
                           aria-label={`Go to sample ${index + 1}`}
                         />
@@ -205,20 +205,20 @@ export const AIShowcaseSection = () => {
                       onClick={nextSlide}
                       variant="outline"
                       size="icon"
-                      className="h-12 w-12 flex-shrink-0"
+                      className="h-9 w-9 flex-shrink-0"
                     >
-                      <ChevronRight className="h-6 w-6" />
+                      <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
 
                   {/* CTA Button */}
-                  <Button asChild className="w-full" size="lg">
+                  <Button asChild className="w-full" size="default">
                     <Link to="/pricing">
                       Try AI for Free
                     </Link>
                   </Button>
                   
-                  <p className="text-center text-xs text-muted-foreground">
+                  <p className="text-center text-[10px] text-muted-foreground">
                     Get 5 free AI tokens to explore
                   </p>
                 </div>
