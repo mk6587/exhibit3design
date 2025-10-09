@@ -9,7 +9,7 @@ import { useProducts } from "@/contexts/ProductsContext";
 import { openAIStudio } from "@/utils/aiStudioAuth";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { AIStudioCTA } from "./AIStudioCTA";
+import { AIStudioCTA, AIStudioCTAMobile } from "./AIStudioCTA";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -163,19 +163,7 @@ const Header = () => {
               )}
             </Button>
           ) : (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              asChild
-              className="md:hidden relative hover:bg-muted flex items-center gap-1 px-2"
-            >
-              <Link to="/auth">
-                <Sparkles className="h-4 w-4 text-purple-600 animate-pulse" />
-                <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-                  AI Studio
-                </span>
-              </Link>
-            </Button>
+            <AIStudioCTAMobile />
           )}
 
           {/* Mobile Menu Button */}
