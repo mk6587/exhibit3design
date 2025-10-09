@@ -79,7 +79,7 @@ export const AIShowcaseSection = () => {
               {/* Before/After Media */}
               <div className="relative aspect-[16/10] bg-black overflow-hidden">
                 {showAfter && currentSample.afterVideo ? <video src={currentSample.afterVideo} className="w-full h-full object-cover" autoPlay loop muted playsInline /> : showAfter && currentSample.afterImage ? <img src={currentSample.afterImage} alt="After AI edit" className="w-full h-full object-cover transition-opacity duration-300" /> : !showAfter && currentSample.beforeImage ? <img src={currentSample.beforeImage} alt="Before AI edit" className="w-full h-full object-cover transition-opacity duration-300" /> : <video src={currentSample.beforeVideo} className="w-full h-full object-cover" autoPlay loop muted playsInline />}
-                <Badge className="absolute top-4 left-4 text-sm font-semibold" variant={showAfter ? "default" : "secondary"}>
+                <Badge className="absolute bottom-4 left-4 text-sm font-semibold" variant={showAfter ? "default" : "secondary"}>
                   {showAfter ? "After" : "Before"}
                 </Badge>
               </div>
