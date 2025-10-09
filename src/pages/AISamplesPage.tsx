@@ -6,12 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 interface AIGeneration {
   id: string;
@@ -154,70 +148,71 @@ export default function AISamplesPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {generations.map((generation) => (
-                  <div
-                    key={generation.id}
-                    className="group relative bg-card rounded-lg overflow-hidden border shadow-sm hover:shadow-lg transition-all"
-                  >
-                    {/* Result Image */}
-                    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                      {generation.output_image_url.endsWith('.mp4') ? (
-                        <video
-                          src={generation.output_image_url}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          muted
-                          loop
-                          playsInline
-                          onMouseEnter={(e) => e.currentTarget.play()}
-                          onMouseLeave={(e) => e.currentTarget.pause()}
-                        />
-                      ) : (
-                        <img
-                          src={generation.output_image_url}
-                          alt="AI Generated Result"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                        />
-                      )}
-                      <Badge className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm">
-                        {generation.tokens_used} {generation.tokens_used === 1 ? 'token' : 'tokens'}
-                      </Badge>
-                    </div>
+                {generations.map((generation) => {
+                  const [isHovered, setIsHovered] = useState(false);
+                  const hasSourceImage = !!generation.input_image_url;
+                  
+                  // Show source on hover if it exists, otherwise always show result
+                  const displayImage = (isHovered && hasSourceImage) 
+                    ? generation.input_image_url 
+                    : generation.output_image_url;
+                  
+                  const isVideo = generation.output_image_url.endsWith('.mp4');
 
-                    {/* Content */}
-                    <div className="p-4 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          <span>{formatDate(generation.created_at)}</span>
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {formatServiceType(generation.service_type)}
+                  return (
+                    <div
+                      key={generation.id}
+                      className="group relative bg-card rounded-lg overflow-hidden border shadow-sm hover:shadow-lg transition-all"
+                      onMouseEnter={() => setIsHovered(true)}
+                      onMouseLeave={() => setIsHovered(false)}
+                    >
+                      {/* Image with hover effect */}
+                      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                        {isVideo && !isHovered ? (
+                          <video
+                            src={generation.output_image_url}
+                            className="w-full h-full object-cover transition-all duration-300"
+                            muted
+                            loop
+                            playsInline
+                            autoPlay
+                          />
+                        ) : (
+                          <img
+                            src={displayImage}
+                            alt={isHovered && hasSourceImage ? "Source image" : "AI Generated Result"}
+                            className="w-full h-full object-cover transition-all duration-300"
+                            loading="lazy"
+                          />
+                        )}
+                        <Badge className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm">
+                          {generation.tokens_used} {generation.tokens_used === 1 ? 'token' : 'tokens'}
                         </Badge>
+                        {hasSourceImage && (
+                          <Badge 
+                            className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm transition-opacity duration-300"
+                            variant={isHovered ? "default" : "secondary"}
+                          >
+                            {isHovered ? "Source" : "Result"}
+                          </Badge>
+                        )}
                       </div>
 
-                      {generation.input_image_url && (
-                        <Accordion type="single" collapsible className="w-full">
-                          <AccordionItem value="before" className="border-0">
-                            <AccordionTrigger className="text-xs text-muted-foreground py-2 hover:no-underline">
-                              View source image
-                            </AccordionTrigger>
-                            <AccordionContent>
-                              <div className="relative aspect-video rounded overflow-hidden mt-2">
-                                <img
-                                  src={generation.input_image_url}
-                                  alt="Original input"
-                                  className="w-full h-full object-cover"
-                                  loading="lazy"
-                                />
-                              </div>
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-                      )}
+                      {/* Content */}
+                      <div className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Calendar className="h-3 w-3" />
+                            <span>{formatDate(generation.created_at)}</span>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {formatServiceType(generation.service_type)}
+                          </Badge>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
