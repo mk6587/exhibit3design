@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 interface AIGeneration {
@@ -21,25 +21,45 @@ export default function AISamplesPage() {
   const [generations, setGenerations] = useState<AIGeneration[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
-      navigate('/');
-      return;
-    }
     fetchGenerations();
-  }, [user, navigate]);
+  }, [user]);
 
   const fetchGenerations = async () => {
     try {
-      const { data, error } = await supabase
-        .from('ai_generation_history')
-        .select('*')
-        .order('created_at', { ascending: false });
+      if (user) {
+        // Fetch user's AI generation history
+        const { data, error } = await supabase
+          .from('ai_generation_history')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setGenerations(data || []);
+        if (error) throw error;
+        setGenerations(data || []);
+      } else {
+        // Fetch public AI samples for non-authenticated users
+        const { data, error } = await supabase
+          .from('ai_edit_samples')
+          .select('*')
+          .order('display_order', { ascending: true });
+
+        if (error) throw error;
+        
+        // Transform ai_edit_samples to match AIGeneration interface
+        const transformedData: AIGeneration[] = (data || []).map((sample: any) => ({
+          id: sample.id,
+          prompt: sample.prompt_used || 'AI transformation',
+          service_type: sample.category || 'ai_edit',
+          input_image_url: sample.before_image_url,
+          output_image_url: sample.after_image_url,
+          tokens_used: 1,
+          created_at: sample.created_at
+        }));
+        
+        setGenerations(transformedData);
+      }
     } catch (error) {
       console.error('Error fetching AI generations:', error);
     } finally {
@@ -93,13 +113,16 @@ export default function AISamplesPage() {
           <div className="container mx-auto max-w-6xl text-center">
             <Badge className="mb-4" variant="outline">
               <Sparkles className="h-3 w-3 mr-1" />
-              AI Generation History
+              {user ? 'AI Generation History' : 'AI Examples'}
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Your AI Creations
+              {user ? 'Your AI Creations' : 'AI-Powered Transformations'}
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Browse all your AI-generated designs and transformations
+              {user 
+                ? 'Browse all your AI-generated designs and transformations'
+                : 'See how AI can transform exhibition stand designs'
+              }
             </p>
           </div>
         </section>
@@ -110,9 +133,14 @@ export default function AISamplesPage() {
             {generations.length === 0 ? (
               <div className="text-center py-16">
                 <Sparkles className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No generations yet</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  {user ? 'No generations yet' : 'No examples available'}
+                </h3>
                 <p className="text-muted-foreground mb-6">
-                  Start creating AI designs to see them here
+                  {user 
+                    ? 'Start creating AI designs to see them here'
+                    : 'Check back soon for AI transformation examples'
+                  }
                 </p>
                 <Button asChild>
                   <Link to="/products">Browse Designs</Link>
