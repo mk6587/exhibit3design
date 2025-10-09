@@ -14,6 +14,8 @@ export interface Product {
   featured: boolean;
   created_at?: string;
   updated_at?: string;
+  subscription_tier_required?: string;
+  is_sample?: boolean;
 }
 
 // Simple fallback data

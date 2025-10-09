@@ -18,8 +18,9 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import FaqPage from "./pages/FaqPage";
-import CartPage from "./pages/CartPage";
-import CheckoutPage from "./pages/CheckoutPage";
+// Cart and Checkout removed - now using subscription model
+// import CartPage from "./pages/CartPage";
+// import CheckoutPage from "./pages/CheckoutPage";
 import OrderLookupPage from "./pages/OrderLookupPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 
@@ -80,8 +81,7 @@ const App = () => {
                       <Route path="/about" element={<AboutPage />} />
                       <Route path="/contact" element={<ContactPage />} />
                       <Route path="/faq" element={<FaqPage />} />
-                      <Route path="/cart" element={<CartPage />} />
-                      <Route path="/checkout" element={<CheckoutPage />} />
+                      {/* Cart and Checkout routes removed - subscription model */}
                       <Route path="/order-lookup" element={<OrderLookupPage />} />
                       <Route path="/order/:orderId" element={<OrderDetailsPage />} />
                       <Route path="/profile" element={<ProfilePage />} />

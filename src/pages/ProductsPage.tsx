@@ -76,8 +76,8 @@ const ProductsPage = () => {
       return matchesSearch && matchesTags;
     })
     .sort((a, b) => {
-      if (sort === "price-asc") return a.price - b.price;
-      if (sort === "price-desc") return b.price - a.price;
+      if (sort === "name-asc") return a.title.localeCompare(b.title);
+      if (sort === "name-desc") return b.title.localeCompare(a.title);
       return b.id - a.id; // Latest by default (assuming higher ID = newer)
     });
 
@@ -171,8 +171,8 @@ const ProductsPage = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="latest">Latest</SelectItem>
-                <SelectItem value="price-asc">Price (Low to High)</SelectItem>
-                <SelectItem value="price-desc">Price (High to Low)</SelectItem>
+                <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                <SelectItem value="name-desc">Name (Z-A)</SelectItem>
               </SelectContent>
             </Select>
           </div>

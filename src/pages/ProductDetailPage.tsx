@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import ProductGallery from "@/components/product/ProductGallery";
-import AddToCartButton from "@/components/product/AddToCartButton";
+import { Button } from "@/components/ui/button";
+import { Sparkles, Lock, ArrowRight } from "lucide-react";
 import { useProducts } from "@/contexts/ProductsContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -119,7 +120,37 @@ const ProductDetailPage = () => {
               ))}
             </div>
             
-            <div className="text-2xl font-semibold mb-4">€{product.price}</div>
+            {/* Subscription Tier Requirement */}
+            {product.subscription_tier_required ? (
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Lock className="h-5 w-5 text-primary" />
+                  <span className="text-lg font-semibold">
+                    {product.subscription_tier_required === 'sample' ? 'Free Sample' :
+                     product.subscription_tier_required === 'basic' ? 'Requires Starter Plan' :
+                     product.subscription_tier_required === 'standard' ? 'Requires Pro Plan' :
+                     'Requires Studio Plan'}
+                  </span>
+                </div>
+                <p className="text-muted-foreground mb-4">
+                  This design is included in your {
+                    product.subscription_tier_required === 'basic' ? 'Starter' :
+                    product.subscription_tier_required === 'standard' ? 'Pro' :
+                    'Studio'
+                  } subscription or higher.
+                </p>
+              </div>
+            ) : (
+              <div className="mb-6">
+                <Badge className="mb-3" variant="secondary">
+                  <Sparkles className="h-4 w-4 mr-1" />
+                  Free Sample
+                </Badge>
+                <p className="text-muted-foreground">
+                  This is a free sample design available to all users.
+                </p>
+              </div>
+            )}
             
             {product.memo && (
               <div className="mb-6">
@@ -127,7 +158,23 @@ const ProductDetailPage = () => {
               </div>
             )}
             
-            <AddToCartButton productId={product.id} productName={product.title} />
+            {/* CTA Buttons */}
+            <div className="space-y-3">
+              <Button asChild size="lg" className="w-full">
+                <Link to="/pricing">
+                  {product.subscription_tier_required && product.subscription_tier_required !== 'sample' 
+                    ? `Upgrade to Access` 
+                    : 'Get Started Free'}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="w-full">
+                <Link to="/ai-samples">
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  See AI Customization Examples
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
         

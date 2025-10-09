@@ -29,3 +29,9 @@ verify_jwt = false
 
 [functions.generate-ai-token]
 verify_jwt = false
+
+[functions.runware-image-edit]
+verify_jwt = true
+
+[functions.runware-video-generation]
+verify_jwt = true

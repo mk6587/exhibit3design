@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Search, User, Menu, X, LogOut, Sparkles, Coins } from "lucide-react";
+import { Search, User, Menu, X, LogOut, Sparkles, Coins } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,9 +17,7 @@ const Header = () => {
     profile,
     signOut
   } = useAuth();
-  const {
-    cartItems
-  } = useProducts();
+  // Removed cartItems - using subscription model now
   const navigate = useNavigate();
 
   // Get token balances from profile
@@ -149,15 +147,7 @@ const Header = () => {
               </Button>
             </div>}
 
-          {/* Cart */}
-          <Button variant="ghost" size="icon" asChild className="relative">
-            <Link to="/cart">
-              <ShoppingCart className="h-5 w-5" />
-              {cartItems.length > 0 && <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-                  {cartItems.length > 99 ? '99+' : cartItems.length}
-                </span>}
-            </Link>
-          </Button>
+          {/* Cart removed - subscription model */}
 
           {/* AI Studio Mobile Icon */}
           <Button 
