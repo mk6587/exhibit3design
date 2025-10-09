@@ -17,6 +17,10 @@ interface Profile {
   email_confirmed: boolean;
   ai_tokens_used: number;
   ai_tokens_limit: number;
+  ai_tokens_balance: number;
+  free_tokens_claimed: boolean;
+  video_seconds_used: number;
+  video_seconds_balance: number;
   created_at: string;
   updated_at: string;
 }

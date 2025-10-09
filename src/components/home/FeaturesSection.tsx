@@ -1,37 +1,37 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { DollarSign, FileText, Settings, Clock, Palette, Headphones } from "lucide-react";
+import { Zap, FileText, Palette, DollarSign, Star, Shield } from "lucide-react";
 
 const features = [
   {
-    icon: DollarSign,
-    title: "Affordable Pricing",
-    description: "All design files available at an affordable price - a fraction of the cost of custom designs."
+    icon: Zap,
+    title: "AI-Powered Speed",
+    description: "Complete client presentations in minutes, not days, with instant AI customization."
   },
   {
     icon: FileText,
-    title: "Multiple File Formats",
-    description: "Download in SKP, 3DS, Max, and PDF formats to work with your preferred software."
-  },
-  {
-    icon: Settings,
-    title: "Ready to Customize",
-    description: "Easily modify designs to match your specific requirements and client needs."
-  },
-  {
-    icon: Clock,
-    title: "Time-Saving Solution",
-    description: "Skip weeks of design work and start with a professional template instantly."
+    title: "Ready-Made Templates",
+    description: "Start with professional designs, not blank files. Skip the initial design phase."
   },
   {
     icon: Palette,
-    title: "Designer-Created",
-    description: "All designs created by an experienced exhibition stand designer with industry knowledge."
+    title: "Instant Customization",
+    description: "Restyle, recolor, and render designs with simple AI prompts. No design skills needed."
   },
   {
-    icon: Headphones,
-    title: "Custom Design Services",
-    description: "Need something specific? We also offer affordable custom design services."
+    icon: DollarSign,
+    title: "No Per-File Costs",
+    description: "Subscribe once, access all design files. Predictable monthly pricing."
+  },
+  {
+    icon: Star,
+    title: "Professional Quality",
+    description: "Every template created by experienced exhibition stand designers."
+  },
+  {
+    icon: Shield,
+    title: "Free to Try",
+    description: "Get 5 AI tokens to test before subscribing. Experience the power yourself."
   }
 ];
 
@@ -40,7 +40,10 @@ const FeaturesSection = () => {
     <section className="py-8 md:py-12 px-4 bg-background">
       <div className="container mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-8 md:mb-12">
-          <h2 className="text-xl md:text-3xl font-bold mb-2 md:mb-4">Why Choose Us?</h2>
+          <h2 className="text-xl md:text-3xl font-bold mb-2 md:mb-4">Design Faster with AI-Enhanced Workflows</h2>
+          <p className="text-sm md:text-base text-muted-foreground">
+            Access professional exhibition stand templates and customize them instantly with AI. Do more in less time.
+          </p>
         </div>
         
         <div className="grid grid-cols-3 gap-4 md:gap-8">

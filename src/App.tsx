@@ -39,6 +39,8 @@ import AdminProductCreatePage from "./pages/AdminProductCreatePage";
 import AdminProductEditPage from "./pages/AdminProductEditPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
+import PricingPage from "./pages/PricingPage";
+import AISamplesPage from "./pages/AISamplesPage";
 
 import NotFound from "./pages/NotFound";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
@@ -116,6 +118,8 @@ const App = () => {
                         </ProtectedAdminRoute>
                       } />
                       <Route path="/sitemap.xml" element={<SitemapPage />} />
+                      <Route path="/pricing" element={<PricingPage />} />
+                      <Route path="/ai-samples" element={<AISamplesPage />} />
                       
                       <Route path="*" element={<NotFound />} />
                     </Routes>

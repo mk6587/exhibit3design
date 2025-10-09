@@ -12,19 +12,22 @@ const CtaSection = () => {
       
       <div className="container mx-auto text-center relative z-10">
         <h2 className="text-xl md:text-4xl font-bold mb-3 md:mb-6 px-4">
-          Ready to Start?
+          Start Designing Faster Today
         </h2>
         <p className="text-sm md:text-lg mb-6 md:mb-8 max-w-lg md:max-w-2xl mx-auto opacity-90 px-4">
-          Browse our designs or get custom work
+          Try AI editing for free with 5 tokens. No credit card required.
         </p>
         <div className="flex flex-col md:flex-row justify-center gap-3 md:gap-4 px-4">
           <Button asChild size="lg" variant="secondary" className="font-semibold">
-            <Link to="/products">Browse Designs</Link>
+            <Link to="/pricing">Get 5 Free Tokens</Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">
-            <Link to="/contact">Custom Design</Link>
+            <Link to="/ai-samples">See AI in Action</Link>
           </Button>
         </div>
+        <p className="text-xs md:text-sm mt-3 md:mt-4 opacity-70 px-4">
+          Access professional templates + AI tools • No design experience needed
+        </p>
       </div>
     </section>
   );
