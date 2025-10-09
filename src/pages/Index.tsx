@@ -12,8 +12,8 @@ const Index = () => {
       keywords="exhibition stands, AI design tools, trade show templates, exhibition design subscription"
       url="https://exhibit3design.com/"
     >
-      <FeaturedProducts />
       <AIShowcaseSection />
+      <FeaturedProducts />
       <FeaturesSection />
       <CtaSection />
     </Layout>
