@@ -31,28 +31,26 @@ const ProductCard = ({
     }
   };
 
-  // Get tier display name - only show badge if tier is specified
-  const getTierDisplayName = (tier?: string, isSample?: boolean) => {
-    if (isSample || tier === 'sample') return 'Free Sample';
-    if (!tier) return null; // No badge if no tier specified
+  // Get tier display name - all products require a subscription
+  const getTierDisplayName = (tier?: string) => {
     switch (tier) {
       case 'basic': return 'Starter Plan';
       case 'standard': return 'Pro Plan';
       case 'premium': return 'Studio Plan';
-      default: return tier;
+      default: return null; // No badge if tier not specified
     }
   };
 
   // Get tier badge color
-  const getTierBadgeVariant = (tier?: string, isSample?: boolean) => {
-    if (isSample || tier === 'sample') return 'default';
+  const getTierBadgeVariant = (tier?: string) => {
     if (tier === 'basic') return 'secondary';
     if (tier === 'standard') return 'default';
+    if (tier === 'premium') return 'default';
     return 'default';
   };
 
-  const tierName = getTierDisplayName(product.subscription_tier_required, product.is_sample);
-  const badgeVariant = getTierBadgeVariant(product.subscription_tier_required, product.is_sample);
+  const tierName = getTierDisplayName(product.subscription_tier_required);
+  const badgeVariant = getTierBadgeVariant(product.subscription_tier_required);
   return <Card className="group overflow-hidden transition-all duration-200 hover:shadow-md aspect-[4/3] bg-background animate-fade-in border border-border rounded-none hover:border-primary/20">
       {/* Image Container */}
       <div className="relative h-5/6 overflow-hidden">
@@ -96,7 +94,7 @@ const ProductCard = ({
         )}
 
         {/* Lock Icon for Premium Content */}
-        {product.subscription_tier_required && product.subscription_tier_required !== 'sample' && (
+        {product.subscription_tier_required && (
           <div className="absolute top-2 right-14 z-10">
             <div className="bg-black/60 backdrop-blur-sm px-2 py-1 rounded-sm">
               <Lock className="h-3 w-3 text-white" />
