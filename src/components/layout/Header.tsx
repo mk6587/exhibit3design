@@ -9,6 +9,7 @@ import { useProducts } from "@/contexts/ProductsContext";
 import { openAIStudio } from "@/utils/aiStudioAuth";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { AIStudioCTA } from "./AIStudioCTA";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -121,17 +122,7 @@ const Header = () => {
               )}
             </Button>
           ) : (
-            <Button 
-              variant="default" 
-              size="sm" 
-              asChild
-              className="hidden md:flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg hover:shadow-xl transition-all animate-pulse"
-            >
-              <Link to="/auth">
-                <Sparkles className="h-4 w-4" />
-                <span>Get 5 Free AI Tokens</span>
-              </Link>
-            </Button>
+            <AIStudioCTA />
           )}
 
           {/* User Menu */}
