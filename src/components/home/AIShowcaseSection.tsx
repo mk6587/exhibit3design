@@ -86,58 +86,62 @@ export const AIShowcaseSection = () => {
           <CardContent className="p-0">
             <div className="grid md:grid-cols-2 gap-0">
               {/* Before/After Media */}
-              <div className="relative aspect-[16/10] bg-black overflow-hidden">
-                {showAfter && currentSample.afterVideo ? (
-                  <video
-                    src={currentSample.afterVideo}
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
-                ) : showAfter && currentSample.afterImage ? (
-                  <img
-                    src={currentSample.afterImage}
-                    alt="After AI edit"
-                    className="w-full h-full object-cover transition-opacity duration-300"
-                  />
-                ) : !showAfter && currentSample.beforeImage ? (
-                  <img
-                    src={currentSample.beforeImage}
-                    alt="Before AI edit"
-                    className="w-full h-full object-cover transition-opacity duration-300"
-                  />
-                ) : (
-                  <video
-                    src={currentSample.beforeVideo}
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
-                )}
-                <Badge 
-                  className="absolute top-4 left-4 text-sm font-semibold"
-                  variant={showAfter ? "default" : "secondary"}
-                >
-                  {showAfter ? "After" : "Before"}
-                </Badge>
+              <div className="flex flex-col">
+                <div className="relative aspect-[16/10] bg-black overflow-hidden">
+                  {showAfter && currentSample.afterVideo ? (
+                    <video
+                      src={currentSample.afterVideo}
+                      className="w-full h-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    />
+                  ) : showAfter && currentSample.afterImage ? (
+                    <img
+                      src={currentSample.afterImage}
+                      alt="After AI edit"
+                      className="w-full h-full object-cover transition-opacity duration-300"
+                    />
+                  ) : !showAfter && currentSample.beforeImage ? (
+                    <img
+                      src={currentSample.beforeImage}
+                      alt="Before AI edit"
+                      className="w-full h-full object-cover transition-opacity duration-300"
+                    />
+                  ) : (
+                    <video
+                      src={currentSample.beforeVideo}
+                      className="w-full h-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    />
+                  )}
+                  <Badge 
+                    className="absolute top-4 left-4 text-sm font-semibold"
+                    variant={showAfter ? "default" : "secondary"}
+                  >
+                    {showAfter ? "After" : "Before"}
+                  </Badge>
+                </div>
                 
-                {/* Toggle Button */}
-                <Button
-                  onClick={() => setShowAfter(!showAfter)}
-                  className="absolute bottom-4 left-1/2 -translate-x-1/2"
-                  variant="secondary"
-                >
-                  {showAfter ? "Show Before" : "Show After"}
-                </Button>
+                {/* Toggle Button - Outside Image */}
+                <div className="flex justify-center py-3 bg-card border-t">
+                  <Button
+                    onClick={() => setShowAfter(!showAfter)}
+                    variant="secondary"
+                    size="default"
+                  >
+                    {showAfter ? "Show Before" : "Show After"}
+                  </Button>
+                </div>
               </div>
 
               {/* Info Panel */}
               <div className="p-4 flex flex-col justify-between bg-card">
-                <div>
+                <div className="text-center">
                   <Badge variant="outline" className="mb-2 text-xs">
                     {currentSample.category}
                   </Badge>
@@ -155,15 +159,15 @@ export const AIShowcaseSection = () => {
 
                   {/* Features */}
                   <div className="space-y-1 mb-3">
-                    <div className="flex items-center gap-2 text-xs">
+                    <div className="flex items-center justify-center gap-2 text-xs">
                       <Sparkles className="h-3.5 w-3.5 text-primary" />
                       <span>Advanced AI-powered editing</span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs">
+                    <div className="flex items-center justify-center gap-2 text-xs">
                       <Sparkles className="h-3.5 w-3.5 text-primary" />
                       <span>Instant results in seconds</span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs">
+                    <div className="flex items-center justify-center gap-2 text-xs">
                       <Sparkles className="h-3.5 w-3.5 text-primary" />
                       <span>No design experience needed</span>
                     </div>
