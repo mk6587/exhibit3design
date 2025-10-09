@@ -33,8 +33,8 @@ const aiSamples: AISample[] = [
     title: "Video Generation",
     category: "AI Video Creation",
     type: 'video',
-    beforeVideo: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos/sample-before.mp4",
-    afterVideo: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos/sample-after.mp4",
+    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/3/video-rotating.jpg",
+    afterVideo: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/3/video-rotating.mp4",
     prompt: "create a cinematic video with smooth camera movement"
   },
   {
@@ -87,15 +87,30 @@ export const AIShowcaseSection = () => {
             <div className="grid md:grid-cols-2 gap-0">
               {/* Before/After Media */}
               <div className="relative h-[600px]">
-                {currentSample.type === 'image' ? (
+                {showAfter && currentSample.afterVideo ? (
+                  <video
+                    src={currentSample.afterVideo}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                ) : showAfter && currentSample.afterImage ? (
                   <img
-                    src={showAfter ? currentSample.afterImage : currentSample.beforeImage}
-                    alt={showAfter ? "After AI edit" : "Before AI edit"}
+                    src={currentSample.afterImage}
+                    alt="After AI edit"
+                    className="w-full h-full object-cover transition-opacity duration-300"
+                  />
+                ) : !showAfter && currentSample.beforeImage ? (
+                  <img
+                    src={currentSample.beforeImage}
+                    alt="Before AI edit"
                     className="w-full h-full object-cover transition-opacity duration-300"
                   />
                 ) : (
                   <video
-                    src={showAfter ? currentSample.afterVideo : currentSample.beforeVideo}
+                    src={currentSample.beforeVideo}
                     className="w-full h-full object-cover"
                     autoPlay
                     loop
