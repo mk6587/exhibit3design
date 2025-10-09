@@ -10,7 +10,7 @@ export const AIStudioCTA = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setShowFreeTokens((prev) => !prev);
-    }, 3000); // Switch every 3 seconds
+    }, 5000); // Switch every 5 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -55,7 +55,7 @@ export const AIStudioCTAMobile = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setShowFreeTokens((prev) => !prev);
-    }, 3000); // Switch every 3 seconds
+    }, 5000); // Switch every 5 seconds
 
     return () => clearInterval(interval);
   }, []);
