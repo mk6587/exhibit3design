@@ -141,7 +141,7 @@ const Header = () => {
 
           {/* Cart removed - subscription model */}
 
-          {/* AI Studio Mobile Icon with Token Badge or Free Badge */}
+          {/* AI Studio Mobile Icon with Token Badge or Simple Icon */}
           {user ? (
             <Button 
               variant="ghost" 
@@ -169,15 +169,9 @@ const Header = () => {
               className="md:hidden relative hover:bg-muted flex items-center justify-center"
             >
               <Link to="/auth">
-                <span className="text-lg font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="text-lg font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
                   AI
                 </span>
-                <Badge 
-                  variant="secondary" 
-                  className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-green-600 text-white border-0 animate-pulse"
-                >
-                  FREE
-                </Badge>
               </Link>
             </Button>
           )}
