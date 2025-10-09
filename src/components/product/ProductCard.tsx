@@ -3,14 +3,17 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import ImageViewer from "@/components/ui/image-viewer";
-import { Eye, MousePointer2 } from "lucide-react";
+import { Eye, MousePointer2, Lock } from "lucide-react";
 import "@/components/ui/rich-text-editor.css";
+
 export interface Product {
   id: number;
   title: string;
   price: number;
   image: string;
   tags: string[];
+  subscription_tier_required?: string;
+  is_sample?: boolean;
 }
 interface ProductCardProps {
   product: Product;
@@ -19,12 +22,36 @@ const ProductCard = ({
   product
 }: ProductCardProps) => {
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+  
   const handleImageClick = (e: React.MouseEvent) => {
     if (e.ctrlKey || e.metaKey || e.button === 2) {
       e.preventDefault();
       setIsImageViewerOpen(true);
     }
   };
+
+  // Get tier display name
+  const getTierDisplayName = (tier?: string) => {
+    if (!tier) return 'Free Sample';
+    switch (tier) {
+      case 'sample': return 'Free Sample';
+      case 'basic': return 'Starter Plan';
+      case 'standard': return 'Pro Plan';
+      case 'premium': return 'Studio Plan';
+      default: return 'Available';
+    }
+  };
+
+  // Get tier badge color
+  const getTierBadgeVariant = (tier?: string) => {
+    if (!tier || tier === 'sample') return 'default';
+    if (tier === 'basic') return 'secondary';
+    if (tier === 'standard') return 'default';
+    return 'default';
+  };
+
+  const tierName = getTierDisplayName(product.subscription_tier_required);
+  const badgeVariant = getTierBadgeVariant(product.subscription_tier_required);
   return <Card className="group overflow-hidden transition-all duration-200 hover:shadow-md aspect-[4/3] bg-background animate-fade-in border border-border rounded-none hover:border-primary/20">
       {/* Image Container */}
       <div className="relative h-5/6 overflow-hidden">
@@ -44,12 +71,24 @@ const ProductCard = ({
           </div>
         </div>
         
-        {/* Price Badge */}
+        {/* Subscription Tier Badge */}
         <div className="absolute top-2 left-2 z-10">
-          <Badge variant="secondary" className="bg-white text-black text-xs font-medium px-2 py-0.5 rounded-none border-0 shadow-sm">
-            €{product.price}
+          <Badge 
+            variant={badgeVariant}
+            className="bg-primary/90 text-primary-foreground text-xs font-medium px-2 py-1 rounded-sm border-0 shadow-sm backdrop-blur-sm"
+          >
+            {tierName}
           </Badge>
         </div>
+
+        {/* Lock Icon for Premium Content */}
+        {product.subscription_tier_required && product.subscription_tier_required !== 'sample' && (
+          <div className="absolute top-2 right-14 z-10">
+            <div className="bg-black/60 backdrop-blur-sm px-2 py-1 rounded-sm">
+              <Lock className="h-3 w-3 text-white" />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom Frame for Product Name */}
