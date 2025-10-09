@@ -84,64 +84,50 @@ export const AIShowcaseSection = () => {
         {/* Carousel */}
         <Card className="overflow-hidden border-2">
           <CardContent className="p-0">
-            <div className="grid md:grid-cols-2 gap-0">
-               {/* Before/After Media */}
-               <div className="flex flex-col justify-between">
-                 <div className="relative aspect-[16/10] bg-black overflow-hidden">
-                  {showAfter && currentSample.afterVideo ? (
-                    <video
-                      src={currentSample.afterVideo}
-                      className="w-full h-full object-cover"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                    />
-                  ) : showAfter && currentSample.afterImage ? (
-                    <img
-                      src={currentSample.afterImage}
-                      alt="After AI edit"
-                      className="w-full h-full object-cover transition-opacity duration-300"
-                    />
-                  ) : !showAfter && currentSample.beforeImage ? (
-                    <img
-                      src={currentSample.beforeImage}
-                      alt="Before AI edit"
-                      className="w-full h-full object-cover transition-opacity duration-300"
-                    />
-                  ) : (
-                    <video
-                      src={currentSample.beforeVideo}
-                      className="w-full h-full object-cover"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                    />
-                  )}
-                  <Badge 
-                    className="absolute top-4 left-4 text-sm font-semibold"
-                    variant={showAfter ? "default" : "secondary"}
-                  >
-                    {showAfter ? "After" : "Before"}
-                  </Badge>
-                </div>
-                 
-                 {/* Toggle Button - Outside Image */}
-                 <div className="flex justify-center py-3 bg-card border-t mt-auto">
-                   <Button
-                     onClick={() => setShowAfter(!showAfter)}
-                     variant="secondary"
-                     size="default"
-                     className="w-full max-w-xs"
-                   >
-                     {showAfter ? "Show Before" : "Show After"}
-                   </Button>
-                 </div>
-               </div>
+            <div className="grid md:grid-cols-2">
+              {/* Before/After Media */}
+              <div className="relative aspect-[16/10] bg-black overflow-hidden">
+                {showAfter && currentSample.afterVideo ? (
+                  <video
+                    src={currentSample.afterVideo}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                ) : showAfter && currentSample.afterImage ? (
+                  <img
+                    src={currentSample.afterImage}
+                    alt="After AI edit"
+                    className="w-full h-full object-cover transition-opacity duration-300"
+                  />
+                ) : !showAfter && currentSample.beforeImage ? (
+                  <img
+                    src={currentSample.beforeImage}
+                    alt="Before AI edit"
+                    className="w-full h-full object-cover transition-opacity duration-300"
+                  />
+                ) : (
+                  <video
+                    src={currentSample.beforeVideo}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                )}
+                <Badge 
+                  className="absolute top-4 left-4 text-sm font-semibold"
+                  variant={showAfter ? "default" : "secondary"}
+                >
+                  {showAfter ? "After" : "Before"}
+                </Badge>
+              </div>
 
-               {/* Info Panel */}
-               <div className="p-4 flex flex-col justify-between bg-card">
+              {/* Info Panel */}
+              <div className="p-4 flex flex-col justify-between bg-card">
                 <div className="text-center">
                   <Badge variant="outline" className="mb-2 text-xs">
                     {currentSample.category}
@@ -215,18 +201,30 @@ export const AIShowcaseSection = () => {
                       <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
-
-                   {/* CTA Button */}
-                   <Button asChild className="w-full max-w-xs mx-auto" size="default">
-                     <Link to="/pricing">
-                       Try AI for Free
-                     </Link>
-                   </Button>
-                  
-                  <p className="text-center text-[10px] text-muted-foreground">
-                    Get 5 free AI tokens to explore
-                  </p>
                 </div>
+              </div>
+            </div>
+            
+            {/* Buttons Row - Aligned */}
+            <div className="grid md:grid-cols-2 border-t">
+              <div className="flex justify-center py-3 bg-card border-r">
+                <Button
+                  onClick={() => setShowAfter(!showAfter)}
+                  variant="secondary"
+                  size="default"
+                >
+                  {showAfter ? "Show Before" : "Show After"}
+                </Button>
+              </div>
+              <div className="p-3 bg-card space-y-2">
+                <Button asChild className="w-full" size="default">
+                  <Link to="/pricing">
+                    Try AI for Free
+                  </Link>
+                </Button>
+                <p className="text-center text-[10px] text-muted-foreground">
+                  Get 5 free AI tokens to explore
+                </p>
               </div>
             </div>
           </CardContent>
