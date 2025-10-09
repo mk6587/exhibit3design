@@ -65,8 +65,8 @@ export const AIShowcaseSection = () => {
   };
 
   return (
-    <section className="py-8 md:py-12 px-4 bg-gradient-to-b from-background to-muted/20">
-      <div className="container mx-auto">
+    <section className="py-8 md:py-12 bg-gradient-to-b from-background to-muted/20">
+      <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-3">
@@ -80,9 +80,11 @@ export const AIShowcaseSection = () => {
             Instantly customize exhibition stands with simple text prompts. No design skills needed.
           </p>
         </div>
+      </div>
 
+      <div className="container mx-auto px-4">
         {/* Carousel */}
-        <Card className="overflow-hidden border-2">
+        <Card className="overflow-hidden border-2 border-l-4 border-r-4">
           <CardContent className="p-0">
             <div className="grid md:grid-cols-[1.3fr_1fr]">
               {/* Before/After Media */}
@@ -229,7 +231,9 @@ export const AIShowcaseSection = () => {
             </div>
           </CardContent>
         </Card>
+      </div>
 
+      <div className="container mx-auto px-4">
         {/* Bottom Badge */}
         <div className="text-center mt-4">
           <p className="text-xs text-muted-foreground">
