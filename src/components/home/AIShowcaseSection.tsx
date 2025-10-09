@@ -65,18 +65,18 @@ export const AIShowcaseSection = () => {
   };
 
   return (
-    <section className="py-16 px-4 bg-gradient-to-b from-background to-muted/20">
+    <section className="py-8 px-4 bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto max-w-6xl">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-4">
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-3">
             <Sparkles className="h-4 w-4" />
             <span className="text-sm font-medium">AI-Powered Editing</span>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-2xl md:text-3xl font-bold mb-2">
             See How AI Transforms Your Designs
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
             Instantly customize exhibition stands with simple text prompts. No design skills needed.
           </p>
         </div>
@@ -136,25 +136,25 @@ export const AIShowcaseSection = () => {
               </div>
 
               {/* Info Panel */}
-              <div className="p-6 flex flex-col justify-between bg-card">
+              <div className="p-4 flex flex-col justify-between bg-card">
                 <div>
-                  <Badge variant="outline" className="mb-3 text-xs">
+                  <Badge variant="outline" className="mb-2 text-xs">
                     {currentSample.category}
                   </Badge>
-                  <h3 className="text-xl font-bold mb-3">
+                  <h3 className="text-lg font-bold mb-2">
                     {currentSample.title}
                   </h3>
                   
                   {/* Prompt Display */}
-                  <div className="mb-4">
-                    <p className="text-xs text-muted-foreground mb-1.5">AI Prompt Used:</p>
-                    <div className="p-3 bg-muted/50 rounded-lg border">
+                  <div className="mb-3">
+                    <p className="text-xs text-muted-foreground mb-1">AI Prompt Used:</p>
+                    <div className="p-2 bg-muted/50 rounded-lg border">
                       <p className="text-xs italic">"{currentSample.prompt}"</p>
                     </div>
                   </div>
 
                   {/* Features */}
-                  <div className="space-y-1.5 mb-4">
+                  <div className="space-y-1 mb-3">
                     <div className="flex items-center gap-2 text-xs">
                       <Sparkles className="h-3.5 w-3.5 text-primary" />
                       <span>Advanced AI-powered editing</span>
@@ -171,7 +171,7 @@ export const AIShowcaseSection = () => {
                 </div>
 
                 {/* Navigation & CTA */}
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {/* Carousel Navigation */}
                   <div className="flex items-center justify-between gap-3">
                     <Button
@@ -228,8 +228,8 @@ export const AIShowcaseSection = () => {
         </Card>
 
         {/* Bottom Badge */}
-        <div className="text-center mt-8">
-          <p className="text-sm text-muted-foreground">
+        <div className="text-center mt-4">
+          <p className="text-xs text-muted-foreground">
             Powered by cutting-edge AI technology
           </p>
         </div>
