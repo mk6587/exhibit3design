@@ -6,6 +6,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface AIGeneration {
   id: string;
@@ -180,37 +186,34 @@ export default function AISamplesPage() {
 
                     {/* Content */}
                     <div className="p-4 space-y-3">
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Calendar className="h-3 w-3" />
-                        <span>{formatDate(generation.created_at)}</span>
-                      </div>
-
-                      <Badge variant="outline" className="text-xs">
-                        {formatServiceType(generation.service_type)}
-                      </Badge>
-
-                      <div className="bg-muted/50 p-3 rounded-md">
-                        <p className="text-xs text-muted-foreground font-medium mb-1 flex items-center gap-1">
-                          <Sparkles className="h-3 w-3" />
-                          Prompt
-                        </p>
-                        <p className="text-sm line-clamp-3 italic">
-                          "{generation.prompt}"
-                        </p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          <span>{formatDate(generation.created_at)}</span>
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          {formatServiceType(generation.service_type)}
+                        </Badge>
                       </div>
 
                       {generation.input_image_url && (
-                        <div className="pt-2 border-t">
-                          <p className="text-xs text-muted-foreground mb-2">Before:</p>
-                          <div className="relative aspect-video rounded overflow-hidden">
-                            <img
-                              src={generation.input_image_url}
-                              alt="Original input"
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                          </div>
-                        </div>
+                        <Accordion type="single" collapsible className="w-full">
+                          <AccordionItem value="before" className="border-0">
+                            <AccordionTrigger className="text-xs text-muted-foreground py-2 hover:no-underline">
+                              View source image
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <div className="relative aspect-video rounded overflow-hidden mt-2">
+                                <img
+                                  src={generation.input_image_url}
+                                  alt="Original input"
+                                  className="w-full h-full object-cover"
+                                  loading="lazy"
+                                />
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
                       )}
                     </div>
                   </div>
