@@ -64,7 +64,7 @@ export const AIShowcaseSection = () => {
           <CardContent className="p-0">
             <div className="grid md:grid-cols-2 gap-0">
               {/* Before/After Images */}
-              <div className="relative aspect-square md:aspect-auto">
+              <div className="relative h-[600px]">
                 <img
                   src={showAfter ? currentSample.afterImage : currentSample.beforeImage}
                   alt={showAfter ? "After AI edit" : "Before AI edit"}
