@@ -84,7 +84,7 @@ export const AIShowcaseSection = () => {
 
       <div className="container mx-auto px-4">
         {/* Carousel */}
-        <Card className="overflow-hidden border-2 border-l-4 border-r-4">
+        <Card className="overflow-hidden border-0">
           <CardContent className="p-0">
             <div className="grid md:grid-cols-[1.3fr_1fr]">
               {/* Before/After Media */}
