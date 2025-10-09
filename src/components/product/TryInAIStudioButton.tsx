@@ -26,27 +26,15 @@ export const TryInAIStudioButton = ({
   const handleTryInAIStudio = async () => {
     // Check if user is authenticated
     if (!user) {
-      toast.error("Please sign in to use AI Studio");
+      toast.error("Please sign in to access AI Studio");
       navigate("/auth");
       return;
     }
 
-    // Check if user has AI tokens
-    const tokensAvailable = profile?.ai_tokens_balance || 0;
-    if (tokensAvailable <= 0) {
-      toast.error("You don't have enough AI tokens. Please upgrade your plan.");
-      navigate("/pricing");
-      return;
-    }
-
-    // Open AI Studio
-    try {
-      await openAIStudio(user.id, user.email!);
-      toast.success("Opening AI Studio...");
-    } catch (error) {
-      console.error("Error opening AI Studio:", error);
-      toast.error("Failed to open AI Studio. Please try again.");
-    }
+    // Check if user has an active premium subscription
+    // AI Studio is only available to premium subscribers
+    toast.error("AI Studio requires a premium subscription. Choose your plan to get started!");
+    navigate("/pricing");
   };
 
   return (
