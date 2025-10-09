@@ -74,10 +74,7 @@ export const FeaturedProductsGrid = () => {
                             </p>
                           )}
                           
-                          <div className="flex items-center justify-between pt-2">
-                            <span className="text-2xl font-bold text-primary">
-                              ${product.price}
-                            </span>
+                          <div className="flex justify-end pt-2">
                             <Link 
                               to={`/product/${product.id}`} 
                               className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors"
