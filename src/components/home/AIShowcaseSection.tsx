@@ -85,9 +85,9 @@ export const AIShowcaseSection = () => {
         <Card className="overflow-hidden border-2">
           <CardContent className="p-0">
             <div className="grid md:grid-cols-2 gap-0">
-              {/* Before/After Media */}
-              <div className="flex flex-col">
-                <div className="relative aspect-[16/10] bg-black overflow-hidden">
+               {/* Before/After Media */}
+               <div className="flex flex-col justify-between">
+                 <div className="relative aspect-[16/10] bg-black overflow-hidden">
                   {showAfter && currentSample.afterVideo ? (
                     <video
                       src={currentSample.afterVideo}
@@ -126,21 +126,22 @@ export const AIShowcaseSection = () => {
                     {showAfter ? "After" : "Before"}
                   </Badge>
                 </div>
-                
-                {/* Toggle Button - Outside Image */}
-                <div className="flex justify-center py-3 bg-card border-t">
-                  <Button
-                    onClick={() => setShowAfter(!showAfter)}
-                    variant="secondary"
-                    size="default"
-                  >
-                    {showAfter ? "Show Before" : "Show After"}
-                  </Button>
-                </div>
-              </div>
+                 
+                 {/* Toggle Button - Outside Image */}
+                 <div className="flex justify-center py-3 bg-card border-t mt-auto">
+                   <Button
+                     onClick={() => setShowAfter(!showAfter)}
+                     variant="secondary"
+                     size="default"
+                     className="w-full max-w-xs"
+                   >
+                     {showAfter ? "Show Before" : "Show After"}
+                   </Button>
+                 </div>
+               </div>
 
-              {/* Info Panel */}
-              <div className="p-4 flex flex-col justify-between bg-card">
+               {/* Info Panel */}
+               <div className="p-4 flex flex-col justify-between bg-card">
                 <div className="text-center">
                   <Badge variant="outline" className="mb-2 text-xs">
                     {currentSample.category}
@@ -215,12 +216,12 @@ export const AIShowcaseSection = () => {
                     </Button>
                   </div>
 
-                  {/* CTA Button */}
-                  <Button asChild className="w-full" size="default">
-                    <Link to="/pricing">
-                      Try AI for Free
-                    </Link>
-                  </Button>
+                   {/* CTA Button */}
+                   <Button asChild className="w-full max-w-xs mx-auto" size="default">
+                     <Link to="/pricing">
+                       Try AI for Free
+                     </Link>
+                   </Button>
                   
                   <p className="text-center text-[10px] text-muted-foreground">
                     Get 5 free AI tokens to explore
