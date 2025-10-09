@@ -1,24 +1,30 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Search, User, Menu, X, LogOut, Sparkles } from "lucide-react";
+import { ShoppingCart, Search, User, Menu, X, LogOut, Sparkles, Coins } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/contexts/ProductsContext";
 import { openAIStudio } from "@/utils/aiStudioAuth";
 import { toast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const {
     user,
+    profile,
     signOut
   } = useAuth();
   const {
     cartItems
   } = useProducts();
   const navigate = useNavigate();
+
+  // Get token balances from profile
+  const aiTokens = profile?.ai_tokens_balance || 0;
+  const videoSeconds = profile?.video_seconds_balance || 0;
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
   const handleSignOut = async () => {
@@ -86,6 +92,8 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6 h-full">
           <Link to="/products" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">Browse Designs</Link>
+          <Link to="/pricing" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">Pricing</Link>
+          <Link to="/ai-samples" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">AI Examples</Link>
           <Link to="/contact" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
             Custom Services
           </Link>
@@ -116,6 +124,22 @@ const Header = () => {
             AI Studio
           </Button>
 
+          {/* Token Counter - Desktop */}
+          {user && profile && (
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20">
+              <Coins className="h-4 w-4 text-primary" />
+              <div className="flex items-center gap-3 text-xs font-medium">
+                <span className="text-primary">{aiTokens} tokens</span>
+                {videoSeconds > 0 && (
+                  <>
+                    <span className="text-muted-foreground">|</span>
+                    <span className="text-primary">{videoSeconds}s video</span>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* User Menu */}
           {user ? <div className="flex items-center space-x-2">
               <Button variant="ghost" size="icon" asChild>
@@ -128,7 +152,7 @@ const Header = () => {
               </Button>
             </div> : <div className="hidden md:flex items-center space-x-2">
               <Button size="sm" asChild>
-                <Link to="/auth">Login / Register</Link>
+                <Link to="/pricing">Get 5 Free Tokens</Link>
               </Button>
             </div>}
 
@@ -164,8 +188,35 @@ const Header = () => {
       {/* Mobile Menu */}
       <div className={cn("md:hidden bg-background absolute w-full shadow-sm border-t border-flat-border z-50 left-0 right-0", isMenuOpen ? "block" : "hidden")}>
         <nav className="container mx-auto px-4 sm:px-6 py-2 flex flex-col">
+          {/* Token Counter - Mobile */}
+          {user && profile && (
+            <div className="py-3 px-4 bg-primary/10 rounded-lg border border-primary/20 mb-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Coins className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-medium text-muted-foreground">Your Balance:</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm font-semibold">
+                  <span className="text-primary">{aiTokens} tokens</span>
+                  {videoSeconds > 0 && (
+                    <>
+                      <span className="text-muted-foreground">•</span>
+                      <span className="text-primary">{videoSeconds}s</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           <Link to="/products" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
             Browse Designs
+          </Link>
+          <Link to="/pricing" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
+            Pricing
+          </Link>
+          <Link to="/ai-samples" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
+            AI Examples
           </Link>
           <Link to="/contact" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
             Custom Services
@@ -198,8 +249,8 @@ const Header = () => {
                 Sign Out
               </button>
             </> : <>
-              <Link to="/auth" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
-                Login / Register
+              <Link to="/pricing" className="mobile-nav-item hover:bg-flat-hover transition-colors font-semibold text-primary" onClick={() => setIsMenuOpen(false)}>
+                Get 5 Free Tokens
               </Link>
             </>}
         </nav>

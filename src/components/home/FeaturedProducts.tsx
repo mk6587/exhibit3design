@@ -138,19 +138,33 @@ const FeaturedProducts = () => {
             <h1 className="text-4xl md:text-6xl font-bold mb-4" style={{
             textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6)'
           }}>
-              Premium Exhibition Stands
+              Do You Want to Create Videos Like This?
             </h1>
             <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto" style={{
             textShadow: '1px 1px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 0, 0, 0.5)'
-          }}>Get it done faster with affordable, ready-made designs.</p>
+          }}>
+              Exhibit3Design AI Studio can do it for you. Use your 5 free tokens!
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-purple-600/50 text-white border-purple-400 hover:bg-purple-600/60">
-                <Link to="/products">Explore Our Designs</Link>
+              <Button 
+                asChild 
+                size="lg" 
+                className="bg-purple-600 text-white border-purple-400 hover:bg-purple-700"
+              >
+                <Link to="/pricing">Try AI Studio Now</Link>
               </Button>
-              {!hasVideo && <div className="text-sm text-white/80 bg-black/20 px-4 py-2 rounded-lg backdrop-blur-sm">
-                  💡 Upload a video to the 'videos' storage bucket to replace this image
-                </div>}
+              <Button 
+                asChild 
+                size="lg" 
+                variant="outline"
+                className="bg-white/10 text-white border-white/50 hover:bg-white/20"
+              >
+                <Link to="/products">Browse Designs</Link>
+              </Button>
             </div>
+            {!hasVideo && <div className="text-sm text-white/80 bg-black/20 px-4 py-2 rounded-lg backdrop-blur-sm mt-4">
+                💡 Upload a video to the 'videos' storage bucket to replace this image
+              </div>}
           </div>
         </div>
       </section>
