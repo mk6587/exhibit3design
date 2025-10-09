@@ -12,7 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, User, ShoppingBag, LogOut, Download, ShoppingCart } from "lucide-react";
+import { Loader2, User, ShoppingBag, LogOut, Download, ShoppingCart, Crown } from "lucide-react";
+import { SubscriptionPanel } from "@/components/profile/SubscriptionPanel";
 import { toast } from "@/hooks/use-toast";
 import { toast as sonnerToast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
@@ -257,10 +258,14 @@ const ProfilePage = () => {
           </div>
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="profile" className="flex items-center gap-2">
                 <User className="h-4 w-4" />
                 Profile
+              </TabsTrigger>
+              <TabsTrigger value="subscription" className="flex items-center gap-2">
+                <Crown className="h-4 w-4" />
+                Subscription
               </TabsTrigger>
               <TabsTrigger value="orders" className="flex items-center gap-2">
                 <ShoppingBag className="h-4 w-4" />
@@ -388,6 +393,11 @@ const ProfilePage = () => {
                   </form>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Subscription Tab */}
+            <TabsContent value="subscription">
+              <SubscriptionPanel />
             </TabsContent>
 
             {/* Orders Tab */}

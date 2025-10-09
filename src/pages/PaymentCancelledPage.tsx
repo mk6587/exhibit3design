@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
 import { updateOrderStatus } from "@/services/paymentService";
+import { updateSubscriptionOrderStatus } from "@/services/subscriptionPaymentService";
 
 const PaymentCancelledPage = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const PaymentCancelledPage = () => {
   const status = searchParams.get('status');
   const orderNumber = searchParams.get('order_number');
   const authority = searchParams.get('authority');
+  const planId = searchParams.get('planId');
 
   useEffect(() => {
     const processCancellation = async () => {
@@ -22,7 +24,11 @@ const PaymentCancelledPage = () => {
       if (status === 'cancelled' && orderNumber) {
         try {
           console.log("Attempting to update order status...");
-          await updateOrderStatus(orderNumber, 'cancelled', authority || undefined);
+          if (planId) {
+            await updateSubscriptionOrderStatus(orderNumber, 'cancelled', authority || undefined);
+          } else {
+            await updateOrderStatus(orderNumber, 'cancelled', authority || undefined);
+          }
           toast.info("Payment was cancelled.");
           console.log("Order status updated successfully");
         } catch (error) {
@@ -36,7 +42,7 @@ const PaymentCancelledPage = () => {
     };
 
     processCancellation();
-  }, [status, orderNumber, authority]);
+  }, [status, orderNumber, authority, planId]);
 
   const handleTryAgain = () => {
     navigate('/cart');

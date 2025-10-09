@@ -143,19 +143,40 @@ const PaymentSuccessPage = () => {
                 </div>
               )}
               
-              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                <p className="text-sm text-blue-800">
-                  <strong>Design Files:</strong> Your design files will be sent to your email address within 1 hour.
-                </p>
-              </div>
+              {planId ? (
+                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>Subscription Activated!</strong> Your subscription has been activated and tokens/credits have been added to your account.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>Design Files:</strong> Your design files will be sent to your email address within 1 hour.
+                  </p>
+                </div>
+              )}
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button onClick={handleViewDownloads} className="bg-primary hover:bg-primary/90">
-                  View Downloads
-                </Button>
-                <Button onClick={handleContinueShopping} variant="outline">
-                  Continue Shopping
-                </Button>
+                {planId ? (
+                  <>
+                    <Button onClick={() => navigate('/profile')} className="bg-primary hover:bg-primary/90">
+                      View Subscription
+                    </Button>
+                    <Button onClick={() => navigate('/ai-samples')} variant="outline">
+                      Start Editing
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button onClick={handleViewDownloads} className="bg-primary hover:bg-primary/90">
+                      View Downloads
+                    </Button>
+                    <Button onClick={handleContinueShopping} variant="outline">
+                      Continue Shopping
+                    </Button>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>

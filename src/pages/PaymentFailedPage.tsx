@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
 import { updateOrderStatus } from "@/services/paymentService";
+import { updateSubscriptionOrderStatus } from "@/services/subscriptionPaymentService";
 
 const PaymentFailedPage = () => {
   const navigate = useNavigate();
@@ -15,12 +16,17 @@ const PaymentFailedPage = () => {
   const orderNumber = searchParams.get('order_number');
   const authority = searchParams.get('authority');
   const error = searchParams.get('error');
+  const planId = searchParams.get('planId');
 
   useEffect(() => {
     const processFailure = async () => {
       if (status === 'failed' && orderNumber) {
         try {
-          await updateOrderStatus(orderNumber, 'failed', authority || undefined);
+          if (planId) {
+            await updateSubscriptionOrderStatus(orderNumber, 'failed', authority || undefined);
+          } else {
+            await updateOrderStatus(orderNumber, 'failed', authority || undefined);
+          }
           toast.error("Payment failed. Please try again.");
         } catch (updateError) {
           console.error("Failed to update order status:", updateError);
@@ -29,7 +35,7 @@ const PaymentFailedPage = () => {
     };
 
     processFailure();
-  }, [status, orderNumber, authority]);
+  }, [status, orderNumber, authority, planId]);
 
   const handleTryAgain = () => {
     navigate('/cart');
