@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
 import { updateOrderStatus, getOrderByNumber } from "@/services/paymentService";
+import { activateSubscription, updateSubscriptionOrderStatus } from "@/services/subscriptionPaymentService";
 import { useProducts } from "@/contexts/ProductsContext";
 import { trackPurchase } from "@/services/ga4Analytics";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +22,7 @@ const PaymentSuccessPage = () => {
   const status = searchParams.get('status');
   const authority = searchParams.get('authority');
   const reference = searchParams.get('ref');
+  const planId = searchParams.get('planId'); // For subscription payments
 
   useEffect(() => {
     const processSuccess = async () => {
@@ -35,14 +37,22 @@ const PaymentSuccessPage = () => {
       try {
         // Handle YekPay success
         if (status === 'success' && orderNumber) {
-          console.log('Processing YekPay payment success', { orderNumber, authority, reference });
+          console.log('Processing YekPay payment success', { orderNumber, authority, reference, planId });
           
           try {
-            console.log("Attempting to update order status...");
-            await updateOrderStatus(orderNumber, 'completed', authority || undefined, reference || undefined);
-            clearCart();
+            // Check if this is a subscription payment
+            if (planId) {
+              console.log("Processing subscription payment...");
+              await updateSubscriptionOrderStatus(orderNumber, 'completed', authority || undefined, reference || undefined);
+              await activateSubscription(orderNumber, planId);
+              toast.success("Subscription activated successfully!");
+            } else {
+              console.log("Processing product payment...");
+              await updateOrderStatus(orderNumber, 'completed', authority || undefined, reference || undefined);
+              clearCart();
+              toast.success("Payment completed successfully!");
+            }
             setOrderProcessed(true);
-            toast.success("Payment completed successfully!");
             console.log("Order status updated successfully");
           } catch (error) {
             console.error("Failed to update order status:", error);

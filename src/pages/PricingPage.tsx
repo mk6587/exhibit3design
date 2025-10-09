@@ -179,7 +179,7 @@ export default function PricingPage() {
                           variant={isFeatured ? "default" : "outline"}
                           size="lg"
                         >
-                          <Link to={plan.price === 0 ? "/auth" : "/pricing#subscribe"}>
+                          <Link to={plan.price === 0 ? "/auth" : `/subscription-checkout?planId=${plan.id}`}>
                             {plan.price === 0 ? 'Get Free Tokens' : 'Subscribe Now'}
                           </Link>
                         </Button>
