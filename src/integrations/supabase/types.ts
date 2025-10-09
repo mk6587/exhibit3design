@@ -47,6 +47,45 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_edit_samples: {
+        Row: {
+          after_image_url: string
+          before_image_url: string
+          category: string
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          is_featured: boolean
+          prompt_used: string | null
+          title: string
+        }
+        Insert: {
+          after_image_url: string
+          before_image_url: string
+          category: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_featured?: boolean
+          prompt_used?: string | null
+          title: string
+        }
+        Update: {
+          after_image_url?: string
+          before_image_url?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_featured?: boolean
+          prompt_used?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       designers: {
         Row: {
           bio: string | null
@@ -289,9 +328,12 @@ export type Database = {
           featured: boolean | null
           id: number
           images: string[] | null
+          is_sample: boolean | null
+          max_subscription_tier: string | null
           memo: string | null
           price: number
           specifications: string | null
+          subscription_tier_required: string | null
           tags: string[] | null
           title: string
           updated_at: string | null
@@ -301,9 +343,12 @@ export type Database = {
           featured?: boolean | null
           id?: number
           images?: string[] | null
+          is_sample?: boolean | null
+          max_subscription_tier?: string | null
           memo?: string | null
           price: number
           specifications?: string | null
+          subscription_tier_required?: string | null
           tags?: string[] | null
           title: string
           updated_at?: string | null
@@ -313,9 +358,12 @@ export type Database = {
           featured?: boolean | null
           id?: number
           images?: string[] | null
+          is_sample?: boolean | null
+          max_subscription_tier?: string | null
           memo?: string | null
           price?: number
           specifications?: string | null
+          subscription_tier_required?: string | null
           tags?: string[] | null
           title?: string
           updated_at?: string | null
@@ -325,6 +373,7 @@ export type Database = {
       profiles: {
         Row: {
           address_line_1: string | null
+          ai_tokens_balance: number | null
           ai_tokens_limit: number
           ai_tokens_used: number
           city: string | null
@@ -332,6 +381,7 @@ export type Database = {
           created_at: string
           email_confirmed: boolean | null
           first_name: string | null
+          free_tokens_claimed: boolean | null
           id: string
           last_name: string | null
           phone_number: string | null
@@ -339,9 +389,12 @@ export type Database = {
           state_region: string | null
           updated_at: string
           user_id: string
+          video_seconds_balance: number | null
+          video_seconds_used: number | null
         }
         Insert: {
           address_line_1?: string | null
+          ai_tokens_balance?: number | null
           ai_tokens_limit?: number
           ai_tokens_used?: number
           city?: string | null
@@ -349,6 +402,7 @@ export type Database = {
           created_at?: string
           email_confirmed?: boolean | null
           first_name?: string | null
+          free_tokens_claimed?: boolean | null
           id?: string
           last_name?: string | null
           phone_number?: string | null
@@ -356,9 +410,12 @@ export type Database = {
           state_region?: string | null
           updated_at?: string
           user_id: string
+          video_seconds_balance?: number | null
+          video_seconds_used?: number | null
         }
         Update: {
           address_line_1?: string | null
+          ai_tokens_balance?: number | null
           ai_tokens_limit?: number
           ai_tokens_used?: number
           city?: string | null
@@ -366,6 +423,7 @@ export type Database = {
           created_at?: string
           email_confirmed?: boolean | null
           first_name?: string | null
+          free_tokens_claimed?: boolean | null
           id?: string
           last_name?: string | null
           phone_number?: string | null
@@ -373,6 +431,8 @@ export type Database = {
           state_region?: string | null
           updated_at?: string
           user_id?: string
+          video_seconds_balance?: number | null
+          video_seconds_used?: number | null
         }
         Relationships: []
       }
@@ -409,6 +469,60 @@ export type Database = {
         }
         Relationships: []
       }
+      subscription_plans: {
+        Row: {
+          billing_period: string
+          created_at: string
+          description: string | null
+          display_order: number
+          features: Json | null
+          file_access_tier: string
+          id: string
+          initial_ai_tokens: number
+          is_active: boolean
+          is_featured: boolean
+          max_files: number
+          name: string
+          price: number
+          updated_at: string
+          video_seconds: number
+        }
+        Insert: {
+          billing_period?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          features?: Json | null
+          file_access_tier: string
+          id?: string
+          initial_ai_tokens?: number
+          is_active?: boolean
+          is_featured?: boolean
+          max_files?: number
+          name: string
+          price: number
+          updated_at?: string
+          video_seconds?: number
+        }
+        Update: {
+          billing_period?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          features?: Json | null
+          file_access_tier?: string
+          id?: string
+          initial_ai_tokens?: number
+          is_active?: boolean
+          is_featured?: boolean
+          max_files?: number
+          name?: string
+          price?: number
+          updated_at?: string
+          video_seconds?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -429,6 +543,56 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string
+          current_period_start: string
+          id: string
+          plan_id: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end: string
+          current_period_start?: string
+          id?: string
+          plan_id: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string
+          current_period_start?: string
+          id?: string
+          plan_id?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_tokens: {
         Row: {
@@ -465,6 +629,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_file_access: {
+        Args: { p_product_id: number; p_user_id: string }
+        Returns: boolean
+      }
       check_guest_order_access_rate_limit: {
         Args: { client_ip?: string }
         Returns: boolean
@@ -510,6 +678,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      deduct_ai_tokens: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: boolean
+      }
+      deduct_video_seconds: {
+        Args: { p_seconds: number; p_user_id: string }
+        Returns: boolean
+      }
       delete_otp_by_email: {
         Args: { search_email: string }
         Returns: boolean
@@ -543,6 +719,20 @@ export type Database = {
         Returns: {
           expires_at: string
           token: string
+        }[]
+      }
+      get_active_subscription: {
+        Args: { p_user_id: string }
+        Returns: {
+          ai_tokens_included: number
+          current_period_end: string
+          file_access_tier: string
+          plan_id: string
+          plan_name: string
+          plan_price: number
+          status: string
+          subscription_id: string
+          video_seconds_included: number
         }[]
       }
       get_decrypted_customer_data: {
@@ -584,6 +774,18 @@ export type Database = {
           status: string
           updated_at: string
         }[]
+      }
+      get_user_token_balance: {
+        Args: { p_user_id: string }
+        Returns: {
+          ai_tokens: number
+          free_tokens_claimed: boolean
+          video_seconds: number
+        }[]
+      }
+      grant_free_tokens: {
+        Args: { p_user_id: string }
+        Returns: boolean
       }
       has_role: {
         Args: {
