@@ -84,7 +84,7 @@ export const AIShowcaseSection = () => {
         {/* Carousel */}
         <Card className="overflow-hidden border-2">
           <CardContent className="p-0">
-            <div className="grid md:grid-cols-2">
+            <div className="grid md:grid-cols-[1.3fr_1fr]">
               {/* Before/After Media */}
               <div className="relative aspect-[16/10] bg-black overflow-hidden">
                 {showAfter && currentSample.afterVideo ? (
@@ -206,7 +206,7 @@ export const AIShowcaseSection = () => {
             </div>
             
             {/* Buttons Row - Aligned */}
-            <div className="grid md:grid-cols-2 border-t">
+            <div className="grid md:grid-cols-[1.3fr_1fr] border-t">
               <div className="flex justify-center py-3 bg-card border-r">
                 <Button
                   onClick={() => setShowAfter(!showAfter)}
