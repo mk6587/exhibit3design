@@ -164,17 +164,17 @@ export const AIShowcaseSection = () => {
                 {/* Navigation & CTA */}
                 <div className="space-y-2">
                   {/* Carousel Navigation */}
-                  <div className="flex items-center justify-center gap-3">
+                  <div className="flex items-center justify-center gap-2">
                     <Button
                       onClick={prevSlide}
                       variant="outline"
                       size="icon"
-                      className="h-9 w-9 flex-shrink-0"
+                      className="h-8 w-8 flex-shrink-0"
                     >
-                      <ChevronLeft className="h-4 w-4" />
+                      <ChevronLeft className="h-3 w-3" />
                     </Button>
                     
-                    <div className="flex gap-2 items-center">
+                    <div className="flex gap-1.5 items-center min-w-[60px] justify-center">
                       {aiSamples.map((_, index) => (
                         <button
                           key={index}
@@ -182,10 +182,10 @@ export const AIShowcaseSection = () => {
                             setCurrentIndex(index);
                             setShowAfter(false);
                           }}
-                          className={`h-1.5 rounded-full transition-all ${
+                          className={`h-1 rounded-full transition-all flex-shrink-0 ${
                             index === currentIndex 
-                              ? "w-6 bg-primary" 
-                              : "w-1.5 bg-muted-foreground/30"
+                              ? "w-5 bg-primary" 
+                              : "w-1 bg-muted-foreground/30"
                           }`}
                           aria-label={`Go to sample ${index + 1}`}
                         />
@@ -196,9 +196,9 @@ export const AIShowcaseSection = () => {
                       onClick={nextSlide}
                       variant="outline"
                       size="icon"
-                      className="h-9 w-9 flex-shrink-0"
+                      className="h-8 w-8 flex-shrink-0"
                     >
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-3 w-3" />
                     </Button>
                   </div>
                 </div>
