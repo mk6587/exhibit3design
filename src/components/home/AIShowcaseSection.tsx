@@ -21,12 +21,12 @@ interface AISample {
 const aiSamples: AISample[] = [
   {
     id: "1",
-    title: "Scene Transformation",
+    title: "Sketch Transformation",
     category: "Image Magic Edit",
     type: 'image',
     beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg",
     afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg",
-    prompt: "change the background to a modern office setting"
+    prompt: "convert this photo into a detailed pencil sketch with artistic shading"
   },
   {
     id: "2",
