@@ -128,7 +128,7 @@ export const AIShowcaseSection = () => {
 
               {/* Info Panel */}
               <div className="p-4 flex flex-col justify-between bg-card">
-                <div className="text-center">
+                <div>
                   <Badge variant="outline" className="mb-2 text-xs">
                     {currentSample.category}
                   </Badge>
@@ -146,15 +146,15 @@ export const AIShowcaseSection = () => {
 
                   {/* Features */}
                   <div className="space-y-1 mb-3">
-                    <div className="flex items-center justify-center gap-2 text-xs">
+                    <div className="flex items-center gap-2 text-xs">
                       <Sparkles className="h-3.5 w-3.5 text-primary" />
                       <span>Advanced AI-powered editing</span>
                     </div>
-                    <div className="flex items-center justify-center gap-2 text-xs">
+                    <div className="flex items-center gap-2 text-xs">
                       <Sparkles className="h-3.5 w-3.5 text-primary" />
                       <span>Instant results in seconds</span>
                     </div>
-                    <div className="flex items-center justify-center gap-2 text-xs">
+                    <div className="flex items-center gap-2 text-xs">
                       <Sparkles className="h-3.5 w-3.5 text-primary" />
                       <span>No design experience needed</span>
                     </div>
