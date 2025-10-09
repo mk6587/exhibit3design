@@ -22,7 +22,7 @@ const aiSamples: AISample[] = [
   {
     id: "1",
     title: "Sketch Transformation",
-    category: "Image Magic Edit",
+    category: "Image Artistic Mode",
     type: 'image',
     beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-before.png",
     afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-after.jpg",
