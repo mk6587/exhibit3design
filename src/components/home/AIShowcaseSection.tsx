@@ -21,7 +21,7 @@ const aiSamples: AISample[] = [
     title: "Portrait Enhancement",
     category: "Image Magic Edit",
     beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg",
-    afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpeg",
+    afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg",
     prompt: "Apply professional image magic edit with enhanced lighting and composition"
   }
 ];
