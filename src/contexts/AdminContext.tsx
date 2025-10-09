@@ -5,6 +5,7 @@ import { User } from '@supabase/supabase-js';
 
 interface AdminContextType {
   isAuthenticated: boolean;
+  isAdmin: boolean;
   user: User | null;
   login: (email: string, password: string, captchaToken?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
@@ -15,6 +16,7 @@ const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
   // Check if current user is an admin using security definer function
@@ -43,8 +45,9 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (currentUser) {
         setUser(currentUser);
-        const isAdmin = await checkAdminStatus(currentUser.id);
-        setIsAuthenticated(isAdmin);
+        const adminStatus = await checkAdminStatus(currentUser.id);
+        setIsAdmin(adminStatus);
+        setIsAuthenticated(adminStatus);
       }
     };
 
@@ -55,6 +58,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
       // Only handle sign out events
       if (event === 'SIGNED_OUT') {
         setUser(null);
+        setIsAdmin(false);
         setIsAuthenticated(false);
       } else if (event === 'SIGNED_IN' && session?.user) {
         // Just set the user, admin check is handled by login function
@@ -88,16 +92,17 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
         console.log('AdminContext: User authenticated, checking admin status...');
         setUser(data.user);
         
-        const isAdmin = await checkAdminStatus(data.user.id);
-        console.log('AdminContext: Admin status check result:', isAdmin);
+        const adminStatus = await checkAdminStatus(data.user.id);
+        console.log('AdminContext: Admin status check result:', adminStatus);
         
-        if (!isAdmin) {
+        if (!adminStatus) {
           console.log('AdminContext: User is not admin, signing out');
           await supabase.auth.signOut();
           return { success: false, error: 'Access denied: Admin privileges required' };
         }
 
         console.log('AdminContext: Login successful');
+        setIsAdmin(true);
         setIsAuthenticated(true);
         return { success: true };
       }
@@ -113,11 +118,12 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     await supabase.auth.signOut();
     setIsAuthenticated(false);
+    setIsAdmin(false);
     setUser(null);
   };
 
   return (
-    <AdminContext.Provider value={{ isAuthenticated, user, login, logout, checkAdminStatus }}>
+    <AdminContext.Provider value={{ isAuthenticated, isAdmin, user, login, logout, checkAdminStatus }}>
       {children}
     </AdminContext.Provider>
   );

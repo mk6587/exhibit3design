@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Search, User, Menu, X, LogOut, Sparkles, Coins } from "lucide-react";
+import { Search, User, Menu, X, LogOut, Sparkles, Coins, Shield } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/contexts/ProductsContext";
+import { useAdmin } from "@/contexts/AdminContext";
 import { openAIStudio } from "@/utils/aiStudioAuth";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +19,7 @@ const Header = () => {
     profile,
     signOut
   } = useAuth();
+  const { isAdmin } = useAdmin();
   // Removed cartItems - using subscription model now
   const navigate = useNavigate();
 
@@ -96,6 +98,12 @@ const Header = () => {
           <Link to="/contact" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
             Custom Services
           </Link>
+          {isAdmin && (
+            <Link to="/admin/dashboard" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full gap-1">
+              <Shield className="h-4 w-4" />
+              Admin
+            </Link>
+          )}
         </nav>
         
         {/* Actions */}
@@ -215,6 +223,18 @@ const Header = () => {
           <Link to="/faq" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
             FAQ
           </Link>
+          
+          {/* Admin Dashboard Link - Only shown to admins */}
+          {isAdmin && (
+            <Link 
+              to="/admin/dashboard" 
+              className="mobile-nav-item hover:bg-flat-hover transition-colors flex items-center gap-2 text-primary font-medium border-t border-border pt-2 mt-2" 
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <Shield className="h-4 w-4" />
+              Admin Dashboard
+            </Link>
+          )}
           
           <button 
             onClick={() => {

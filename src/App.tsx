@@ -38,6 +38,7 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminPage from "./pages/AdminPage";
 import AdminProductCreatePage from "./pages/AdminProductCreatePage";
 import AdminProductEditPage from "./pages/AdminProductEditPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
 import PricingPage from "./pages/PricingPage";
@@ -105,7 +106,7 @@ const App = () => {
                       } />
                       <Route path="/admin/dashboard" element={
                         <ProtectedAdminRoute>
-                          <AdminPage />
+                          <AdminDashboardPage />
                         </ProtectedAdminRoute>
                       } />
                       <Route path="/admin/product/new" element={
