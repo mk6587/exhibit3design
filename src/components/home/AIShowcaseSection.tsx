@@ -22,7 +22,7 @@ const aiSamples: AISample[] = [
   {
     id: "1",
     title: "Sketch Transformation",
-    category: "Image Artistic Mode",
+    category: "Image Magic Edit",
     type: 'image',
     beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-before.png",
     afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-after.jpg",
@@ -40,7 +40,7 @@ const aiSamples: AISample[] = [
   {
     id: "3",
     title: "Portrait Enhancement",
-    category: "Image Artistic Mode",
+    category: "Image Magic Edit",
     type: 'image',
     beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg?v=2",
     afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg?v=2",
