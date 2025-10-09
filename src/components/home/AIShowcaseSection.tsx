@@ -63,7 +63,7 @@ export const AIShowcaseSection = () => {
             <span className="text-sm font-medium">AI-Powered Editing</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold mb-2">
-            See How AI Transforms Your Designs
+            AI Transforms Your Designs
           </h2>
           <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
             Instantly customize exhibition stands with simple text prompts. No design skills needed.
