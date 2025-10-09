@@ -22,7 +22,7 @@ const aiSamples: AISample[] = [
   {
     id: "1",
     title: "Sketch Transformation",
-    category: "Image Magic Edit",
+    category: "Image Artistic Mode",
     type: 'image',
     beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-before.png",
     afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-after.jpg",
@@ -40,7 +40,7 @@ const aiSamples: AISample[] = [
   {
     id: "3",
     title: "Portrait Enhancement",
-    category: "Image Magic Edit",
+    category: "Image Artistic Mode",
     type: 'image',
     beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg",
     afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg",
@@ -91,7 +91,7 @@ export const AIShowcaseSection = () => {
                   <img
                     src={showAfter ? currentSample.afterImage : currentSample.beforeImage}
                     alt={showAfter ? "After AI edit" : "Before AI edit"}
-                    className="w-full h-full object-cover transition-opacity duration-300"
+                    className="w-full h-full object-contain bg-muted transition-opacity duration-300"
                   />
                 ) : (
                   <video
