@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-
 interface AISample {
   id: string;
   title: string;
@@ -18,54 +17,44 @@ interface AISample {
 }
 
 // Sample data - will be replaced with real data from database
-const aiSamples: AISample[] = [
-  {
-    id: "1",
-    title: "Sketch Transformation",
-    category: "Image Artistic Mode",
-    type: 'image',
-    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-before.png",
-    afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-after.jpg",
-    prompt: "convert this photo into a detailed pencil sketch with artistic shading"
-  },
-  {
-    id: "2",
-    title: "Video Generation",
-    category: "AI Video Creation",
-    type: 'video',
-    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/3/video-rotating.jpg",
-    afterVideo: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/3/video-rotating.mp4",
-    prompt: "create a cinematic video with smooth camera movement"
-  },
-  {
-    id: "3",
-    title: "Portrait Enhancement",
-    category: "Image Magic Edit",
-    type: 'image',
-    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg?v=2",
-    afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg?v=2",
-    prompt: "straighten her hair and change her sweater to a green t-shirt"
-  }
-];
-
+const aiSamples: AISample[] = [{
+  id: "1",
+  title: "Sketch Transformation",
+  category: "Image Artistic Mode",
+  type: 'image',
+  beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-before.png",
+  afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-after.jpg",
+  prompt: "convert this photo into a detailed pencil sketch with artistic shading"
+}, {
+  id: "2",
+  title: "Video Generation",
+  category: "AI Video Creation",
+  type: 'video',
+  beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/3/video-rotating.jpg",
+  afterVideo: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/3/video-rotating.mp4",
+  prompt: "create a cinematic video with smooth camera movement"
+}, {
+  id: "3",
+  title: "Portrait Enhancement",
+  category: "Image Magic Edit",
+  type: 'image',
+  beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg?v=2",
+  afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg?v=2",
+  prompt: "straighten her hair and change her sweater to a green t-shirt"
+}];
 export const AIShowcaseSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAfter, setShowAfter] = useState(false);
-
   const currentSample = aiSamples[currentIndex];
-
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % aiSamples.length);
+    setCurrentIndex(prev => (prev + 1) % aiSamples.length);
     setShowAfter(false);
   };
-
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + aiSamples.length) % aiSamples.length);
+    setCurrentIndex(prev => (prev - 1 + aiSamples.length) % aiSamples.length);
     setShowAfter(false);
   };
-
-  return (
-    <section className="py-8 md:py-12 bg-gradient-to-b from-background to-muted/20">
+  return <section className="py-8 md:py-12 bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-6">
@@ -89,41 +78,8 @@ export const AIShowcaseSection = () => {
             <div className="grid md:grid-cols-[1.3fr_1fr]">
               {/* Before/After Media */}
               <div className="relative aspect-[16/10] bg-black overflow-hidden">
-                {showAfter && currentSample.afterVideo ? (
-                  <video
-                    src={currentSample.afterVideo}
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
-                ) : showAfter && currentSample.afterImage ? (
-                  <img
-                    src={currentSample.afterImage}
-                    alt="After AI edit"
-                    className="w-full h-full object-cover transition-opacity duration-300"
-                  />
-                ) : !showAfter && currentSample.beforeImage ? (
-                  <img
-                    src={currentSample.beforeImage}
-                    alt="Before AI edit"
-                    className="w-full h-full object-cover transition-opacity duration-300"
-                  />
-                ) : (
-                  <video
-                    src={currentSample.beforeVideo}
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
-                )}
-                <Badge 
-                  className="absolute top-4 left-4 text-sm font-semibold"
-                  variant={showAfter ? "default" : "secondary"}
-                >
+                {showAfter && currentSample.afterVideo ? <video src={currentSample.afterVideo} className="w-full h-full object-cover" autoPlay loop muted playsInline /> : showAfter && currentSample.afterImage ? <img src={currentSample.afterImage} alt="After AI edit" className="w-full h-full object-cover transition-opacity duration-300" /> : !showAfter && currentSample.beforeImage ? <img src={currentSample.beforeImage} alt="Before AI edit" className="w-full h-full object-cover transition-opacity duration-300" /> : <video src={currentSample.beforeVideo} className="w-full h-full object-cover" autoPlay loop muted playsInline />}
+                <Badge className="absolute top-4 left-4 text-sm font-semibold" variant={showAfter ? "default" : "secondary"}>
                   {showAfter ? "After" : "Before"}
                 </Badge>
               </div>
@@ -167,39 +123,18 @@ export const AIShowcaseSection = () => {
                 <div className="space-y-2">
                   {/* Carousel Navigation */}
                   <div className="flex items-center justify-center gap-2">
-                    <Button
-                      onClick={prevSlide}
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8 flex-shrink-0"
-                    >
+                    <Button onClick={prevSlide} variant="outline" size="icon" className="h-8 w-8 flex-shrink-0">
                       <ChevronLeft className="h-3 w-3" />
                     </Button>
                     
                     <div className="flex gap-1.5 items-center min-w-[60px] justify-center">
-                      {aiSamples.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => {
-                            setCurrentIndex(index);
-                            setShowAfter(false);
-                          }}
-                          className={`h-1 rounded-full transition-all flex-shrink-0 ${
-                            index === currentIndex 
-                              ? "w-5 bg-primary" 
-                              : "w-1 bg-muted-foreground/30"
-                          }`}
-                          aria-label={`Go to sample ${index + 1}`}
-                        />
-                      ))}
+                      {aiSamples.map((_, index) => <button key={index} onClick={() => {
+                      setCurrentIndex(index);
+                      setShowAfter(false);
+                    }} className={`h-1 rounded-full transition-all flex-shrink-0 ${index === currentIndex ? "w-5 bg-primary" : "w-1 bg-muted-foreground/30"}`} aria-label={`Go to sample ${index + 1}`} />)}
                     </div>
 
-                    <Button
-                      onClick={nextSlide}
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8 flex-shrink-0"
-                    >
+                    <Button onClick={nextSlide} variant="outline" size="icon" className="h-8 w-8 flex-shrink-0">
                       <ChevronRight className="h-3 w-3" />
                     </Button>
                   </div>
@@ -209,12 +144,8 @@ export const AIShowcaseSection = () => {
             
             {/* Buttons Row - Aligned */}
             <div className="grid md:grid-cols-[1.3fr_1fr] border-t">
-              <div className="flex justify-center py-3 bg-card border-r">
-                <Button
-                  onClick={() => setShowAfter(!showAfter)}
-                  variant="secondary"
-                  size="default"
-                >
+              <div className="flex justify-center py-3">
+                <Button onClick={() => setShowAfter(!showAfter)} variant="secondary" size="default">
                   {showAfter ? "Show Before" : "Show After"}
                 </Button>
               </div>
@@ -241,6 +172,5 @@ export const AIShowcaseSection = () => {
           </p>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
