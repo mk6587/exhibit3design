@@ -82,10 +82,10 @@ export default function PricingPage() {
               Flexible Pricing
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Choose Your Perfect Plan
+              Simple, Transparent Pricing
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Access professional exhibition stand designs and AI editing tools. All plans include commercial license.
+              From free trial to agency-level plans. Get access to professional exhibition stand designs and powerful AI editing tools.
             </p>
           </div>
         </section>
@@ -226,10 +226,10 @@ export default function PricingPage() {
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl text-center">
             <h2 className="text-3xl font-bold mb-4">
-              Not Sure Which Plan to Choose?
+              Start with Free AI Trial
             </h2>
             <p className="text-lg text-muted-foreground mb-8">
-              Start with our Free AI Trial and upgrade anytime. No credit card required.
+              Try our AI tools before subscribing. Get 5 free tokens and 1 sample file access. No credit card required.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg">
