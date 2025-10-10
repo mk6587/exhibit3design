@@ -75,11 +75,7 @@ export function AIGenerationCard({ generation, formatDate, formatServiceType }: 
         </Badge>
         {hasSourceImage && (
           <Badge 
-            className={`absolute top-3 left-3 z-10 backdrop-blur-sm shadow-lg transition-all duration-300 ${
-              isHovered 
-                ? "bg-purple-600 text-white border-purple-600 hover:bg-purple-700" 
-                : "bg-background/95 border"
-            }`}
+            className="absolute top-3 left-3 z-10 backdrop-blur-sm shadow-lg transition-all duration-300 bg-purple-600 text-white border-purple-600 hover:bg-purple-700"
           >
             {isHovered ? "Source" : "Result"}
           </Badge>
