@@ -8,8 +8,8 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Exhibit3Designs</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Premium exhibition stand design files for professionals. 
-              Find the perfect design for your next exhibition.
+              AI-powered design generation subscription service for professionals. 
+              Create stunning exhibition designs with advanced AI tools.
             </p>
           </div>
           
@@ -27,11 +27,20 @@ const Footer = () => {
               </li>
               <li>
                 <Link 
-                  to="/products" 
+                  to="/ai-samples" 
                   className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20"
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                 >
-                  Browse Designs
+                  AI Samples
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/pricing" 
+                  className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20"
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                >
+                  Pricing
                 </Link>
               </li>
               <li>
@@ -100,16 +109,16 @@ const Footer = () => {
                   className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20"
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                 >
-                  My Orders
+                  My Profile
                 </Link>
               </li>
               <li>
                 <Link 
-                  to="/downloads" 
+                  to="/pricing" 
                   className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20"
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                 >
-                  My Downloads
+                  My Subscription
                 </Link>
               </li>
             </ul>
