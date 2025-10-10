@@ -113,28 +113,33 @@ export function SubscriptionPanel() {
             )}
             <div className="space-y-4 pt-2">
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-foreground mb-3">Unlock Premium Benefits:</p>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm font-semibold text-foreground">Pro AI Pack Benefits:</p>
+                  <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0">
+                    Recommended
+                  </Badge>
+                </div>
                 <div className="flex items-start gap-2 text-sm">
                   <Zap className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-muted-foreground">Up to 30 AI image edits per month</span>
+                  <span className="text-muted-foreground">20 AI image edits per month</span>
                 </div>
                 <div className="flex items-start gap-2 text-sm">
                   <Video className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-muted-foreground">Up to 5 video results per month</span>
+                  <span className="text-muted-foreground">3 video results per month</span>
                 </div>
                 <div className="flex items-start gap-2 text-sm">
                   <FileText className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-muted-foreground">Access to 3 premium design files</span>
+                  <span className="text-muted-foreground">3 design files</span>
                 </div>
                 <div className="flex items-start gap-2 text-sm">
                   <Crown className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-muted-foreground">Priority support</span>
+                  <span className="text-muted-foreground">Best value for money</span>
                 </div>
               </div>
               <Button asChild size="lg" className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
                 <Link to="/pricing">
                   <Crown className="h-4 w-4 mr-2" />
-                  Upgrade to Premium
+                  Get Pro AI Pack
                 </Link>
               </Button>
               <p className="text-xs text-center text-muted-foreground">
