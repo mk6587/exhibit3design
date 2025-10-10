@@ -91,44 +91,70 @@ const ProductDetailPage = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {/* Product Gallery */}
-          <div>
+          <div className="animate-fade-in">
             <ProductGallery images={product.images} title={product.title} />
           </div>
           
           {/* Product Information */}
-          <div>
-            <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
-            <div className="flex flex-wrap gap-1 mb-4">
-              {product.tags.map(tag => <Badge key={tag} variant="outline">
+          <div className="space-y-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-slide-up">
+              {product.title}
+            </h1>
+            
+            <div className="flex flex-wrap gap-2">
+              {product.tags.map((tag, index) => (
+                <Badge 
+                  key={tag} 
+                  variant="outline"
+                  className="bg-primary/10 border-primary/20 text-primary hover:bg-primary/20 transition-all duration-300 animate-scale-in"
+                  style={{ animationDelay: `${0.05 * index}s` }}
+                >
                   {tag}
-                </Badge>)}
+                </Badge>
+              ))}
             </div>
             
-            <div className="text-2xl font-semibold mb-4">€{product.price}</div>
+            <div className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              €{product.price}
+            </div>
             
-            {product.memo && <div className="mb-6">
-                <p className="text-foreground">{product.memo}</p>
-              </div>}
+            {product.memo && (
+              <div className="p-4 rounded-lg bg-accent/5 border border-accent/20">
+                <p className="text-foreground leading-relaxed">{product.memo}</p>
+              </div>
+            )}
             
             <AddToCartButton productId={product.id} productName={product.title} />
           </div>
         </div>
         
         {/* Product Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
-          <TabsList className="grid grid-cols-2 w-full md:w-fit">
-            <TabsTrigger value="specifications">Specifications</TabsTrigger>
-            <TabsTrigger value="license">License</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <TabsList className="grid grid-cols-2 w-full md:w-fit bg-muted/50 p-1">
+            <TabsTrigger 
+              value="specifications"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground transition-all duration-300"
+            >
+              Specifications
+            </TabsTrigger>
+            <TabsTrigger 
+              value="license"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground transition-all duration-300"
+            >
+              License
+            </TabsTrigger>
           </TabsList>
           
-          <div className="mt-6 p-6 border rounded-lg">
+          <div className="mt-6 p-6 border border-border/50 rounded-lg bg-card/50 backdrop-blur-sm">
             <TabsContent value="specifications">
               <div className="space-y-8">
                 {/* Specifications */}
                 {specifications && <div className="space-y-6">
-                    <Card>
+                    <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300">
                       <CardHeader>
-                        <CardTitle>Physical Specifications</CardTitle>
+                        <CardTitle className="text-xl font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                          Physical Specifications
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <Table>
@@ -151,48 +177,61 @@ const ProductDetailPage = () => {
                       </CardContent>
                     </Card>
 
-                    {specifications.specifications && <Card>
+                    {specifications.specifications && <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300">
                         <CardHeader>
-                          <CardTitle>Stand Specifications</CardTitle>
+                          <CardTitle className="text-xl font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                            Stand Specifications
+                          </CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {Object.entries(facilityLabels).map(([key, label]) => <div key={key} className="flex items-center justify-between p-3 border rounded-lg">
-                                <span className="font-medium">{label}</span>
+                            {Object.entries(facilityLabels).map(([key, label]) => (
+                              <div 
+                                key={key} 
+                                className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/30 hover:bg-muted/50 transition-all duration-300 group"
+                              >
+                                <span className="font-medium group-hover:text-primary transition-colors">{label}</span>
                                 <div className="flex items-center">
-                                  {specifications.specifications?.[key] ? <div className="flex items-center text-green-600">
+                                  {specifications.specifications?.[key] ? (
+                                    <div className="flex items-center text-primary">
                                       <Check className="h-4 w-4 mr-1" />
-                                      <span className="text-sm">Included</span>
-                                    </div> : <div className="flex items-center text-gray-400">
+                                      <span className="text-sm font-medium">Included</span>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center text-muted-foreground">
                                       <X className="h-4 w-4 mr-1" />
                                       <span className="text-sm">Not included</span>
-                                    </div>}
+                                    </div>
+                                  )}
                                 </div>
-                              </div>)}
+                              </div>
+                            ))}
                           </div>
                         </CardContent>
                       </Card>}
 
-                    <Card>
+                    <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300">
                       <CardHeader>
-                        <CardTitle>Technical Information</CardTitle>
+                        <CardTitle className="text-xl font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                          Technical Information
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/30 hover:bg-muted/50 transition-all duration-300 group">
                             <div className="flex items-center">
-                              <Download className="h-4 w-4 mr-2 text-green-600" />
+                              <Download className="h-5 w-5 mr-2 text-primary group-hover:scale-110 transition-transform" />
                               <span className="font-medium">SketchUp Compatibility</span>
                             </div>
-                            <span className="text-sm text-muted-foreground">2020+</span>
+                            <span className="text-sm font-semibold text-primary">2020+</span>
                           </div>
                           
-                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/30 hover:bg-muted/50 transition-all duration-300 group">
                             <div className="flex items-center">
-                              <Download className="h-4 w-4 mr-2 text-red-600" />
+                              <Download className="h-5 w-5 mr-2 text-accent group-hover:scale-110 transition-transform" />
                               <span className="font-medium">3DS Max Compatibility</span>
                             </div>
-                            <span className="text-sm text-muted-foreground">2019+</span>
+                            <span className="text-sm font-semibold text-accent">2019+</span>
                           </div>
                         </div>
                       </CardContent>
@@ -202,25 +241,48 @@ const ProductDetailPage = () => {
               </div>
             </TabsContent>
             
-            <TabsContent value="license">
-              <h3 className="font-bold mb-4">License Information</h3>
-              <p className="mb-4">
-                All design files come with a standard commercial license, allowing you to:
-              </p>
-              <ul className="list-disc pl-6 mb-4">
-                <li>Use the design for commercial exhibition stands</li>
-                <li>Modify the design to fit your needs</li>
-                <li>Use the design for client work</li>
-              </ul>
-              <p className="mb-4">
-                The license does not permit:
-              </p>
-              <ul className="list-disc pl-6 mb-4">
-                <li>Reselling or redistributing the original design files</li>
-                <li>Creating a competing product using these designs</li>
-              </ul>
-              <p>
-                For extended license options, please <Link to="/contact" className="text-primary hover:underline">contact us</Link>.
+            <TabsContent value="license" className="space-y-6">
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                License Information
+              </h3>
+              
+              <div className="p-6 rounded-lg border border-primary/20 bg-primary/5">
+                <h4 className="font-semibold text-lg mb-3 text-primary">What You Can Do</h4>
+                <ul className="space-y-2">
+                  <li className="flex items-start">
+                    <Check className="h-5 w-5 mr-2 text-primary flex-shrink-0 mt-0.5" />
+                    <span>Use the design for commercial exhibition stands</span>
+                  </li>
+                  <li className="flex items-start">
+                    <Check className="h-5 w-5 mr-2 text-primary flex-shrink-0 mt-0.5" />
+                    <span>Modify the design to fit your needs</span>
+                  </li>
+                  <li className="flex items-start">
+                    <Check className="h-5 w-5 mr-2 text-primary flex-shrink-0 mt-0.5" />
+                    <span>Use the design for client work</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="p-6 rounded-lg border border-destructive/20 bg-destructive/5">
+                <h4 className="font-semibold text-lg mb-3 text-destructive">Restrictions</h4>
+                <ul className="space-y-2">
+                  <li className="flex items-start">
+                    <X className="h-5 w-5 mr-2 text-destructive flex-shrink-0 mt-0.5" />
+                    <span>Reselling or redistributing the original design files</span>
+                  </li>
+                  <li className="flex items-start">
+                    <X className="h-5 w-5 mr-2 text-destructive flex-shrink-0 mt-0.5" />
+                    <span>Creating a competing product using these designs</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <p className="text-muted-foreground">
+                For extended license options, please{' '}
+                <Link to="/contact" className="text-primary hover:text-accent transition-colors font-medium underline">
+                  contact us
+                </Link>.
               </p>
             </TabsContent>
           </div>
