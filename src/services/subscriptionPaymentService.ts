@@ -42,10 +42,10 @@ const createPendingSubscriptionOrder = async (
       throw new Error("You must be logged in to purchase a subscription.");
     }
 
-    // Create order record
+    // Create subscription order record
     const orderData = {
       user_id: user.id,
-      product_id: 0, // Subscription orders don't have product_id
+      plan_id: paymentData.planId,
       amount: paymentData.amount,
       status: 'pending',
       payment_method: 'yekpay',
@@ -62,7 +62,7 @@ const createPendingSubscriptionOrder = async (
     };
 
     const { data, error } = await supabase
-      .from('orders')
+      .from('subscription_orders')
       .insert(orderData)
       .select()
       .single();
@@ -228,7 +228,7 @@ export const updateSubscriptionOrderStatus = async (
     if (reference) updateData.yekpay_reference = reference;
 
     const { error } = await supabase
-      .from('orders')
+      .from('subscription_orders')
       .update(updateData)
       .eq('order_number', orderNumber);
 
