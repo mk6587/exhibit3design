@@ -12,32 +12,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, User, ShoppingBag, LogOut, Download, ShoppingCart, Crown } from "lucide-react";
+import { Loader2, User, Activity, LogOut, Crown } from "lucide-react";
 import { SubscriptionPanel } from "@/components/profile/SubscriptionPanel";
+import { UsageHistory } from "@/components/profile/UsageHistory";
 import { toast } from "@/hooks/use-toast";
-import { toast as sonnerToast } from "sonner";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { profileUpdateSchema } from "@/lib/validationSchemas";
-
-interface Order {
-  id: string;
-  product_id: number;
-  amount: number;
-  status: string;
-  payment_method: string | null;
-  transaction_id: string | null;
-  created_at: string;
-  products: {
-    title: string;
-    images: string[];
-  };
-}
 
 const ProfilePage = () => {
   const { user, profile, loading: authLoading, updateProfile, signOut } = useAuth();
-  const { addToCart, products } = useProducts();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [ordersLoading, setOrdersLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -70,43 +53,6 @@ const ProfilePage = () => {
     }
   }, [profile]);
 
-  // Fetch user orders
-  useEffect(() => {
-    const fetchOrders = async () => {
-      if (!user) return;
-
-      try {
-        const { data, error } = await supabase
-          .from("orders")
-          .select(`
-            *,
-            products (
-              title,
-              images
-            )
-          `)
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false });
-
-        if (error) {
-          console.error("Error fetching orders:", error);
-          toast({
-            title: "Error",
-            description: "Failed to load order history.",
-            variant: "destructive",
-          });
-        } else {
-          setOrders(data || []);
-        }
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      } finally {
-        setOrdersLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, [user]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -189,34 +135,6 @@ const ProfilePage = () => {
     }
   };
 
-  const handleRepurchase = (order: Order) => {
-    const product = products.find(p => p.id === order.product_id);
-    if (product) {
-      addToCart(product, 1, false); // Add 1 quantity, suppress the default toast
-      navigate('/cart');
-      sonnerToast.success('Product added to cart for repurchase');
-    } else {
-      sonnerToast.error('Product not found');
-    }
-  };
-
-  const handleDownload = (order: Order) => {
-    if (order.status === 'completed') {
-      navigate('/downloads');
-    } else {
-      sonnerToast.error('Payment must be completed before downloading');
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   if (authLoading) {
     console.log('ProfilePage: Auth loading...');
@@ -248,7 +166,7 @@ const ProfilePage = () => {
             <div>
               <h1 className="text-3xl font-bold mb-2">My Account</h1>
               <p className="text-muted-foreground">
-                Manage your profile and view your order history
+                Manage your profile and track your usage
               </p>
             </div>
             <Button variant="outline" onClick={handleSignOut}>
@@ -267,9 +185,9 @@ const ProfilePage = () => {
                 <Crown className="h-4 w-4" />
                 Subscription
               </TabsTrigger>
-              <TabsTrigger value="orders" className="flex items-center gap-2">
-                <ShoppingBag className="h-4 w-4" />
-                Order History
+              <TabsTrigger value="usage" className="flex items-center gap-2">
+                <Activity className="h-4 w-4" />
+                Usage History
               </TabsTrigger>
             </TabsList>
 
@@ -400,107 +318,9 @@ const ProfilePage = () => {
               <SubscriptionPanel />
             </TabsContent>
 
-            {/* Orders Tab */}
-            <TabsContent value="orders">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Order History</CardTitle>
-                  <CardDescription>
-                    View and manage your purchased design files.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {ordersLoading ? (
-                    <div className="flex justify-center py-8">
-                      <Loader2 className="h-6 w-6 animate-spin" />
-                    </div>
-                  ) : orders.length === 0 ? (
-                    <div className="text-center py-8">
-                      <ShoppingBag className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-medium mb-2">No orders yet</h3>
-                      <p className="text-muted-foreground mb-4">
-                        Start browsing our design collection to make your first purchase.
-                      </p>
-                      <Button onClick={() => navigate("/products")}>
-                        Browse Products
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Product</TableHead>
-                            <TableHead>Amount</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Action</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {orders.map((order) => (
-                            <TableRow key={order.id}>
-                              <TableCell>
-                                <div className="flex items-center space-x-3">
-                                  {order.products.images[0] && (
-                                    <img
-                                      src={order.products.images[0]}
-                                      alt={order.products.title}
-                                      className="w-12 h-12 object-cover rounded"
-                                    />
-                                  )}
-                                   <div>
-                                     <Link 
-                                       to={`/products/${order.product_id}`}
-                                       className="font-medium hover:text-primary transition-colors"
-                                     >
-                                       {order.products.title}
-                                     </Link>
-                                   </div>
-                                </div>
-                              </TableCell>
-                              <TableCell>€{order.amount}</TableCell>
-                              <TableCell>
-                                <Badge
-                                  variant={
-                                    order.status === "completed" ? "default" : "secondary"
-                                  }
-                                >
-                                  {order.status}
-                                </Badge>
-                              </TableCell>
-                              <TableCell>{formatDate(order.created_at)}</TableCell>
-                              <TableCell>
-                                <div className="flex space-x-2">
-                                  {order.status === 'completed' ? (
-                                    <Button 
-                                      size="sm" 
-                                      variant="outline"
-                                      onClick={() => handleDownload(order)}
-                                    >
-                                      <Download className="h-4 w-4 mr-2" />
-                                      Order Status
-                                    </Button>
-                                  ) : (
-                                    <Button 
-                                      size="sm" 
-                                      variant="default"
-                                      onClick={() => handleRepurchase(order)}
-                                    >
-                                      <ShoppingCart className="h-4 w-4 mr-2" />
-                                      Repurchase
-                                    </Button>
-                                  )}
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+            {/* Usage History Tab */}
+            <TabsContent value="usage">
+              <UsageHistory />
             </TabsContent>
           </Tabs>
         </div>
