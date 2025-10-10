@@ -27,24 +27,6 @@ const Footer = () => {
               </li>
               <li>
                 <Link 
-                  to="/ai-samples" 
-                  className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20"
-                  style={{ WebkitTapHighlightColor: 'transparent' }}
-                >
-                  AI Samples
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/pricing" 
-                  className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20"
-                  style={{ WebkitTapHighlightColor: 'transparent' }}
-                >
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link 
                   to="/about" 
                   className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20"
                   style={{ WebkitTapHighlightColor: 'transparent' }}
@@ -101,6 +83,24 @@ const Footer = () => {
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                 >
                   Register
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/ai-samples" 
+                  className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20"
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                >
+                  AI Samples
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/pricing" 
+                  className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20"
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                >
+                  Pricing
                 </Link>
               </li>
               <li>
