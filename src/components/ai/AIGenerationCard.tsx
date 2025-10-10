@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 interface AIGenerationCardProps {
   generation: {
@@ -27,9 +28,23 @@ export function AIGenerationCard({ generation, formatDate, formatServiceType }: 
   
   const isVideo = generation.output_image_url.endsWith('.mp4');
 
+  // Determine service link based on service type
+  const getServiceLink = () => {
+    const serviceMap: Record<string, string> = {
+      'animation': '/pricing',
+      'image_generation': '/pricing',
+      'image_edit': '/pricing',
+      'style_transfer': '/pricing',
+      'video_generation': '/pricing',
+      'ai_edit': '/pricing'
+    };
+    return serviceMap[generation.service_type] || '/pricing';
+  };
+
   return (
-    <div
-      className="group relative bg-card rounded-lg overflow-hidden border shadow-sm hover:shadow-lg transition-all"
+    <Link
+      to={getServiceLink()}
+      className="group relative bg-card rounded-lg overflow-hidden border shadow-sm hover:shadow-lg transition-all block"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -77,6 +92,6 @@ export function AIGenerationCard({ generation, formatDate, formatServiceType }: 
           </Badge>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
