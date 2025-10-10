@@ -1,35 +1,30 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import ProductGallery from "@/components/product/ProductGallery";
-import { Button } from "@/components/ui/button";
-import { Sparkles, Lock, ArrowRight } from "lucide-react";
+import AddToCartButton from "@/components/product/AddToCartButton";
 import { useProducts } from "@/contexts/ProductsContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Check, X, FileText, Calendar, HardDrive, Download } from "lucide-react";
 import "@/components/ui/rich-text-editor.css";
 import { trackViewItem } from "@/services/ga4Analytics";
-import { TryInAIStudioButton } from "@/components/product/TryInAIStudioButton";
-
 const ProductDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
-  const { getProductById, loading } = useProducts();
+  const {
+    id
+  } = useParams<{
+    id: string;
+  }>();
+  const {
+    getProductById,
+    loading
+  } = useProducts();
   const [activeTab, setActiveTab] = useState("specifications");
-  
   const product = getProductById(parseInt(id!));
-  
+
   // Scroll to top when component mounts or product changes
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -41,7 +36,7 @@ const ProductDetailPage = () => {
       trackViewItem(product);
     }
   }, [product, loading]);
-  
+
   // Parse specifications
   const parseSpecifications = (specs: string) => {
     try {
@@ -56,9 +51,7 @@ const ProductDetailPage = () => {
       };
     }
   };
-
   const specifications = product ? parseSpecifications(product.specifications) : null;
-  
   const facilityLabels = {
     infoDesk: "Info Desk",
     storage: "Storage",
@@ -66,12 +59,10 @@ const ProductDetailPage = () => {
     kitchen: "Kitchen",
     seatingArea: "Seating Area",
     meetingRoom: "Meeting Room",
-    hangingBanner: "Hanging Banner",
+    hangingBanner: "Hanging Banner"
   };
-  
   if (loading) {
-    return (
-      <Layout>
+    return <Layout>
         <div className="container mx-auto px-4 py-12">
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             <Skeleton className="aspect-[4/3] w-full" />
@@ -86,23 +77,17 @@ const ProductDetailPage = () => {
             </div>
           </div>
         </div>
-      </Layout>
-    );
+      </Layout>;
   }
-  
   if (!product) {
-    return (
-      <Layout>
+    return <Layout>
         <div className="container mx-auto px-4 py-12 text-center">
           <h1 className="text-2xl font-bold mb-4">Product not found</h1>
           <p>The product you're looking for doesn't exist or has been removed.</p>
         </div>
-      </Layout>
-    );
+      </Layout>;
   }
-  
-  return (
-    <Layout>
+  return <Layout>
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {/* Product Gallery */}
@@ -114,61 +99,18 @@ const ProductDetailPage = () => {
           <div>
             <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
             <div className="flex flex-wrap gap-1 mb-4">
-              {product.tags.map((tag) => (
-                <Badge key={tag} variant="outline">
+              {product.tags.map(tag => <Badge key={tag} variant="outline">
                   {tag}
-                </Badge>
-              ))}
+                </Badge>)}
             </div>
             
-            {/* Subscription Access Info */}
-            <div className="mb-6">
-              <div className="flex items-center gap-2 mb-3">
-                <Lock className="h-5 w-5 text-primary" />
-                <span className="text-lg font-semibold">
-                  Available with Any Subscription
-                </span>
-              </div>
-              <p className="text-muted-foreground mb-4">
-                This design is available to all subscribers. The number of designs you can access depends on your subscription tier:
-              </p>
-              <ul className="text-sm text-muted-foreground space-y-1 ml-6 list-disc">
-                <li>Starter Plan: Limited design files</li>
-                <li>Pro Plan: More design files</li>
-                <li>Studio Plan: Maximum design files</li>
-              </ul>
-            </div>
+            <div className="text-2xl font-semibold mb-4">€{product.price}</div>
             
-            {product.memo && (
-              <div className="mb-6">
+            {product.memo && <div className="mb-6">
                 <p className="text-foreground">{product.memo}</p>
-              </div>
-            )}
+              </div>}
             
-            {/* CTA Buttons */}
-            <div className="space-y-3">
-              <TryInAIStudioButton 
-                productId={product.id}
-                productTitle={product.title}
-                variant="default"
-                size="lg"
-                className="w-full"
-              />
-              <Button asChild size="lg" className="w-full">
-                <Link to="/pricing">
-                  {product.subscription_tier_required && product.subscription_tier_required !== 'sample' 
-                    ? `Upgrade to Access` 
-                    : 'Get Started Free'}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="w-full">
-                <Link to="/ai-samples">
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  See AI Customization Examples
-                </Link>
-              </Button>
-            </div>
+            <AddToCartButton productId={product.id} productName={product.title} />
           </div>
         </div>
         
@@ -183,8 +125,7 @@ const ProductDetailPage = () => {
             <TabsContent value="specifications">
               <div className="space-y-8">
                 {/* Specifications */}
-                {specifications && (
-                  <div className="space-y-6">
+                {specifications && <div className="space-y-6">
                     <Card>
                       <CardHeader>
                         <CardTitle>Physical Specifications</CardTitle>
@@ -196,10 +137,7 @@ const ProductDetailPage = () => {
                               <TableHead className="w-1/3 font-medium">Dimensions</TableHead>
                               <TableCell>{specifications.dimensions || 'Not specified'}</TableCell>
                             </TableRow>
-                            <TableRow>
-                              <TableHead className="font-medium">Height</TableHead>
-                              <TableCell>{specifications.height || 'Not specified'}</TableCell>
-                            </TableRow>
+                            
                             <TableRow>
                               <TableHead className="font-medium">Layout</TableHead>
                               <TableCell>{specifications.layout || 'Not specified'}</TableCell>
@@ -213,35 +151,27 @@ const ProductDetailPage = () => {
                       </CardContent>
                     </Card>
 
-                    {specifications.specifications && (
-                      <Card>
+                    {specifications.specifications && <Card>
                         <CardHeader>
                           <CardTitle>Stand Specifications</CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {Object.entries(facilityLabels).map(([key, label]) => (
-                              <div key={key} className="flex items-center justify-between p-3 border rounded-lg">
+                            {Object.entries(facilityLabels).map(([key, label]) => <div key={key} className="flex items-center justify-between p-3 border rounded-lg">
                                 <span className="font-medium">{label}</span>
                                 <div className="flex items-center">
-                                  {specifications.specifications?.[key] ? (
-                                    <div className="flex items-center text-green-600">
+                                  {specifications.specifications?.[key] ? <div className="flex items-center text-green-600">
                                       <Check className="h-4 w-4 mr-1" />
                                       <span className="text-sm">Included</span>
-                                    </div>
-                                  ) : (
-                                    <div className="flex items-center text-gray-400">
+                                    </div> : <div className="flex items-center text-gray-400">
                                       <X className="h-4 w-4 mr-1" />
                                       <span className="text-sm">Not included</span>
-                                    </div>
-                                  )}
+                                    </div>}
                                 </div>
-                              </div>
-                            ))}
+                              </div>)}
                           </div>
                         </CardContent>
-                      </Card>
-                    )}
+                      </Card>}
 
                     <Card>
                       <CardHeader>
@@ -268,8 +198,7 @@ const ProductDetailPage = () => {
                       </CardContent>
                     </Card>
 
-                  </div>
-                )}
+                  </div>}
               </div>
             </TabsContent>
             
@@ -297,8 +226,6 @@ const ProductDetailPage = () => {
           </div>
         </Tabs>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default ProductDetailPage;
