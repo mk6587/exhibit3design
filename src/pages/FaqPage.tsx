@@ -11,44 +11,52 @@ import { Link } from "react-router-dom";
 
 const faqItems = [
   {
-    question: "What file formats do you provide?",
-    answer: "We provide our exhibition stand designs in multiple formats including SketchUp (.skp), 3D Studio Max (.max), 3D Studio (.3ds), and PDF for technical drawings. This ensures compatibility with most 3D modeling and design software."
+    question: "What subscription plans do you offer?",
+    answer: "We offer three subscription tiers: Basic, Professional, and Enterprise. Each plan includes a monthly allocation of AI tokens for generating images and videos, plus access to our library of ready-made exhibition stand designs. Higher tiers provide more tokens and additional features. Visit our Pricing page to compare plans and find the right fit for your needs."
   },
   {
-    question: "Can I modify the designs after purchase?",
-    answer: "Yes, all our design files are fully editable. You can customize colors, materials, dimensions, and other elements to suit your specific needs. The files are structured with organized layers and components to make customization straightforward."
+    question: "What are AI tokens and how do they work?",
+    answer: "AI tokens are credits used to generate images and videos using our AI tools. Each generation consumes a certain number of tokens depending on the complexity and type of content. For example, image generation may use fewer tokens than video generation. Your token balance resets monthly based on your subscription plan."
   },
   {
-    question: "What's included in the purchase?",
-    answer: "Each purchase includes all the advertised file formats, complete with materials, textures, and lighting setups (where applicable). You'll also receive a PDF with technical specifications and assembly guidelines."
+    question: "What AI tools are included in my subscription?",
+    answer: "Your subscription includes access to powerful AI generation tools for creating custom exhibition stand designs. You can generate high-quality images and videos based on text prompts, upload reference files, and customize outputs. All generations are powered by advanced AI models including Gemini Flash 2.5 and Kling 2.5 Turbo Pro."
   },
   {
-    question: "How do I download my purchases?",
-    answer: "After completing your purchase, you'll receive an email with download instructions. You can also access your downloads from your account dashboard. The download links are secure and will expire after a certain period for security reasons."
+    question: "What happens when I run out of tokens?",
+    answer: "When you use all your monthly tokens, you won't be able to generate new AI content until your tokens reset at the start of your next billing cycle. You can upgrade to a higher-tier plan at any time to receive more tokens immediately. You'll still have full access to any previously generated content and our library of ready-made designs."
   },
   {
-    question: "What is your refund policy?",
-    answer: "Due to the digital nature of our products, we generally do not offer refunds once the files have been downloaded. However, if you experience technical issues with the files, please contact our support team, and we'll assist you in resolving the issue."
+    question: "Can I download and modify the designs?",
+    answer: "Yes! All ready-made designs in our library are available in multiple formats including SketchUp (.skp), 3D Studio Max (.max), 3D Studio (.3ds), and PDF. Files are fully editable, allowing you to customize colors, materials, dimensions, and other elements. AI-generated content can be downloaded in high-resolution formats for your projects."
   },
   {
     question: "Can I use these designs for commercial projects?",
-    answer: "Yes, our standard license allows you to use the designs for commercial exhibition projects. You can modify them and use them for client work. However, you may not resell or redistribute the original design files."
+    answer: "Absolutely. Your subscription license allows you to use both ready-made designs and AI-generated content for commercial exhibition projects and client work. You can modify and adapt them to your specific needs. However, you may not resell, redistribute, or share the original design files or your account access with others."
   },
   {
-    question: "Do you offer custom design services?",
-    answer: "Yes, we offer custom exhibition stand design services tailored to your specific requirements. Please contact us through our contact page with your project details for a custom quote."
+    question: "How does billing work for subscriptions?",
+    answer: "Subscriptions are billed monthly or annually (depending on your choice) via Stripe. You'll be charged automatically at the start of each billing cycle. Your AI tokens reset monthly regardless of whether you choose monthly or annual billing. You can view your billing history and manage your subscription from your profile dashboard."
   },
   {
-    question: "How often do you add new designs?",
-    answer: "We add new designs to our collection regularly, typically 5-10 new designs each month. Sign up for our newsletter to be notified when new designs are available."
+    question: "Can I cancel my subscription anytime?",
+    answer: "Yes, you can cancel your subscription at any time from your profile dashboard. When you cancel, you'll retain access to your subscription benefits until the end of your current billing period. After that, you'll no longer be charged, and your access to AI tools and new content will end. Any content you've already generated or downloaded remains yours."
   },
   {
-    question: "Do you offer bulk discounts?",
-    answer: "Yes, we offer discounts for bulk purchases. If you're interested in purchasing multiple designs, please contact us for a custom quote."
+    question: "What file formats are provided for ready-made designs?",
+    answer: "Our ready-made exhibition stand designs are provided in professional formats: SketchUp (.skp), 3D Studio Max (.max), 3D Studio (.3ds), and PDF for technical drawings. This ensures compatibility with most 3D modeling software. AI-generated images are provided in high-resolution PNG or JPG formats, and videos in MP4 format."
   },
   {
-    question: "What software do I need to open the files?",
-    answer: "To open .skp files, you'll need SketchUp. For .max files, you'll need 3D Studio Max. For .3ds files, you can use various 3D modeling software like Blender, Maya, or 3D Studio Max. PDF files can be opened with any PDF reader."
+    question: "How often is new content added?",
+    answer: "We regularly update our library with new ready-made designs and continuously improve our AI generation capabilities. New designs are typically added monthly. As a subscriber, you'll have immediate access to all new additions and AI model upgrades at no extra cost."
+  },
+  {
+    question: "What if I need help using the AI tools?",
+    answer: "We provide comprehensive guides and sample prompts to help you get the best results from our AI tools. If you need additional assistance, our support team is available via the contact page. We're here to help you create stunning exhibition designs efficiently."
+  },
+  {
+    question: "Is my payment information secure?",
+    answer: "Yes, all payments are processed through Stripe, an industry-leading payment processor with bank-level security. We never store your complete credit card information on our servers. Your payment data is encrypted and handled according to PCI DSS compliance standards."
   }
 ];
 
@@ -59,7 +67,7 @@ const FaqPage = () => {
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold mb-4">Frequently Asked Questions</h1>
           <p className="text-muted-foreground mb-8">
-            Find answers to the most common questions about our exhibition stand designs and services.
+            Find answers to the most common questions about our subscription plans, AI tools, and design services.
           </p>
           
           <Accordion type="single" collapsible className="mb-8">
