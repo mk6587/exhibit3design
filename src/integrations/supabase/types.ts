@@ -83,126 +83,6 @@ export type Database = {
         }
         Relationships: []
       }
-      designers: {
-        Row: {
-          bio: string | null
-          business_name: string | null
-          commission_rate: number | null
-          created_at: string
-          id: string
-          is_active: boolean
-          is_approved: boolean
-          portfolio_url: string | null
-          specialties: string[] | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          bio?: string | null
-          business_name?: string | null
-          commission_rate?: number | null
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          is_approved?: boolean
-          portfolio_url?: string | null
-          specialties?: string[] | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          bio?: string | null
-          business_name?: string | null
-          commission_rate?: number | null
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          is_approved?: boolean
-          portfolio_url?: string | null
-          specialties?: string[] | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      guest_checkout_sessions: {
-        Row: {
-          created_at: string
-          customer_address: string | null
-          customer_city: string | null
-          customer_country: string | null
-          customer_email: string | null
-          customer_first_name: string | null
-          customer_last_name: string | null
-          customer_mobile: string | null
-          customer_postal_code: string | null
-          expires_at: string
-          id: string
-          session_token: string
-        }
-        Insert: {
-          created_at?: string
-          customer_address?: string | null
-          customer_city?: string | null
-          customer_country?: string | null
-          customer_email?: string | null
-          customer_first_name?: string | null
-          customer_last_name?: string | null
-          customer_mobile?: string | null
-          customer_postal_code?: string | null
-          expires_at?: string
-          id?: string
-          session_token: string
-        }
-        Update: {
-          created_at?: string
-          customer_address?: string | null
-          customer_city?: string | null
-          customer_country?: string | null
-          customer_email?: string | null
-          customer_first_name?: string | null
-          customer_last_name?: string | null
-          customer_mobile?: string | null
-          customer_postal_code?: string | null
-          expires_at?: string
-          id?: string
-          session_token?: string
-        }
-        Relationships: []
-      }
-      guest_order_access_log: {
-        Row: {
-          access_granted: boolean
-          access_ip: string | null
-          access_timestamp: string
-          access_user_agent: string | null
-          failure_reason: string | null
-          id: string
-          order_id: string
-          order_token: string
-        }
-        Insert: {
-          access_granted?: boolean
-          access_ip?: string | null
-          access_timestamp?: string
-          access_user_agent?: string | null
-          failure_reason?: string | null
-          id?: string
-          order_id: string
-          order_token: string
-        }
-        Update: {
-          access_granted?: boolean
-          access_ip?: string | null
-          access_timestamp?: string
-          access_user_agent?: string | null
-          failure_reason?: string | null
-          id?: string
-          order_id?: string
-          order_token?: string
-        }
-        Relationships: []
-      }
       orders: {
         Row: {
           amount: number
@@ -436,39 +316,6 @@ export type Database = {
         }
         Relationships: []
       }
-      sso_tokens: {
-        Row: {
-          created_at: string
-          expires_at: string
-          id: string
-          redirect_url: string
-          token: string
-          used: boolean | null
-          user_email: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          expires_at: string
-          id?: string
-          redirect_url: string
-          token: string
-          used?: boolean | null
-          user_email: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          expires_at?: string
-          id?: string
-          redirect_url?: string
-          token?: string
-          used?: boolean | null
-          user_email?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       subscription_plans: {
         Row: {
           billing_period: string
@@ -603,10 +450,6 @@ export type Database = {
         Args: { p_product_id: number; p_user_id: string }
         Returns: boolean
       }
-      check_guest_order_access_rate_limit: {
-        Args: { client_ip?: string }
-        Returns: boolean
-      }
       check_recent_otp: {
         Args: { minutes_ago?: number; search_email: string }
         Returns: boolean
@@ -618,19 +461,11 @@ export type Database = {
           is_admin: boolean
         }[]
       }
-      cleanup_expired_guest_sessions: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
       cleanup_expired_guest_tokens: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
       cleanup_expired_otps: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      cleanup_expired_sso_tokens: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
@@ -785,14 +620,6 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
-      is_current_user_designer: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_designer: {
-        Args: { user_id_param: string }
-        Returns: boolean
-      }
       mark_otp_verified_and_cleanup: {
         Args: { otp_id: string }
         Returns: boolean
@@ -804,20 +631,6 @@ export type Database = {
       set_order_token_session: {
         Args: { token: string }
         Returns: undefined
-      }
-      store_guest_checkout_session: {
-        Args: {
-          p_address: string
-          p_city: string
-          p_country: string
-          p_email: string
-          p_first_name: string
-          p_last_name: string
-          p_mobile: string
-          p_postal_code: string
-          p_session_token: string
-        }
-        Returns: boolean
       }
       transfer_guest_order_data: {
         Args: { p_email: string; p_user_id: string }
@@ -832,25 +645,12 @@ export type Database = {
           success: boolean
         }[]
       }
-      transfer_guest_session_to_profile: {
-        Args: { p_session_token: string; p_user_id: string }
-        Returns: boolean
-      }
       validate_payment_update: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
       verify_guest_order_access: {
         Args: { order_id_param: string; order_token_param: string }
-        Returns: boolean
-      }
-      verify_guest_order_access_secure: {
-        Args: {
-          client_ip?: string
-          order_id_param: string
-          order_token_param: string
-          user_agent?: string
-        }
         Returns: boolean
       }
       verify_otp_code: {
