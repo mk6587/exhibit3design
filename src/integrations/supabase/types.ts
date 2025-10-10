@@ -383,6 +383,7 @@ export type Database = {
           last_name: string | null
           phone_number: string | null
           postcode: string | null
+          selected_files: Json | null
           state_region: string | null
           updated_at: string
           user_id: string
@@ -404,6 +405,7 @@ export type Database = {
           last_name?: string | null
           phone_number?: string | null
           postcode?: string | null
+          selected_files?: Json | null
           state_region?: string | null
           updated_at?: string
           user_id: string
@@ -425,6 +427,7 @@ export type Database = {
           last_name?: string | null
           phone_number?: string | null
           postcode?: string | null
+          selected_files?: Json | null
           state_region?: string | null
           updated_at?: string
           user_id?: string

@@ -22,13 +22,35 @@ import { Check, X, FileText, Calendar, HardDrive, Download } from "lucide-react"
 import "@/components/ui/rich-text-editor.css";
 import { trackViewItem } from "@/services/ga4Analytics";
 import { TryInAIStudioButton } from "@/components/product/TryInAIStudioButton";
+import SelectFileButton from "@/components/product/SelectFileButton";
+import { useAuth } from "@/contexts/AuthContext";
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const { getProductById, loading } = useProducts();
+  const { user, profile } = useAuth();
   const [activeTab, setActiveTab] = useState("specifications");
   
   const product = getProductById(parseInt(id!));
+  
+  // Check if user has free trial (no active subscription)
+  const [hasFreeAccess, setHasFreeAccess] = useState(false);
+  
+  useEffect(() => {
+    const checkSubscription = async () => {
+      if (!user) {
+        setHasFreeAccess(false);
+        return;
+      }
+      
+      const supabase = (await import("@/integrations/supabase/client")).supabase;
+      const { data } = await supabase.rpc('get_active_subscription', { p_user_id: user.id });
+      
+      setHasFreeAccess(!data || data.length === 0);
+    };
+    
+    checkSubscription();
+  }, [user]);
   
   // Scroll to top when component mounts or product changes
   useEffect(() => {
@@ -147,13 +169,20 @@ const ProductDetailPage = () => {
             
             {/* CTA Buttons */}
             <div className="space-y-3">
-              <TryInAIStudioButton 
-                productId={product.id}
-                productTitle={product.title}
-                variant="default"
-                size="lg"
-                className="w-full"
-              />
+              {hasFreeAccess && user ? (
+                <SelectFileButton 
+                  productId={product.id}
+                  productName={product.title}
+                />
+              ) : (
+                <TryInAIStudioButton 
+                  productId={product.id}
+                  productTitle={product.title}
+                  variant="default"
+                  size="lg"
+                  className="w-full"
+                />
+              )}
               <Button asChild size="lg" variant="outline" className="w-full">
                 <Link to="/ai-samples">
                   <Sparkles className="mr-2 h-4 w-4" />

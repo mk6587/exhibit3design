@@ -21,6 +21,7 @@ interface Profile {
   free_tokens_claimed: boolean;
   video_results_used: number;
   video_results_balance: number;
+  selected_files: any;
   created_at: string;
   updated_at: string;
 }
@@ -141,6 +142,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           phone_number: location.phone_number,
           address_line_1: location.address_line_1,
           postcode: location.postcode,
+          selected_files: [],
         })
         .select()
         .single();
