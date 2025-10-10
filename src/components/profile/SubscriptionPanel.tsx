@@ -80,23 +80,81 @@ export function SubscriptionPanel() {
 
   if (!subscription) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Crown className="h-5 w-5 text-primary" />
-            Subscription
-          </CardTitle>
-          <CardDescription>You don't have an active subscription</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Subscribe to unlock premium features, more AI tokens, and access to exclusive design files.
-          </p>
-          <Button asChild className="w-full">
-            <Link to="/pricing">View Plans</Link>
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        {/* Free Tokens Card */}
+        <Card className="border-2 border-primary/20">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30">
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              Your Free Credits
+            </CardTitle>
+            <CardDescription>Start using AI features now!</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-6">
+            {tokenBalance && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Zap className="h-5 w-5 text-primary" />
+                    <p className="text-sm font-medium">AI Image Edits</p>
+                  </div>
+                  <p className="text-3xl font-bold text-primary">{tokenBalance.ai_tokens}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Free tokens available</p>
+                </div>
+                <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Video className="h-5 w-5 text-primary" />
+                    <p className="text-sm font-medium">AI Video Results</p>
+                  </div>
+                  <p className="text-3xl font-bold text-primary">{tokenBalance.video_results}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Free tokens available</p>
+                </div>
+              </div>
+            )}
+            <div className="flex flex-col gap-2">
+              <Button asChild size="lg" className="w-full">
+                <Link to="/ai-samples">
+                  <Zap className="h-4 w-4 mr-2" />
+                  Use Your Free Tokens Now
+                </Link>
+              </Button>
+              <p className="text-xs text-center text-muted-foreground">
+                Try AI features immediately with your free credits
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Subscription Upgrade Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Crown className="h-5 w-5 text-primary" />
+              Upgrade to Premium
+            </CardTitle>
+            <CardDescription>Get more tokens and exclusive features</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm">
+                <Zap className="h-4 w-4 text-primary" />
+                <span>More AI image edit tokens every month</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Video className="h-4 w-4 text-primary" />
+                <span>Additional AI video result tokens</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <FileText className="h-4 w-4 text-primary" />
+                <span>Access to exclusive premium design files</span>
+              </div>
+            </div>
+            <Button asChild variant="outline" className="w-full">
+              <Link to="/pricing">View Subscription Plans</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
