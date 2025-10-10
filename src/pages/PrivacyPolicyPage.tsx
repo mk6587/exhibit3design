@@ -205,9 +205,8 @@ const PrivacyPolicyPage = () => {
               If you have questions, concerns, or requests regarding this Privacy Policy or your personal data, you can contact us at:
             </p>
             <p>
-              <strong>Email:</strong> privacy@exhibit3design.com<br />
-              <strong>Website:</strong> www.exhibit3design.com<br />
-              <strong>Business Address:</strong> (Add your registered company address here)
+              <strong>Email:</strong> info@exhibit3design.com<br />
+              <strong>Website:</strong> www.exhibit3design.com | ai.exhibit3design.com
             </p>
           </section>
         </div>
