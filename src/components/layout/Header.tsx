@@ -95,12 +95,6 @@ const Header = () => {
           <Link to="/contact" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full">
             Custom Services
           </Link>
-          {isAdmin && (
-            <Link to="/admin/dashboard" className="text-sm font-medium hover:text-primary transition-all duration-150 hover:-translate-y-[1px] flex items-center h-full gap-1">
-              <Shield className="h-4 w-4" />
-              Admin
-            </Link>
-          )}
         </nav>
         
         {/* Actions */}
@@ -216,19 +210,7 @@ const Header = () => {
             FAQ
           </Link>
           
-          {/* Admin Dashboard Link - Only shown to admins */}
-          {isAdmin && (
-            <Link 
-              to="/admin/dashboard" 
-              className="mobile-nav-item hover:bg-flat-hover transition-colors flex items-center gap-2 text-primary font-medium border-t border-border pt-2 mt-2" 
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <Shield className="h-4 w-4" />
-              Admin Dashboard
-            </Link>
-          )}
-          
-          <button 
+          <button
             onClick={() => {
               handleAIStudioClick();
               setIsMenuOpen(false);
