@@ -102,9 +102,9 @@ const PrivacyPolicyPage = () => {
                     <td className="border border-border px-4 py-2">AWS / Vercel</td>
                   </tr>
                   <tr>
-                    <td className="border border-border px-4 py-2">AI Tools</td>
+                    <td className="border border-border px-4 py-2">AI Processing</td>
                     <td className="border border-border px-4 py-2">To process image and video generation requests</td>
-                    <td className="border border-border px-4 py-2">Runware (Gemini Flash 2.5 & Kling 2.5 Turbo Pro)</td>
+                    <td className="border border-border px-4 py-2">Third-party AI service providers</td>
                   </tr>
                   <tr>
                     <td className="border border-border px-4 py-2">Email Delivery</td>
