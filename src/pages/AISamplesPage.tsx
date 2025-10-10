@@ -29,40 +29,26 @@ export default function AISamplesPage() {
 
   const fetchGenerations = async () => {
     try {
-      // Fetch public AI samples
-      const { data: samplesData, error: samplesError } = await supabase
-        .from('ai_edit_samples')
-        .select('*')
-        .order('display_order', { ascending: true });
-
-      if (samplesError) throw samplesError;
-      
-      // Transform ai_edit_samples to match AIGeneration interface
-      const transformedSamples: AIGeneration[] = (samplesData || []).map((sample: any) => ({
-        id: sample.id,
-        prompt: sample.prompt_used || 'AI transformation',
-        service_type: sample.category || 'ai_edit',
-        input_image_url: sample.before_image_url,
-        output_image_url: sample.after_image_url,
-        tokens_used: 1,
-        created_at: sample.created_at
-      }));
-
       if (user) {
-        // Fetch user's AI generation history
-        const { data: historyData, error: historyError } = await supabase
+        // Authenticated users: fetch their own history + public samples
+        const { data, error } = await supabase
           .from('ai_generation_history')
           .select('*')
-          .eq('user_id', user.id)
+          .or(`user_id.eq.${user.id},is_public_sample.eq.true`)
           .order('created_at', { ascending: false });
 
-        if (historyError) throw historyError;
-        
-        // Combine samples and user history, with user history first
-        setGenerations([...(historyData || []), ...transformedSamples]);
+        if (error) throw error;
+        setGenerations(data || []);
       } else {
-        // Show only public samples for non-authenticated users
-        setGenerations(transformedSamples);
+        // Non-authenticated users: fetch only public samples
+        const { data, error } = await supabase
+          .from('ai_generation_history')
+          .select('*')
+          .eq('is_public_sample', true)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        setGenerations(data || []);
       }
     } catch (error) {
       console.error('Error fetching AI generations:', error);

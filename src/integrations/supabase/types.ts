@@ -47,75 +47,39 @@ export type Database = {
         }
         Relationships: []
       }
-      ai_edit_samples: {
-        Row: {
-          after_image_url: string
-          before_image_url: string
-          category: string
-          created_at: string
-          description: string | null
-          display_order: number
-          id: string
-          is_featured: boolean
-          prompt_used: string | null
-          title: string
-        }
-        Insert: {
-          after_image_url: string
-          before_image_url: string
-          category: string
-          created_at?: string
-          description?: string | null
-          display_order?: number
-          id?: string
-          is_featured?: boolean
-          prompt_used?: string | null
-          title: string
-        }
-        Update: {
-          after_image_url?: string
-          before_image_url?: string
-          category?: string
-          created_at?: string
-          description?: string | null
-          display_order?: number
-          id?: string
-          is_featured?: boolean
-          prompt_used?: string | null
-          title?: string
-        }
-        Relationships: []
-      }
       ai_generation_history: {
         Row: {
           created_at: string
           id: string
           input_image_url: string | null
+          is_public_sample: boolean | null
           output_image_url: string
           prompt: string
           service_type: string
           tokens_used: number
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           input_image_url?: string | null
+          is_public_sample?: boolean | null
           output_image_url: string
           prompt: string
           service_type: string
           tokens_used?: number
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           input_image_url?: string | null
+          is_public_sample?: boolean | null
           output_image_url?: string
           prompt?: string
           service_type?: string
           tokens_used?: number
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
