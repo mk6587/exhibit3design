@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Search, User, Menu, X, LogOut, Sparkles, Coins, Shield } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { User, Menu, X, LogOut, Sparkles, Coins, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/contexts/ProductsContext";
@@ -13,7 +12,6 @@ import { Badge } from "@/components/ui/badge";
 import { AIStudioCTA, AIStudioCTAMobile } from "./AIStudioCTA";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const {
     user,
     profile,
@@ -27,7 +25,6 @@ const Header = () => {
   const aiTokens = profile?.ai_tokens_balance || 0;
   const videoResults = profile?.video_results_balance || 0;
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
   const handleSignOut = async () => {
     console.log('Logout button clicked');
     setIsMenuOpen(false);
@@ -108,11 +105,6 @@ const Header = () => {
         
         {/* Actions */}
         <div className="flex items-center space-x-1 sm:space-x-2">
-          {/* Search Toggle */}
-          <Button variant="ghost" size="icon" onClick={toggleSearch} className="hidden md:flex">
-            <Search className="h-5 w-5" />
-          </Button>
-
           {/* AI Studio Button with Token Balance or CTA */}
           {user ? (
             <Button 
@@ -262,18 +254,6 @@ const Header = () => {
               </Link>
             </>}
         </nav>
-      </div>
-
-      {/* Search Bar */}
-      <div className={cn("bg-background absolute w-full transition-all duration-200 ease-in-out left-0 right-0", isSearchOpen ? "top-16" : "-top-20")}>
-        <div className="container mx-auto px-4 sm:px-6 py-4">
-          <form className="flex items-center gap-3">
-            <Input type="search" placeholder="Search designs..." className="flex-1" />
-            <Button type="submit" size="default">
-              Search
-            </Button>
-          </form>
-        </div>
       </div>
     </header>;
 };
