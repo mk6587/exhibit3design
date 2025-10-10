@@ -140,10 +140,6 @@ const getEmailTemplate = async (templateName: string, props: any): Promise<strin
       const { PasswordResetEmail } = await import('./_templates/password-reset.tsx');
       return await renderAsync(React.createElement(PasswordResetEmail, props));
       
-    case 'order-confirmation':
-      const { OrderConfirmationEmail } = await import('./_templates/order-confirmation.tsx');
-      return await renderAsync(React.createElement(OrderConfirmationEmail, props));
-      
     case 'contact-notification':
       return generateContactNotificationEmail(props);
       

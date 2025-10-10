@@ -42,30 +42,6 @@ export class EmailService {
   }
 
   /**
-   * Send order confirmation email
-   */
-  static async sendOrderConfirmation(order: any, orderNumber: string, orderToken?: string): Promise<{ success: boolean; error?: string }> {
-    const customerName = order.customer_first_name && order.customer_last_name 
-      ? `${order.customer_first_name} ${order.customer_last_name}` 
-      : order.customer_first_name || 'Valued Customer';
-
-    return this.sendEmail({
-      to: order.customer_email,
-      bcc: 'info@exhibit3design.com',
-      subject: 'Payment Successful - Your Design Files Are Being Prepared',
-      template: {
-        name: 'order-confirmation',
-        props: {
-          order,
-          orderNumber,
-          customerName,
-          orderToken // Include the secure token for guest orders
-        }
-      }
-    });
-  }
-
-  /**
    * Send contact form notification email
    */
   static async sendContactNotification(contactData: { name: string; email: string; message: string }): Promise<{ success: boolean; error?: string }> {
