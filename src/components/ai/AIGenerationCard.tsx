@@ -67,13 +67,16 @@ export function AIGenerationCard({ generation, formatDate, formatServiceType }: 
             loading="lazy"
           />
         )}
-        <Badge className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm">
+        <Badge 
+          variant="secondary" 
+          className="absolute top-3 right-3 backdrop-blur-sm"
+        >
           {generation.tokens_used} {generation.tokens_used === 1 ? 'token' : 'tokens'}
         </Badge>
         {hasSourceImage && (
           <Badge 
-            className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm transition-opacity duration-300"
-            variant={isHovered ? "default" : "secondary"}
+            variant={isHovered ? "default" : "outline"}
+            className="absolute top-3 left-3 backdrop-blur-sm transition-all duration-300"
           >
             {isHovered ? "Source" : "Result"}
           </Badge>
