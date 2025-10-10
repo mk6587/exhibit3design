@@ -154,14 +154,6 @@ const ProductDetailPage = () => {
                 size="lg"
                 className="w-full"
               />
-              <Button asChild size="lg" className="w-full">
-                <Link to="/pricing">
-                  {product.subscription_tier_required && product.subscription_tier_required !== 'sample' 
-                    ? `Upgrade to Access` 
-                    : 'Get Started Free'}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
               <Button asChild size="lg" variant="outline" className="w-full">
                 <Link to="/ai-samples">
                   <Sparkles className="mr-2 h-4 w-4" />
