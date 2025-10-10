@@ -111,15 +111,34 @@ export function SubscriptionPanel() {
                 </div>
               </div>
             )}
-            <div className="flex flex-col gap-2">
-              <Button asChild size="lg" className="w-full">
-                <Link to="/ai-samples">
-                  <Zap className="h-4 w-4 mr-2" />
-                  Use Your Free Tokens Now
+            <div className="space-y-4 pt-2">
+              <div className="space-y-2">
+                <p className="text-sm font-semibold text-foreground mb-3">Unlock Premium Benefits:</p>
+                <div className="flex items-start gap-2 text-sm">
+                  <Zap className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-muted-foreground">Up to 50 AI image edit tokens monthly</span>
+                </div>
+                <div className="flex items-start gap-2 text-sm">
+                  <Video className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-muted-foreground">Up to 20 AI video result tokens monthly</span>
+                </div>
+                <div className="flex items-start gap-2 text-sm">
+                  <FileText className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-muted-foreground">Access to exclusive premium design files</span>
+                </div>
+                <div className="flex items-start gap-2 text-sm">
+                  <Crown className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-muted-foreground">Priority support and early access to new features</span>
+                </div>
+              </div>
+              <Button asChild size="lg" className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                <Link to="/pricing">
+                  <Crown className="h-4 w-4 mr-2" />
+                  Upgrade to Premium
                 </Link>
               </Button>
               <p className="text-xs text-center text-muted-foreground">
-                Try AI features immediately with your free credits
+                Get more credits and unlock all premium features
               </p>
             </div>
           </CardContent>
