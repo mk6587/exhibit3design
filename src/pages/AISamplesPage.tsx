@@ -29,37 +29,40 @@ export default function AISamplesPage() {
 
   const fetchGenerations = async () => {
     try {
+      // Fetch public AI samples
+      const { data: samplesData, error: samplesError } = await supabase
+        .from('ai_edit_samples')
+        .select('*')
+        .order('display_order', { ascending: true });
+
+      if (samplesError) throw samplesError;
+      
+      // Transform ai_edit_samples to match AIGeneration interface
+      const transformedSamples: AIGeneration[] = (samplesData || []).map((sample: any) => ({
+        id: sample.id,
+        prompt: sample.prompt_used || 'AI transformation',
+        service_type: sample.category || 'ai_edit',
+        input_image_url: sample.before_image_url,
+        output_image_url: sample.after_image_url,
+        tokens_used: 1,
+        created_at: sample.created_at
+      }));
+
       if (user) {
         // Fetch user's AI generation history
-        const { data, error } = await supabase
+        const { data: historyData, error: historyError } = await supabase
           .from('ai_generation_history')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        setGenerations(data || []);
+        if (historyError) throw historyError;
+        
+        // Combine samples and user history, with user history first
+        setGenerations([...(historyData || []), ...transformedSamples]);
       } else {
-        // Fetch public AI samples for non-authenticated users
-        const { data, error } = await supabase
-          .from('ai_edit_samples')
-          .select('*')
-          .order('display_order', { ascending: true });
-
-        if (error) throw error;
-        
-        // Transform ai_edit_samples to match AIGeneration interface
-        const transformedData: AIGeneration[] = (data || []).map((sample: any) => ({
-          id: sample.id,
-          prompt: sample.prompt_used || 'AI transformation',
-          service_type: sample.category || 'ai_edit',
-          input_image_url: sample.before_image_url,
-          output_image_url: sample.after_image_url,
-          tokens_used: 1,
-          created_at: sample.created_at
-        }));
-        
-        setGenerations(transformedData);
+        // Show only public samples for non-authenticated users
+        setGenerations(transformedSamples);
       }
     } catch (error) {
       console.error('Error fetching AI generations:', error);
