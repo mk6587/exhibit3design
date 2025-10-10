@@ -23,7 +23,7 @@ const aiSamples: AISample[] = [{
   category: "Image Artistic Mode",
   type: 'image',
   beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-before.png",
-  afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-after.jpg",
+  afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-after.jpg?v=2",
   prompt: "convert this photo into a detailed pencil sketch with artistic shading"
 }, {
   id: "2",
