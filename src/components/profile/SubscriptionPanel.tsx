@@ -98,16 +98,16 @@ export function SubscriptionPanel() {
                     <Zap className="h-5 w-5 text-primary" />
                     <p className="text-sm font-medium">AI Image Edits</p>
                   </div>
-                  <p className="text-3xl font-bold text-primary">{tokenBalance.ai_tokens}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Free tokens available</p>
+                  <p className="text-3xl font-bold text-primary">{tokenBalance.ai_tokens}/5 remaining</p>
+                  <p className="text-xs text-muted-foreground mt-1">Free tokens</p>
                 </div>
                 <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
                   <div className="flex items-center gap-2 mb-2">
                     <Video className="h-5 w-5 text-primary" />
                     <p className="text-sm font-medium">AI Video Results</p>
                   </div>
-                  <p className="text-3xl font-bold text-primary">{tokenBalance.video_results}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Free tokens available</p>
+                  <p className="text-3xl font-bold text-primary">{tokenBalance.video_results}/0 remaining</p>
+                  <p className="text-xs text-muted-foreground mt-1">Free tokens</p>
                 </div>
               </div>
             )}
