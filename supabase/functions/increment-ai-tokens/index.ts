@@ -51,10 +51,10 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // First, get current usage
+    // First, get current balance and usage
     const { data: currentProfile, error: fetchError } = await supabase
       .from('profiles')
-      .select('ai_tokens_used')
+      .select('ai_tokens_used, ai_tokens_balance')
       .eq('user_id', userId)
       .single();
 
@@ -67,27 +67,30 @@ serve(async (req) => {
     }
 
     const currentUsage = currentProfile?.ai_tokens_used || 0;
-    const tokensLimit = 2;
+    const currentBalance = currentProfile?.ai_tokens_balance || 0;
 
-    // Check if user has already exceeded limit
-    if (currentUsage >= tokensLimit) {
+    // Check if user has tokens available
+    if (currentBalance <= 0) {
       return new Response(
         JSON.stringify({ 
-          error: 'Token limit exceeded',
+          error: 'No tokens remaining',
           tokensUsed: currentUsage,
           tokensRemaining: 0,
-          tokensLimit
+          tokensBalance: 0
         }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Increment the counter
+    // Increment usage and decrement balance
     const { data: updatedProfile, error: updateError } = await supabase
       .from('profiles')
-      .update({ ai_tokens_used: currentUsage + 1 })
+      .update({ 
+        ai_tokens_used: currentUsage + 1,
+        ai_tokens_balance: currentBalance - 1
+      })
       .eq('user_id', userId)
-      .select('ai_tokens_used')
+      .select('ai_tokens_used, ai_tokens_balance')
       .single();
 
     if (updateError) {
@@ -99,14 +102,14 @@ serve(async (req) => {
     }
 
     const newUsage = updatedProfile.ai_tokens_used;
-    const tokensRemaining = Math.max(0, tokensLimit - newUsage);
+    const tokensRemaining = updatedProfile.ai_tokens_balance;
 
     return new Response(
       JSON.stringify({
         success: true,
         tokensUsed: newUsage,
         tokensRemaining,
-        tokensLimit
+        tokensBalance: tokensRemaining
       }),
       {
         status: 200,

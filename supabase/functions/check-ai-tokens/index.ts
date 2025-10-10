@@ -53,7 +53,7 @@ serve(async (req) => {
 
     const { data: profile, error } = await supabase
       .from('profiles')
-      .select('ai_tokens_used, ai_tokens_limit')
+      .select('ai_tokens_used, ai_tokens_balance')
       .eq('user_id', userId)
       .single();
 
@@ -66,16 +66,15 @@ serve(async (req) => {
     }
 
     const tokensUsed = profile?.ai_tokens_used || 0;
-    const tokensLimit = profile?.ai_tokens_limit || 2;
-    const tokensRemaining = Math.max(0, tokensLimit - tokensUsed);
-    const hasTokens = tokensRemaining > 0;
+    const tokensBalance = profile?.ai_tokens_balance || 0;
+    const hasTokens = tokensBalance > 0;
 
     return new Response(
       JSON.stringify({
         hasTokens,
         tokensUsed,
-        tokensRemaining,
-        tokensLimit
+        tokensRemaining: tokensBalance,
+        tokensBalance
       }),
       {
         status: 200,

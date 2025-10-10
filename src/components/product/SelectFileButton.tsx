@@ -26,7 +26,7 @@ const SelectFileButton = ({ productId, productName }: SelectFileButtonProps) => 
     setIsLoading(true);
     
     try {
-      // Get current selected files
+      // Get current selected files and check subscription limits
       const { data: currentProfile, error: fetchError } = await supabase
         .from('profiles')
         .select('selected_files')
@@ -40,6 +40,29 @@ const SelectFileButton = ({ productId, productName }: SelectFileButtonProps) => 
       // Check if file is already selected
       if (selectedFiles.some((file: any) => file.product_id === productId)) {
         toast.info("You've already selected this file");
+        setIsLoading(false);
+        return;
+      }
+      
+      // Check user's subscription file limit
+      const { data: subscription } = await supabase
+        .from('user_subscriptions')
+        .select(`
+          subscription_plans(max_files)
+        `)
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .gt('current_period_end', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      
+      const maxFiles = (subscription?.subscription_plans as any)?.max_files || 1; // Default to 1 for free users
+      
+      if (selectedFiles.length >= maxFiles) {
+        toast.error(`File limit reached`, {
+          description: `You can select up to ${maxFiles} file(s) with your current plan. Upgrade to select more files.`
+        });
         setIsLoading(false);
         return;
       }
