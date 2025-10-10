@@ -334,30 +334,6 @@ const CheckoutPage = () => {
   const processPayment = async () => {
     if (!isGuest) {
       await saveUserProfile();
-    } else {
-      // For guest users, store checkout data in temporary session
-      try {
-        const sessionToken = crypto.randomUUID();
-        localStorage.setItem('guest_session_token', sessionToken);
-        
-        const { error: storeError } = await supabase.rpc('store_guest_checkout_session', {
-          p_session_token: sessionToken,
-          p_first_name: customerInfo.firstName,
-          p_last_name: customerInfo.lastName,
-          p_email: customerInfo.email,
-          p_mobile: customerInfo.mobile,
-          p_address: customerInfo.address,
-          p_city: customerInfo.city,
-          p_postal_code: customerInfo.postalCode,
-          p_country: customerInfo.country
-        });
-        
-        if (storeError) {
-          console.error('Error storing guest session:', storeError);
-        }
-      } catch (error) {
-        console.error('Error creating guest session:', error);
-      }
     }
 
     const paymentData = {

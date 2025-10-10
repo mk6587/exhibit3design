@@ -102,15 +102,20 @@ const Header = () => {
           {/* AI Studio Button with Token Balance or CTA */}
           {user ? (
             <Button 
-              variant="default" 
+              variant="ghost" 
               size="sm" 
               onClick={handleAIStudioClick}
-              className="hidden md:flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg hover:shadow-xl transition-all"
+              className="hidden md:flex items-center gap-1.5 hover:bg-muted px-2"
             >
-              <Sparkles className="h-4 w-4" />
-              <span>AI Studio</span>
-              {profile && (
-                <Badge variant="secondary" className="ml-1 bg-white/20 text-white border-0 hover:bg-white/30">
+              <Sparkles className="h-4 w-4 text-purple-600" />
+              <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+                AI Studio
+              </span>
+              {profile && aiTokens > 0 && (
+                <Badge 
+                  variant="secondary" 
+                  className="ml-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0"
+                >
                   {aiTokens}
                 </Badge>
               )}
