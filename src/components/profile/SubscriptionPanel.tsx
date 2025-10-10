@@ -116,19 +116,19 @@ export function SubscriptionPanel() {
                 <p className="text-sm font-semibold text-foreground mb-3">Unlock Premium Benefits:</p>
                 <div className="flex items-start gap-2 text-sm">
                   <Zap className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-muted-foreground">Up to 50 AI image edit tokens monthly</span>
+                  <span className="text-muted-foreground">Up to 30 AI image edits per month</span>
                 </div>
                 <div className="flex items-start gap-2 text-sm">
                   <Video className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-muted-foreground">Up to 20 AI video result tokens monthly</span>
+                  <span className="text-muted-foreground">Up to 5 video results per month</span>
                 </div>
                 <div className="flex items-start gap-2 text-sm">
                   <FileText className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-muted-foreground">Access to exclusive premium design files</span>
+                  <span className="text-muted-foreground">Access to 3 premium design files</span>
                 </div>
                 <div className="flex items-start gap-2 text-sm">
                   <Crown className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-muted-foreground">Priority support and early access to new features</span>
+                  <span className="text-muted-foreground">Priority support</span>
                 </div>
               </div>
               <Button asChild size="lg" className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
