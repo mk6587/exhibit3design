@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { initiateSubscriptionPayment } from "@/services/subscriptionPaymentService";
@@ -22,6 +23,9 @@ const checkoutSchema = z.object({
   city: z.string().min(2, "City must be at least 2 characters"),
   postalCode: z.string().min(3, "Postal code must be at least 3 characters"),
   country: z.string().min(2, "Country must be at least 2 characters"),
+  acceptTerms: z.boolean().refine(val => val === true, {
+    message: "You must accept the privacy policy to continue",
+  }),
 });
 
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
@@ -47,6 +51,7 @@ export default function SubscriptionCheckoutPage() {
       city: "",
       postalCode: "",
       country: "",
+      acceptTerms: false,
     },
   });
 
@@ -91,7 +96,7 @@ export default function SubscriptionCheckoutPage() {
         .from('profiles')
         .select('*')
         .eq('user_id', authUser.id)
-        .single();
+        .maybeSingle();
 
       if (profile) {
         form.reset({
@@ -306,6 +311,34 @@ export default function SubscriptionCheckoutPage() {
                           <Input {...field} />
                         </FormControl>
                         <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="acceptTerms"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            I accept the{" "}
+                            <Link
+                              to="/privacy-policy"
+                              target="_blank"
+                              className="text-primary underline hover:text-primary/80"
+                            >
+                              Privacy Policy
+                            </Link>
+                          </FormLabel>
+                          <FormMessage />
+                        </div>
                       </FormItem>
                     )}
                   />
