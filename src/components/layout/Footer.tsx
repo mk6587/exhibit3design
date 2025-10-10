@@ -8,8 +8,7 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Exhibit3Designs</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              AI-powered design generation subscription service for professionals. 
-              Create stunning exhibition designs with advanced AI tools.
+              Access ready-made exhibition stand designs and powerful AI tools — a complete subscription platform for professionals who want to create faster and smarter.
             </p>
           </div>
           
