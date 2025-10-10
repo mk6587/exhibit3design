@@ -6,7 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, X } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Star, X, Crown } from 'lucide-react';
 import AIContentGenerator from './AIContentGenerator';
 import { Product } from '@/types/product';
 import { getTagSuggestions } from '@/utils/autoTags';
@@ -148,6 +150,65 @@ const ProductBasicInfoTab: React.FC<ProductBasicInfoTabProps> = ({
             onCheckedChange={(checked) => onProductChange({...product, featured: checked})}
           />
         </div>
+
+        {/* Subscription Access Control */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Crown className="h-5 w-5 text-primary" />
+              Subscription Access Control
+            </CardTitle>
+            <CardDescription>
+              Set which subscription tier is required to access this product's files
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="subscription-tier">Required Subscription Tier</Label>
+              <Select
+                value={product.subscription_tier_required || 'sample'}
+                onValueChange={(value) => onProductChange({ 
+                  ...product, 
+                  subscription_tier_required: value,
+                  is_sample: value === 'sample'
+                })}
+              >
+                <SelectTrigger id="subscription-tier">
+                  <SelectValue placeholder="Select tier" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sample">Sample (Free - Preview only)</SelectItem>
+                  <SelectItem value="basic">Basic Tier</SelectItem>
+                  <SelectItem value="standard">Standard Tier</SelectItem>
+                  <SelectItem value="premium">Premium Tier</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-sm text-muted-foreground">
+                Users must have an active subscription of this tier or higher to download files
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-2 p-3 border rounded-lg bg-muted/50">
+              <div className="flex-1">
+                <Label htmlFor="is-sample" className="text-sm font-medium">
+                  Free Sample
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Make this available to all users without subscription
+                </p>
+              </div>
+              <Switch
+                id="is-sample"
+                checked={product.is_sample || false}
+                onCheckedChange={(checked) => onProductChange({ 
+                  ...product, 
+                  is_sample: checked,
+                  subscription_tier_required: checked ? 'sample' : (product.subscription_tier_required || 'basic')
+                })}
+              />
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

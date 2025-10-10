@@ -6,7 +6,8 @@ import { useProducts } from '@/contexts/ProductsContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { LogOut, Edit, Eye, Trash2 } from 'lucide-react';
+import { LogOut, Edit, Eye, Trash2, Crown } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const AdminPage = () => {
   const { logout } = useAdmin();
@@ -80,7 +81,15 @@ const AdminPage = () => {
                   className="w-full h-48 object-cover rounded-md mb-4"
                 />
                 <CardTitle className="text-lg">{product.title}</CardTitle>
-                <CardDescription>€{product.price}</CardDescription>
+                <CardDescription className="flex items-center justify-between">
+                  <span>€{product.price}</span>
+                  {product.subscription_tier_required && (
+                    <Badge variant={product.is_sample ? "secondary" : "default"} className="ml-2">
+                      <Crown className="mr-1 h-3 w-3" />
+                      {product.subscription_tier_required}
+                    </Badge>
+                  )}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <Button asChild className="w-full" variant="outline">
