@@ -79,7 +79,17 @@ export default function AISamplesPage() {
   };
 
   const formatServiceType = (type: string) => {
-    return type
+    // Map service types to more descriptive names
+    const serviceTypeMap: Record<string, string> = {
+      'animation': 'Rotating Stand Video',
+      'image_generation': 'Image Generation',
+      'image_edit': 'Image Edit',
+      'style_transfer': 'Style Transfer',
+      'video_generation': 'Video Generation',
+      'ai_edit': 'AI Edit'
+    };
+    
+    return serviceTypeMap[type] || type
       .split('_')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
