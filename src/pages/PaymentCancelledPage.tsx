@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
-import { updateOrderStatus } from "@/services/paymentService";
 import { updateSubscriptionOrderStatus } from "@/services/subscriptionPaymentService";
 
 const PaymentCancelledPage = () => {
@@ -21,23 +20,18 @@ const PaymentCancelledPage = () => {
     const processCancellation = async () => {
       console.log("PaymentCancelledPage - URL params:", { status, orderNumber, authority });
       
-      if (status === 'cancelled' && orderNumber) {
+      if (status === 'cancelled' && orderNumber && planId) {
         try {
-          console.log("Attempting to update order status...");
-          if (planId) {
-            await updateSubscriptionOrderStatus(orderNumber, 'cancelled', authority || undefined);
-          } else {
-            await updateOrderStatus(orderNumber, 'cancelled', authority || undefined);
-          }
-          toast.info("Payment was cancelled.");
-          console.log("Order status updated successfully");
+          console.log("Attempting to update subscription order status...");
+          await updateSubscriptionOrderStatus(orderNumber, 'cancelled', authority || undefined);
+          toast.info("Subscription payment was cancelled.");
+          console.log("Subscription order status updated successfully");
         } catch (error) {
-          console.error("Failed to update order status:", error);
-          // Don't let this error break the page - just log it
+          console.error("Failed to update subscription order status:", error);
           toast.error("Failed to update order status, but payment was cancelled.");
         }
       } else {
-        console.log("Not processing cancellation - missing status or order number");
+        console.log("Not processing cancellation - missing required parameters");
       }
     };
 
@@ -45,7 +39,7 @@ const PaymentCancelledPage = () => {
   }, [status, orderNumber, authority, planId]);
 
   const handleTryAgain = () => {
-    navigate('/cart');
+    navigate('/pricing');
   };
 
   const handleContinueShopping = () => {

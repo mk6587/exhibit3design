@@ -1,10 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardStats } from "@/components/admin/DashboardStats";
-import { RecentOrders } from "@/components/admin/RecentOrders";
 import { SubscriptionsManagement } from "@/components/admin/SubscriptionsManagement";
 import { UsersManagement } from "@/components/admin/UsersManagement";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { LayoutDashboard, Crown, Users, ShoppingBag } from "lucide-react";
+import { LayoutDashboard, Crown, Users } from "lucide-react";
 
 export default function AdminDashboardPage() {
   return (
@@ -18,7 +17,7 @@ export default function AdminDashboardPage() {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <LayoutDashboard className="h-4 w-4" />
               Overview
@@ -31,15 +30,10 @@ export default function AdminDashboardPage() {
               <Users className="h-4 w-4" />
               Users
             </TabsTrigger>
-            <TabsTrigger value="orders" className="flex items-center gap-2">
-              <ShoppingBag className="h-4 w-4" />
-              Orders
-            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
             <DashboardStats />
-            <RecentOrders />
           </TabsContent>
 
           <TabsContent value="subscriptions">
@@ -48,10 +42,6 @@ export default function AdminDashboardPage() {
 
           <TabsContent value="users">
             <UsersManagement />
-          </TabsContent>
-
-          <TabsContent value="orders">
-            <RecentOrders />
           </TabsContent>
         </Tabs>
       </div>

@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
-import { updateOrderStatus } from "@/services/paymentService";
 import { updateSubscriptionOrderStatus } from "@/services/subscriptionPaymentService";
 
 const PaymentFailedPage = () => {
@@ -20,16 +19,12 @@ const PaymentFailedPage = () => {
 
   useEffect(() => {
     const processFailure = async () => {
-      if (status === 'failed' && orderNumber) {
+      if (status === 'failed' && orderNumber && planId) {
         try {
-          if (planId) {
-            await updateSubscriptionOrderStatus(orderNumber, 'failed', authority || undefined);
-          } else {
-            await updateOrderStatus(orderNumber, 'failed', authority || undefined);
-          }
-          toast.error("Payment failed. Please try again.");
+          await updateSubscriptionOrderStatus(orderNumber, 'failed', authority || undefined);
+          toast.error("Subscription payment failed. Please try again.");
         } catch (updateError) {
-          console.error("Failed to update order status:", updateError);
+          console.error("Failed to update subscription order status:", updateError);
         }
       }
     };
@@ -38,7 +33,7 @@ const PaymentFailedPage = () => {
   }, [status, orderNumber, authority, planId]);
 
   const handleTryAgain = () => {
-    navigate('/cart');
+    navigate('/pricing');
   };
 
   const handleViewOrders = () => {

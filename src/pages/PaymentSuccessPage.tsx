@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
-import { updateOrderStatus, getOrderByNumber } from "@/services/paymentService";
 import { activateSubscription, updateSubscriptionOrderStatus } from "@/services/subscriptionPaymentService";
 import { useProducts } from "@/contexts/ProductsContext";
 import { trackPurchase } from "@/services/ga4Analytics";
@@ -35,75 +34,38 @@ const PaymentSuccessPage = () => {
       if (orderProcessed) return;
 
       try {
-        // Handle YekPay success
-        if (status === 'success' && orderNumber) {
-          console.log('Processing YekPay payment success', { orderNumber, authority, reference, planId });
+        // Handle subscription payment success only
+        if (status === 'success' && orderNumber && planId) {
+          console.log('Processing subscription payment success', { orderNumber, authority, reference, planId });
           
           try {
-            // Check if this is a subscription payment
-            if (planId) {
-              console.log("Processing subscription payment...");
-              await updateSubscriptionOrderStatus(orderNumber, 'completed', authority || undefined, reference || undefined);
-              await activateSubscription(orderNumber, planId);
-              toast.success("Subscription activated successfully!");
-            } else {
-              console.log("Processing product payment...");
-              await updateOrderStatus(orderNumber, 'completed', authority || undefined, reference || undefined);
-              clearCart();
-              toast.success("Payment completed successfully!");
-            }
+            console.log("Processing subscription payment...");
+            await updateSubscriptionOrderStatus(orderNumber, 'completed', authority || undefined, reference || undefined);
+            await activateSubscription(orderNumber, planId);
+            toast.success("Subscription activated successfully!");
             setOrderProcessed(true);
-            console.log("Order status updated successfully");
+            console.log("Subscription activated successfully");
           } catch (error) {
-            console.error("Failed to update order status:", error);
-            // Don't let this error break the page - just log it
-            toast.success("Payment completed successfully!");
+            console.error("Failed to activate subscription:", error);
+            toast.error("There was an issue activating your subscription. Please contact support.");
             setOrderProcessed(true);
           }
         }
-        // Handle direct access with orderNumber (when redirected from payment gateway)
-        else if (orderNumber && !status && !sessionId) {
-          console.log('Direct payment success redirect', { orderNumber, authority, reference });
-          
-          try {
-            // Check if order exists and update if it's still pending
-            const order = await getOrderByNumber(orderNumber);
-            if (order && order.status === 'pending') {
-              console.log("Updating pending order to completed");
-              await updateOrderStatus(orderNumber, 'completed', authority || undefined, reference || undefined);
-            }
-            clearCart();
-            setOrderProcessed(true);
-            toast.success("Payment completed successfully!");
-          } catch (error) {
-            console.error("Failed to process payment success:", error);
-            toast.success("Payment completed successfully!");
-            setOrderProcessed(true);
-          }
-        }
-        // Fallback: If user reaches this page without specific parameters, assume success
+        // Fallback: If user reaches this page without proper parameters
         else if (!orderProcessed) {
-          console.log('Payment success page accessed without specific parameters - assuming success');
-          clearCart();
+          console.log('Payment success page accessed without proper subscription parameters');
           setOrderProcessed(true);
           toast.success("Payment completed successfully!");
         }
       } catch (error) {
         console.error("Failed to process payment success:", error);
-        toast.error("Payment completed but there was an issue updating the order. Please contact support.");
+        toast.error("Payment completed but there was an issue. Please contact support.");
       }
     };
 
     processSuccess();
   }, [sessionId, orderNumber, status, authority, reference, clearCart, orderProcessed]);
 
-  const handleViewDownloads = () => {
-    navigate('/downloads');
-  };
-
-  const handleContinueShopping = () => {
-    navigate('/products');
-  };
 
   return (
     <Layout>
@@ -143,40 +105,19 @@ const PaymentSuccessPage = () => {
                 </div>
               )}
               
-              {planId ? (
-                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                  <p className="text-sm text-blue-800">
-                    <strong>Subscription Activated!</strong> Your subscription has been activated and tokens/credits have been added to your account.
-                  </p>
-                </div>
-              ) : (
-                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                  <p className="text-sm text-blue-800">
-                    <strong>Design Files:</strong> Your design files will be sent to your email address within 1 hour.
-                  </p>
-                </div>
-              )}
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>Subscription Activated!</strong> Your subscription has been activated and tokens/credits have been added to your account.
+                </p>
+              </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                {planId ? (
-                  <>
-                    <Button onClick={() => navigate('/profile')} className="bg-primary hover:bg-primary/90">
-                      View Subscription
-                    </Button>
-                    <Button onClick={() => navigate('/ai-samples')} variant="outline">
-                      Start Editing
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button onClick={handleViewDownloads} className="bg-primary hover:bg-primary/90">
-                      View Downloads
-                    </Button>
-                    <Button onClick={handleContinueShopping} variant="outline">
-                      Continue Shopping
-                    </Button>
-                  </>
-                )}
+                <Button onClick={() => navigate('/profile')} className="bg-primary hover:bg-primary/90">
+                  View Subscription
+                </Button>
+                <Button onClick={() => navigate('/ai-samples')} variant="outline">
+                  Start Editing
+                </Button>
               </div>
             </CardContent>
           </Card>

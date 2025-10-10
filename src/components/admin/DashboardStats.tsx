@@ -34,18 +34,18 @@ export function DashboardStats() {
 
   const loadStats = async () => {
     try {
-      // Get total revenue from completed orders
-      const { data: orders, error: ordersError } = await supabase
-        .from('orders')
+      // Get total revenue from completed subscription orders
+      const { data: subscriptionOrders, error: ordersError } = await supabase
+        .from('subscription_orders')
         .select('amount, status');
       
       if (ordersError) throw ordersError;
 
-      const totalRevenue = orders
+      const totalRevenue = subscriptionOrders
         ?.filter(o => o.status === 'completed')
         ?.reduce((sum, order) => sum + Number(order.amount), 0) || 0;
 
-      const totalOrders = orders?.filter(o => o.status === 'completed')?.length || 0;
+      const totalOrders = subscriptionOrders?.filter(o => o.status === 'completed')?.length || 0;
 
       // Get active subscriptions count
       const { count: activeSubsCount, error: subsError } = await supabase

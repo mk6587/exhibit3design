@@ -1,46 +1,18 @@
-import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AlertTriangle } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
-import { updateOrderStatus } from "@/services/paymentService";
 
 const PaymentErrorPage = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  
-  const status = searchParams.get('status');
-  const orderNumber = searchParams.get('order_number');
-  const authority = searchParams.get('authority');
-  const error = searchParams.get('error');
-
-  useEffect(() => {
-    const processError = async () => {
-      if (status === 'error' && orderNumber) {
-        try {
-          await updateOrderStatus(orderNumber, 'error', authority || undefined);
-          toast.error("A payment error occurred.");
-        } catch (updateError) {
-          console.error("Failed to update order status:", updateError);
-        }
-      }
-    };
-
-    processError();
-  }, [status, orderNumber, authority]);
 
   const handleTryAgain = () => {
-    navigate('/cart');
+    navigate('/pricing');
   };
 
   const handleContactSupport = () => {
     navigate('/contact');
-  };
-
-  const handleContinueShopping = () => {
-    navigate('/products');
   };
 
   return (
@@ -58,29 +30,6 @@ const PaymentErrorPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {orderNumber && (
-                <div className="bg-muted p-4 rounded-lg">
-                  <div className="text-sm">
-                    <span className="font-medium">Order Number:</span>
-                    <div className="font-mono">{orderNumber}</div>
-                    {authority && (
-                      <>
-                        <span className="font-medium mt-2 block">Transaction ID:</span>
-                        <div className="font-mono">{authority}</div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {error && (
-                <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
-                  <p className="text-sm text-orange-800">
-                    <strong>Error Details:</strong> {decodeURIComponent(error)}
-                  </p>
-                </div>
-              )}
-
               <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
                 <p className="text-sm text-red-800">
                   <strong>What to do:</strong> Please try again or contact our support team for assistance. 
@@ -94,9 +43,6 @@ const PaymentErrorPage = () => {
                 </Button>
                 <Button onClick={handleContactSupport} variant="outline">
                   Contact Support
-                </Button>
-                <Button onClick={handleContinueShopping} variant="outline">
-                  Continue Shopping
                 </Button>
               </div>
             </CardContent>

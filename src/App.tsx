@@ -18,14 +18,8 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import FaqPage from "./pages/FaqPage";
-// Cart and Checkout removed - now using subscription model
-// import CartPage from "./pages/CartPage";
-// import CheckoutPage from "./pages/CheckoutPage";
-import OrderLookupPage from "./pages/OrderLookupPage";
-import OrderDetailsPage from "./pages/OrderDetailsPage";
-
+// Cart, Checkout, Orders, and Downloads removed - now using subscription model only
 import ProfilePage from "./pages/ProfilePage";
-import DownloadsPage from "./pages/DownloadsPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import PaymentFailedPage from "./pages/PaymentFailedPage";
 import PaymentCancelledPage from "./pages/PaymentCancelledPage";
@@ -41,7 +35,6 @@ import AdminProductEditPage from "./pages/AdminProductEditPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminSubscriptionsPage from "./pages/AdminSubscriptionsPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
-import AdminOrdersPage from "./pages/AdminOrdersPage";
 import AdminPlansPage from "./pages/AdminPlansPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
@@ -87,11 +80,8 @@ const App = () => {
                       <Route path="/about" element={<AboutPage />} />
                       <Route path="/contact" element={<ContactPage />} />
                       <Route path="/faq" element={<FaqPage />} />
-                      {/* Cart and Checkout routes removed - subscription model */}
-                      <Route path="/order-lookup" element={<OrderLookupPage />} />
-                      <Route path="/order/:orderId" element={<OrderDetailsPage />} />
+                      {/* Cart, Checkout, Orders, and Downloads routes removed - subscription model only */}
                       <Route path="/profile" element={<ProfilePage />} />
-                      <Route path="/downloads" element={<DownloadsPage />} />
                       <Route path="/payment-success" element={<PaymentSuccessPage />} />
                       <Route path="/payment-failed" element={<PaymentFailedPage />} />
                       <Route path="/payment-cancelled" element={<PaymentCancelledPage />} />
@@ -131,11 +121,6 @@ const App = () => {
                       <Route path="/admin/users" element={
                         <ProtectedAdminRoute>
                           <AdminUsersPage />
-                        </ProtectedAdminRoute>
-                      } />
-                      <Route path="/admin/orders" element={
-                        <ProtectedAdminRoute>
-                          <AdminOrdersPage />
                         </ProtectedAdminRoute>
                       } />
                       <Route path="/admin/plans" element={
