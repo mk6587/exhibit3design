@@ -9,126 +9,205 @@ const PrivacyPolicyPage = () => {
         <Separator className="mb-6" />
 
         <div className="prose prose-sm md:prose-base max-w-none">
-          <p className="text-muted-foreground mb-4">Last Updated: July 17, 2025</p>
+          <p className="text-muted-foreground mb-4">Last Updated: October 11, 2025</p>
 
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">1. Introduction</h2>
             <p>
-              Welcome to Exhibit3Design. We are committed to protecting your personal information and your right to privacy. 
-              This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website 
-              and use our services.
+              Welcome to Exhibit3Design ("we," "our," or "us").
+              We value your privacy and are committed to protecting your personal information.
+              This Privacy Policy describes how we collect, use, and safeguard your data when you visit our website, create an account, subscribe to a plan, or make a payment using our secure checkout.
+            </p>
+            <p className="mt-3">
+              By accessing or using our services, you agree to the terms of this Privacy Policy.
             </p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">2. Information We Collect</h2>
-            <p className="mb-3">We collect information that you voluntarily provide to us when you:</p>
+            <p className="mb-4">
+              We only collect the data necessary to operate our website, manage subscriptions, and deliver AI-powered design services.
+            </p>
+            
+            <h3 className="text-lg font-semibold mb-3">A. Information You Provide Directly</h3>
+            <p className="mb-3">When you register, subscribe, or make a payment, you provide the following details:</p>
+            <ul className="list-disc pl-6 mb-4">
+              <li>Full name</li>
+              <li>Email address</li>
+              <li>Mobile number</li>
+              <li>Billing address (street, city, postal code, country)</li>
+              <li>Payment information (processed securely by Stripe)</li>
+              <li>Account credentials (email and password)</li>
+              <li>Subscription details and token usage information</li>
+            </ul>
+            <p className="mb-4">
+              This information is collected for account creation, billing, customer support, and secure payment processing.
+            </p>
+
+            <h3 className="text-lg font-semibold mb-3">B. Information Collected Automatically</h3>
+            <p className="mb-3">When you browse our website or use our AI tools, we collect limited technical data automatically, including:</p>
             <ul className="list-disc pl-6 mb-3">
-              <li>Register for an account</li>
-              <li>Purchase products</li>
-              <li>Sign up for our newsletter</li>
-              <li>Contact us</li>
-              <li>Participate in surveys or promotions</li>
+              <li>IP address and approximate region</li>
+              <li>Browser type and operating system</li>
+              <li>Pages visited and session duration</li>
+              <li>Token usage metrics (number of AI image/video generations)</li>
             </ul>
             <p>
-              This information may include your name, email address, postal address, phone number, and payment information.
+              This information is used to maintain website performance, prevent fraud, and improve user experience.
+              We do not use advertising trackers, cookies for profiling, or sell behavioral data.
             </p>
-            <p className="mt-3">
-              We also automatically collect certain information when you visit our website, including:
-            </p>
-            <ul className="list-disc pl-6">
-              <li>IP address</li>
-              <li>Browser type</li>
-              <li>Device information</li>
-              <li>Pages visited</li>
-              <li>Time spent on pages</li>
-              <li>Referring website</li>
-              <li>Other browsing information</li>
-            </ul>
           </section>
 
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">3. How We Use Your Information</h2>
-            <p className="mb-3">We use the information we collect to:</p>
+            <p className="mb-3">We use your personal data only for legitimate business purposes, including:</p>
             <ul className="list-disc pl-6">
-              <li>Provide, operate, and maintain our website and services</li>
-              <li>Process and complete transactions</li>
-              <li>Send you order confirmations and updates</li>
-              <li>Provide customer support</li>
-              <li>Send you technical notices and security alerts</li>
-              <li>Respond to your comments and questions</li>
-              <li>Improve our website and services</li>
-              <li>Develop new products and services</li>
-              <li>Prevent fraud and abuse</li>
-              <li>Send you marketing communications (if you have opted in)</li>
+              <li>Creating and managing your account</li>
+              <li>Processing payments and subscription renewals</li>
+              <li>Allocating and tracking AI tokens per your plan</li>
+              <li>Providing access to AI tools and generated content</li>
+              <li>Sending invoices, renewal reminders, and important updates</li>
+              <li>Offering customer support and handling service requests</li>
+              <li>Detecting and preventing unauthorized or fraudulent activity</li>
+              <li>Fulfilling legal, financial, and tax obligations</li>
             </ul>
+            <p className="mt-3">
+              We do not sell, rent, or share your personal data with advertisers or unrelated third parties.
+            </p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">4. How We Share Your Information</h2>
+            <p className="mb-4">
+              We only share necessary data with trusted service providers that help us operate securely and efficiently:
+            </p>
+            <div className="overflow-x-auto mb-3">
+              <table className="min-w-full border-collapse border border-border">
+                <thead>
+                  <tr className="bg-muted/50">
+                    <th className="border border-border px-4 py-2 text-left">Category</th>
+                    <th className="border border-border px-4 py-2 text-left">Purpose</th>
+                    <th className="border border-border px-4 py-2 text-left">Provider Example</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-border px-4 py-2">Payment Processing</td>
+                    <td className="border border-border px-4 py-2">To process payments and manage subscriptions securely</td>
+                    <td className="border border-border px-4 py-2">Stripe</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border px-4 py-2">Hosting & Storage</td>
+                    <td className="border border-border px-4 py-2">To host our website and store encrypted data</td>
+                    <td className="border border-border px-4 py-2">AWS / Vercel</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border px-4 py-2">AI Tools</td>
+                    <td className="border border-border px-4 py-2">To process image and video generation requests</td>
+                    <td className="border border-border px-4 py-2">Runware (Gemini Flash 2.5 & Kling 2.5 Turbo Pro)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border px-4 py-2">Email Delivery</td>
+                    <td className="border border-border px-4 py-2">To send transactional or account-related emails</td>
+                    <td className="border border-border px-4 py-2">SendGrid / Postmark</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              All service providers are contractually bound to follow strict confidentiality and data protection rules (e.g., GDPR compliance).
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">5. Payment Security</h2>
+            <p>
+              All payments are processed via Stripe, which uses advanced encryption and PCI DSS–compliant technology.
+              We do not store or have access to your full credit card or payment information.
+              We only retain payment references, such as invoice ID, plan type, and payment status, for record-keeping and tax purposes.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">6. Cookies and Local Storage</h2>
+            <p className="mb-3">We use only essential cookies and local storage to:</p>
+            <ul className="list-disc pl-6 mb-3">
+              <li>Keep you securely logged in</li>
+              <li>Remember your subscription plan and token balance</li>
+              <li>Improve site speed and performance</li>
+            </ul>
+            <p>
+              We do not use advertising or tracking cookies.
+              You can disable cookies in your browser, but doing so may affect certain features (like staying logged in).
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">7. Data Retention</h2>
+            <ul className="list-disc pl-6 mb-3">
+              <li>Account and billing data are stored for as long as your account remains active.</li>
+              <li>Transaction and invoice records are kept for as long as required by law (typically 5–7 years).</li>
+              <li>If you close your account, we will delete or anonymize your data unless retention is legally required.</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">8. Security</h2>
+            <p className="mb-3">We take data protection seriously and apply multiple security measures, including:</p>
+            <ul className="list-disc pl-6 mb-3">
+              <li>HTTPS (SSL/TLS) encryption for all web traffic</li>
+              <li>Secure password hashing and encryption for stored data</li>
+              <li>Restricted access controls for databases and admin systems</li>
+              <li>Secure transmission of all payments through Stripe and AI requests through Runware APIs</li>
+            </ul>
+            <p>
+              While we strive for the highest standards, no system is 100% secure.
+              We recommend using a strong password and keeping your credentials private.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">9. Your Rights</h2>
+            <p className="mb-3">Depending on your location, you may have the right to:</p>
+            <ul className="list-disc pl-6 mb-3">
+              <li>Access and review the data we hold about you</li>
+              <li>Request corrections or updates to your personal information</li>
+              <li>Request deletion of your account and associated data</li>
+              <li>Withdraw consent for marketing communications</li>
+              <li>Request a copy of your data (data portability)</li>
+            </ul>
+            <p>
+              To exercise any of these rights, please email us at privacy@exhibit3design.com.
+              We will respond within 30 days as required by applicable data protection laws (e.g., GDPR).
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">10. Children's Privacy</h2>
+            <p>
+              Exhibit3Design is intended for professional and business use.
+              We do not knowingly collect or process information from anyone under the age of 16.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">11. Updates to This Policy</h2>
+            <p>
+              We may update this Privacy Policy from time to time to reflect service changes, legal updates, or new technologies.
+              Any updates will be posted on this page, and the "Last Updated" date will be revised accordingly.
+              We encourage you to review this page periodically.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">12. Contact Us</h2>
             <p className="mb-3">
-              We may share your information with third parties in the following situations:
+              If you have questions, concerns, or requests regarding this Privacy Policy or your personal data, you can contact us at:
             </p>
-            <ul className="list-disc pl-6">
-              <li>With service providers who perform services on our behalf</li>
-              <li>To comply with legal obligations</li>
-              <li>To protect and defend our rights and property</li>
-              <li>With your consent or at your direction</li>
-              <li>In connection with a business transfer or acquisition</li>
-            </ul>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">5. Your Rights</h2>
-            <p className="mb-3">Depending on your location, you may have the following rights:</p>
-            <ul className="list-disc pl-6">
-              <li>Right to access personal data we hold about you</li>
-              <li>Right to request correction of your personal data</li>
-              <li>Right to request deletion of your personal data</li>
-              <li>Right to object to processing of your personal data</li>
-              <li>Right to data portability</li>
-              <li>Right to withdraw consent</li>
-            </ul>
-            <p className="mt-3">
-              To exercise these rights, please contact us using the information provided in the "Contact Us" section.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">6. Security</h2>
             <p>
-              We implement appropriate technical and organizational measures to protect your personal information. 
-              However, no security system is impenetrable, and we cannot guarantee the security of our systems 100%. 
-              We are not responsible for the circumvention of any privacy settings or security measures on our website.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">7. Cookies</h2>
-            <p>
-              We use cookies and similar tracking technologies to track activity on our website and hold certain information. 
-              Cookies are files with a small amount of data which may include an anonymous unique identifier. 
-              You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">8. Changes to This Privacy Policy</h2>
-            <p>
-              We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new 
-              Privacy Policy on this page and updating the "Last Updated" date. You are advised to review this Privacy Policy 
-              periodically for any changes.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">9. Contact Us</h2>
-            <p>
-              If you have any questions about this Privacy Policy, please contact us at:
-            </p>
-            <p className="mt-3">
-              Email: info@exhibitdesigns.com<br />
-              Phone: +1 (555) 123-4567
+              <strong>Email:</strong> privacy@exhibit3design.com<br />
+              <strong>Website:</strong> www.exhibit3design.com<br />
+              <strong>Business Address:</strong> (Add your registered company address here)
             </p>
           </section>
         </div>
