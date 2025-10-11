@@ -1,16 +1,18 @@
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import { useProtectedExternalLink } from "@/hooks/useProtectedExternalLink";
 
 export const HeroSection = () => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [posterLoaded, setPosterLoaded] = useState(false);
   const [posterError, setPosterError] = useState(false);
   const [minDisplayTime, setMinDisplayTime] = useState(false);
+  const { navigateToProtectedLink } = useProtectedExternalLink();
 
   const videoUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos-public/exhibit_hp_video.mp4";
   const posterUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg";
   const hasVideo = true;
+  const aiStudioUrl = "https://ai.exhibit3design.com/?service=rotate-360";
 
   const handleVideoCanPlay = () => {
     if (minDisplayTime) {
@@ -107,8 +109,13 @@ export const HeroSection = () => {
           </p>
           
           <div className="flex justify-center">
-            <Button asChild size="lg" variant="outline" className="bg-purple-600/40 text-white border-purple-400/70 hover:bg-purple-600/50">
-              <a href="https://ai.exhibit3design.com/?service=rotate-360" target="_blank" rel="noopener noreferrer">Create with AI Now</a>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="bg-purple-600/40 text-white border-purple-400/70 hover:bg-purple-600/50"
+              onClick={() => navigateToProtectedLink(aiStudioUrl)}
+            >
+              Create with AI Now
             </Button>
           </div>
           {!hasVideo && (

@@ -124,10 +124,17 @@ const OTPAuthPage = () => {
     if (result.success) {
       if (result.magicLink) {
         // Simply redirect to the magic link - let Supabase handle the authentication
+        // The redirect will be handled by AuthContext after successful login
         window.location.href = result.magicLink;
       } else {
-        // No magic link, just go to home
-        navigate('/');
+        // Check for stored redirect URL
+        const redirectUrl = sessionStorage.getItem('auth_redirect_url');
+        if (redirectUrl) {
+          sessionStorage.removeItem('auth_redirect_url');
+          window.location.href = redirectUrl;
+        } else {
+          navigate('/');
+        }
       }
     } else {
       setError(result.error || 'Invalid verification code');
@@ -173,12 +180,14 @@ const OTPAuthPage = () => {
     setError('');
     
     try {
+      // Note: The redirect URL will be checked and used by AuthContext after OAuth completes
       const result = await signInWithGoogle();
       
       if (result.error) {
         setError(result.error.message || 'Failed to sign in with Google');
       }
       // If successful, the OAuth flow will handle the redirect
+      // AuthContext will check for stored redirect URL after successful login
     } catch (error) {
       setError('An error occurred while signing in with Google');
     }

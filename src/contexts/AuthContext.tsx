@@ -187,6 +187,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setTimeout(() => {
             window.dispatchEvent(new CustomEvent('authStateChanged'));
           }, 1000);
+          
+          // Handle post-login redirect
+          setTimeout(() => {
+            const redirectUrl = sessionStorage.getItem('auth_redirect_url');
+            if (redirectUrl) {
+              sessionStorage.removeItem('auth_redirect_url');
+              console.log('Redirecting to stored URL:', redirectUrl);
+              window.location.href = redirectUrl;
+            }
+          }, 500);
         }
         
         // Defer all Supabase calls with setTimeout to prevent deadlock

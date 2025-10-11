@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Wand2, Zap, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
+import { useProtectedExternalLink } from "@/hooks/useProtectedExternalLink";
 
 interface AISample {
   id: string;
@@ -66,8 +66,10 @@ export const AIShowcaseSection = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const { navigateToProtectedLink } = useProtectedExternalLink();
 
   const currentSample = aiSamples[currentIndex];
+  const pricingUrl = "https://ai.exhibit3design.com/?service=rotate-360";
 
   // Minimum swipe distance (in px) to trigger slide change
   const minSwipeDistance = 50;
@@ -336,12 +338,12 @@ export const AIShowcaseSection = () => {
         {/* CTA Button */}
         <div className="flex justify-center">
           <Button
-            asChild
             size="lg"
             className="px-6 py-5 md:px-8 md:py-6 text-sm md:text-base font-semibold shadow-lg hover:shadow-xl transition-all"
             style={{ backgroundColor: "#8E44FF" }}
+            onClick={() => navigateToProtectedLink(pricingUrl)}
           >
-            <Link to="/pricing">Create with AI Now</Link>
+            Create with AI Now
           </Button>
         </div>
       </div>
