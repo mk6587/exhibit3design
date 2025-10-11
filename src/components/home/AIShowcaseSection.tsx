@@ -7,20 +7,32 @@ import { Link } from "react-router-dom";
 interface AISample {
   id: string;
   mode: string;
-  beforeImage: string;
-  afterImage: string;
+  type: 'image' | 'video';
+  beforeImage?: string;
+  afterImage?: string;
+  beforeVideo?: string;
+  afterVideo?: string;
 }
 
 const aiSamples: AISample[] = [
   {
     id: "1",
     mode: "Sketch Mode",
+    type: 'image',
     beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-before.png",
     afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-after.jpg?v=2",
   },
   {
     id: "2",
+    mode: "Video Generation",
+    type: 'video',
+    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/3/video-rotating.jpg",
+    afterVideo: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/3/video-rotating.mp4",
+  },
+  {
+    id: "3",
     mode: "Artistic Render",
+    type: 'image',
     beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg?v=2",
     afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg?v=2",
   },
@@ -156,14 +168,25 @@ export const AIShowcaseSection = () => {
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
           >
-            {/* Before image */}
-            <img
-              src={currentSample.beforeImage}
-              alt="Original design"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+            {/* Before image/video */}
+            {currentSample.beforeVideo ? (
+              <video
+                src={currentSample.beforeVideo}
+                className="absolute inset-0 w-full h-full object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
+            ) : (
+              <img
+                src={currentSample.beforeImage}
+                alt="Original design"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            )}
 
-            {/* After image with reveal animation */}
+            {/* After image/video with reveal animation */}
             <div
               className="absolute inset-0 transition-all duration-[1500ms] ease-out"
               style={{
@@ -172,11 +195,22 @@ export const AIShowcaseSection = () => {
                   : "inset(0 0 0 100%)",
               }}
             >
-              <img
-                src={currentSample.afterImage}
-                alt="AI transformed design"
-                className="w-full h-full object-cover"
-              />
+              {currentSample.afterVideo ? (
+                <video
+                  src={currentSample.afterVideo}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+              ) : (
+                <img
+                  src={currentSample.afterImage}
+                  alt="AI transformed design"
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
 
             {/* Reveal line indicator */}
