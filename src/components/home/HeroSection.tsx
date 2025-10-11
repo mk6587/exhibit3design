@@ -108,7 +108,7 @@ export const HeroSection = () => {
           
           <div className="flex justify-center">
             <Button asChild size="lg" variant="outline" className="bg-purple-600/40 text-white border-purple-400/70 hover:bg-purple-600/50">
-              <Link to="/pricing">Create with AI Now</Link>
+              <a href="https://ai.exhibit3design.com/?service=rotate-360" target="_blank" rel="noopener noreferrer">Create with AI Now</a>
             </Button>
           </div>
           {!hasVideo && (
