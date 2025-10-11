@@ -242,7 +242,7 @@ export const AIShowcaseSection = () => {
           </div>
 
           {/* Sample indicators */}
-          <div className="flex justify-center gap-1.5 mt-4 md:mt-6">
+          <div className="flex justify-center gap-2 mt-4 md:mt-6">
             {aiSamples.map((_, index) => (
               <button
                 key={index}
@@ -250,10 +250,10 @@ export const AIShowcaseSection = () => {
                   setIsRevealing(false);
                   setTimeout(() => setCurrentIndex(index), 300);
                 }}
-                className={`h-1 rounded-full transition-all ${
+                className={`rounded-full transition-all ${
                   index === currentIndex
-                    ? "w-4 bg-primary"
-                    : "w-1 bg-muted-foreground/40 hover:bg-muted-foreground/60"
+                    ? "h-2 w-2 bg-primary scale-125"
+                    : "h-2 w-2 bg-muted-foreground/40 hover:bg-muted-foreground/60"
                 }`}
                 aria-label={`View sample ${index + 1}`}
               />
