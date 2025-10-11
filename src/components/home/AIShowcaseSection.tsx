@@ -286,7 +286,7 @@ export const AIShowcaseSection = () => {
                 }}
                 className={`rounded-full transition-all ${
                   index === currentIndex
-                    ? "h-2 w-2 bg-primary scale-125"
+                    ? "h-2.5 w-2.5 bg-primary"
                     : "h-2 w-2 bg-muted-foreground/40 hover:bg-muted-foreground/60"
                 }`}
                 aria-label={`View sample ${index + 1}`}
