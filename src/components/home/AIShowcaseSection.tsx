@@ -284,7 +284,7 @@ export const AIShowcaseSection = () => {
                   setIsRevealing(false);
                   setTimeout(() => setCurrentIndex(index), 300);
                 }}
-                className={`rounded-full transition-all ${
+                className={`rounded-full transition-all flex-shrink-0 ${
                   index === currentIndex
                     ? "h-2.5 w-2.5 bg-primary"
                     : "h-2 w-2 bg-muted-foreground/40 hover:bg-muted-foreground/60"
