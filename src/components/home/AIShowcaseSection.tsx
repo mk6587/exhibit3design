@@ -79,22 +79,23 @@ export const AIShowcaseSection = () => {
     if (isHovered) return;
 
     const interval = setInterval(() => {
-      // Change image immediately, then reset reveal state
       setCurrentIndex((prev) => (prev + 1) % aiSamples.length);
       setIsRevealing(false);
-    }, 8000); // Slower: 8 seconds instead of 5
+    }, 8000);
 
     return () => clearInterval(interval);
   }, [isHovered]);
 
-  // Auto-reveal animation
+  // Auto-reveal animation (only when not hovered)
   useEffect(() => {
+    if (isHovered) return;
+
     const timer = setTimeout(() => {
       setIsRevealing(true);
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [currentIndex]);
+  }, [currentIndex, isHovered]);
 
   const handlePrevious = () => {
     setIsRevealing(false);
@@ -165,14 +166,8 @@ export const AIShowcaseSection = () => {
           {/* Before/After container */}
           <div 
             className="relative aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden shadow-2xl group"
-            onMouseEnter={() => {
-              setIsHovered(true);
-              setIsRevealing(true);
-            }}
-            onMouseLeave={() => {
-              setIsHovered(false);
-              setIsRevealing(false);
-            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
@@ -199,7 +194,7 @@ export const AIShowcaseSection = () => {
             <div
               className="absolute inset-0 transition-all duration-[1500ms] ease-out"
               style={{
-                clipPath: isRevealing
+                clipPath: isHovered || isRevealing
                   ? "inset(0 0 0 0)"
                   : "inset(0 0 0 100%)",
               }}
@@ -226,7 +221,7 @@ export const AIShowcaseSection = () => {
             <div
               className="absolute top-0 bottom-0 w-0.5 md:w-1 bg-gradient-to-b from-transparent via-white to-transparent transition-all duration-[1500ms] ease-out opacity-70"
               style={{
-                left: isRevealing ? "100%" : "0%",
+                left: isHovered || isRevealing ? "100%" : "0%",
               }}
             />
 
@@ -234,8 +229,8 @@ export const AIShowcaseSection = () => {
             <div 
               className="absolute bottom-3 md:bottom-6 left-3 md:left-6 transition-opacity duration-700 ease-in-out"
               style={{ 
-                opacity: isRevealing ? 0 : 1,
-                transitionDelay: isRevealing ? '0ms' : '300ms'
+                opacity: (isHovered || isRevealing) ? 0 : 1,
+                transitionDelay: (isHovered || isRevealing) ? '0ms' : '300ms'
               }}
             >
               <Badge variant="secondary" className="backdrop-blur-sm bg-black/50 text-white border-0 text-xs md:text-sm">
@@ -245,8 +240,8 @@ export const AIShowcaseSection = () => {
             <div 
               className="absolute bottom-3 md:bottom-6 right-3 md:right-6 transition-opacity duration-700 ease-in-out"
               style={{ 
-                opacity: isRevealing ? 1 : 0,
-                transitionDelay: isRevealing ? '300ms' : '0ms'
+                opacity: (isHovered || isRevealing) ? 1 : 0,
+                transitionDelay: (isHovered || isRevealing) ? '300ms' : '0ms'
               }}
             >
               <Badge 
