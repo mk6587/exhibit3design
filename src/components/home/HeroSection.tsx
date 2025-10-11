@@ -89,17 +89,26 @@ export const HeroSection = () => {
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center text-white px-4">
           <h1 
-            className="text-2xl md:text-3xl font-bold mb-4" 
+            className="text-2xl md:text-3xl font-bold mb-2" 
             style={{
               textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6)'
             }}
           >
-            Design Faster with Ready-Made Files & AI
+            Your design can spin like this — in one click.
           </h1>
+          
+          <p 
+            className="text-base md:text-lg font-normal mb-6" 
+            style={{
+              textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6)'
+            }}
+          >
+            Show clients your stand in motion, instantly.
+          </p>
           
           <div className="flex justify-center">
             <Button asChild size="lg" variant="outline" className="bg-purple-600/40 text-white border-purple-400/70 hover:bg-purple-600/50">
-              <Link to="/pricing">Try AI Studio Now</Link>
+              <Link to="/pricing">Create Now</Link>
             </Button>
           </div>
           {!hasVideo && (
