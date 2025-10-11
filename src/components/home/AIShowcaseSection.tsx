@@ -53,10 +53,9 @@ export const AIShowcaseSection = () => {
     if (isHovered) return;
 
     const interval = setInterval(() => {
+      // Change image immediately, then reset reveal state
+      setCurrentIndex((prev) => (prev + 1) % aiSamples.length);
       setIsRevealing(false);
-      setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % aiSamples.length);
-      }, 500);
     }, 8000); // Slower: 8 seconds instead of 5
 
     return () => clearInterval(interval);
