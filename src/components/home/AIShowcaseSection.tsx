@@ -1,176 +1,208 @@
-import { useState } from "react";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Wand2, Zap, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+
 interface AISample {
   id: string;
-  title: string;
-  category: string;
-  type: 'image' | 'video';
-  beforeImage?: string;
-  afterImage?: string;
-  beforeVideo?: string;
-  afterVideo?: string;
-  prompt: string;
+  mode: string;
+  beforeImage: string;
+  afterImage: string;
 }
 
-// Sample data - will be replaced with real data from database
-const aiSamples: AISample[] = [{
-  id: "1",
-  title: "Sketch Transformation",
-  category: "Image Artistic Mode",
-  type: 'image',
-  beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-before.png",
-  afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-after.jpg?v=2",
-  prompt: "convert this photo into a detailed pencil sketch with artistic shading"
-}, {
-  id: "2",
-  title: "Video Generation",
-  category: "AI Video Creation",
-  type: 'video',
-  beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/3/video-rotating.jpg",
-  afterVideo: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/3/video-rotating.mp4",
-  prompt: "create a cinematic video with smooth camera movement"
-}, {
-  id: "3",
-  title: "Portrait Enhancement",
-  category: "Image Magic Edit",
-  type: 'image',
-  beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg?v=2",
-  afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg?v=2",
-  prompt: "straighten her hair and change her sweater to a green t-shirt"
-}];
+const aiSamples: AISample[] = [
+  {
+    id: "1",
+    mode: "Sketch Mode",
+    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-before.png",
+    afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-after.jpg?v=2",
+  },
+  {
+    id: "2",
+    mode: "Artistic Render",
+    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg?v=2",
+    afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg?v=2",
+  },
+];
+
+const benefits = [
+  {
+    icon: Zap,
+    text: "Instant AI transformation",
+  },
+  {
+    icon: Wand2,
+    text: "No design experience needed",
+  },
+  {
+    icon: CheckCircle2,
+    text: "Presentation-ready results",
+  },
+];
+
 export const AIShowcaseSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [showAfter, setShowAfter] = useState(false);
+  const [isRevealing, setIsRevealing] = useState(false);
+
   const currentSample = aiSamples[currentIndex];
-  const nextSlide = () => {
-    setCurrentIndex(prev => (prev + 1) % aiSamples.length);
-    setShowAfter(false);
-  };
-  const prevSlide = () => {
-    setCurrentIndex(prev => (prev - 1 + aiSamples.length) % aiSamples.length);
-    setShowAfter(false);
-  };
-  return <section className="py-8 md:py-12 bg-gradient-to-b from-background to-muted/20">
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-3">
-            <Sparkles className="h-4 w-4" />
-            <span className="text-sm font-medium">AI-Powered Editing</span>
-          </div>
-          <h2 className="text-2xl md:text-3xl font-bold mb-2">
-            AI Transforms Your Designs
+
+  // Auto-cycle through samples
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsRevealing(false);
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % aiSamples.length);
+      }, 500);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Auto-reveal animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsRevealing(true);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [currentIndex]);
+
+  return (
+    <section className="py-16 md:py-24 bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-grid-white/5 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+      
+      <div className="container mx-auto px-4 relative z-10">
+        {/* Header */}
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            AI Transforms Your Designs — Instantly.
           </h2>
-          <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
-            Instantly customize exhibition stands with simple text prompts. No design skills needed.
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+            See how your stand changes style with one click. No prompt needed.
           </p>
         </div>
-      </div>
 
-      <div className="container mx-auto px-4">
-        {/* Carousel */}
-        <Card className="overflow-hidden border-0">
-          <CardContent className="p-0">
-            <div className="grid md:grid-cols-[1.3fr_1fr]">
-              {/* Before/After Media */}
-              <div className="relative aspect-[16/10] bg-black overflow-hidden">
-                {showAfter && currentSample.afterVideo ? <video src={currentSample.afterVideo} className="w-full h-full object-cover" autoPlay loop muted playsInline /> : showAfter && currentSample.afterImage ? <img src={currentSample.afterImage} alt="After AI edit" className="w-full h-full object-cover transition-opacity duration-300" /> : !showAfter && currentSample.beforeImage ? <img src={currentSample.beforeImage} alt="Before AI edit" className="w-full h-full object-cover transition-opacity duration-300" /> : <video src={currentSample.beforeVideo} className="w-full h-full object-cover" autoPlay loop muted playsInline />}
-                <Badge className="absolute bottom-4 left-4 text-sm font-semibold" variant={showAfter ? "default" : "secondary"}>
-                  {showAfter ? "After" : "Before"}
-                </Badge>
-              </div>
+        {/* Main transformation display */}
+        <div className="max-w-5xl mx-auto mb-12">
+          {/* Mode badge */}
+          <div className="flex justify-center mb-4">
+            <Badge 
+              variant="outline" 
+              className="px-4 py-2 text-sm font-medium border-primary/50 bg-primary/5"
+            >
+              {currentSample.mode}
+            </Badge>
+          </div>
 
-              {/* Info Panel */}
-              <div className="p-4 flex flex-col justify-between bg-card">
-                <div>
-                  <Badge variant="outline" className="mb-2 text-xs">
-                    {currentSample.category}
-                  </Badge>
-                  <h3 className="text-lg font-bold mb-2">
-                    {currentSample.title}
-                  </h3>
-                  
-                  {/* Prompt Display */}
-                  <div className="mb-3">
-                    <p className="text-xs text-muted-foreground mb-1">AI Prompt Used:</p>
-                    <div className="p-2 bg-muted/50 rounded-lg border">
-                      <p className="text-xs italic">"{currentSample.prompt}"</p>
-                    </div>
-                  </div>
+          {/* Before/After container */}
+          <div 
+            className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl group cursor-pointer"
+            onMouseEnter={() => setIsRevealing(true)}
+            onMouseLeave={() => setIsRevealing(false)}
+          >
+            {/* Before image */}
+            <img
+              src={currentSample.beforeImage}
+              alt="Original design"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
 
-                  {/* Features */}
-                  <div className="space-y-1 mb-3">
-                    <div className="flex items-center gap-2 text-xs">
-                      <Sparkles className="h-3.5 w-3.5 text-primary" />
-                      <span>Advanced AI-powered editing</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs">
-                      <Sparkles className="h-3.5 w-3.5 text-primary" />
-                      <span>Instant results in seconds</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs">
-                      <Sparkles className="h-3.5 w-3.5 text-primary" />
-                      <span>No design experience needed</span>
-                    </div>
-                  </div>
-                </div>
+            {/* After image with reveal animation */}
+            <div
+              className="absolute inset-0 transition-all duration-1000 ease-out"
+              style={{
+                clipPath: isRevealing
+                  ? "inset(0 0 0 0)"
+                  : "inset(0 0 0 100%)",
+              }}
+            >
+              <img
+                src={currentSample.afterImage}
+                alt="AI transformed design"
+                className="w-full h-full object-cover"
+              />
+            </div>
 
-                {/* Navigation & CTA */}
-                <div className="space-y-2">
-                  {/* Carousel Navigation */}
-                  <div className="flex items-center justify-center gap-2">
-                    <Button onClick={prevSlide} variant="outline" size="icon" className="h-8 w-8 flex-shrink-0">
-                      <ChevronLeft className="h-3 w-3" />
-                    </Button>
-                    
-                    <div className="flex gap-1.5 items-center min-w-[60px] justify-center">
-                      {aiSamples.map((_, index) => <button key={index} onClick={() => {
-                      setCurrentIndex(index);
-                      setShowAfter(false);
-                    }} className={`h-1 rounded-full transition-all flex-shrink-0 ${index === currentIndex ? "w-5 bg-primary" : "w-1 bg-muted-foreground/30"}`} aria-label={`Go to sample ${index + 1}`} />)}
-                    </div>
+            {/* Reveal line indicator */}
+            <div
+              className="absolute top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-white to-transparent transition-all duration-1000 ease-out opacity-70"
+              style={{
+                left: isRevealing ? "100%" : "0%",
+              }}
+            />
 
-                    <Button onClick={nextSlide} variant="outline" size="icon" className="h-8 w-8 flex-shrink-0">
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </div>
+            {/* Labels */}
+            <div className="absolute bottom-6 left-6">
+              <Badge variant="secondary" className="backdrop-blur-sm bg-black/50 text-white border-0">
+                Original
+              </Badge>
+            </div>
+            <div className="absolute bottom-6 right-6">
+              <Badge 
+                className="backdrop-blur-sm border-0 transition-opacity duration-300"
+                style={{ backgroundColor: "#8E44FF", opacity: isRevealing ? 1 : 0 }}
+              >
+                AI Result
+              </Badge>
+            </div>
+
+            {/* Hover instruction */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <div className="bg-black/70 backdrop-blur-sm px-6 py-3 rounded-full text-white text-sm font-medium">
+                Hover to reveal transformation
               </div>
             </div>
-            
-            {/* Buttons Row - Aligned */}
-            <div className="grid md:grid-cols-[1.3fr_1fr] border-t">
-              <div className="flex justify-center py-3">
-                <Button onClick={() => setShowAfter(!showAfter)} variant="secondary" size="default">
-                  {showAfter ? "Show Before" : "Show After"}
-                </Button>
-              </div>
-              <div className="p-3 bg-card space-y-2">
-                <Button asChild className="w-full" size="default">
-                  <Link to="/pricing">
-                    Try AI for Free
-                  </Link>
-                </Button>
-                <p className="text-center text-[10px] text-muted-foreground">
-                  Get 5 free AI tokens to explore
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
 
-      <div className="container mx-auto px-4">
-        {/* Bottom Badge */}
-        <div className="text-center mt-4">
-          <p className="text-xs text-muted-foreground">
-            Powered by cutting-edge AI technology
-          </p>
+          {/* Sample indicators */}
+          <div className="flex justify-center gap-2 mt-6">
+            {aiSamples.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setIsRevealing(false);
+                  setCurrentIndex(index);
+                }}
+                className={`h-2 rounded-full transition-all ${
+                  index === currentIndex
+                    ? "w-8 bg-primary"
+                    : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                }`}
+                aria-label={`View sample ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Benefits */}
+        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+          {benefits.map((benefit, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-center text-center p-6 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-colors"
+            >
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <benefit.icon className="h-6 w-6 text-primary" />
+              </div>
+              <p className="text-sm font-medium">{benefit.text}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA Button */}
+        <div className="flex justify-center">
+          <Button
+            asChild
+            size="lg"
+            className="px-8 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+            style={{ backgroundColor: "#8E44FF" }}
+          >
+            <Link to="/pricing">Create with AI Now</Link>
+          </Button>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
