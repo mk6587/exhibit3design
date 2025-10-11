@@ -45,8 +45,13 @@ export const AIShowcaseSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRevealing, setIsRevealing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
 
   const currentSample = aiSamples[currentIndex];
+
+  // Minimum swipe distance (in px) to trigger slide change
+  const minSwipeDistance = 50;
 
   // Auto-cycle through samples (pauses on hover)
   useEffect(() => {
@@ -82,6 +87,30 @@ export const AIShowcaseSection = () => {
     setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % aiSamples.length);
     }, 300);
+  };
+
+  // Touch handlers for swipe
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(0); // Reset
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      handleNext();
+    } else if (isRightSwipe) {
+      handlePrevious();
+    }
   };
 
   return (
@@ -123,6 +152,9 @@ export const AIShowcaseSection = () => {
               setIsHovered(false);
               setIsRevealing(false);
             }}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
           >
             {/* Before image */}
             <img
