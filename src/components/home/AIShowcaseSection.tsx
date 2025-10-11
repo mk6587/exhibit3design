@@ -36,6 +36,13 @@ const aiSamples: AISample[] = [
     beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg?v=2",
     afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg?v=2",
   },
+  {
+    id: "4",
+    mode: "360° Walkthrough",
+    type: 'video',
+    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/4/walkthrough-before.png",
+    afterVideo: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/4/walkthrough-video-after.mp4",
+  },
 ];
 
 const benefits = [
