@@ -69,7 +69,7 @@ export const AIShowcaseSection = () => {
   const { navigateToProtectedLink } = useProtectedExternalLink();
 
   const currentSample = aiSamples[currentIndex];
-  const pricingUrl = "https://ai.exhibit3design.com/?service=rotate-360";
+  const pricingUrl = "https://ai.exhibit3design.com/";
 
   // Minimum swipe distance (in px) to trigger slide change
   const minSwipeDistance = 50;
