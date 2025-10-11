@@ -11,9 +11,9 @@ export const FeaturedProductsGrid = () => {
     return (
       <section className="py-6 md:py-12 px-0 md:px-4">
         <div className="w-full md:container md:mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">
-            Featured Products
-          </h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">
+          Featured Designs
+        </h2>
           
           <div className="px-4 md:px-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -37,7 +37,7 @@ export const FeaturedProductsGrid = () => {
     <section className="py-6 md:py-12 px-0 md:px-4">
       <div className="w-full md:container md:mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">
-          Featured Products
+          Featured Designs
         </h2>
         
         <div className="px-4 md:px-0">
