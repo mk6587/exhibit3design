@@ -184,21 +184,21 @@ export const AIShowcaseSection = () => {
 
             {/* Navigation arrows */}
             <Button
-              variant="secondary"
+              variant="ghost"
               size="icon"
-              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 md:h-10 md:w-10"
+              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity h-9 w-9 md:h-11 md:w-11 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20"
               onClick={handlePrevious}
             >
-              <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
+              <ChevronLeft className="h-5 w-5 md:h-6 md:w-6 text-white" />
             </Button>
             
             <Button
-              variant="secondary"
+              variant="ghost"
               size="icon"
-              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 md:h-10 md:w-10"
+              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity h-9 w-9 md:h-11 md:w-11 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20"
               onClick={handleNext}
             >
-              <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
+              <ChevronRight className="h-5 w-5 md:h-6 md:w-6 text-white" />
             </Button>
 
             {/* Hover instruction - desktop only */}
