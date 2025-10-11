@@ -158,16 +158,22 @@ export const AIShowcaseSection = () => {
 
             {/* Labels */}
             <div 
-              className="absolute bottom-3 md:bottom-6 left-3 md:left-6 transition-opacity duration-500"
-              style={{ opacity: isRevealing ? 0 : 1 }}
+              className="absolute bottom-3 md:bottom-6 left-3 md:left-6 transition-opacity duration-700 ease-in-out"
+              style={{ 
+                opacity: isRevealing ? 0 : 1,
+                transitionDelay: isRevealing ? '0ms' : '300ms'
+              }}
             >
               <Badge variant="secondary" className="backdrop-blur-sm bg-black/50 text-white border-0 text-xs md:text-sm">
                 Original
               </Badge>
             </div>
             <div 
-              className="absolute bottom-3 md:bottom-6 right-3 md:right-6 transition-opacity duration-500"
-              style={{ opacity: isRevealing ? 1 : 0 }}
+              className="absolute bottom-3 md:bottom-6 right-3 md:right-6 transition-opacity duration-700 ease-in-out"
+              style={{ 
+                opacity: isRevealing ? 1 : 0,
+                transitionDelay: isRevealing ? '300ms' : '0ms'
+              }}
             >
               <Badge 
                 className="backdrop-blur-sm border-0 text-xs md:text-sm text-white"
