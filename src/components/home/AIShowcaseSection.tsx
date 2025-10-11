@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Wand2, Zap, CheckCircle2 } from "lucide-react";
+import { Wand2, Zap, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
@@ -44,29 +44,46 @@ const benefits = [
 export const AIShowcaseSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRevealing, setIsRevealing] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const currentSample = aiSamples[currentIndex];
 
-  // Auto-cycle through samples
+  // Auto-cycle through samples (pauses on hover)
   useEffect(() => {
+    if (isHovered) return;
+
     const interval = setInterval(() => {
       setIsRevealing(false);
       setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % aiSamples.length);
       }, 500);
-    }, 5000);
+    }, 8000); // Slower: 8 seconds instead of 5
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isHovered]);
 
   // Auto-reveal animation
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsRevealing(true);
-    }, 800);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [currentIndex]);
+
+  const handlePrevious = () => {
+    setIsRevealing(false);
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev - 1 + aiSamples.length) % aiSamples.length);
+    }, 300);
+  };
+
+  const handleNext = () => {
+    setIsRevealing(false);
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev + 1) % aiSamples.length);
+    }, 300);
+  };
 
   return (
     <section className="py-16 md:py-24 bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden">
@@ -75,22 +92,22 @@ export const AIShowcaseSection = () => {
       
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+        <div className="text-center mb-8 md:mb-16">
+          <h2 className="text-2xl md:text-5xl font-bold mb-2 md:mb-4 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
             AI Transforms Your Designs — Instantly.
           </h2>
-          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto">
             See how your stand changes style with one click. No prompt needed.
           </p>
         </div>
 
         {/* Main transformation display */}
-        <div className="max-w-5xl mx-auto mb-12">
+        <div className="max-w-5xl mx-auto mb-8 md:mb-12">
           {/* Mode badge */}
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-3 md:mb-4">
             <Badge 
               variant="outline" 
-              className="px-4 py-2 text-sm font-medium border-primary/50 bg-primary/5"
+              className="px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm font-medium border-primary/50 bg-primary/5"
             >
               {currentSample.mode}
             </Badge>
@@ -98,9 +115,15 @@ export const AIShowcaseSection = () => {
 
           {/* Before/After container */}
           <div 
-            className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl group cursor-pointer"
-            onMouseEnter={() => setIsRevealing(true)}
-            onMouseLeave={() => setIsRevealing(false)}
+            className="relative aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden shadow-2xl group"
+            onMouseEnter={() => {
+              setIsHovered(true);
+              setIsRevealing(true);
+            }}
+            onMouseLeave={() => {
+              setIsHovered(false);
+              setIsRevealing(false);
+            }}
           >
             {/* Before image */}
             <img
@@ -111,7 +134,7 @@ export const AIShowcaseSection = () => {
 
             {/* After image with reveal animation */}
             <div
-              className="absolute inset-0 transition-all duration-1000 ease-out"
+              className="absolute inset-0 transition-all duration-[1500ms] ease-out"
               style={{
                 clipPath: isRevealing
                   ? "inset(0 0 0 0)"
@@ -127,48 +150,73 @@ export const AIShowcaseSection = () => {
 
             {/* Reveal line indicator */}
             <div
-              className="absolute top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-white to-transparent transition-all duration-1000 ease-out opacity-70"
+              className="absolute top-0 bottom-0 w-0.5 md:w-1 bg-gradient-to-b from-transparent via-white to-transparent transition-all duration-[1500ms] ease-out opacity-70"
               style={{
                 left: isRevealing ? "100%" : "0%",
               }}
             />
 
             {/* Labels */}
-            <div className="absolute bottom-6 left-6">
-              <Badge variant="secondary" className="backdrop-blur-sm bg-black/50 text-white border-0">
+            <div 
+              className="absolute bottom-3 md:bottom-6 left-3 md:left-6 transition-opacity duration-500"
+              style={{ opacity: isRevealing ? 0 : 1 }}
+            >
+              <Badge variant="secondary" className="backdrop-blur-sm bg-black/50 text-white border-0 text-xs md:text-sm">
                 Original
               </Badge>
             </div>
-            <div className="absolute bottom-6 right-6">
+            <div 
+              className="absolute bottom-3 md:bottom-6 right-3 md:right-6 transition-opacity duration-500"
+              style={{ opacity: isRevealing ? 1 : 0 }}
+            >
               <Badge 
-                className="backdrop-blur-sm border-0 transition-opacity duration-300"
-                style={{ backgroundColor: "#8E44FF", opacity: isRevealing ? 1 : 0 }}
+                className="backdrop-blur-sm border-0 text-xs md:text-sm text-white"
+                style={{ backgroundColor: "#8E44FF" }}
               >
                 AI Result
               </Badge>
             </div>
 
-            {/* Hover instruction */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            {/* Navigation arrows */}
+            <Button
+              variant="secondary"
+              size="icon"
+              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 md:h-10 md:w-10"
+              onClick={handlePrevious}
+            >
+              <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+            
+            <Button
+              variant="secondary"
+              size="icon"
+              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 md:h-10 md:w-10"
+              onClick={handleNext}
+            >
+              <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+
+            {/* Hover instruction - desktop only */}
+            <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
               <div className="bg-black/70 backdrop-blur-sm px-6 py-3 rounded-full text-white text-sm font-medium">
-                Hover to reveal transformation
+                Hover to reveal • Use arrows to navigate
               </div>
             </div>
           </div>
 
           {/* Sample indicators */}
-          <div className="flex justify-center gap-2 mt-6">
+          <div className="flex justify-center gap-2 mt-4 md:mt-6">
             {aiSamples.map((_, index) => (
               <button
                 key={index}
                 onClick={() => {
                   setIsRevealing(false);
-                  setCurrentIndex(index);
+                  setTimeout(() => setCurrentIndex(index), 300);
                 }}
-                className={`h-2 rounded-full transition-all ${
+                className={`h-1.5 md:h-2 rounded-full transition-all ${
                   index === currentIndex
-                    ? "w-8 bg-primary"
-                    : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                    ? "w-6 md:w-8 bg-primary"
+                    : "w-1.5 md:w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
                 }`}
                 aria-label={`View sample ${index + 1}`}
               />
@@ -176,17 +224,27 @@ export const AIShowcaseSection = () => {
           </div>
         </div>
 
-        {/* Benefits */}
-        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+        {/* Benefits - Hidden on mobile, compact on desktop */}
+        <div className="hidden md:grid md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-12">
           {benefits.map((benefit, index) => (
             <div
               key={index}
-              className="flex flex-col items-center text-center p-6 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-colors"
+              className="flex flex-col items-center text-center p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-colors"
             >
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <benefit.icon className="h-6 w-6 text-primary" />
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                <benefit.icon className="h-5 w-5 text-primary" />
               </div>
-              <p className="text-sm font-medium">{benefit.text}</p>
+              <p className="text-xs font-medium">{benefit.text}</p>
+            </div>
+          ))}
+        </div>
+        
+        {/* Mobile benefits - ultra compact */}
+        <div className="md:hidden flex justify-center gap-6 mb-8 px-4">
+          {benefits.map((benefit, index) => (
+            <div key={index} className="flex flex-col items-center gap-1">
+              <benefit.icon className="h-4 w-4 text-primary" />
+              <p className="text-[10px] text-center max-w-[70px] leading-tight">{benefit.text}</p>
             </div>
           ))}
         </div>
@@ -196,7 +254,7 @@ export const AIShowcaseSection = () => {
           <Button
             asChild
             size="lg"
-            className="px-8 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+            className="px-6 py-5 md:px-8 md:py-6 text-sm md:text-base font-semibold shadow-lg hover:shadow-xl transition-all"
             style={{ backgroundColor: "#8E44FF" }}
           >
             <Link to="/pricing">Create with AI Now</Link>
