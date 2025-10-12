@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.generate-ai-token]
 verify_jwt = false
+
+[functions.activate-subscription]
+verify_jwt = true

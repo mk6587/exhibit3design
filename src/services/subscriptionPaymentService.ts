@@ -80,68 +80,36 @@ const createPendingSubscriptionOrder = async (
 };
 
 // Activate subscription after successful payment
+// SECURITY: Uses secure edge function with service role credentials
 export const activateSubscription = async (
   orderNumber: string,
   planId: string
 ) => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("User not authenticated");
+    console.log("🔐 Activating subscription via secure edge function...");
+    
+    // Call secure edge function that uses service role credentials
+    const { data, error } = await supabase.functions.invoke('activate-subscription', {
+      body: { 
+        orderNumber,
+        planId 
+      }
+    });
 
-    // Get plan details
-    const { data: plan, error: planError } = await supabase
-      .from('subscription_plans')
-      .select('*')
-      .eq('id', planId)
-      .single();
-
-    if (planError || !plan) {
-      throw new Error("Invalid subscription plan");
+    if (error) {
+      console.error("❌ Subscription activation failed:", error);
+      throw new Error(error.message || "Failed to activate subscription");
     }
 
-    // Calculate subscription period
-    const now = new Date();
-    const periodEnd = new Date(now);
-    if (plan.billing_period === 'monthly') {
-      periodEnd.setMonth(periodEnd.getMonth() + 1);
-    } else {
-      periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+    if (!data?.success) {
+      console.error("❌ Subscription activation returned failure:", data);
+      throw new Error(data?.error || "Failed to activate subscription");
     }
 
-    // Create or update subscription
-    const { error: subError } = await supabase
-      .from('user_subscriptions')
-      .upsert({
-        user_id: user.id,
-        plan_id: planId,
-        status: 'active',
-        current_period_start: now.toISOString(),
-        current_period_end: periodEnd.toISOString(),
-        cancel_at_period_end: false
-      });
-
-    if (subError) {
-      console.error("Failed to create subscription:", subError);
-      throw new Error("Failed to activate subscription");
-    }
-
-    // Grant AI tokens to profile
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .update({
-        ai_tokens_balance: plan.initial_ai_tokens,
-        ai_tokens_limit: plan.initial_ai_tokens,
-        video_results_balance: plan.video_results
-      })
-      .eq('user_id', user.id);
-
-    if (profileError) {
-      console.error("Failed to grant tokens:", profileError);
-    }
-
-    return { success: true };
+    console.log("✅ Subscription activated successfully:", data);
+    return { success: true, data };
   } catch (error) {
-    console.error("Error activating subscription:", error);
+    console.error("❌ Error activating subscription:", error);
     throw error;
   }
 };

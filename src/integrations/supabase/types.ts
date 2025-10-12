@@ -364,6 +364,45 @@ export type Database = {
         }
         Relationships: []
       }
+      token_audit_log: {
+        Row: {
+          action: string
+          amount: number
+          balance_after: number
+          balance_before: number
+          created_at: string
+          id: string
+          metadata: Json | null
+          source: string
+          token_type: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          amount: number
+          balance_after: number
+          balance_before: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          source: string
+          token_type: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          amount?: number
+          balance_after?: number
+          balance_before?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          source?: string
+          token_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -481,6 +520,16 @@ export type Database = {
         Args: { p_amount: number; p_user_id: string }
         Returns: boolean
       }
+      deduct_tokens_atomic: {
+        Args: {
+          p_amount: number
+          p_metadata?: Json
+          p_source?: string
+          p_token_type: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       deduct_video_results: {
         Args: { p_count: number; p_user_id: string }
         Returns: boolean
@@ -585,6 +634,16 @@ export type Database = {
       grant_free_tokens: {
         Args: { p_user_id: string }
         Returns: boolean
+      }
+      grant_tokens_atomic: {
+        Args: {
+          p_ai_tokens: number
+          p_metadata?: Json
+          p_source: string
+          p_user_id: string
+          p_video_results: number
+        }
+        Returns: Json
       }
       has_role: {
         Args: {

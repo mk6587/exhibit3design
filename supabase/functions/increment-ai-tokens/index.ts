@@ -46,63 +46,58 @@ serve(async (req) => {
       );
     }
 
-    // Increment user's AI token usage
+    // Use atomic token deduction to prevent race conditions
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // First, get current balance and usage
-    const { data: currentProfile, error: fetchError } = await supabase
-      .from('profiles')
-      .select('ai_tokens_used, ai_tokens_balance')
-      .eq('user_id', userId)
-      .single();
+    // Atomically deduct 1 AI token with race condition prevention
+    const { data: result, error: deductError } = await supabase
+      .rpc('deduct_tokens_atomic', {
+        p_user_id: userId,
+        p_token_type: 'ai_tokens',
+        p_amount: 1,
+        p_source: 'ai_studio',
+        p_metadata: { 
+          timestamp: new Date().toISOString(),
+          source_app: 'ai.exhibit3design.com'
+        }
+      });
 
-    if (fetchError) {
-      console.error('Error fetching profile:', fetchError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to fetch user data' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const currentUsage = currentProfile?.ai_tokens_used || 0;
-    const currentBalance = currentProfile?.ai_tokens_balance || 0;
-
-    // Check if user has tokens available
-    if (currentBalance <= 0) {
-      return new Response(
-        JSON.stringify({ 
-          error: 'No tokens remaining',
-          tokensUsed: currentUsage,
-          tokensRemaining: 0,
-          tokensBalance: 0
-        }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Increment usage and decrement balance
-    const { data: updatedProfile, error: updateError } = await supabase
-      .from('profiles')
-      .update({ 
-        ai_tokens_used: currentUsage + 1,
-        ai_tokens_balance: currentBalance - 1
-      })
-      .eq('user_id', userId)
-      .select('ai_tokens_used, ai_tokens_balance')
-      .single();
-
-    if (updateError) {
-      console.error('Error updating profile:', updateError);
+    if (deductError) {
+      console.error('Error deducting tokens:', deductError);
       return new Response(
         JSON.stringify({ error: 'Failed to update token usage' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const newUsage = updatedProfile.ai_tokens_used;
-    const tokensRemaining = updatedProfile.ai_tokens_balance;
+    // Check if deduction was successful
+    if (!result || !result.success) {
+      console.log('Insufficient token balance for user:', userId);
+      return new Response(
+        JSON.stringify({ 
+          error: result?.error || 'No tokens remaining',
+          message: result?.message || 'Insufficient AI tokens balance',
+          tokensRemaining: 0
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Get updated usage stats
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('ai_tokens_used, ai_tokens_balance')
+      .eq('user_id', userId)
+      .single();
+
+    if (profileError) {
+      console.error('Error fetching updated profile:', profileError);
+    }
+
+    const newUsage = profile?.ai_tokens_used || 0;
+    const tokensRemaining = result.balance || 0;
 
     return new Response(
       JSON.stringify({
