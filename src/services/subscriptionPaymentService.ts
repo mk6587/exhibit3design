@@ -153,13 +153,22 @@ export const initiateSubscriptionPayment = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
       },
       body: formData.toString()
     });
 
+    console.log("📡 Response status:", response.status);
+    console.log("📡 Response headers:", Object.fromEntries(response.headers.entries()));
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error("❌ Gateway error response:", errorText);
       throw new Error(`Payment gateway error: ${response.statusText}`);
     }
+
+    const contentType = response.headers.get('content-type');
+    console.log("📡 Content-Type:", contentType);
 
     const result = await response.json();
     console.log("📥 YekPay response:", result);
