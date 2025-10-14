@@ -21,7 +21,6 @@ const PaymentSuccessPage = () => {
   const status = searchParams.get('status');
   const authority = searchParams.get('authority');
   const reference = searchParams.get('ref');
-  const planId = searchParams.get('planId'); // For subscription payments
 
   useEffect(() => {
     const processSuccess = async () => {
@@ -34,12 +33,25 @@ const PaymentSuccessPage = () => {
       if (orderProcessed) return;
 
       try {
-        // Handle subscription payment success only
-        if (status === 'success' && orderNumber && planId) {
-          console.log('Processing subscription payment success', { orderNumber, authority, reference, planId });
+        // Handle subscription payment success
+        if (status === 'success' && orderNumber) {
+          console.log('Processing subscription payment success', { orderNumber, authority, reference });
           
           try {
-            console.log("Processing subscription payment...");
+            // Fetch the order to get the plan_id
+            const { data: orderData, error: orderError } = await supabase
+              .from('subscription_orders')
+              .select('plan_id')
+              .eq('order_number', orderNumber)
+              .single();
+
+            if (orderError || !orderData) {
+              throw new Error('Order not found');
+            }
+
+            const planId = orderData.plan_id;
+            console.log("Processing subscription payment with planId:", planId);
+
             await updateSubscriptionOrderStatus(orderNumber, 'completed', authority || undefined, reference || undefined);
             await activateSubscription(orderNumber, planId);
             toast.success("Subscription activated successfully!");

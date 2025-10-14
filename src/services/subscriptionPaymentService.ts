@@ -143,8 +143,7 @@ export const initiateSubscriptionPayment = async (
       postalCode: paymentData.customerInfo.postalCode,
       country: paymentData.customerInfo.country,
       city: paymentData.customerInfo.city,
-      description: `Subscription: ${paymentData.planName}`,
-      planId: paymentData.planId // Include planId for callback processing
+      description: `Subscription: ${paymentData.planName}`
     });
 
     console.log("🚀 Submitting to YekPay gateway...");
