@@ -130,22 +130,24 @@ export const initiateSubscriptionPayment = async (
     const order = await createPendingSubscriptionOrder(paymentData, orderNumber);
     console.log("✅ Pending subscription order created:", order);
 
-    // Prepare YekPay form data
+    // Prepare YekPay form data matching PHP script expectations
     const fields = {
-      fromCurrency: 'EUR',
-      toCurrency: 'IRR',
+      initiate_payment: '1', // Required by PHP script to trigger payment flow
       amount: paymentData.amount.toString(),
-      orderNumber: orderNumber,
-      callback: `${window.location.origin}/payment-success`,
-      firstName: paymentData.customerInfo.firstName,
-      lastName: paymentData.customerInfo.lastName,
+      order_number: orderNumber,
+      first_name: paymentData.customerInfo.firstName,
+      last_name: paymentData.customerInfo.lastName,
       email: paymentData.customerInfo.email,
       mobile: paymentData.customerInfo.mobile,
       address: paymentData.customerInfo.address,
-      postalCode: paymentData.customerInfo.postalCode,
+      postal_code: paymentData.customerInfo.postalCode,
       country: paymentData.customerInfo.country,
       city: paymentData.customerInfo.city,
-      description: `Subscription: ${paymentData.planName}`
+      description: `Subscription: ${paymentData.planName}`,
+      success_url: `${window.location.origin}/payment-success`,
+      cancel_url: `${window.location.origin}/payment-cancelled`,
+      failed_url: `${window.location.origin}/payment-failed`,
+      error_url: `${window.location.origin}/payment-error`
     };
 
     console.log("🚀 Submitting to YekPay gateway via form...");
