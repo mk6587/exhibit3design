@@ -146,39 +146,44 @@ export const initiateSubscriptionPayment = async (
       description: `Subscription: ${paymentData.planName}`
     });
 
-    console.log("🚀 Submitting to YekPay gateway...");
+    console.log("🚀 Submitting to YekPay gateway via form...");
 
-    // Submit to YekPay backend
-    const response = await fetch('https://pay.exhibit3design.com/yekpay.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json',
-      },
-      body: formData.toString()
+    // Create a form to submit to YekPay (handles 302 redirects properly)
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://pay.exhibit3design.com/yekpay.php';
+    form.style.display = 'none';
+
+    // Add all form fields
+    const fields = {
+      fromCurrency: 'EUR',
+      toCurrency: 'IRR',
+      amount: paymentData.amount.toString(),
+      orderNumber: orderNumber,
+      callback: `${window.location.origin}/payment-success`,
+      firstName: paymentData.customerInfo.firstName,
+      lastName: paymentData.customerInfo.lastName,
+      email: paymentData.customerInfo.email,
+      mobile: paymentData.customerInfo.mobile,
+      address: paymentData.customerInfo.address,
+      postalCode: paymentData.customerInfo.postalCode,
+      country: paymentData.customerInfo.country,
+      city: paymentData.customerInfo.city,
+      description: `Subscription: ${paymentData.planName}`
+    };
+
+    Object.entries(fields).forEach(([key, value]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
     });
 
-    console.log("📡 Response status:", response.status);
-    console.log("📡 Response headers:", Object.fromEntries(response.headers.entries()));
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("❌ Gateway error response:", errorText);
-      throw new Error(`Payment gateway error: ${response.statusText}`);
-    }
-
-    const contentType = response.headers.get('content-type');
-    console.log("📡 Content-Type:", contentType);
-
-    const result = await response.json();
-    console.log("📥 YekPay response:", result);
-
-    if (result.Code === 100 && result.Authority) {
-      console.log("✅ Payment authority received, redirecting...");
-      window.location.href = `https://gate.yekpay.com/${result.Authority}`;
-    } else {
-      throw new Error(result.Description || 'Payment initialization failed');
-    }
+    // Append form to body and submit
+    document.body.appendChild(form);
+    console.log("✅ Form created, submitting to YekPay...");
+    form.submit();
 
   } catch (error: any) {
     console.error("❌ Subscription payment error:", error);
