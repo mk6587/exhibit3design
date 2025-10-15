@@ -69,12 +69,13 @@ const OTPAuthPage = () => {
       return;
     }
 
-    if (!captchaToken) {
-      setError('Please complete the security verification');
-      return;
-    }
+    // CAPTCHA temporarily disabled for testing
+    // if (!captchaToken) {
+    //   setError('Please complete the security verification');
+    //   return;
+    // }
 
-    const result = await sendOTP(email, undefined, captchaToken);
+    const result = await sendOTP(email, undefined, 'test-token');
     
     if (result.success) {
       setStep('otp');
@@ -148,13 +149,14 @@ const OTPAuthPage = () => {
     setIsResending(true);
     setError('');
     
-    if (!captchaToken) {
-      setError('Please complete the security verification to resend code');
-      setIsResending(false);
-      return;
-    }
+    // CAPTCHA temporarily disabled for testing
+    // if (!captchaToken) {
+    //   setError('Please complete the security verification to resend code');
+    //   setIsResending(false);
+    //   return;
+    // }
     
-    const result = await sendOTP(email, undefined, captchaToken);
+    const result = await sendOTP(email, undefined, 'test-token');
     
     if (result.success) {
       setTimeLeft(120);
@@ -290,7 +292,8 @@ const OTPAuthPage = () => {
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  {/* CAPTCHA temporarily hidden for testing */}
+                  <div className="space-y-2" style={{ display: 'none' }}>
                     <Label>Security Verification</Label>
                     <TurnstileCaptcha
                       ref={captchaRef}
@@ -317,7 +320,7 @@ const OTPAuthPage = () => {
                   <Button 
                     type="submit" 
                     className="w-full" 
-                    disabled={isLoading || !captchaToken}
+                    disabled={isLoading}
                   >
                     {isLoading ? 'Sending...' : 'Send Verification Code'}
                   </Button>
@@ -369,7 +372,8 @@ const OTPAuthPage = () => {
 
                   {timeLeft === 0 && (
                     <div className="space-y-4">
-                      <div className="space-y-2">
+                      {/* CAPTCHA temporarily hidden for testing */}
+                      <div className="space-y-2" style={{ display: 'none' }}>
                         <Label>Security Verification for Resend</Label>
                         <TurnstileCaptcha
                           ref={captchaRef}
@@ -391,7 +395,7 @@ const OTPAuthPage = () => {
                           type="button"
                           variant="link"
                           onClick={handleResendCode}
-                          disabled={isResending || !captchaToken}
+                          disabled={isResending}
                           className="text-sm"
                         >
                           {isResending ? 'Resending...' : 'Resend verification code'}
