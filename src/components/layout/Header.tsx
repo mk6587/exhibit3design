@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { User, Menu, X, LogOut, Sparkles, Coins, Shield, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -18,10 +18,8 @@ const Header = () => {
     signOut
   } = useAuth();
   const { isAdmin } = useAdmin();
-  const location = useLocation();
   // Removed cartItems - using subscription model now
   const navigate = useNavigate();
-  const isAuthPage = location.pathname === '/auth';
 
   // Get token balances from profile
   const aiTokens = profile?.ai_tokens_balance || 0;
@@ -85,15 +83,9 @@ const Header = () => {
   };
   return <header className="bg-background border-b border-border fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between min-h-16">
-        {isAuthPage ? (
-          <div className="font-bold text-lg sm:text-xl text-primary shrink-0 flex items-center h-full">
-            Login / Register
-          </div>
-        ) : (
-          <Link to="/" className="font-bold text-lg sm:text-xl text-primary shrink-0 flex items-center h-full">
-            Exhibit3Design
-          </Link>
-        )}
+        <Link to="/" className="font-bold text-lg sm:text-xl text-primary shrink-0 flex items-center h-full">
+          Exhibit3Design
+        </Link>
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6 h-full">
