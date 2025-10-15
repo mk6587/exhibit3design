@@ -627,8 +627,10 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: {
           ai_tokens: number
+          ai_tokens_limit: number
           free_tokens_claimed: boolean
           video_results: number
+          video_results_limit: number
         }[]
       }
       grant_free_tokens: {

@@ -24,6 +24,8 @@ interface TokenBalance {
   ai_tokens: number;
   video_results: number;
   free_tokens_claimed: boolean;
+  ai_tokens_limit: number;
+  video_results_limit: number;
 }
 
 export function SubscriptionPanel() {
@@ -98,7 +100,7 @@ export function SubscriptionPanel() {
                     <Zap className="h-5 w-5 text-primary" />
                     <p className="text-sm font-medium">AI Image Edits</p>
                   </div>
-                  <p className="text-3xl font-bold text-primary">{tokenBalance.ai_tokens}/5 remaining</p>
+                  <p className="text-3xl font-bold text-primary">{tokenBalance.ai_tokens}/{tokenBalance.ai_tokens_limit} remaining</p>
                   <p className="text-xs text-muted-foreground mt-1">Free tokens</p>
                 </div>
                 <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
@@ -106,7 +108,7 @@ export function SubscriptionPanel() {
                     <Video className="h-5 w-5 text-primary" />
                     <p className="text-sm font-medium">AI Video Results</p>
                   </div>
-                  <p className="text-3xl font-bold text-primary">{tokenBalance.video_results}/0 remaining</p>
+                  <p className="text-3xl font-bold text-primary">{tokenBalance.video_results}/{tokenBalance.video_results_limit} remaining</p>
                   <p className="text-xs text-muted-foreground mt-1">Free tokens</p>
                 </div>
               </div>
