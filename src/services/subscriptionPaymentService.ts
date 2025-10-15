@@ -23,11 +23,40 @@ interface SubscriptionPaymentRequest {
   customerInfo: SubscriptionCustomerInfo;
 }
 
-// Generate unique subscription order number
-const generateSubscriptionOrderNumber = (): string => {
-  const timestamp = Date.now();
-  const random = Math.floor(Math.random() * 9999) + 1000;
-  return `SUB-${timestamp}-${random}`;
+// Generate unique subscription order number with collision check
+const generateSubscriptionOrderNumber = async (): Promise<string> => {
+  let orderNumber: string;
+  let attempts = 0;
+  const maxAttempts = 5;
+  
+  while (attempts < maxAttempts) {
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 999999) + 100000; // 6-digit random number
+    const uniqueSuffix = Math.random().toString(36).substring(2, 8).toUpperCase(); // Additional random string
+    orderNumber = `SUB-${timestamp}-${random}-${uniqueSuffix}`;
+    
+    // Check if this order number already exists
+    const { data, error } = await supabase
+      .from('subscription_orders')
+      .select('order_number')
+      .eq('order_number', orderNumber)
+      .maybeSingle();
+    
+    if (error) {
+      console.error("Error checking order number uniqueness:", error);
+      attempts++;
+      continue;
+    }
+    
+    // If no existing order found, we have a unique number
+    if (!data) {
+      return orderNumber;
+    }
+    
+    attempts++;
+  }
+  
+  throw new Error("Failed to generate unique order number after multiple attempts");
 };
 
 // Create subscription order in database before payment
@@ -122,8 +151,8 @@ export const initiateSubscriptionPayment = async (
     console.log("🎯 Initiating subscription payment...");
     console.log("📦 Payment data:", paymentData);
     
-    const orderNumber = generateSubscriptionOrderNumber();
-    console.log("📝 Generated order number:", orderNumber);
+    const orderNumber = await generateSubscriptionOrderNumber();
+    console.log("📝 Generated unique order number:", orderNumber);
 
     // Create pending order
     console.log("💾 Creating pending subscription order...");
