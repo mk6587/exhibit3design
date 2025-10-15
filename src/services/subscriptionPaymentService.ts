@@ -120,41 +120,17 @@ export const initiateSubscriptionPayment = async (
 ): Promise<void> => {
   try {
     console.log("🎯 Initiating subscription payment...");
+    console.log("📦 Payment data:", paymentData);
     
     const orderNumber = generateSubscriptionOrderNumber();
     console.log("📝 Generated order number:", orderNumber);
 
     // Create pending order
+    console.log("💾 Creating pending subscription order...");
     const order = await createPendingSubscriptionOrder(paymentData, orderNumber);
     console.log("✅ Pending subscription order created:", order);
 
     // Prepare YekPay form data
-    const formData = new URLSearchParams({
-      fromCurrency: 'EUR',
-      toCurrency: 'IRR',
-      amount: paymentData.amount.toString(),
-      orderNumber: orderNumber,
-      callback: `${window.location.origin}/payment-success`,
-      firstName: paymentData.customerInfo.firstName,
-      lastName: paymentData.customerInfo.lastName,
-      email: paymentData.customerInfo.email,
-      mobile: paymentData.customerInfo.mobile,
-      address: paymentData.customerInfo.address,
-      postalCode: paymentData.customerInfo.postalCode,
-      country: paymentData.customerInfo.country,
-      city: paymentData.customerInfo.city,
-      description: `Subscription: ${paymentData.planName}`
-    });
-
-    console.log("🚀 Submitting to YekPay gateway via form...");
-
-    // Create a form to submit to YekPay (handles 302 redirects properly)
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://pay.exhibit3design.com/yekpay.php';
-    form.style.display = 'none';
-
-    // Add all form fields
     const fields = {
       fromCurrency: 'EUR',
       toCurrency: 'IRR',
@@ -172,21 +148,37 @@ export const initiateSubscriptionPayment = async (
       description: `Subscription: ${paymentData.planName}`
     };
 
+    console.log("🚀 Submitting to YekPay gateway via form...");
+    console.log("📋 Form fields:", fields);
+
+    // Create a form to submit to YekPay (handles 302 redirects properly)
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://pay.exhibit3design.com/yekpay.php';
+    form.style.display = 'none';
+
+    // Add all form fields
     Object.entries(fields).forEach(([key, value]) => {
       const input = document.createElement('input');
       input.type = 'hidden';
       input.name = key;
       input.value = value;
       form.appendChild(input);
+      console.log(`📝 Added field: ${key} = ${value}`);
     });
 
     // Append form to body and submit
     document.body.appendChild(form);
-    console.log("✅ Form created, submitting to YekPay...");
+    console.log("✅ Form appended to body, about to submit...");
+    console.log("🌐 Form action:", form.action);
+    console.log("📨 Form method:", form.method);
+    
     form.submit();
+    console.log("✅ Form submitted!");
 
   } catch (error: any) {
     console.error("❌ Subscription payment error:", error);
+    console.error("❌ Error stack:", error.stack);
     toast.error(error.message || "Failed to process subscription payment");
     throw error;
   }
