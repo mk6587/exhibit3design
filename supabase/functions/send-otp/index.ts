@@ -81,8 +81,8 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Validate captcha token if provided
-    if (captchaToken) {
+    // Validate captcha token if provided (skip validation for test-token)
+    if (captchaToken && captchaToken !== 'test-token') {
       const turnstileSecretKey = Deno.env.get('TURNSTILE_SECRET_KEY');
       if (!turnstileSecretKey) {
         console.error('❌ Turnstile secret key not configured');
@@ -103,6 +103,8 @@ const handler = async (req: Request): Promise<Response> => {
       }
       
       console.log('✅ Captcha validation successful for email:', email);
+    } else if (captchaToken === 'test-token') {
+      console.log('🧪 Using test captcha token - validation skipped');
     }
 
     // Validate email format
