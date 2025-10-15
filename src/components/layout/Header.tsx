@@ -145,9 +145,9 @@ const Header = () => {
               </Button>
             </div>
           ) : (
-            <Button variant="ghost" size="icon" asChild className="hidden md:flex">
+            <Button variant="default" size="sm" asChild className="hidden md:flex">
               <Link to="/auth">
-                <LogIn className="h-5 w-5" />
+                Login / Register
               </Link>
             </Button>
           )}
