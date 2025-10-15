@@ -292,24 +292,7 @@ const OTPAuthPage = () => {
                     />
                   </div>
 
-                  {/* CAPTCHA temporarily hidden for testing */}
-                  <div className="space-y-2" style={{ display: 'none' }}>
-                    <Label>Security Verification</Label>
-                    <TurnstileCaptcha
-                      ref={captchaRef}
-                      siteKey={TURNSTILE_SITE_KEY}
-                      onVerify={setCaptchaToken}
-                      onError={() => {
-                        setCaptchaToken('');
-                        setError('Security verification failed. Please try again.');
-                      }}
-                      onExpire={() => {
-                        setCaptchaToken('');
-                        setError('Security verification expired. Please verify again.');
-                      }}
-                      className="flex justify-center"
-                    />
-                  </div>
+                  {/* CAPTCHA temporarily disabled for testing */}
 
                   {error && (
                     <div className="text-sm text-destructive font-medium">
@@ -372,24 +355,7 @@ const OTPAuthPage = () => {
 
                   {timeLeft === 0 && (
                     <div className="space-y-4">
-                      {/* CAPTCHA temporarily hidden for testing */}
-                      <div className="space-y-2" style={{ display: 'none' }}>
-                        <Label>Security Verification for Resend</Label>
-                        <TurnstileCaptcha
-                          ref={captchaRef}
-                          siteKey={TURNSTILE_SITE_KEY}
-                          onVerify={setCaptchaToken}
-                          onError={() => {
-                            setCaptchaToken('');
-                            setError('Security verification failed. Please try again.');
-                          }}
-                          onExpire={() => {
-                            setCaptchaToken('');
-                            setError('Security verification expired. Please verify again.');
-                          }}
-                          className="flex justify-center"
-                        />
-                      </div>
+                      {/* CAPTCHA temporarily disabled for testing */}
                       <div className="text-center">
                         <Button
                           type="button"
