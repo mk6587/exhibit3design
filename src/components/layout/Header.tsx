@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { User, Menu, X, LogOut, Sparkles, Coins, Shield } from "lucide-react";
+import { User, Menu, X, LogOut, Sparkles, Coins, Shield, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/contexts/ProductsContext";
@@ -125,7 +125,7 @@ const Header = () => {
           )}
 
           {/* User Menu */}
-          {user && (
+          {user ? (
             <div className="flex items-center space-x-2">
               <Button variant="ghost" size="icon" asChild>
                 <Link to="/profile">
@@ -136,6 +136,12 @@ const Header = () => {
                 <LogOut className="h-5 w-5" />
               </Button>
             </div>
+          ) : (
+            <Button variant="ghost" size="icon" asChild className="hidden md:flex">
+              <Link to="/auth">
+                <LogIn className="h-5 w-5" />
+              </Link>
+            </Button>
           )}
 
           {/* Cart removed - subscription model */}
@@ -236,6 +242,10 @@ const Header = () => {
                 Sign Out
               </button>
             </> : <>
+              <Link to="/auth" className="mobile-nav-item hover:bg-flat-hover transition-colors flex items-center" onClick={() => setIsMenuOpen(false)}>
+                <LogIn className="h-5 w-5 mr-3" />
+                Login / Register
+              </Link>
               <Link to="/pricing" className="mobile-nav-item hover:bg-flat-hover transition-colors font-semibold text-primary" onClick={() => setIsMenuOpen(false)}>
                 Get 5 Free Tokens
               </Link>
