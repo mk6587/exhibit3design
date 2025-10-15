@@ -237,7 +237,7 @@ export default function SubscriptionCheckoutPage() {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input type="email" {...field} />
+                          <Input type="email" {...field} disabled />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -357,7 +357,7 @@ export default function SubscriptionCheckoutPage() {
                     ) : (
                       <>
                         <CreditCard className="mr-2 h-4 w-4" />
-                        Pay €{plan.price} via YekPay
+                        Pay €{plan.price} via Stripe
                       </>
                     )}
                   </Button>
