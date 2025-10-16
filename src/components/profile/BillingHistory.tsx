@@ -211,7 +211,8 @@ export const BillingHistory = () => {
                   <TableCell className="font-semibold">{formatAmount(order.amount)}</TableCell>
                   <TableCell>{getStatusBadge(order.status)}</TableCell>
                   <TableCell className="text-right">
-                    {(order.status.toLowerCase() === "cancelled" || 
+                    {(order.status.toLowerCase() === "pending" ||
+                      order.status.toLowerCase() === "cancelled" || 
                       order.status.toLowerCase() === "canceled" ||
                       order.status.toLowerCase() === "failed") && (
                       <Button
@@ -219,7 +220,7 @@ export const BillingHistory = () => {
                         onClick={() => handleRetryPayment(order)}
                         className="bg-primary hover:bg-primary/90"
                       >
-                        Pay Again
+                        {order.status.toLowerCase() === "pending" ? "Complete Payment" : "Pay Again"}
                       </Button>
                     )}
                   </TableCell>
