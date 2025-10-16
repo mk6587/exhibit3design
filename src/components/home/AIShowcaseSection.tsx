@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { Wand2, Zap, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Wand2, Zap, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useProtectedExternalLink } from "@/hooks/useProtectedExternalLink";
 import { BeforeAfterSlider } from "./BeforeAfterSlider";
@@ -61,28 +60,8 @@ const benefits = [
 ];
 
 export const AIShowcaseSection = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const { navigateToProtectedLink } = useProtectedExternalLink();
-
-  const currentSample = aiSamples[currentIndex];
   const pricingUrl = "https://ai.exhibit3design.com/";
-
-  // Auto-cycle through samples
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % aiSamples.length);
-    }, 8000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + aiSamples.length) % aiSamples.length);
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % aiSamples.length);
-  };
 
   return (
     <section className="py-16 md:py-24 bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden">
@@ -100,55 +79,18 @@ export const AIShowcaseSection = () => {
           </p>
         </div>
 
-        {/* Main transformation display */}
-        <div className="max-w-5xl mx-auto mb-8 md:mb-12 relative">
-          <BeforeAfterSlider
-            beforeImage={currentSample.beforeImage}
-            afterImage={currentSample.afterImage}
-            beforeVideo={currentSample.beforeVideo}
-            afterVideo={currentSample.afterVideo}
-            mode={currentSample.mode}
-          />
-
-          {/* Navigation arrows */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 h-9 w-9 md:h-11 md:w-11 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20"
-            onClick={handlePrevious}
-          >
-            <ChevronLeft className="h-5 w-5 md:h-6 md:w-6 text-white" />
-          </Button>
-          
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 h-9 w-9 md:h-11 md:w-11 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20"
-            onClick={handleNext}
-          >
-            <ChevronRight className="h-5 w-5 md:h-6 md:w-6 text-white" />
-          </Button>
-        </div>
-
-        {/* Sample indicators */}
-        <div className="flex justify-center items-center gap-2 mt-3 md:mt-4 max-w-5xl mx-auto">
-          {aiSamples.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              style={{
-                width: index === currentIndex ? '10px' : '8px',
-                height: index === currentIndex ? '10px' : '8px',
-                minWidth: index === currentIndex ? '10px' : '8px',
-                minHeight: index === currentIndex ? '10px' : '8px',
-              }}
-              className={`rounded-full transition-all flex-shrink-0 ${
-                index === currentIndex
-                  ? "bg-primary"
-                  : "bg-muted-foreground/40 hover:bg-muted-foreground/60"
-              }`}
-              aria-label={`View sample ${index + 1}`}
-            />
+        {/* Grid of 4 before/after sliders */}
+        <div className="max-w-7xl mx-auto mb-8 md:mb-12 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
+          {aiSamples.map((sample) => (
+            <div key={sample.id} className="w-full">
+              <BeforeAfterSlider
+                beforeImage={sample.beforeImage}
+                afterImage={sample.afterImage}
+                beforeVideo={sample.beforeVideo}
+                afterVideo={sample.afterVideo}
+                mode={sample.mode}
+              />
+            </div>
           ))}
         </div>
 
