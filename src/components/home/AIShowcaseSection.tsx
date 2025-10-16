@@ -122,14 +122,14 @@ export const AIShowcaseSection = () => {
             </Button>
 
             {/* Indicators */}
-            <div className="flex justify-center gap-2 mt-4">
+            <div className="flex justify-center gap-3 mt-4">
               {aiSamples.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
-                  className={`h-3 w-3 rounded-full transition-all ${
+                  className={`h-2.5 w-2.5 rounded-full transition-all ${
                     index === currentIndex
-                      ? "bg-primary"
+                      ? "bg-primary scale-125"
                       : "bg-muted-foreground/40"
                   }`}
                   aria-label={`View sample ${index + 1}`}
