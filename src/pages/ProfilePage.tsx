@@ -12,10 +12,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, User, Activity, LogOut, Crown, FileText } from "lucide-react";
+import { Loader2, User, Activity, LogOut, Crown, FileText, CreditCard } from "lucide-react";
 import { SubscriptionPanel } from "@/components/profile/SubscriptionPanel";
 import { UsageHistory } from "@/components/profile/UsageHistory";
 import { SelectedFiles } from "@/components/profile/SelectedFiles";
+import { BillingHistory } from "@/components/profile/BillingHistory";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { profileUpdateSchema } from "@/lib/validationSchemas";
@@ -177,7 +178,7 @@ const ProfilePage = () => {
           </div>
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="profile" className="flex items-center gap-2">
                 <User className="h-4 w-4" />
                 Profile
@@ -185,6 +186,10 @@ const ProfilePage = () => {
               <TabsTrigger value="subscription" className="flex items-center gap-2">
                 <Crown className="h-4 w-4" />
                 Subscription
+              </TabsTrigger>
+              <TabsTrigger value="billing" className="flex items-center gap-2">
+                <CreditCard className="h-4 w-4" />
+                Billing
               </TabsTrigger>
               <TabsTrigger value="files" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
@@ -321,6 +326,11 @@ const ProfilePage = () => {
             {/* Subscription Tab */}
             <TabsContent value="subscription">
               <SubscriptionPanel />
+            </TabsContent>
+
+            {/* Billing Tab */}
+            <TabsContent value="billing">
+              <BillingHistory />
             </TabsContent>
 
             {/* Selected Files Tab */}
