@@ -43,7 +43,7 @@ const PaymentCancelledPage = () => {
   };
 
   const handleContinueShopping = () => {
-    navigate('/products');
+    navigate('/pricing');
   };
 
   return (
@@ -88,7 +88,7 @@ const PaymentCancelledPage = () => {
                   Complete Payment
                 </Button>
                 <Button onClick={handleContinueShopping} variant="outline">
-                  Continue Shopping
+                  Subscription
                 </Button>
               </div>
             </CardContent>
