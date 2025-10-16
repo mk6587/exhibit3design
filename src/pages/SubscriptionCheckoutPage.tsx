@@ -357,7 +357,7 @@ export default function SubscriptionCheckoutPage() {
                     ) : (
                       <>
                         <CreditCard className="mr-2 h-4 w-4" />
-                        Pay €{plan.price} via Stripe
+                        Pay €{plan.price}
                       </>
                     )}
                   </Button>
