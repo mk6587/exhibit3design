@@ -506,6 +506,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      correct_user_tokens: {
+        Args: {
+          p_ai_tokens: number
+          p_user_id: string
+          p_video_results: number
+        }
+        Returns: Json
+      }
       create_profile_with_guest_data: {
         Args: { p_email: string; p_user_id: string }
         Returns: {
