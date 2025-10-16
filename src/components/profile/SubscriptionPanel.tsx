@@ -34,7 +34,40 @@ export function SubscriptionPanel() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadSubscriptionData();
+    const setupRealtimeAndLoadData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      loadSubscriptionData();
+
+      // Set up real-time subscription for profile changes
+      const channel = supabase
+        .channel('profile-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'profiles',
+            filter: `user_id=eq.${user.id}`
+          },
+          async () => {
+            console.log('Profile updated, reloading token balance');
+            await loadSubscriptionData();
+          }
+        )
+        .subscribe();
+
+      return channel;
+    };
+
+    let channelPromise = setupRealtimeAndLoadData();
+
+    return () => {
+      channelPromise.then(channel => {
+        if (channel) supabase.removeChannel(channel);
+      });
+    };
   }, []);
 
   const loadSubscriptionData = async () => {
