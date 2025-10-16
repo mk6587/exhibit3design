@@ -127,10 +127,16 @@ export const AIShowcaseSection = () => {
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
-                  className={`rounded-full transition-all ${
+                  style={{ 
+                    width: '10px', 
+                    height: '10px',
+                    minWidth: '10px',
+                    minHeight: '10px'
+                  }}
+                  className={`rounded-full transition-all flex-shrink-0 ${
                     index === currentIndex
-                      ? "w-2.5 h-2.5 bg-primary"
-                      : "w-2.5 h-2.5 bg-muted-foreground/40"
+                      ? "bg-primary"
+                      : "bg-muted-foreground/40"
                   }`}
                   aria-label={`View sample ${index + 1}`}
                 />
