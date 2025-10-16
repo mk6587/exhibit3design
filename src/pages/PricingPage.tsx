@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SubscriptionPlan {
   id: string;
@@ -23,12 +24,17 @@ interface SubscriptionPlan {
 }
 
 export default function PricingPage() {
+  const { user } = useAuth();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPlanId, setCurrentPlanId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPlans();
-  }, []);
+    if (user) {
+      fetchCurrentSubscription();
+    }
+  }, [user]);
 
   const fetchPlans = async () => {
     try {
@@ -55,6 +61,24 @@ export default function PricingPage() {
       console.error('Error fetching plans:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCurrentSubscription = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase.rpc('get_active_subscription', {
+        p_user_id: user.id
+      });
+
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        setCurrentPlanId(data[0].plan_id);
+      }
+    } catch (error) {
+      console.error('Error fetching current subscription:', error);
     }
   };
 
@@ -102,21 +126,28 @@ export default function PricingPage() {
                 {plans.map((plan) => {
                   const Icon = getPlanIcon(plan.name);
                   const isFeatured = plan.is_featured;
+                  const isCurrentPlan = currentPlanId === plan.id;
 
                   return (
                     <Card
                       key={plan.id}
                       className={`relative flex flex-col ${
-                        isFeatured 
+                        isCurrentPlan
+                          ? 'border-primary border-2 shadow-xl'
+                          : isFeatured 
                           ? 'border-primary border-2 shadow-xl scale-105' 
                           : 'border-border'
                       }`}
                     >
-                      {isFeatured && (
+                      {isCurrentPlan ? (
+                        <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary">
+                          Current Plan
+                        </Badge>
+                      ) : isFeatured ? (
                         <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary">
                           Best Value
                         </Badge>
-                      )}
+                      ) : null}
 
                       <CardHeader className="text-center pb-4">
                         <div className={`w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center ${
@@ -173,16 +204,29 @@ export default function PricingPage() {
                       </CardContent>
 
                       <CardFooter className="pt-4">
-                        <Button 
-                          asChild
-                          className="w-full" 
-                          variant={isFeatured ? "default" : "outline"}
-                          size="lg"
-                        >
-                          <Link to={plan.price === 0 ? "/auth" : `/subscription-checkout?planId=${plan.id}`}>
-                            {plan.price === 0 ? 'Get Free Tokens' : 'Subscribe Now'}
-                          </Link>
-                        </Button>
+                        {isCurrentPlan ? (
+                          <Button 
+                            className="w-full" 
+                            variant="secondary"
+                            size="lg"
+                            disabled
+                          >
+                            Current Plan
+                          </Button>
+                        ) : (
+                          <Button 
+                            asChild
+                            className="w-full" 
+                            variant={isFeatured ? "default" : "outline"}
+                            size="lg"
+                          >
+                            <Link to={plan.price === 0 ? "/auth" : `/subscription-checkout?planId=${plan.id}`}>
+                              {!user ? (plan.price === 0 ? 'Get Free Tokens' : 'Subscribe Now') : 
+                               currentPlanId ? 'Upgrade Plan' : 
+                               plan.price === 0 ? 'Get Free Tokens' : 'Subscribe Now'}
+                            </Link>
+                          </Button>
+                        )}
                       </CardFooter>
                     </Card>
                   );
@@ -222,25 +266,27 @@ export default function PricingPage() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-16 px-4">
-          <div className="container mx-auto max-w-4xl text-center">
-            <h2 className="text-3xl font-bold mb-4">
-              Start with Free AI Trial
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Try our AI tools before subscribing. Get 5 free tokens and 1 sample file access. No credit card required.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg">
-                <Link to="/auth">Get 5 Free Tokens</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link to="/ai-samples">See AI Examples</Link>
-              </Button>
+        {/* CTA Section - Only show if user doesn't have a subscription */}
+        {!currentPlanId && (
+          <section className="py-16 px-4">
+            <div className="container mx-auto max-w-4xl text-center">
+              <h2 className="text-3xl font-bold mb-4">
+                Start with Free AI Trial
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8">
+                Try our AI tools before subscribing. Get 5 free tokens and 1 sample file access. No credit card required.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button asChild size="lg">
+                  <Link to="/auth">Get 5 Free Tokens</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link to="/ai-samples">See AI Examples</Link>
+                </Button>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </div>
     </Layout>
   );
