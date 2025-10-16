@@ -1,7 +1,9 @@
-import { Wand2, Zap, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { Wand2, Zap, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useProtectedExternalLink } from "@/hooks/useProtectedExternalLink";
 import { BeforeAfterSlider } from "./BeforeAfterSlider";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AISample {
   id: string;
@@ -60,8 +62,18 @@ const benefits = [
 ];
 
 export const AIShowcaseSection = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const { navigateToProtectedLink } = useProtectedExternalLink();
+  const isMobile = useIsMobile();
   const pricingUrl = "https://ai.exhibit3design.com/";
+
+  const handlePrevious = () => {
+    setCurrentIndex((prev) => (prev - 1 + aiSamples.length) % aiSamples.length);
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % aiSamples.length);
+  };
 
   return (
     <section className="py-16 md:py-24 bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden">
@@ -79,20 +91,68 @@ export const AIShowcaseSection = () => {
           </p>
         </div>
 
-        {/* Grid of 4 before/after sliders */}
-        <div className="max-w-7xl mx-auto mb-8 md:mb-12 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
-          {aiSamples.map((sample) => (
-            <div key={sample.id} className="w-full">
-              <BeforeAfterSlider
-                beforeImage={sample.beforeImage}
-                afterImage={sample.afterImage}
-                beforeVideo={sample.beforeVideo}
-                afterVideo={sample.afterVideo}
-                mode={sample.mode}
-              />
+        {/* Mobile: Carousel view */}
+        {isMobile ? (
+          <div className="relative max-w-full mx-auto mb-8 px-4">
+            <BeforeAfterSlider
+              beforeImage={aiSamples[currentIndex].beforeImage}
+              afterImage={aiSamples[currentIndex].afterImage}
+              beforeVideo={aiSamples[currentIndex].beforeVideo}
+              afterVideo={aiSamples[currentIndex].afterVideo}
+              mode={aiSamples[currentIndex].mode}
+            />
+            
+            {/* Navigation arrows */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute left-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border"
+              onClick={handlePrevious}
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border"
+              onClick={handleNext}
+            >
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+
+            {/* Indicators */}
+            <div className="flex justify-center gap-2 mt-4">
+              {aiSamples.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`h-2 rounded-full transition-all ${
+                    index === currentIndex
+                      ? "w-6 bg-primary"
+                      : "w-2 bg-muted-foreground/40"
+                  }`}
+                  aria-label={`View sample ${index + 1}`}
+                />
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          /* Desktop: Grid of 4 before/after sliders */
+          <div className="max-w-7xl mx-auto mb-8 md:mb-12 grid grid-cols-2 gap-4 md:gap-6 lg:gap-8">
+            {aiSamples.map((sample) => (
+              <div key={sample.id} className="w-full">
+                <BeforeAfterSlider
+                  beforeImage={sample.beforeImage}
+                  afterImage={sample.afterImage}
+                  beforeVideo={sample.beforeVideo}
+                  afterVideo={sample.afterVideo}
+                  mode={sample.mode}
+                />
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Benefits - Hidden on mobile, compact on desktop */}
         <div className="hidden md:grid md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-12">
