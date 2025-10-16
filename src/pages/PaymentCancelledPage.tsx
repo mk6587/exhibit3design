@@ -88,7 +88,7 @@ const PaymentCancelledPage = () => {
                   Complete Payment
                 </Button>
                 <Button onClick={handleContinueShopping} variant="outline">
-                  View Subscription Plans
+                  View Plans
                 </Button>
               </div>
             </CardContent>
