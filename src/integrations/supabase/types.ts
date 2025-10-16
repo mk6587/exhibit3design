@@ -512,6 +512,14 @@ export type Database = {
           profile_data: Json
         }[]
       }
+      create_subscription_for_user: {
+        Args: { p_period_days?: number; p_plan_id: string; p_user_id: string }
+        Returns: {
+          message: string
+          subscription_id: string
+          success: boolean
+        }[]
+      }
       current_user_is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
