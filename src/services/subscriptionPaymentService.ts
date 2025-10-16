@@ -24,16 +24,16 @@ interface SubscriptionPaymentRequest {
 }
 
 // Generate unique subscription order number with collision check
+// YekPay requires numeric-only order numbers
 const generateSubscriptionOrderNumber = async (): Promise<string> => {
   let orderNumber: string;
   let attempts = 0;
   const maxAttempts = 5;
   
   while (attempts < maxAttempts) {
-    const timestamp = Date.now();
+    const timestamp = Date.now(); // 13 digits
     const random = Math.floor(Math.random() * 999999) + 100000; // 6-digit random number
-    const uniqueSuffix = Math.random().toString(36).substring(2, 8).toUpperCase(); // Additional random string
-    orderNumber = `SUB-${timestamp}-${random}-${uniqueSuffix}`;
+    orderNumber = `${timestamp}${random}`; // Numeric only: timestamp + random = 19 digits
     
     // Check if this order number already exists
     const { data, error } = await supabase
