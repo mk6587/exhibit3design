@@ -83,6 +83,54 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_samples: {
+        Row: {
+          after_image_url: string | null
+          after_video_url: string | null
+          before_image_url: string | null
+          before_video_url: string | null
+          created_at: string
+          external_link: string | null
+          id: string
+          is_active: boolean
+          mode_label: string
+          name: string
+          sort_order: number
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          after_image_url?: string | null
+          after_video_url?: string | null
+          before_image_url?: string | null
+          before_video_url?: string | null
+          created_at?: string
+          external_link?: string | null
+          id?: string
+          is_active?: boolean
+          mode_label: string
+          name: string
+          sort_order?: number
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          after_image_url?: string | null
+          after_video_url?: string | null
+          before_image_url?: string | null
+          before_video_url?: string | null
+          created_at?: string
+          external_link?: string | null
+          id?: string
+          is_active?: boolean
+          mode_label?: string
+          name?: string
+          sort_order?: number
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       otp_registrations: {
         Row: {
           created_at: string

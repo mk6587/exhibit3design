@@ -1,50 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Wand2, Zap, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useProtectedExternalLink } from "@/hooks/useProtectedExternalLink";
 import { BeforeAfterSlider } from "./BeforeAfterSlider";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AISample {
   id: string;
-  mode: string;
+  mode_label: string;
   type: 'image' | 'video';
-  beforeImage?: string;
-  afterImage?: string;
-  beforeVideo?: string;
-  afterVideo?: string;
+  before_image_url?: string;
+  after_image_url?: string;
+  before_video_url?: string;
+  after_video_url?: string;
 }
-
-const aiSamples: AISample[] = [
-  {
-    id: "1",
-    mode: "Sketch Mode",
-    type: 'image',
-    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-before.png",
-    afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/2/sketch-after.jpg?v=2",
-  },
-  {
-    id: "2",
-    mode: "Video Generation",
-    type: 'video',
-    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/3/video-rotating.jpg",
-    afterVideo: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/3/video-rotating.mp4",
-  },
-  {
-    id: "3",
-    mode: "360° Walkthrough",
-    type: 'video',
-    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/4/walkthrough-before.png",
-    afterVideo: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/4/walkthrough-video-after.mp4",
-  },
-  {
-    id: "4",
-    mode: "Artistic Render",
-    type: 'image',
-    beforeImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-before.jpeg?v=2",
-    afterImage: "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/ai-studio/before-after/1/girl-after.jpg?v=2",
-  },
-];
 
 const benefits = [
   {
@@ -63,9 +33,46 @@ const benefits = [
 
 export const AIShowcaseSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [aiSamples, setAiSamples] = useState<AISample[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { navigateToProtectedLink } = useProtectedExternalLink();
   const isMobile = useIsMobile();
   const pricingUrl = "https://ai.exhibit3design.com/";
+
+  useEffect(() => {
+    fetchSamples();
+  }, []);
+
+  const fetchSamples = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('ai_samples')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      
+      // Map database fields to component interface
+      const mappedSamples: AISample[] = (data || []).map((sample: any) => ({
+        id: sample.id,
+        mode_label: sample.mode_label,
+        type: sample.type as 'image' | 'video',
+        before_image_url: sample.before_image_url,
+        after_image_url: sample.after_image_url,
+        before_video_url: sample.before_video_url,
+        after_video_url: sample.after_video_url,
+      }));
+      
+      setAiSamples(mappedSamples);
+    } catch (error) {
+      console.error('Error fetching AI samples:', error);
+      // Fallback to empty array on error
+      setAiSamples([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handlePrevious = () => {
     setCurrentIndex((prev) => (prev - 1 + aiSamples.length) % aiSamples.length);
@@ -74,6 +81,22 @@ export const AIShowcaseSection = () => {
   const handleNext = () => {
     setCurrentIndex((prev) => (prev + 1) % aiSamples.length);
   };
+
+  if (isLoading) {
+    return (
+      <section className="py-16 md:py-24 bg-gradient-to-b from-background via-muted/20 to-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (aiSamples.length === 0) {
+    return null; // Don't show section if no samples
+  }
 
   return (
     <section className="py-16 md:py-24 bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden">
@@ -95,11 +118,11 @@ export const AIShowcaseSection = () => {
         {isMobile ? (
           <div className="relative max-w-full mx-auto mb-8 px-4">
             <BeforeAfterSlider
-              beforeImage={aiSamples[currentIndex].beforeImage}
-              afterImage={aiSamples[currentIndex].afterImage}
-              beforeVideo={aiSamples[currentIndex].beforeVideo}
-              afterVideo={aiSamples[currentIndex].afterVideo}
-              mode={aiSamples[currentIndex].mode}
+              beforeImage={aiSamples[currentIndex].before_image_url}
+              afterImage={aiSamples[currentIndex].after_image_url}
+              beforeVideo={aiSamples[currentIndex].before_video_url}
+              afterVideo={aiSamples[currentIndex].after_video_url}
+              mode={aiSamples[currentIndex].mode_label}
             />
             
             {/* Navigation arrows */}
@@ -149,11 +172,11 @@ export const AIShowcaseSection = () => {
             {aiSamples.map((sample) => (
               <div key={sample.id} className="w-full">
                 <BeforeAfterSlider
-                  beforeImage={sample.beforeImage}
-                  afterImage={sample.afterImage}
-                  beforeVideo={sample.beforeVideo}
-                  afterVideo={sample.afterVideo}
-                  mode={sample.mode}
+                  beforeImage={sample.before_image_url}
+                  afterImage={sample.after_image_url}
+                  beforeVideo={sample.before_video_url}
+                  afterVideo={sample.after_video_url}
+                  mode={sample.mode_label}
                 />
               </div>
             ))}

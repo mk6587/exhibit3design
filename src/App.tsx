@@ -36,6 +36,7 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminSubscriptionsPage from "./pages/AdminSubscriptionsPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import AdminPlansPage from "./pages/AdminPlansPage";
+import AdminAISamplesPage from "./pages/AdminAISamplesPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
 import PricingPage from "./pages/PricingPage";
@@ -126,6 +127,11 @@ const App = () => {
                       <Route path="/admin/plans" element={
                         <ProtectedAdminRoute>
                           <AdminPlansPage />
+                        </ProtectedAdminRoute>
+                      } />
+                      <Route path="/admin/ai-samples" element={
+                        <ProtectedAdminRoute>
+                          <AdminAISamplesPage />
                         </ProtectedAdminRoute>
                       } />
                       <Route path="/sitemap.xml" element={<SitemapPage />} />
