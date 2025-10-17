@@ -42,7 +42,7 @@ export function FileRequestsManagement() {
         .from('file_requests')
         .select(`
           *,
-          profiles:user_id (
+          profiles!file_requests_user_id_fkey (
             first_name,
             last_name
           )
