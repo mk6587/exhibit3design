@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Sparkles, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,15 +20,45 @@ interface AIGeneration {
   created_at: string;
 }
 
+interface AICuratedSample {
+  id: string;
+  name: string;
+  mode_label: string;
+  type: 'image' | 'video';
+  before_image_url?: string;
+  after_image_url?: string;
+  before_video_url?: string;
+  after_video_url?: string;
+  created_at: string;
+}
+
 export default function AISamplesPage() {
   const [generations, setGenerations] = useState<AIGeneration[]>([]);
+  const [curatedSamples, setCuratedSamples] = useState<AICuratedSample[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
   useEffect(() => {
     trackPageView('/ai-samples', 'AI Examples - Exhibition Design Gallery');
     fetchGenerations();
+    fetchCuratedSamples();
   }, [user]);
+
+  const fetchCuratedSamples = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('ai_samples')
+        .select('*')
+        .eq('is_active', true)
+        .eq('show_on_samples_page', true)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      setCuratedSamples((data || []) as AICuratedSample[]);
+    } catch (error) {
+      console.error('Error fetching curated samples:', error);
+    }
+  };
 
   const fetchGenerations = async () => {
     try {
@@ -132,7 +163,7 @@ export default function AISamplesPage() {
         {/* Grid Section */}
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-7xl">
-            {generations.length === 0 ? (
+            {generations.length === 0 && curatedSamples.length === 0 ? (
               <div className="text-center py-16">
                 <Sparkles className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">
@@ -149,15 +180,78 @@ export default function AISamplesPage() {
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {generations.map((generation) => (
-                  <AIGenerationCard
-                    key={generation.id}
-                    generation={generation}
-                    formatDate={formatDate}
-                    formatServiceType={formatServiceType}
-                  />
-                ))}
+              <div className="space-y-8">
+                {/* Curated Samples Section */}
+                {curatedSamples.length > 0 && (
+                  <div>
+                    <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                      <Sparkles className="h-6 w-6 text-primary" />
+                      Featured Examples
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {curatedSamples.map((sample) => (
+                        <Card key={sample.id} className="overflow-hidden">
+                          <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                            {sample.type === 'video' && sample.after_video_url ? (
+                              <video
+                                src={sample.after_video_url}
+                                className="w-full h-full object-cover"
+                                muted
+                                loop
+                                playsInline
+                                autoPlay
+                              />
+                            ) : (
+                              <img
+                                src={sample.after_image_url}
+                                alt={sample.name}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            )}
+                            <Badge 
+                              className="absolute top-3 left-3 backdrop-blur-sm shadow-lg bg-purple-600 text-white border-purple-600"
+                            >
+                              Featured
+                            </Badge>
+                          </div>
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <Calendar className="h-3 w-3" />
+                                <span>{formatDate(sample.created_at)}</span>
+                              </div>
+                              <Badge variant="outline" className="text-xs">
+                                {sample.mode_label}
+                              </Badge>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* User Generations Section */}
+                {generations.length > 0 && (
+                  <div>
+                    {curatedSamples.length > 0 && (
+                      <h2 className="text-2xl font-bold mb-6">
+                        {user ? 'Your Generations' : 'Community Examples'}
+                      </h2>
+                    )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {generations.map((generation) => (
+                        <AIGenerationCard
+                          key={generation.id}
+                          generation={generation}
+                          formatDate={formatDate}
+                          formatServiceType={formatServiceType}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -95,6 +95,8 @@ export type Database = {
           is_active: boolean
           mode_label: string
           name: string
+          show_on_homepage: boolean
+          show_on_samples_page: boolean
           sort_order: number
           type: string
           updated_at: string
@@ -110,6 +112,8 @@ export type Database = {
           is_active?: boolean
           mode_label: string
           name: string
+          show_on_homepage?: boolean
+          show_on_samples_page?: boolean
           sort_order?: number
           type: string
           updated_at?: string
@@ -125,6 +129,8 @@ export type Database = {
           is_active?: boolean
           mode_label?: string
           name?: string
+          show_on_homepage?: boolean
+          show_on_samples_page?: boolean
           sort_order?: number
           type?: string
           updated_at?: string

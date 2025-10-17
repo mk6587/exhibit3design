@@ -32,6 +32,8 @@ interface AISample {
   sort_order: number;
   external_link?: string;
   is_active: boolean;
+  show_on_homepage: boolean;
+  show_on_samples_page: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -54,7 +56,9 @@ export const AISamplesManagement = () => {
     after_video_url: '',
     sort_order: 0,
     external_link: '',
-    is_active: true
+    is_active: true,
+    show_on_homepage: true,
+    show_on_samples_page: true
   };
 
   useEffect(() => {
@@ -188,7 +192,7 @@ export const AISamplesManagement = () => {
         <div>
           <h2 className="text-3xl font-bold">AI Samples Management</h2>
           <p className="text-muted-foreground mt-1">
-            Manage showcase samples displayed on the homepage
+            Manage showcase samples for homepage and AI examples page
           </p>
         </div>
         <Button onClick={() => setIsCreating(true)}>
@@ -230,6 +234,16 @@ export const AISamplesManagement = () => {
                   </p>
                   <p className="text-sm text-muted-foreground">
                     <span className="font-medium">Sort Order:</span> {sample.sort_order}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-medium">Display on:</span>{" "}
+                    {sample.show_on_homepage && sample.show_on_samples_page
+                      ? "Homepage & AI Samples"
+                      : sample.show_on_homepage
+                      ? "Homepage only"
+                      : sample.show_on_samples_page
+                      ? "AI Samples only"
+                      : "Hidden"}
                   </p>
                   {sample.external_link && (
                     <p className="text-sm text-muted-foreground">
@@ -422,7 +436,25 @@ const SampleForm = ({ sample: initialSample, onSave, onCancel }: SampleFormProps
             checked={sample.is_active ?? true}
             onCheckedChange={(checked) => setSample({ ...sample, is_active: checked })}
           />
-          <Label>Active (visible on homepage)</Label>
+          <Label>Active</Label>
+        </div>
+
+        <div className="space-y-3">
+          <Label className="text-base font-semibold">Display Location</Label>
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={sample.show_on_homepage ?? true}
+              onCheckedChange={(checked) => setSample({ ...sample, show_on_homepage: checked })}
+            />
+            <Label>Show on Homepage</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={sample.show_on_samples_page ?? true}
+              onCheckedChange={(checked) => setSample({ ...sample, show_on_samples_page: checked })}
+            />
+            <Label>Show on AI Samples Page</Label>
+          </div>
         </div>
 
         <div className="flex gap-2 pt-4">

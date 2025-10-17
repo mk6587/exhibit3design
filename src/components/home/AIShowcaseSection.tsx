@@ -49,6 +49,7 @@ export const AIShowcaseSection = () => {
         .from('ai_samples')
         .select('*')
         .eq('is_active', true)
+        .eq('show_on_homepage', true)
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
