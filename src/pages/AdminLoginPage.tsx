@@ -1,6 +1,6 @@
 
-import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -19,9 +19,18 @@ const AdminLoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string>('');
   const captchaRef = useRef<TurnstileCaptchaRef>(null);
-  const { login } = useAdmin();
+  const { login, isAuthenticated } = useAdmin();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      const redirect = searchParams.get('redirect') || '/admin';
+      navigate(redirect, { replace: true });
+    }
+  }, [isAuthenticated, navigate, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +57,8 @@ const AdminLoginPage = () => {
           title: "Login successful",
           description: "Welcome back!",
         });
-        navigate('/admin');
+        const redirect = searchParams.get('redirect') || '/admin';
+        navigate(redirect, { replace: true });
       } else {
         toast({
           title: "Login failed",

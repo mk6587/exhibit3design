@@ -46,6 +46,7 @@ import AISamplesPage from "./pages/AISamplesPage";
 import SubscriptionCheckoutPage from "./pages/SubscriptionCheckoutPage";
 
 import NotFound from "./pages/NotFound";
+import ForbiddenPage from "./pages/ForbiddenPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import SitemapPage from "./pages/SitemapPage";
 import { hideWelcomeModals } from "./utils/hideWelcomeModal";
@@ -150,6 +151,7 @@ const App = () => {
                       <Route path="/pricing" element={<PricingPage />} />
                       <Route path="/subscription-checkout" element={<SubscriptionCheckoutPage />} />
                       <Route path="/ai-samples" element={<AISamplesPage />} />
+                      <Route path="/403" element={<ForbiddenPage />} />
                       
                       <Route path="*" element={<NotFound />} />
                     </Routes>
