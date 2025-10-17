@@ -157,8 +157,10 @@ export default function SubscriptionCheckoutPage() {
 
   return (
     <Layout
-      title="Subscription Checkout - Exhibit3Design"
-      description="Complete your subscription purchase"
+      title={`Subscribe to ${plan.name} - AI Exhibition Design Platform | Exhibit3Design`}
+      description={`Complete your ${plan.name} subscription for AI-powered exhibition stand design. Get ${plan.initial_ai_tokens} AI tokens, ${plan.max_files} design files, and instant photorealistic renders.`}
+      keywords="AI subscription, exhibition design plans, AI rendering tokens, trade show design subscription, exhibition AI tools"
+      url="https://exhibit3design.com/subscription-checkout"
     >
       <div className="container mx-auto max-w-2xl py-8 px-4">
         <h1 className="text-3xl font-bold mb-6">Complete Your Subscription</h1>

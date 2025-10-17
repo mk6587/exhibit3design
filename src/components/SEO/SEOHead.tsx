@@ -37,6 +37,24 @@ const SEOHead = ({
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
+      
+      {/* JSON-LD Structured Data */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "Exhibit3Design",
+          "applicationCategory": "DesignApplication",
+          "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "EUR",
+            "lowPrice": "0"
+          },
+          "description": "AI-powered exhibition stand design platform. Transform sketches into photorealistic renders, 360° walkthroughs, and presentation-ready visuals instantly.",
+          "operatingSystem": "Web",
+          "url": "https://exhibit3design.com"
+        })}
+      </script>
     </Helmet>
   );
 };

@@ -124,7 +124,12 @@ const ProductDetailPage = () => {
   }
   
   return (
-    <Layout>
+    <Layout
+      title={`${product.title} - AI Exhibition Stand Design | Exhibit3Design`}
+      description={`${product.memo || `Professional exhibition stand design ready for AI customization. Upload your sketch and get photorealistic renders, 360° walkthroughs & instant style variations.`}`}
+      keywords={`AI exhibition design, ${product.tags.join(', ')}, exhibition stand templates, AI rendering, 360 walkthrough, trade show design AI`}
+      url={`https://exhibit3design.com/products/${product.id}`}
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {/* Product Gallery */}
