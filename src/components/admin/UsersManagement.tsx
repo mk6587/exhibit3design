@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Users, Search, Zap, Video } from "lucide-react";
 import { toast } from "sonner";
+import { UserActionsMenu } from "./UserActionsMenu";
 
 interface UserData {
   user_id: string;
@@ -18,6 +19,7 @@ interface UserData {
   video_results_balance: number;
   created_at: string;
   has_subscription: boolean;
+  is_active?: boolean;
 }
 
 export function UsersManagement() {
@@ -59,6 +61,7 @@ export function UsersManagement() {
         video_results_balance: profile.video_results_balance || 0,
         created_at: profile.created_at,
         has_subscription: subscribedUserIds.has(profile.user_id),
+        is_active: profile.is_active ?? true,
       }));
 
       setUsers(userData);
@@ -124,22 +127,24 @@ export function UsersManagement() {
             <TableRow>
               <TableHead>Email</TableHead>
               <TableHead>Name</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Subscription</TableHead>
               <TableHead>AI Tokens</TableHead>
               <TableHead>Video Credits</TableHead>
               <TableHead>Joined</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell colSpan={8} className="text-center text-muted-foreground">
                   {searchTerm ? 'No users found' : 'No users yet'}
                 </TableCell>
               </TableRow>
             ) : (
               filteredUsers.map((user) => (
-                <TableRow key={user.user_id}>
+                <TableRow key={user.user_id} className={user.is_active === false ? 'opacity-50' : ''}>
                   <TableCell className="font-medium">
                     {user.email || 'N/A'}
                   </TableCell>
@@ -147,6 +152,13 @@ export function UsersManagement() {
                     {user.first_name && user.last_name
                       ? `${user.first_name} ${user.last_name}`
                       : 'N/A'}
+                  </TableCell>
+                  <TableCell>
+                    {user.is_active === false ? (
+                      <Badge variant="destructive">Deactivated</Badge>
+                    ) : (
+                      <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-200">Active</Badge>
+                    )}
                   </TableCell>
                   <TableCell>
                     {user.has_subscription ? (
@@ -169,6 +181,9 @@ export function UsersManagement() {
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {format(new Date(user.created_at), 'MMM dd, yyyy')}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <UserActionsMenu user={user} onUpdate={loadUsers} />
                   </TableCell>
                 </TableRow>
               ))

@@ -320,11 +320,14 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string
+          deactivated_at: string | null
+          deactivation_reason: string | null
           email: string | null
           email_confirmed: boolean | null
           first_name: string | null
           free_tokens_claimed: boolean | null
           id: string
+          is_active: boolean
           last_name: string | null
           phone_number: string | null
           postcode: string | null
@@ -343,11 +346,14 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          deactivated_at?: string | null
+          deactivation_reason?: string | null
           email?: string | null
           email_confirmed?: boolean | null
           first_name?: string | null
           free_tokens_claimed?: boolean | null
           id?: string
+          is_active?: boolean
           last_name?: string | null
           phone_number?: string | null
           postcode?: string | null
@@ -366,11 +372,14 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          deactivated_at?: string | null
+          deactivation_reason?: string | null
           email?: string | null
           email_confirmed?: boolean | null
           first_name?: string | null
           free_tokens_claimed?: boolean | null
           id?: string
+          is_active?: boolean
           last_name?: string | null
           phone_number?: string | null
           postcode?: string | null
@@ -556,6 +565,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_activity_log: {
+        Row: {
+          action_details: Json | null
+          action_type: string
+          admin_id: string | null
+          created_at: string
+          id: string
+          ip_address: string | null
+          user_id: string
+        }
+        Insert: {
+          action_details?: Json | null
+          action_type: string
+          admin_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          user_id: string
+        }
+        Update: {
+          action_details?: Json | null
+          action_type?: string
+          admin_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -632,6 +671,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_toggle_user_status: {
+        Args: {
+          p_admin_id: string
+          p_is_active: boolean
+          p_reason?: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
+      admin_update_user_tokens: {
+        Args: {
+          p_admin_id: string
+          p_ai_tokens: number
+          p_reason: string
+          p_user_id: string
+          p_video_results: number
+        }
+        Returns: Json
+      }
       check_admin_ip_whitelist: {
         Args: { p_ip_address: string }
         Returns: boolean
@@ -856,6 +914,16 @@ export type Database = {
       log_admin_login_attempt: {
         Args: { p_email: string; p_ip_address: string; p_success: boolean }
         Returns: undefined
+      }
+      log_user_activity: {
+        Args: {
+          p_action_details?: Json
+          p_action_type: string
+          p_admin_id: string
+          p_ip_address?: string
+          p_user_id: string
+        }
+        Returns: string
       }
       mark_otp_verified_and_cleanup: {
         Args: { otp_id: string }

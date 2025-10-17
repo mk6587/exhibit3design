@@ -24,6 +24,9 @@ interface Profile {
   video_results_used: number;
   video_results_balance: number;
   selected_files: any;
+  is_active: boolean;
+  deactivated_at: string | null;
+  deactivation_reason: string | null;
   created_at: string;
   updated_at: string;
 }
