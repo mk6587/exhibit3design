@@ -26,8 +26,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const mainItems = [
-  { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
-  { title: "Products", url: "/admin", icon: Package },
+  { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
+  { title: "Products", url: "/admin/products", icon: Package },
   { title: "File Requests", url: "/admin/file-requests", icon: FileText },
   { title: "Subscriptions", url: "/admin/subscriptions", icon: Crown },
   { title: "Users", url: "/admin/users", icon: Users },

@@ -97,12 +97,12 @@ const App = () => {
                       <Route path="/admin/login" element={<AdminLoginPage />} />
                       <Route path="/admin" element={
                         <ProtectedAdminRoute>
-                          <AdminPage />
+                          <AdminDashboardPage />
                         </ProtectedAdminRoute>
                       } />
-                      <Route path="/admin/dashboard" element={
+                      <Route path="/admin/products" element={
                         <ProtectedAdminRoute>
-                          <AdminDashboardPage />
+                          <AdminPage />
                         </ProtectedAdminRoute>
                       } />
                       <Route path="/admin/product/new" element={

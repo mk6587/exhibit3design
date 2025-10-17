@@ -7,7 +7,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 interface Stats {
   totalRevenue: number;
   activeSubscriptions: number;
-  totalOrders: number;
   totalUsers: number;
   monthlyRecurringRevenue: number;
   totalAiTokensUsed: number;
@@ -19,7 +18,6 @@ export function DashboardStats() {
   const [stats, setStats] = useState<Stats>({
     totalRevenue: 0,
     activeSubscriptions: 0,
-    totalOrders: 0,
     totalUsers: 0,
     monthlyRecurringRevenue: 0,
     totalAiTokensUsed: 0,
@@ -44,8 +42,6 @@ export function DashboardStats() {
       const totalRevenue = subscriptionOrders
         ?.filter(o => o.status === 'completed')
         ?.reduce((sum, order) => sum + Number(order.amount), 0) || 0;
-
-      const totalOrders = subscriptionOrders?.filter(o => o.status === 'completed')?.length || 0;
 
       // Get active subscriptions count
       const { count: activeSubsCount, error: subsError } = await supabase
@@ -84,7 +80,6 @@ export function DashboardStats() {
       setStats({
         totalRevenue,
         activeSubscriptions: activeSubsCount || 0,
-        totalOrders,
         totalUsers: usersCount,
         monthlyRecurringRevenue,
         totalAiTokensUsed,
@@ -136,7 +131,7 @@ export function DashboardStats() {
       title: "Total Revenue",
       value: `€${stats.totalRevenue.toFixed(2)}`,
       icon: DollarSign,
-      description: "From completed orders",
+      description: "From completed subscriptions",
     },
     {
       title: "Monthly Recurring Revenue",
@@ -149,12 +144,6 @@ export function DashboardStats() {
       value: stats.activeSubscriptions,
       icon: Crown,
       description: "Current subscribers",
-    },
-    {
-      title: "Total Orders",
-      value: stats.totalOrders,
-      icon: ShoppingBag,
-      description: "Completed purchases",
     },
   ];
 
@@ -190,7 +179,7 @@ export function DashboardStats() {
       {/* Revenue & Subscriptions */}
       <div>
         <h3 className="text-lg font-semibold mb-4">Revenue & Subscriptions</h3>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {revenueCards.map((stat, index) => {
             const Icon = stat.icon;
             return (
