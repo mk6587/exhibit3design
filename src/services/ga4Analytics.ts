@@ -336,17 +336,126 @@ export const trackEngagement = (eventName: string, eventData?: any) => {
   console.log('GA4: engagement tracked', { eventName, eventData });
 };
 
-// Track subscription events
-export const trackSubscription = (action: string, planName: string, planPrice: number) => {
+// Track subscription events with full details
+export const trackSubscriptionEvent = (
+  action: 'subscribe' | 'upgrade' | 'downgrade' | 'cancel' | 'renew',
+  planDetails: {
+    plan_id: string;
+    plan_name: string;
+    plan_price: number;
+    billing_period: string;
+    ai_tokens: number;
+    video_results: number;
+    max_files: number;
+    file_access_tier: string;
+  }
+) => {
   if (!isGtagAvailable()) return;
 
-  window.gtag('event', action, {
-    subscription_plan: planName,
-    value: planPrice,
-    currency: 'EUR'
+  window.gtag('event', 'subscription_action', {
+    action: action,
+    transaction_id: `sub_${Date.now()}`,
+    value: planDetails.plan_price,
+    currency: 'EUR',
+    plan_id: planDetails.plan_id,
+    plan_name: planDetails.plan_name,
+    billing_period: planDetails.billing_period,
+    ai_tokens_included: planDetails.ai_tokens,
+    video_results_included: planDetails.video_results,
+    max_files: planDetails.max_files,
+    access_tier: planDetails.file_access_tier
   });
 
-  console.log('GA4: subscription tracked', { action, planName, planPrice });
+  console.log('GA4: subscription_action tracked', { action, planDetails });
+};
+
+// Track AI token usage
+export const trackAITokenUsage = (
+  action: 'generate' | 'deduct' | 'grant',
+  details: {
+    tokens_used?: number;
+    tokens_remaining: number;
+    service_type?: string;
+    prompt?: string;
+    success: boolean;
+  }
+) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', 'ai_token_usage', {
+    action: action,
+    tokens_used: details.tokens_used || 0,
+    tokens_remaining: details.tokens_remaining,
+    service_type: details.service_type || 'unknown',
+    success: details.success,
+    timestamp: Date.now()
+  });
+
+  console.log('GA4: ai_token_usage tracked', { action, details });
+};
+
+// Track video results usage
+export const trackVideoResultUsage = (
+  action: 'generate' | 'deduct' | 'grant',
+  details: {
+    results_used?: number;
+    results_remaining: number;
+    success: boolean;
+  }
+) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', 'video_result_usage', {
+    action: action,
+    results_used: details.results_used || 0,
+    results_remaining: details.results_remaining,
+    success: details.success,
+    timestamp: Date.now()
+  });
+
+  console.log('GA4: video_result_usage tracked', { action, details });
+};
+
+// Set user properties for segmentation
+export const setUserProperties = (properties: {
+  user_id?: string;
+  subscription_tier?: string;
+  subscription_status?: 'active' | 'inactive' | 'cancelled';
+  ai_tokens_balance?: number;
+  video_results_balance?: number;
+  max_files?: number;
+  customer_lifetime_value?: number;
+}) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('set', 'user_properties', {
+    subscription_tier: properties.subscription_tier || 'free',
+    subscription_status: properties.subscription_status || 'inactive',
+    ai_tokens_balance: properties.ai_tokens_balance || 0,
+    video_results_balance: properties.video_results_balance || 0,
+    max_files_allowed: properties.max_files || 0,
+    lifetime_value: properties.customer_lifetime_value || 0
+  });
+
+  if (properties.user_id) {
+    window.gtag('config', 'GA_MEASUREMENT_ID', {
+      user_id: properties.user_id
+    });
+  }
+
+  console.log('GA4: user_properties set', properties);
+};
+
+// Track profile updates
+export const trackProfileUpdate = (updatedFields: string[]) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', 'profile_update', {
+    fields_updated: updatedFields.join(','),
+    field_count: updatedFields.length
+  });
+
+  console.log('GA4: profile_update tracked', { updatedFields });
 };
 
 // Track AI Studio events
@@ -362,17 +471,64 @@ export const trackAIStudio = (action: string, productId?: number, productName?: 
   console.log('GA4: ai_studio_action tracked', { action, productId, productName });
 };
 
-// Track file selection
-export const trackFileSelection = (productId: number, productName: string, fileCount: number) => {
+// Track file selection with subscription context
+export const trackFileSelection = (
+  productId: number, 
+  productName: string, 
+  fileCount: number,
+  subscriptionTier?: string,
+  maxFilesAllowed?: number
+) => {
   if (!isGtagAvailable()) return;
 
   window.gtag('event', 'file_selected', {
     product_id: productId,
     product_name: productName,
-    total_files_selected: fileCount
+    total_files_selected: fileCount,
+    subscription_tier: subscriptionTier || 'free',
+    max_files_allowed: maxFilesAllowed || 0,
+    usage_percentage: maxFilesAllowed ? (fileCount / maxFilesAllowed) * 100 : 0
   });
 
-  console.log('GA4: file_selected tracked', { productId, productName, fileCount });
+  console.log('GA4: file_selected tracked', { 
+    productId, 
+    productName, 
+    fileCount,
+    subscriptionTier,
+    maxFilesAllowed
+  });
+};
+
+// Track authentication events
+export const trackAuthEvent = (
+  action: 'sign_up' | 'login' | 'logout' | 'password_reset',
+  method?: 'email' | 'google' | 'otp'
+) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', action, {
+    method: method || 'email'
+  });
+
+  console.log('GA4: auth event tracked', { action, method });
+};
+
+// Track errors
+export const trackError = (
+  errorType: string,
+  errorMessage: string,
+  location: string
+) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', 'exception', {
+    description: errorMessage,
+    error_type: errorType,
+    location: location,
+    fatal: false
+  });
+
+  console.log('GA4: error tracked', { errorType, errorMessage, location });
 };
 
 // Declare gtag function for TypeScript

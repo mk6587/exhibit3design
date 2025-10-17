@@ -126,8 +126,14 @@ export const TryInAIStudioButton = ({
       // Refresh profile to get updated data
       await refreshProfile();
 
-      // Track file selection
-      trackFileSelection(productId, productTitle, updatedFiles.length);
+      // Track file selection with subscription context
+      trackFileSelection(
+        productId, 
+        productTitle, 
+        updatedFiles.length,
+        hasSubscription ? 'active' : 'free',
+        maxFiles
+      );
 
       toast.success("Design selected! Download links will be emailed to you.");
       setIsSelected(true);

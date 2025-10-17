@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { setUserProperties, trackAuthEvent } from '@/services/ga4Analytics';
 
 interface Profile {
   id: string;
@@ -159,11 +160,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Refresh profile data
+  // Refresh profile data and update GA4 user properties
   const refreshProfile = async () => {
     if (user) {
       const profileData = await fetchProfile(user.id);
       setProfile(profileData);
+      
+      // Update user properties in GA4 if profile exists
+      if (profileData) {
+        // Get subscription details
+        const { data: subscription } = await supabase.rpc('get_active_subscription', { 
+          p_user_id: user.id 
+        }) as any;
+        
+        setUserProperties({
+          user_id: user.id,
+          subscription_tier: subscription?.[0]?.file_access_tier || 'free',
+          subscription_status: subscription?.[0]?.status || 'inactive',
+          ai_tokens_balance: profileData.ai_tokens_balance || 0,
+          video_results_balance: profileData.video_results_balance || 0,
+          max_files: subscription?.[0]?.max_files || 0
+        });
+      }
     }
   };
 
@@ -214,6 +232,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               
               if (mounted) {
                 setProfile(profileData);
+                
+                // Set user properties in GA4
+                if (profileData) {
+                  setTimeout(async () => {
+                    try {
+                      const { data: subscription } = await supabase.rpc('get_active_subscription', { 
+                        p_user_id: session.user.id 
+                      }) as any;
+                      
+                      setUserProperties({
+                        user_id: session.user.id,
+                        subscription_tier: subscription?.[0]?.file_access_tier || 'free',
+                        subscription_status: subscription?.[0]?.status || 'inactive',
+                        ai_tokens_balance: profileData.ai_tokens_balance || 0,
+                        video_results_balance: profileData.video_results_balance || 0,
+                        max_files: subscription?.[0]?.max_files || 0
+                      });
+                    } catch (e) {
+                      console.error('Failed to set user properties:', e);
+                    }
+                  }, 100);
+                }
               }
             } catch (error) {
               console.error('Profile fetch error:', error);
@@ -296,6 +336,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.error('Signup failed:', error);
         return { error };
       }
+      
+      // Track signup
+      trackAuthEvent('sign_up', 'email');
 
       return { error: null };
     } catch (error) {
@@ -326,6 +369,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         
         return { error: { ...error, message: userMessage } };
       }
+      
+      // Track login
+      trackAuthEvent('login', 'email');
 
       return { error: null };
     } catch (error) {
@@ -358,6 +404,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signOut = async () => {
     console.log('AuthContext: signOut called - forcing complete logout');
+    
+    // Track logout
+    trackAuthEvent('logout');
     
     // Immediately clear all state - don't wait for API
     setUser(null);

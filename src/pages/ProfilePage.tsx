@@ -20,6 +20,7 @@ import { BillingHistory } from "@/components/profile/BillingHistory";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { profileUpdateSchema } from "@/lib/validationSchemas";
+import { trackPageView, trackProfileUpdate } from "@/services/ga4Analytics";
 
 const ProfilePage = () => {
   const { user, profile, loading: authLoading, updateProfile, signOut } = useAuth();
@@ -40,6 +41,13 @@ const ProfilePage = () => {
       navigate("/auth");
     }
   }, [authLoading, user, navigate]);
+  
+  // Track page view
+  useEffect(() => {
+    if (user) {
+      trackPageView('/profile', 'User Profile Dashboard');
+    }
+  }, [user]);
 
   // Initialize form fields
   useEffect(() => {
@@ -91,6 +99,20 @@ const ProfilePage = () => {
           description: "Failed to update profile.",
           variant: "destructive",
         });
+      } else {
+        // Track profile update with changed fields
+        const updatedFields = [];
+        if (validatedData.firstName !== profile.first_name) updatedFields.push('first_name');
+        if (validatedData.lastName !== profile.last_name) updatedFields.push('last_name');
+        if (validatedData.country !== profile.country) updatedFields.push('country');
+        if (validatedData.city !== profile.city) updatedFields.push('city');
+        if (validatedData.phoneNumber !== profile.phone_number) updatedFields.push('phone_number');
+        if (validatedData.addressLine1 !== profile.address_line_1) updatedFields.push('address');
+        if (validatedData.postcode !== profile.postcode) updatedFields.push('postcode');
+        
+        if (updatedFields.length > 0) {
+          trackProfileUpdate(updatedFields);
+        }
       }
     } catch (error: any) {
       if (error.errors) {

@@ -13,6 +13,7 @@ import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { initiateSubscriptionPayment } from "@/services/subscriptionPaymentService";
 import { Loader2, CreditCard } from "lucide-react";
+import { trackPageView, trackSubscriptionEvent, trackButtonClick } from "@/services/ga4Analytics";
 
 const checkoutSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -90,6 +91,12 @@ export default function SubscriptionCheckoutPage() {
         return;
       }
       setPlan(planData);
+      
+      // Track page view with plan details
+      trackPageView(
+        `/subscription-checkout?planId=${planId}`,
+        `Checkout - ${planData.name} Subscription`
+      );
 
       // Load user profile
       const { data: profile } = await supabase
@@ -126,6 +133,19 @@ export default function SubscriptionCheckoutPage() {
     if (!plan) return;
 
     setProcessing(true);
+    
+    // Track subscription initiation
+    trackSubscriptionEvent('subscribe', {
+      plan_id: plan.id,
+      plan_name: plan.name,
+      plan_price: plan.price,
+      billing_period: plan.billing_period,
+      ai_tokens: plan.initial_ai_tokens,
+      video_results: plan.video_results,
+      max_files: plan.max_files,
+      file_access_tier: plan.file_access_tier
+    });
+    
     try {
       await initiateSubscriptionPayment({
         planId: plan.id,
