@@ -62,7 +62,12 @@ const faqItems = [
 
 const FaqPage = () => {
   return (
-    <Layout>
+    <Layout
+      title="FAQ - AI Exhibition Design Tools | Exhibit3Design"
+      description="Common questions about AI-powered exhibition design, AI tokens, 360° video generation, subscriptions, and instant rendering tools."
+      keywords="AI design FAQ, exhibition AI questions, AI tools help, design subscription FAQ"
+      url="https://exhibit3design.com/faq"
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold mb-4">Frequently Asked Questions</h1>

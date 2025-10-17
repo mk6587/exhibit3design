@@ -10,9 +10,9 @@ interface SEOHeadProps {
 }
 
 const SEOHead = ({ 
-  title = "Exhibit3Design - AI-Powered Exhibition Stand Design & Trade Show Solutions",
-  description = "Transform your trade show presence with AI-powered exhibition stand design. Professional custom booth designs, 3D visualization, and instant design iterations for exhibition designers and companies. From concept to reality.",
-  keywords = "AI exhibition stand design, trade show booth design, AI-powered stand builder, exhibition stand designer, custom trade show displays, 3D exhibition visualization, modular exhibition stands, trade show design services, exhibition booth builder, stand design AI tool, exhibition design software, trade show marketing solutions",
+  title = "Exhibit3Design - AI-Powered Exhibition Stand Design Platform",
+  description = "Transform exhibition stands instantly with AI. Upload your sketch and get photorealistic renders, 360° walkthroughs, style variations, and presentation-ready visuals in seconds. No design experience needed.",
+  keywords = "AI exhibition design, AI stand design, 360 walkthrough generator, photorealistic rendering AI, exhibition AI tools, sketch to render AI, trade show AI design, instant exhibition renders, AI-powered booth design, exhibition design automation",
   image = "https://exhibit3design.com/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png",
   url = "https://exhibit3design.com/",
   type = "website"

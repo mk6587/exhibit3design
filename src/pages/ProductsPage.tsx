@@ -141,7 +141,12 @@ const ProductsPage = () => {
   };
   
   return (
-    <Layout>
+    <Layout
+      title="Exhibition Stand Designs with AI Tools | Exhibit3Design"
+      description="Browse professional exhibition stand designs ready for AI transformation. Upload to get photorealistic renders, 360° videos, and instant style variations with AI."
+      keywords="AI exhibition designs, AI stand templates, exhibition design library, AI-powered exhibition tools, trade show design with AI"
+      url="https://exhibit3design.com/products"
+    >
       <div className="container mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold mb-8">Browse Exhibition Stand Designs</h1>
         

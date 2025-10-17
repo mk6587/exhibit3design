@@ -1,6 +1,11 @@
 import Layout from "@/components/layout/Layout";
 const AboutPage = () => {
-  return <Layout>
+  return <Layout
+      title="About AI-Powered Exhibition Design Platform | Exhibit3Design"
+      description="Professional exhibition stand designs enhanced with AI. Instant photorealistic renders, 360° walkthroughs, and style transformations powered by advanced AI technology."
+      keywords="AI exhibition design platform, AI-powered trade show design, exhibition AI tools, about exhibit3design"
+      url="https://exhibit3design.com/about"
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold mb-8">About Exhibit3Design</h1>

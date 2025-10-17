@@ -87,7 +87,12 @@ const ContactPage = () => {
       setIsSubmitting(false);
     }
   };
-  return <Layout>
+  return <Layout
+      title="Contact AI Exhibition Design Experts | Exhibit3Design"
+      description="Get help with AI-powered exhibition design tools, subscriptions, or custom projects. Contact our team for AI design support and consultation."
+      keywords="exhibition design contact, AI design support, exhibition AI help, design consultation"
+      url="https://exhibit3design.com/contact"
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold mb-8">Contact Us</h1>

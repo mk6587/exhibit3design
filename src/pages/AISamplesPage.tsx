@@ -87,9 +87,9 @@ export default function AISamplesPage() {
   if (loading) {
     return (
       <Layout
-        title="My AI History | Exhibit3Design"
-        description="View your AI-powered design generation history and results."
-        keywords="AI history, generated designs, AI results"
+      title="AI-Powered Exhibition Design History | Exhibit3Design"
+      description="View your AI-generated exhibition designs, 360° walkthroughs, and instant transformations. Track all your AI-powered design creations."
+      keywords="AI design history, generated exhibition designs, AI transformation results, 360 walkthrough history"
       >
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
@@ -103,9 +103,9 @@ export default function AISamplesPage() {
 
   return (
     <Layout
-      title="My AI History | Exhibit3Design"
-      description="View your AI-powered design generation history and results."
-      keywords="AI history, generated designs, AI results"
+      title="AI-Powered Exhibition Design History | Exhibit3Design"
+      description="View your AI-generated exhibition designs, 360° walkthroughs, and instant transformations. Track all your AI-powered design creations."
+      keywords="AI design history, generated exhibition designs, AI transformation results, 360 walkthrough history"
     >
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
         {/* Hero Section */}

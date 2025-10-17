@@ -8,9 +8,9 @@ import { AIShowcaseSection } from "@/components/home/AIShowcaseSection";
 const Index = () => {
   return (
     <Layout
-      title="Exhibit3Design - Design Faster with Ready-Made Files & AI Tools"
-      description="Skip the blank canvas. Access professional exhibition stand designs and customize them instantly with AI. Get 5 free AI tokens to try."
-      keywords="exhibition stands, AI design tools, trade show templates, exhibition design subscription"
+      title="Exhibit3Design - AI-Powered Exhibition Stand Design Platform"
+      description="Transform exhibition stands instantly with AI. Upload your sketch, get photorealistic renders, 360° walkthroughs & presentation-ready visuals. No design experience needed."
+      keywords="AI exhibition design, AI stand design, 360 walkthrough generator, exhibition AI tools, trade show AI rendering, sketch to render AI, exhibition design automation"
       url="https://exhibit3design.com/"
     >
       <HeroSection />

@@ -94,9 +94,10 @@ export default function PricingPage() {
 
   return (
     <Layout
-      title="Pricing Plans - Exhibit3Design"
-      description="Choose the perfect plan for your exhibition stand design needs. Access professional templates and AI editing tools."
-      keywords="pricing, subscription, exhibition stand templates, AI design tools"
+      title="AI-Powered Exhibition Design Plans | Exhibit3Design Pricing"
+      description="Access professional exhibition designs with AI transformation tools. Plans include AI tokens, 360° video generation, instant renders, and commercial licensing. Try free."
+      keywords="AI design pricing, exhibition AI tools subscription, AI rendering plans, 360 video AI, exhibition design AI pricing"
+      url="https://exhibit3design.com/pricing"
     >
       <div className="min-h-screen bg-gradient-to-b from-background via-muted/10 to-background">
         {/* Header Section */}
