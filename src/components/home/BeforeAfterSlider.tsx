@@ -68,7 +68,7 @@ export const BeforeAfterSlider = ({
           variant="outline" 
           className="px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm font-medium border-primary/50 bg-primary/5"
         >
-          {mode}
+          Visitors Walkthrough Video
         </Badge>
       </div>
 
