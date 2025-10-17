@@ -1,22 +1,20 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAdmin } from '@/contexts/AdminContext';
 import { useProducts } from '@/contexts/ProductsContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Product } from '@/types/product';
 import ProductBasicInfoTab from '@/components/admin/ProductBasicInfoTab';
-
 import ProductSpecificationsTab from '@/components/admin/ProductSpecificationsTab';
 import ProductImagesTab from '@/components/admin/ProductImagesTab';
+import { AdminLayout } from '@/components/admin/AdminLayout';
 
 const AdminProductEditPage = () => {
   const { id } = useParams<{ id: string }>();
-  const { isAuthenticated } = useAdmin();
   const { getProductById, updateProduct, loading } = useProducts();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -35,12 +33,6 @@ const AdminProductEditPage = () => {
   const [imageUrls, setImageUrls] = useState(product.images);
   const [specificImageUrl, setSpecificImageUrl] = useState('');
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/admin/login');
-    }
-  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     if (originalProduct) {
@@ -85,41 +77,46 @@ const AdminProductEditPage = () => {
     }
   };
 
-  if (!isAuthenticated || loading) {
-    return null;
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading product...</p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-4">
-              <Button 
-                onClick={() => navigate('/admin/dashboard')} 
-                variant="outline"
-                size="sm"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Admin
-              </Button>
-              <h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
-            </div>
-            <div className="flex space-x-2">
-              <Button onClick={handlePreview} variant="outline">
-                <Eye className="mr-2 h-4 w-4" />
-                Preview
-              </Button>
-              <Button onClick={handleSave} disabled={saving}>
-                <Save className="mr-2 h-4 w-4" />
-                {saving ? 'Saving...' : 'Save Changes'}
-              </Button>
-            </div>
+    <AdminLayout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-6 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <Button 
+              onClick={() => navigate('/admin')} 
+              variant="outline"
+              size="sm"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Products
+            </Button>
+            <h1 className="text-3xl font-bold">Edit Product</h1>
+          </div>
+          <div className="flex space-x-2">
+            <Button onClick={handlePreview} variant="outline">
+              <Eye className="mr-2 h-4 w-4" />
+              Preview
+            </Button>
+            <Button onClick={handleSave} disabled={saving}>
+              <Save className="mr-2 h-4 w-4" />
+              {saving ? 'Saving...' : 'Save Changes'}
+            </Button>
           </div>
         </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <Card>
           <CardHeader>
             <CardTitle>Product Content Editor</CardTitle>
@@ -159,8 +156,8 @@ const AdminProductEditPage = () => {
             </Tabs>
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 };
 

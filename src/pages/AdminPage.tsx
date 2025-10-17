@@ -1,24 +1,17 @@
 
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAdmin } from '@/contexts/AdminContext';
+import { Link } from 'react-router-dom';
 import { useProducts } from '@/contexts/ProductsContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { LogOut, Edit, Eye, Trash2, Crown } from 'lucide-react';
+import { Edit, Eye, Trash2, Crown, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { AdminLayout } from '@/components/admin/AdminLayout';
 
 const AdminPage = () => {
-  const { logout } = useAdmin();
   const { products, loading, deleteProduct } = useProducts();
-  const navigate = useNavigate();
   const [deletingProductId, setDeletingProductId] = useState<number | null>(null);
-
-  const handleLogout = () => {
-    logout();
-    navigate('/admin/login');
-  };
 
   const handleDeleteProduct = async (productId: number) => {
     try {
@@ -33,38 +26,31 @@ const AdminPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading products...</p>
+      <AdminLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading products...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
-            <Button onClick={handleLogout} variant="outline">
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <AdminLayout>
+      <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <div className="flex justify-between items-start">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Product Management</h2>
-              <p className="text-gray-600">Manage your exhibition stand designs and content ({products.length} products total)</p>
+              <h1 className="text-3xl font-bold mb-2">Product Management</h1>
+              <p className="text-muted-foreground">
+                Manage your exhibition stand designs and content ({products.length} products total)
+              </p>
             </div>
             <Button asChild>
               <Link to="/admin/product/new">
+                <Plus className="mr-2 h-4 w-4" />
                 Add New Product
               </Link>
             </Button>
@@ -137,8 +123,8 @@ const AdminPage = () => {
             </Card>
           ))}
         </div>
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 };
 

@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   Crown,
   Users,
-  ShoppingBag,
   Package,
   Sparkles,
   Settings,
@@ -31,7 +30,6 @@ const mainItems = [
   { title: "Products", url: "/admin", icon: Package },
   { title: "File Requests", url: "/admin/file-requests", icon: FileText },
   { title: "Subscriptions", url: "/admin/subscriptions", icon: Crown },
-  { title: "Orders", url: "/admin/orders", icon: ShoppingBag },
   { title: "Users", url: "/admin/users", icon: Users },
 ];
 
