@@ -38,6 +38,7 @@ import AdminUsersPage from "./pages/AdminUsersPage";
 import AdminPlansPage from "./pages/AdminPlansPage";
 import AdminAISamplesPage from "./pages/AdminAISamplesPage";
 import AdminFileRequestsPage from "./pages/AdminFileRequestsPage";
+import AdminSecurityPage from "./pages/AdminSecurityPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
 import PricingPage from "./pages/PricingPage";
@@ -138,6 +139,11 @@ const App = () => {
                       <Route path="/admin/ai-samples" element={
                         <ProtectedAdminRoute>
                           <AdminAISamplesPage />
+                        </ProtectedAdminRoute>
+                      } />
+                      <Route path="/admin/security" element={
+                        <ProtectedAdminRoute>
+                          <AdminSecurityPage />
                         </ProtectedAdminRoute>
                       } />
                       <Route path="/sitemap.xml" element={<SitemapPage />} />

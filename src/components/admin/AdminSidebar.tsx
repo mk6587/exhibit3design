@@ -8,6 +8,7 @@ import {
   Settings,
   LogOut,
   FileText,
+  Shield,
 } from "lucide-react";
 import {
   Sidebar,
@@ -36,6 +37,7 @@ const mainItems = [
 const settingsItems = [
   { title: "Plans", url: "/admin/plans", icon: Settings },
   { title: "AI Samples", url: "/admin/ai-samples", icon: Sparkles },
+  { title: "Security", url: "/admin/security", icon: Shield },
 ];
 
 export function AdminSidebar() {

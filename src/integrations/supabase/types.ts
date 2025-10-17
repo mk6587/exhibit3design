@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_ip_whitelist: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          ip_address: string
+          is_active: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          ip_address: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          ip_address?: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      admin_login_attempts: {
+        Row: {
+          attempt_time: string
+          created_at: string
+          email: string
+          id: string
+          ip_address: string
+          success: boolean
+        }
+        Insert: {
+          attempt_time?: string
+          created_at?: string
+          email: string
+          id?: string
+          ip_address: string
+          success?: boolean
+        }
+        Update: {
+          attempt_time?: string
+          created_at?: string
+          email?: string
+          id?: string
+          ip_address?: string
+          success?: boolean
+        }
+        Relationships: []
+      }
       admins: {
         Row: {
           created_at: string
@@ -578,6 +632,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_admin_ip_whitelist: {
+        Args: { p_ip_address: string }
+        Returns: boolean
+      }
+      check_admin_rate_limit: {
+        Args: { p_email: string; p_ip_address: string }
+        Returns: Json
+      }
       check_file_access: {
         Args: { p_product_id: number; p_user_id: string }
         Returns: boolean
@@ -790,6 +852,10 @@ export type Database = {
       is_current_user_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      log_admin_login_attempt: {
+        Args: { p_email: string; p_ip_address: string; p_success: boolean }
+        Returns: undefined
       }
       mark_otp_verified_and_cleanup: {
         Args: { otp_id: string }

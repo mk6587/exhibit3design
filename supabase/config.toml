@@ -32,3 +32,9 @@ verify_jwt = false
 
 [functions.activate-subscription]
 verify_jwt = true
+
+[functions.validate-admin-login]
+verify_jwt = false
+
+[functions.log-admin-attempt]
+verify_jwt = false
