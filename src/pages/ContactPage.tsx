@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import EmailService from "@/services/emailService";
 import { contactFormSchema, type ContactFormData } from "@/lib/validationSchemas";
+import { trackPageView, trackFormSubmit } from "@/services/ga4Analytics";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +19,10 @@ const ContactPage = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof ContactFormData, string>>>({});
+
+  useEffect(() => {
+    trackPageView('/contact', 'Contact Us - Get in Touch');
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {
@@ -50,6 +55,7 @@ const ContactPage = () => {
       const { success, error } = await EmailService.sendContactNotification(validatedData);
 
       if (success) {
+        trackFormSubmit('contact_form', 'contact_page');
         toast.success("Message sent successfully", {
           description: "We'll get back to you as soon as possible."
         });

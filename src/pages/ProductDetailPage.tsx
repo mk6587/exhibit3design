@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import { Check, X, FileText, Calendar, HardDrive, Download } from "lucide-react";
 import "@/components/ui/rich-text-editor.css";
-import { trackViewItem } from "@/services/ga4Analytics";
+import { trackViewItem, trackPageView } from "@/services/ga4Analytics";
 import { TryInAIStudioButton } from "@/components/product/TryInAIStudioButton";
 import SelectFileButton from "@/components/product/SelectFileButton";
 import { useAuth } from "@/contexts/AuthContext";
@@ -55,7 +55,10 @@ const ProductDetailPage = () => {
   // Scroll to top when component mounts or product changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+    if (product) {
+      trackPageView(`/product/${product.id}`, `${product.title} - Product Detail`);
+    }
+  }, [id, product]);
 
   // Track view_item when product loads
   useEffect(() => {

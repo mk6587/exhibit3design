@@ -7,6 +7,7 @@ import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { trackPageView, trackButtonClick } from "@/services/ga4Analytics";
 
 interface SubscriptionPlan {
   id: string;
@@ -30,6 +31,7 @@ export default function PricingPage() {
   const [currentPlanId, setCurrentPlanId] = useState<string | null>(null);
 
   useEffect(() => {
+    trackPageView('/pricing', 'Pricing Plans - AI Exhibition Design');
     fetchPlans();
     if (user) {
       fetchCurrentSubscription();
@@ -231,6 +233,11 @@ export default function PricingPage() {
                             variant={isFeatured ? "default" : "outline"}
                             size="lg"
                             disabled={currentPlanId && !isUpgrade(plan)}
+                            onClick={() => trackButtonClick(
+                              plan.price === 0 ? 'get_free_tokens' : 'subscribe_now',
+                              'pricing_page',
+                              { plan_name: plan.name, plan_price: plan.price }
+                            )}
                           >
                             <Link to={plan.price === 0 ? "/auth" : `/subscription-checkout?planId=${plan.id}`}>
                               {!user ? (plan.price === 0 ? 'Get Free Tokens' : 'Subscribe Now') : 

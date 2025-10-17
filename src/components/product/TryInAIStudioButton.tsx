@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
+import { trackFileSelection, trackButtonClick } from "@/services/ga4Analytics";
 
 interface TryInAIStudioButtonProps {
   productId: number;
@@ -70,6 +71,8 @@ export const TryInAIStudioButton = ({
   }, [user, productId, profile]);
 
   const handlePickDesign = async () => {
+    trackButtonClick('select_design', 'product_card', { product_id: productId, product_name: productTitle });
+    
     // Check if user is authenticated
     if (!user) {
       toast.error("Please sign in to select designs");
@@ -122,6 +125,9 @@ export const TryInAIStudioButton = ({
 
       // Refresh profile to get updated data
       await refreshProfile();
+
+      // Track file selection
+      trackFileSelection(productId, productTitle, updatedFiles.length);
 
       toast.success("Design selected! Download links will be emailed to you.");
       setIsSelected(true);

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import ProductCard, { Product } from "@/components/product/ProductCard";
@@ -8,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
-import { trackViewItemList, trackSearch, trackFilterApplied, trackSortChanged, trackFiltersCleared } from "@/services/ga4Analytics";
+import { trackViewItemList, trackSearch, trackFilterApplied, trackSortChanged, trackFiltersCleared, trackPageView } from "@/services/ga4Analytics";
 import { FilterBar } from "@/components/product/FilterBar";
 import { getFilterCategories, doesTagMatch } from "@/utils/tagMapping";
 import exhibitionPlaceholder from "@/assets/exhibition-placeholder.jpg";
@@ -18,6 +17,10 @@ const ProductsPage = () => {
   
   // Use context products if available, otherwise use static products
   const products = contextProducts && contextProducts.length > 0 ? contextProducts : staticProducts;
+
+  useEffect(() => {
+    trackPageView('/products', 'Browse Designs - AI Exhibition Stands');
+  }, []);
 
   // Track view_item_list when products load (only once)
   useEffect(() => {

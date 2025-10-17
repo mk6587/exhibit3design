@@ -286,6 +286,95 @@ export const trackFiltersCleared = (previousFiltersCount: number, resultsCount: 
   });
 };
 
+// Track page views
+export const trackPageView = (pagePath: string, pageTitle: string) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', 'page_view', {
+    page_path: pagePath,
+    page_title: pageTitle,
+    page_location: window.location.href
+  });
+
+  console.log('GA4: page_view tracked', { pagePath, pageTitle });
+};
+
+// Track button clicks
+export const trackButtonClick = (buttonName: string, buttonLocation: string, additionalData?: any) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', 'button_click', {
+    button_name: buttonName,
+    button_location: buttonLocation,
+    ...additionalData
+  });
+
+  console.log('GA4: button_click tracked', { buttonName, buttonLocation, additionalData });
+};
+
+// Track form submissions
+export const trackFormSubmit = (formName: string, formLocation: string) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', 'form_submit', {
+    form_name: formName,
+    form_location: formLocation
+  });
+
+  console.log('GA4: form_submit tracked', { formName, formLocation });
+};
+
+// Track user engagement events
+export const trackEngagement = (eventName: string, eventData?: any) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', eventName, {
+    engagement_time_msec: 100,
+    ...eventData
+  });
+
+  console.log('GA4: engagement tracked', { eventName, eventData });
+};
+
+// Track subscription events
+export const trackSubscription = (action: string, planName: string, planPrice: number) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', action, {
+    subscription_plan: planName,
+    value: planPrice,
+    currency: 'EUR'
+  });
+
+  console.log('GA4: subscription tracked', { action, planName, planPrice });
+};
+
+// Track AI Studio events
+export const trackAIStudio = (action: string, productId?: number, productName?: string) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', 'ai_studio_action', {
+    action: action,
+    product_id: productId,
+    product_name: productName
+  });
+
+  console.log('GA4: ai_studio_action tracked', { action, productId, productName });
+};
+
+// Track file selection
+export const trackFileSelection = (productId: number, productName: string, fileCount: number) => {
+  if (!isGtagAvailable()) return;
+
+  window.gtag('event', 'file_selected', {
+    product_id: productId,
+    product_name: productName,
+    total_files_selected: fileCount
+  });
+
+  console.log('GA4: file_selected tracked', { productId, productName, fileCount });
+};
+
 // Declare gtag function for TypeScript
 declare global {
   interface Window {

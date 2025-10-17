@@ -1,5 +1,12 @@
+import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
+import { trackPageView } from "@/services/ga4Analytics";
+
 const AboutPage = () => {
+  useEffect(() => {
+    trackPageView('/about', 'About Us - Our Story');
+  }, []);
+
   return <Layout
       title="About AI-Powered Exhibition Design Platform | Exhibit3Design"
       description="Professional exhibition stand designs enhanced with AI. Instant photorealistic renders, 360° walkthroughs, and style transformations powered by advanced AI technology."

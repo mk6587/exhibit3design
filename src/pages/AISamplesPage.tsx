@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AIGenerationCard } from "@/components/ai/AIGenerationCard";
+import { trackPageView } from "@/services/ga4Analytics";
 
 interface AIGeneration {
   id: string;
@@ -24,6 +25,7 @@ export default function AISamplesPage() {
   const { user } = useAuth();
 
   useEffect(() => {
+    trackPageView('/ai-samples', 'AI Examples - Exhibition Design Gallery');
     fetchGenerations();
   }, [user]);
 
