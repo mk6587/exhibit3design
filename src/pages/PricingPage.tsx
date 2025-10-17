@@ -5,9 +5,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { trackPageView, trackButtonClick } from "@/services/ga4Analytics";
+import { openAIStudio } from "@/utils/aiStudioAuth";
+import { toast } from "sonner";
 
 interface SubscriptionPlan {
   id: string;
@@ -26,6 +28,7 @@ interface SubscriptionPlan {
 
 export default function PricingPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPlanId, setCurrentPlanId] = useState<string | null>(null);
@@ -102,6 +105,23 @@ export default function PricingPage() {
     if (name.includes('Free')) return Sparkles;
     if (name.includes('Pro')) return Zap;
     return Check;
+  };
+
+  const handleGetFreeTokens = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+
+    try {
+      await openAIStudio(user.id, user.email || '');
+      trackButtonClick('get_free_tokens', 'pricing_page', { user_logged_in: true });
+    } catch (error) {
+      console.error('Error opening AI Studio:', error);
+      toast.error('Failed to open AI Studio');
+    }
   };
 
   return (
@@ -226,6 +246,15 @@ export default function PricingPage() {
                           >
                             Current Plan
                           </Button>
+                        ) : plan.price === 0 ? (
+                          <Button 
+                            className="w-full" 
+                            variant={isFeatured ? "default" : "outline"}
+                            size="lg"
+                            onClick={handleGetFreeTokens}
+                          >
+                            {user ? 'Try AI Studio' : 'Get Free Tokens'}
+                          </Button>
                         ) : (
                           <Button 
                             asChild
@@ -234,15 +263,15 @@ export default function PricingPage() {
                             size="lg"
                             disabled={currentPlanId && !isUpgrade(plan)}
                             onClick={() => trackButtonClick(
-                              plan.price === 0 ? 'get_free_tokens' : 'subscribe_now',
+                              'subscribe_now',
                               'pricing_page',
                               { plan_name: plan.name, plan_price: plan.price }
                             )}
                           >
-                            <Link to={plan.price === 0 ? "/auth" : `/subscription-checkout?planId=${plan.id}`}>
-                              {!user ? (plan.price === 0 ? 'Get Free Tokens' : 'Subscribe Now') : 
+                            <Link to={`/subscription-checkout?planId=${plan.id}`}>
+                              {!user ? 'Subscribe Now' : 
                                currentPlanId ? (isUpgrade(plan) ? 'Upgrade Plan' : 'Lower Tier') : 
-                               plan.price === 0 ? 'Get Free Tokens' : 'Subscribe Now'}
+                               'Subscribe Now'}
                             </Link>
                           </Button>
                         )}
@@ -296,8 +325,8 @@ export default function PricingPage() {
                 Try our AI tools before subscribing. Get 5 free tokens and 1 sample file access. No credit card required.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button asChild size="lg">
-                  <Link to="/auth">Get 5 Free Tokens</Link>
+                <Button size="lg" onClick={handleGetFreeTokens}>
+                  {user ? 'Try AI Studio' : 'Get 5 Free Tokens'}
                 </Button>
                 <Button asChild size="lg" variant="outline">
                   <Link to="/ai-samples">See AI Examples</Link>
