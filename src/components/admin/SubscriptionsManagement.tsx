@@ -19,6 +19,7 @@ interface Subscription {
   created_at: string;
   plan_name: string;
   plan_price: number;
+  user_email: string;
   user_first_name: string;
   user_last_name: string;
 }
@@ -48,7 +49,7 @@ export function SubscriptionsManagement() {
       // Get all profiles
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('user_id, first_name, last_name');
+        .select('user_id, email, first_name, last_name');
 
       if (profilesError) throw profilesError;
 
@@ -69,6 +70,7 @@ export function SubscriptionsManagement() {
           created_at: sub.created_at,
           plan_name: (sub.subscription_plans as any)?.name || 'N/A',
           plan_price: (sub.subscription_plans as any)?.price || 0,
+          user_email: profile?.email || '',
           user_first_name: profile?.first_name || '',
           user_last_name: profile?.last_name || '',
         };
@@ -85,9 +87,10 @@ export function SubscriptionsManagement() {
 
   const filteredSubscriptions = subscriptions.filter((sub) => {
     const fullName = `${sub.user_first_name} ${sub.user_last_name}`.toLowerCase();
+    const email = sub.user_email.toLowerCase();
     const planName = sub.plan_name.toLowerCase();
     const search = searchTerm.toLowerCase();
-    return fullName.includes(search) || planName.includes(search);
+    return fullName.includes(search) || planName.includes(search) || email.includes(search);
   });
 
   const getStatusBadge = (status: string, endDate: string) => {
@@ -167,9 +170,14 @@ export function SubscriptionsManagement() {
               filteredSubscriptions.map((sub) => (
                 <TableRow key={sub.id}>
                   <TableCell>
-                    {sub.user_first_name && sub.user_last_name
-                      ? `${sub.user_first_name} ${sub.user_last_name}`
-                      : 'N/A'}
+                    <div>
+                      <div className="font-medium">{sub.user_email || 'N/A'}</div>
+                      {sub.user_first_name && sub.user_last_name && (
+                        <div className="text-sm text-muted-foreground">
+                          {sub.user_first_name} {sub.user_last_name}
+                        </div>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="font-medium">
                     {sub.plan_name}

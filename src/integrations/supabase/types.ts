@@ -260,6 +260,7 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string
+          email: string | null
           email_confirmed: boolean | null
           first_name: string | null
           free_tokens_claimed: boolean | null
@@ -282,6 +283,7 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          email?: string | null
           email_confirmed?: boolean | null
           first_name?: string | null
           free_tokens_claimed?: boolean | null
@@ -304,6 +306,7 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          email?: string | null
           email_confirmed?: boolean | null
           first_name?: string | null
           free_tokens_claimed?: boolean | null

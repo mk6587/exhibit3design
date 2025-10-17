@@ -7,6 +7,7 @@ import { setUserProperties, trackAuthEvent } from '@/services/ga4Analytics';
 interface Profile {
   id: string;
   user_id: string;
+  email: string | null;
   first_name: string | null;
   last_name: string | null;
   country: string | null;

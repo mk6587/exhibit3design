@@ -11,6 +11,7 @@ import { toast } from "sonner";
 
 interface UserData {
   user_id: string;
+  email: string;
   first_name: string;
   last_name: string;
   ai_tokens_balance: number;
@@ -51,6 +52,7 @@ export function UsersManagement() {
 
       const userData: UserData[] = (profiles || []).map(profile => ({
         user_id: profile.user_id,
+        email: profile.email || '',
         first_name: profile.first_name || '',
         last_name: profile.last_name || '',
         ai_tokens_balance: profile.ai_tokens_balance || 0,
@@ -70,8 +72,9 @@ export function UsersManagement() {
 
   const filteredUsers = users.filter((user) => {
     const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
+    const email = user.email.toLowerCase();
     const search = searchTerm.toLowerCase();
-    return fullName.includes(search);
+    return fullName.includes(search) || email.includes(search);
   });
 
   if (loading) {
@@ -119,6 +122,7 @@ export function UsersManagement() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Email</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Subscription</TableHead>
               <TableHead>AI Tokens</TableHead>
@@ -129,7 +133,7 @@ export function UsersManagement() {
           <TableBody>
             {filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-center text-muted-foreground">
                   {searchTerm ? 'No users found' : 'No users yet'}
                 </TableCell>
               </TableRow>
@@ -137,6 +141,9 @@ export function UsersManagement() {
               filteredUsers.map((user) => (
                 <TableRow key={user.user_id}>
                   <TableCell className="font-medium">
+                    {user.email || 'N/A'}
+                  </TableCell>
+                  <TableCell>
                     {user.first_name && user.last_name
                       ? `${user.first_name} ${user.last_name}`
                       : 'N/A'}
