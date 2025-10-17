@@ -217,12 +217,10 @@ export default function PricingPage() {
                             <span className="text-muted-foreground">AI Image Edits:</span>
                             <span className="font-semibold">{plan.initial_ai_tokens}</span>
                           </div>
-                          {plan.video_results > 0 && (
-                            <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">AI Videos:</span>
-                              <span className="font-semibold">{plan.video_results}</span>
-                            </div>
-                          )}
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">AI Videos:</span>
+                            <span className="font-semibold">{plan.video_results}</span>
+                          </div>
                         </div>
 
                         {/* Features List */}
