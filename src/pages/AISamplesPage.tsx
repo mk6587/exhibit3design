@@ -23,6 +23,7 @@ interface AICuratedSample {
 export default function AISamplesPage() {
   const [curatedSamples, setCuratedSamples] = useState<AICuratedSample[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hoveredSampleId, setHoveredSampleId] = useState<string | null>(null);
 
   useEffect(() => {
     trackPageView('/ai-samples', 'AI Examples - Exhibition Design Gallery');
@@ -113,45 +114,58 @@ export default function AISamplesPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {curatedSamples.map((sample) => (
-                  <Card key={sample.id} className="overflow-hidden">
-                    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                      {sample.type === 'video' && sample.after_video_url ? (
-                        <video
-                          src={sample.after_video_url}
-                          className="w-full h-full object-cover"
-                          muted
-                          loop
-                          playsInline
-                          autoPlay
-                        />
-                      ) : (
-                        <img
-                          src={sample.after_image_url}
-                          alt={sample.name}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      )}
-                      <Badge 
-                        className="absolute top-3 left-3 backdrop-blur-sm shadow-lg bg-purple-600 text-white border-purple-600"
-                      >
-                        Featured
-                      </Badge>
-                    </div>
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          <span>{formatDate(sample.created_at)}</span>
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {sample.mode_label}
+                {curatedSamples.map((sample) => {
+                  const isHovered = hoveredSampleId === sample.id;
+                  const displayImage = (isHovered && sample.before_image_url) 
+                    ? sample.before_image_url 
+                    : sample.after_image_url;
+                  const isVideo = sample.type === 'video';
+
+                  return (
+                    <Card 
+                      key={sample.id} 
+                      className="overflow-hidden group cursor-pointer"
+                      onMouseEnter={() => setHoveredSampleId(sample.id)}
+                      onMouseLeave={() => setHoveredSampleId(null)}
+                    >
+                      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                        {isVideo && sample.after_video_url && !isHovered ? (
+                          <video
+                            src={sample.after_video_url}
+                            className="w-full h-full object-cover transition-all duration-300"
+                            muted
+                            loop
+                            playsInline
+                            autoPlay
+                          />
+                        ) : (
+                          <img
+                            src={displayImage}
+                            alt={isHovered && sample.before_image_url ? "Source image" : sample.name}
+                            className="w-full h-full object-cover transition-all duration-300"
+                            loading="lazy"
+                          />
+                        )}
+                        <Badge 
+                          className="absolute top-3 left-3 backdrop-blur-sm shadow-lg transition-all duration-300 bg-purple-600 text-white border-purple-600 hover:bg-purple-700"
+                        >
+                          {isHovered && sample.before_image_url ? "Source" : "AI Result"}
                         </Badge>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Calendar className="h-3 w-3" />
+                            <span>{formatDate(sample.created_at)}</span>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {sample.mode_label}
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </div>
