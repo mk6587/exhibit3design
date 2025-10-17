@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { FileText, Mail, Calendar } from "lucide-react";
+import { FileText, Mail, Calendar, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -95,22 +96,28 @@ export function SelectedFiles() {
 
         <div className="space-y-3">
           {selectedFiles.map((file, index) => (
-            <div
+            <Link
               key={index}
-              className="p-4 rounded-lg border bg-muted/50 flex items-center justify-between"
+              to={`/products/${file.product_id}`}
+              className="block p-4 rounded-lg border bg-muted/50 hover:bg-muted transition-colors group"
             >
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <FileText className="h-4 w-4 text-primary" />
-                  <h4 className="font-medium">{file.product_name}</h4>
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <FileText className="h-4 w-4 text-primary" />
+                    <h4 className="font-medium group-hover:text-primary transition-colors">
+                      {file.product_name || `Design #${file.product_id}`}
+                    </h4>
+                    <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-3 w-3" />
+                    <span>Selected on {format(new Date(file.selected_at), 'MMM dd, yyyy')}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Calendar className="h-3 w-3" />
-                  <span>Selected on {format(new Date(file.selected_at), 'MMM dd, yyyy')}</span>
-                </div>
+                <Badge variant="secondary">Pending</Badge>
               </div>
-              <Badge variant="secondary">Pending</Badge>
-            </div>
+            </Link>
           ))}
         </div>
       </CardContent>
