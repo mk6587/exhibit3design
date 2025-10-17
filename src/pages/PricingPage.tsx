@@ -82,6 +82,16 @@ export default function PricingPage() {
     }
   };
 
+  const getCurrentPlan = () => {
+    return plans.find(p => p.id === currentPlanId);
+  };
+
+  const isUpgrade = (plan: SubscriptionPlan) => {
+    const currentPlan = getCurrentPlan();
+    if (!currentPlan) return true;
+    return plan.display_order > currentPlan.display_order;
+  };
+
   const formatPrice = (price: number) => {
     return price === 0 ? 'Free' : `€${price.toFixed(2)}`;
   };
@@ -220,10 +230,11 @@ export default function PricingPage() {
                             className="w-full" 
                             variant={isFeatured ? "default" : "outline"}
                             size="lg"
+                            disabled={currentPlanId && !isUpgrade(plan)}
                           >
                             <Link to={plan.price === 0 ? "/auth" : `/subscription-checkout?planId=${plan.id}`}>
                               {!user ? (plan.price === 0 ? 'Get Free Tokens' : 'Subscribe Now') : 
-                               currentPlanId ? 'Upgrade Plan' : 
+                               currentPlanId ? (isUpgrade(plan) ? 'Upgrade Plan' : 'Lower Tier') : 
                                plan.price === 0 ? 'Get Free Tokens' : 'Subscribe Now'}
                             </Link>
                           </Button>
