@@ -51,22 +51,28 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('ai_tokens_used, ai_tokens_balance')
-      .eq('user_id', userId)
-      .single();
+    // Use the get_user_token_balance function to get accurate token data including limits
+    const { data: tokenData, error } = await supabase
+      .rpc('get_user_token_balance', { p_user_id: userId });
 
     if (error) {
-      console.error('Error fetching profile:', error);
+      console.error('Error fetching token balance:', error);
       return new Response(
         JSON.stringify({ error: 'Failed to fetch user data' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    // Get ai_tokens_used from profiles table
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('ai_tokens_used')
+      .eq('user_id', userId)
+      .single();
+
     const tokensUsed = profile?.ai_tokens_used || 0;
-    const tokensBalance = profile?.ai_tokens_balance || 0;
+    const tokensBalance = tokenData?.[0]?.ai_tokens || 0;
+    const tokensLimit = tokenData?.[0]?.ai_tokens_limit || 2;
     const hasTokens = tokensBalance > 0;
 
     return new Response(
@@ -74,7 +80,8 @@ serve(async (req) => {
         hasTokens,
         tokensUsed,
         tokensRemaining: tokensBalance,
-        tokensBalance
+        tokensBalance,
+        tokensLimit
       }),
       {
         status: 200,
