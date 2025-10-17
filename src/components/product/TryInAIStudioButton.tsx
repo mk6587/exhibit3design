@@ -40,7 +40,7 @@ export const TryInAIStudioButton = ({
       try {
         // Check if user has active subscription
         const { data: subscription } = await supabase
-          .rpc('get_active_subscription', { p_user_id: user.id });
+          .rpc('get_active_subscription', { p_user_id: user.id }) as any;
 
         if (subscription && subscription.length > 0) {
           setHasSubscription(true);

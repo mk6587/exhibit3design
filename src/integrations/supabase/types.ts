@@ -639,6 +639,7 @@ export type Database = {
           ai_tokens_included: number
           current_period_end: string
           file_access_tier: string
+          max_files: number
           plan_id: string
           plan_name: string
           plan_price: number
