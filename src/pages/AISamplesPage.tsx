@@ -70,14 +70,14 @@ export default function AISamplesPage() {
   };
 
   const formatServiceType = (type: string) => {
-    // Map service types to descriptive AI service names
+    // Map service types to AI Studio service names
     const serviceTypeMap: Record<string, string> = {
-      'animation': 'Kling AI 360° Video',
-      'image_generation': 'Runware AI Generation',
-      'image_edit': 'Runware Image Magic Edit',
-      'style_transfer': 'Runware Style Transfer',
-      'video_generation': 'Kling AI Video',
-      'ai_edit': 'Gemini AI Edit'
+      'animation': 'Rotating Stand Video',
+      'image_generation': 'Image Generation',
+      'image_edit': 'Image Magic Edit',
+      'style_transfer': 'Image Artistic Mode',
+      'video_generation': 'Visitors Walkthrough Video',
+      'ai_edit': 'Image Magic Edit'
     };
     
     return serviceTypeMap[type] || type
