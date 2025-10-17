@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { FileCheck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { openAIStudio } from "@/utils/aiStudioAuth";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,15 +21,18 @@ export const TryInAIStudioButton = ({
   size = "default",
   className = ""
 }: TryInAIStudioButtonProps) => {
-  const { user, profile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
-  const [hasAccess, setHasAccess] = useState(false);
+  const [hasSubscription, setHasSubscription] = useState(false);
+  const [maxFiles, setMaxFiles] = useState(0);
+  const [selectedFilesCount, setSelectedFilesCount] = useState(0);
+  const [isSelected, setIsSelected] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkAccess = async () => {
       if (!user) {
-        setHasAccess(false);
+        setHasSubscription(false);
         setLoading(false);
         return;
       }
@@ -41,38 +43,100 @@ export const TryInAIStudioButton = ({
           .rpc('get_active_subscription', { p_user_id: user.id });
 
         if (subscription && subscription.length > 0) {
-          setHasAccess(true);
+          setHasSubscription(true);
+          setMaxFiles(subscription[0].max_files || 0);
         } else {
-          setHasAccess(false);
+          setHasSubscription(false);
+          setMaxFiles(0);
+        }
+
+        // Check selected files from profile
+        if (profile?.selected_files) {
+          const selectedFiles = Array.isArray(profile.selected_files) 
+            ? profile.selected_files 
+            : [];
+          setSelectedFilesCount(selectedFiles.length);
+          setIsSelected(selectedFiles.some((file: any) => file.product_id === productId));
         }
       } catch (error) {
         console.error('Error checking subscription:', error);
-        setHasAccess(false);
+        setHasSubscription(false);
       } finally {
         setLoading(false);
       }
     };
 
     checkAccess();
-  }, [user, productId]);
+  }, [user, productId, profile]);
 
-  const handleTryInAIStudio = async () => {
+  const handlePickDesign = async () => {
     // Check if user is authenticated
     if (!user) {
-      toast.error("Please sign in to access AI Studio");
+      toast.error("Please sign in to select designs");
       navigate("/auth");
       return;
     }
 
-    if (!hasAccess) {
-      toast.error("AI Studio requires a premium subscription. Choose your plan to get started!");
+    if (!hasSubscription) {
+      toast.error("Please subscribe to a plan to select design files!");
       navigate("/pricing");
       return;
     }
 
-    // User has access - navigate to AI Studio
-    toast.success("Opening AI Studio...");
-    // TODO: Implement AI Studio navigation
+    // Check if already selected
+    if (isSelected) {
+      toast.info("This design is already in your selected files");
+      return;
+    }
+
+    // Check file limit
+    if (selectedFilesCount >= maxFiles) {
+      toast.error(`You've reached your file limit (${maxFiles} files). Upgrade your plan for more!`);
+      navigate("/pricing");
+      return;
+    }
+
+    try {
+      // Get current selected files
+      const currentFiles = Array.isArray(profile?.selected_files) 
+        ? profile.selected_files 
+        : [];
+
+      // Add new file
+      const updatedFiles = [
+        ...currentFiles,
+        {
+          product_id: productId,
+          product_title: productTitle,
+          selected_at: new Date().toISOString()
+        }
+      ];
+
+      // Update profile
+      const { error } = await supabase
+        .from('profiles')
+        .update({ selected_files: updatedFiles })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Refresh profile to get updated data
+      await refreshProfile();
+
+      toast.success("Design selected! Download links will be emailed to you.");
+      setIsSelected(true);
+      setSelectedFilesCount(updatedFiles.length);
+    } catch (error) {
+      console.error('Error selecting design:', error);
+      toast.error("Failed to select design. Please try again.");
+    }
+  };
+
+  const getButtonLabel = () => {
+    if (loading) return "Checking...";
+    if (!hasSubscription) return "Get Premium";
+    if (isSelected) return "Selected";
+    return "Select Design";
   };
 
   return (
@@ -80,10 +144,11 @@ export const TryInAIStudioButton = ({
       variant={variant}
       size={size}
       className={className}
-      onClick={handleTryInAIStudio}
-      disabled={loading}
+      onClick={handlePickDesign}
+      disabled={loading || isSelected}
     >
-      {loading ? "Checking..." : hasAccess ? "Try in AI Studio" : "Get Premium"}
+      <FileCheck className="mr-2 h-4 w-4" />
+      {getButtonLabel()}
     </Button>
   );
 };
