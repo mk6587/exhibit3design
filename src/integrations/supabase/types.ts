@@ -131,6 +131,48 @@ export type Database = {
         }
         Relationships: []
       }
+      file_requests: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          id: string
+          product_id: number
+          product_name: string
+          requested_at: string
+          status: string
+          updated_at: string
+          uploaded_at: string | null
+          uploaded_file_url: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          product_id: number
+          product_name: string
+          requested_at?: string
+          status?: string
+          updated_at?: string
+          uploaded_at?: string | null
+          uploaded_file_url?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          product_id?: number
+          product_name?: string
+          requested_at?: string
+          status?: string
+          updated_at?: string
+          uploaded_at?: string | null
+          uploaded_file_url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       otp_registrations: {
         Row: {
           created_at: string

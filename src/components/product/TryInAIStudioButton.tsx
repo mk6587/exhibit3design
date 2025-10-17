@@ -51,14 +51,23 @@ export const TryInAIStudioButton = ({
           setMaxFiles(0);
         }
 
-        // Check selected files from profile
-        if (profile?.selected_files) {
-          const selectedFiles = Array.isArray(profile.selected_files) 
-            ? profile.selected_files 
-            : [];
-          setSelectedFilesCount(selectedFiles.length);
-          setIsSelected(selectedFiles.some((file: any) => file.product_id === productId));
-        }
+        // Check if this file was already requested
+        const { data: existingRequest } = await supabase
+          .from('file_requests')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('product_id', productId)
+          .maybeSingle();
+
+        setIsSelected(!!existingRequest);
+
+        // Count total file requests
+        const { count } = await supabase
+          .from('file_requests')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id);
+
+        setSelectedFilesCount(count || 0);
       } catch (error) {
         console.error('Error checking subscription:', error);
         setHasSubscription(false);
@@ -71,11 +80,10 @@ export const TryInAIStudioButton = ({
   }, [user, productId, profile]);
 
   const handlePickDesign = async () => {
-    trackButtonClick('select_design', 'product_card', { product_id: productId, product_name: productTitle });
+    trackButtonClick('pick_design', 'Product Detail', { product_id: productId });
     
-    // Check if user is authenticated
     if (!user) {
-      toast.error("Please sign in to select designs");
+      toast.error("Please log in to select a design file");
       navigate("/auth");
       return;
     }
@@ -86,61 +94,52 @@ export const TryInAIStudioButton = ({
       return;
     }
 
-    // Check if already selected
-    if (isSelected) {
-      toast.info("This design is already in your selected files");
-      return;
-    }
-
-    // Check file limit
-    if (selectedFilesCount >= maxFiles) {
-      toast.error(`You've reached your file limit (${maxFiles} files). Upgrade your plan for more!`);
-      navigate("/pricing");
-      return;
-    }
-
     try {
-      // Get current selected files
-      const currentFiles = Array.isArray(profile?.selected_files) 
-        ? profile.selected_files 
-        : [];
+      // Check if user has already requested this file
+      const { data: existingRequest } = await supabase
+        .from('file_requests')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('product_id', productId)
+        .maybeSingle();
 
-      // Add new file
-      const updatedFiles = [
-        ...currentFiles,
-        {
-          product_id: productId,
-          product_title: productTitle,
-          selected_at: new Date().toISOString()
-        }
-      ];
+      if (existingRequest) {
+        toast.error("You've already requested this design");
+        return;
+      }
 
-      // Update profile
-      const { error } = await supabase
-        .from('profiles')
-        .update({ selected_files: updatedFiles })
+      // Check file limit
+      const { count } = await supabase
+        .from('file_requests')
+        .select('*', { count: 'exact', head: true })
         .eq('user_id', user.id);
+
+      if (count && count >= maxFiles) {
+        toast.error(`You've reached your file limit (${maxFiles} files). Upgrade your plan for more!`);
+        navigate("/pricing");
+        return;
+      }
+
+      // Create new file request
+      const { error } = await supabase
+        .from('file_requests')
+        .insert({
+          user_id: user.id,
+          product_id: productId,
+          product_name: productTitle,
+          status: 'pending'
+        });
 
       if (error) throw error;
 
-      // Refresh profile to get updated data
-      await refreshProfile();
+      // Track the file selection
+      trackFileSelection(productId, productTitle, count || 0, hasSubscription ? 'active' : 'free', maxFiles);
 
-      // Track file selection with subscription context
-      trackFileSelection(
-        productId, 
-        productTitle, 
-        updatedFiles.length,
-        hasSubscription ? 'active' : 'free',
-        maxFiles
-      );
-
-      toast.success("Design selected! Download links will be emailed to you.");
+      toast.success("Design requested! Check your profile for updates.");
       setIsSelected(true);
-      setSelectedFilesCount(updatedFiles.length);
     } catch (error) {
-      console.error('Error selecting design:', error);
-      toast.error("Failed to select design. Please try again.");
+      console.error('Error requesting design:', error);
+      toast.error("Failed to request design");
     }
   };
 

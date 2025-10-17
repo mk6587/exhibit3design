@@ -8,6 +8,7 @@ import {
   Sparkles,
   Settings,
   LogOut,
+  FileText,
 } from "lucide-react";
 import {
   Sidebar,
@@ -28,6 +29,7 @@ import { Button } from "@/components/ui/button";
 const mainItems = [
   { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
   { title: "Products", url: "/admin", icon: Package },
+  { title: "File Requests", url: "/admin/file-requests", icon: FileText },
   { title: "Subscriptions", url: "/admin/subscriptions", icon: Crown },
   { title: "Orders", url: "/admin/orders", icon: ShoppingBag },
   { title: "Users", url: "/admin/users", icon: Users },

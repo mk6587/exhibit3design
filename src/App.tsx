@@ -37,6 +37,7 @@ import AdminSubscriptionsPage from "./pages/AdminSubscriptionsPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import AdminPlansPage from "./pages/AdminPlansPage";
 import AdminAISamplesPage from "./pages/AdminAISamplesPage";
+import AdminFileRequestsPage from "./pages/AdminFileRequestsPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
 import PricingPage from "./pages/PricingPage";
@@ -122,6 +123,11 @@ const App = () => {
                       <Route path="/admin/users" element={
                         <ProtectedAdminRoute>
                           <AdminUsersPage />
+                        </ProtectedAdminRoute>
+                      } />
+                      <Route path="/admin/file-requests" element={
+                        <ProtectedAdminRoute>
+                          <AdminFileRequestsPage />
                         </ProtectedAdminRoute>
                       } />
                       <Route path="/admin/plans" element={
