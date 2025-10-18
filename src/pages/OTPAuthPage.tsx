@@ -184,27 +184,45 @@ const OTPAuthPage = () => {
     
     if (!captchaToken) {
       setError('Please complete the security verification to resend code');
+      toast({
+        title: "Security Verification Required",
+        description: "Please complete the captcha verification before resending the code.",
+        variant: "destructive",
+      });
       setIsResending(false);
       return;
     }
     
+    console.log('🔄 Resending OTP to:', email);
     const result = await sendOTP(email, undefined, captchaToken);
     
     if (result.success) {
+      console.log('✅ OTP resent successfully');
       setTimeLeft(120);
       setOTP('');
       // Reset captcha after successful resend
       captchaRef.current?.reset();
       setCaptchaToken('');
+      toast({
+        title: "Code Sent",
+        description: "A new verification code has been sent to your email.",
+        variant: "default",
+      });
       // Focus the OTP input after successfully resending the code
       setTimeout(() => {
         otpInputRef.current?.focus();
       }, 100);
     } else {
+      console.error('❌ Failed to resend OTP:', result.error);
       // Reset captcha on error
       captchaRef.current?.reset();
       setCaptchaToken('');
       setError(result.error || 'Failed to resend code');
+      toast({
+        title: "Failed to Resend",
+        description: result.error || 'Failed to resend verification code. Please try again.',
+        variant: "destructive",
+      });
     }
     
     setIsResending(false);
