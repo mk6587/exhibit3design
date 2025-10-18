@@ -186,7 +186,7 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
           </TabsList>
 
           <TabsContent value="admin-actions" className="mt-4">
-            <ScrollArea className="h-[500px] pr-4">
+            <ScrollArea className="max-h-[500px] pr-4">
               {loading ? (
                 <div className="space-y-4">
                   {[1, 2, 3, 4, 5].map((i) => (
@@ -230,7 +230,7 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
           </TabsContent>
 
           <TabsContent value="ai-usage" className="mt-4">
-            <ScrollArea className="h-[500px] pr-4">
+            <ScrollArea className="max-h-[500px] pr-4">
               {aiLoading ? (
                 <div className="space-y-4">
                   {[1, 2, 3, 4, 5].map((i) => (
