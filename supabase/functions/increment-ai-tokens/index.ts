@@ -14,9 +14,22 @@ serve(async (req) => {
   }
 
   try {
-    // Get request body for AI generation details
-    const requestBody = await req.json();
-    const { prompt, serviceType, inputImageUrl, outputImageUrl } = requestBody;
+    // Get request body for AI generation details (optional)
+    let prompt = 'AI Generation';
+    let serviceType = 'image_edit';
+    let inputImageUrl = null;
+    let outputImageUrl = null;
+
+    try {
+      const requestBody = await req.json();
+      prompt = requestBody.prompt || 'AI Generation';
+      serviceType = requestBody.serviceType || 'image_edit';
+      inputImageUrl = requestBody.inputImageUrl || null;
+      outputImageUrl = requestBody.outputImageUrl || null;
+    } catch (e) {
+      // Body parsing failed or empty body - use defaults
+      console.log('No request body or invalid JSON, using defaults');
+    }
 
     // Get JWT token from Authorization header
     const authHeader = req.headers.get('Authorization');
@@ -90,6 +103,14 @@ serve(async (req) => {
     }
 
     // Create AI generation history record
+    console.log('Creating AI generation history record:', {
+      user_id: userId,
+      prompt,
+      service_type: serviceType,
+      has_input_image: !!inputImageUrl,
+      has_output_image: !!outputImageUrl
+    });
+
     const { error: historyError } = await supabase
       .from('ai_generation_history')
       .insert({
@@ -105,6 +126,8 @@ serve(async (req) => {
     if (historyError) {
       console.error('Error creating AI generation history:', historyError);
       // Don't fail the request if history creation fails
+    } else {
+      console.log('AI generation history record created successfully');
     }
 
     // Get updated usage stats
