@@ -7,7 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Activity, Clock, Zap, Image as ImageIcon, Video } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Activity, Clock, Zap, Image as ImageIcon, Video, Download, Eye } from "lucide-react";
+import ImageViewer from "@/components/ui/image-viewer";
 
 interface ActivityLog {
   id: string;
@@ -38,6 +40,9 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
   const [aiGenerations, setAiGenerations] = useState<AIGeneration[]>([]);
   const [loading, setLoading] = useState(true);
   const [aiLoading, setAiLoading] = useState(true);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerImages, setViewerImages] = useState<string[]>([]);
+  const [viewerIndex, setViewerIndex] = useState(0);
 
   useEffect(() => {
     if (open) {
@@ -171,6 +176,30 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
     }
   };
 
+  const handleViewImages = (inputUrl: string | null, outputUrl: string) => {
+    const images = inputUrl ? [inputUrl, outputUrl] : [outputUrl];
+    setViewerImages(images);
+    setViewerIndex(0);
+    setViewerOpen(true);
+  };
+
+  const handleDownload = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+      toast.success('Download started');
+    } catch (error) {
+      toast.error('Failed to download image');
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[85vh]">
@@ -292,54 +321,60 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
 
                       {generation.output_image_url && (
                         <div className="space-y-3">
-                          <div className="flex gap-2">
+                          <div className="flex gap-3">
                             {generation.input_image_url && (
                               <div className="flex-1">
                                 <p className="text-xs font-medium text-muted-foreground mb-2">Input Image:</p>
-                                <a 
-                                  href={generation.input_image_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="block group relative"
+                                <div 
+                                  onClick={() => handleViewImages(generation.input_image_url, generation.output_image_url)}
+                                  className="cursor-pointer group relative overflow-hidden rounded-lg border"
                                 >
                                   <img 
                                     src={generation.input_image_url} 
                                     alt="Input"
-                                    className="w-full h-32 object-cover rounded border group-hover:opacity-90 transition-opacity"
+                                    className="w-full h-32 object-cover group-hover:scale-105 transition-transform"
                                   />
-                                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded">
-                                    <ImageIcon className="h-6 w-6 text-white" />
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Eye className="h-6 w-6 text-white" />
                                   </div>
-                                </a>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDownload(generation.input_image_url!, `input-${generation.id}.png`)}
+                                  className="w-full mt-2"
+                                >
+                                  <Download className="h-3 w-3 mr-2" />
+                                  Download Input
+                                </Button>
                               </div>
                             )}
                             <div className="flex-1">
                               <p className="text-xs font-medium text-muted-foreground mb-2">Generated Output:</p>
-                              <a 
-                                href={generation.output_image_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block group relative"
+                              <div 
+                                onClick={() => handleViewImages(generation.input_image_url, generation.output_image_url)}
+                                className="cursor-pointer group relative overflow-hidden rounded-lg border"
                               >
                                 <img 
                                   src={generation.output_image_url} 
                                   alt="Output"
-                                  className="w-full h-32 object-cover rounded border group-hover:opacity-90 transition-opacity"
+                                  className="w-full h-32 object-cover group-hover:scale-105 transition-transform"
                                 />
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded">
-                                  <ImageIcon className="h-6 w-6 text-white" />
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Eye className="h-6 w-6 text-white" />
                                 </div>
-                              </a>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDownload(generation.output_image_url, `output-${generation.id}.png`)}
+                                className="w-full mt-2"
+                              >
+                                <Download className="h-3 w-3 mr-2" />
+                                Download Output
+                              </Button>
                             </div>
                           </div>
-                          <a
-                            href={generation.output_image_url}
-                            download={`ai-generation-${generation.id}.png`}
-                            className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
-                          >
-                            <ImageIcon className="h-4 w-4" />
-                            Download Output Image
-                          </a>
                         </div>
                       )}
                     </div>
@@ -350,6 +385,14 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
           </TabsContent>
         </Tabs>
       </DialogContent>
+
+      <ImageViewer
+        isOpen={viewerOpen}
+        onClose={() => setViewerOpen(false)}
+        images={viewerImages}
+        initialIndex={viewerIndex}
+        title="AI Generation Images"
+      />
     </Dialog>
   );
 }
