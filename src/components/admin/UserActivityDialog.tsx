@@ -308,23 +308,13 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
                         </div>
                       </div>
 
-                      {generation.prompt && generation.prompt !== 'AI Generation' && (
-                        <div className="text-sm">
-                          <p className="font-medium text-foreground mb-2">User Prompt:</p>
-                          <div className="bg-muted/50 rounded-md p-3 border">
-                            <p className="text-muted-foreground whitespace-pre-wrap break-words">
-                              {generation.prompt}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      {generation.output_image_url && (
-                        <div className="space-y-3">
-                          <div className="flex gap-3">
+                      {/* Input Section - Show text and/or image based on what's available */}
+                      {(generation.prompt || generation.input_image_url) && (
+                        <div className="space-y-2">
+                          <p className="text-xs font-medium text-muted-foreground">Input:</p>
+                          <div className="space-y-2">
                             {generation.input_image_url && (
-                              <div className="flex-1">
-                                <p className="text-xs font-medium text-muted-foreground mb-2">Input Image:</p>
+                              <div>
                                 <div 
                                   onClick={() => handleViewImages(generation.input_image_url, generation.output_image_url)}
                                   className="cursor-pointer group relative overflow-hidden rounded-lg border"
@@ -349,32 +339,44 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
                                 </Button>
                               </div>
                             )}
-                            <div className="flex-1">
-                              <p className="text-xs font-medium text-muted-foreground mb-2">Generated Output:</p>
-                              <div 
-                                onClick={() => handleViewImages(generation.input_image_url, generation.output_image_url)}
-                                className="cursor-pointer group relative overflow-hidden rounded-lg border"
-                              >
-                                <img 
-                                  src={generation.output_image_url} 
-                                  alt="Output"
-                                  className="w-full h-32 object-cover group-hover:scale-105 transition-transform"
-                                />
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <Eye className="h-6 w-6 text-white" />
-                                </div>
+                            {generation.prompt && generation.prompt !== 'AI Generation' && (
+                              <div className="bg-muted/50 rounded-md p-3 border">
+                                <p className="text-xs font-medium text-muted-foreground mb-2">Text Prompt:</p>
+                                <p className="text-sm text-muted-foreground whitespace-pre-wrap break-words">
+                                  {generation.prompt}
+                                </p>
                               </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDownload(generation.output_image_url, `output-${generation.id}.png`)}
-                                className="w-full mt-2"
-                              >
-                                <Download className="h-3 w-3 mr-2" />
-                                Download Output
-                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Output Section */}
+                      {generation.output_image_url && (
+                        <div className="space-y-2">
+                          <p className="text-xs font-medium text-muted-foreground">Generated Output:</p>
+                          <div 
+                            onClick={() => handleViewImages(generation.input_image_url, generation.output_image_url)}
+                            className="cursor-pointer group relative overflow-hidden rounded-lg border"
+                          >
+                            <img 
+                              src={generation.output_image_url} 
+                              alt="Output"
+                              className="w-full h-32 object-cover group-hover:scale-105 transition-transform"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Eye className="h-6 w-6 text-white" />
                             </div>
                           </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDownload(generation.output_image_url, `output-${generation.id}.png`)}
+                            className="w-full mt-2"
+                          >
+                            <Download className="h-3 w-3 mr-2" />
+                            Download Output
+                          </Button>
                         </div>
                       )}
                     </div>
