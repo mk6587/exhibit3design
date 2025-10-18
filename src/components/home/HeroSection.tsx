@@ -105,7 +105,7 @@ export const HeroSection = () => {
               textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6)'
             }}
           >
-            Show clients your stand in motion, instantly.
+            Get a ready-made exhibition stand design file and enhance it with powerful AI tools — generate rotating booth videos, add realistic visitors, create pencil sketch views, and apply Magic Edit for custom layouts. Experience the future of exhibition design with lifelike 3D visuals, all in one AI-powered platform.
           </p>
           
           <div className="flex justify-center">
