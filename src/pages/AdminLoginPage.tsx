@@ -10,8 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 import { adminLoginSchema } from '@/lib/validationSchemas';
 import { TurnstileCaptcha, TurnstileCaptchaRef } from '@/components/ui/turnstile-captcha';
 
-// Turnstile site key - same as used in OTP auth and checkout
-const TURNSTILE_SITE_KEY = '0x4AAAAAABrwTuOgXHn1AdM8';
+// Cloudflare Turnstile site key from environment variables
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
 
 const AdminLoginPage = () => {
   const [email, setEmail] = useState('');

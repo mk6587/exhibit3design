@@ -16,8 +16,8 @@ import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { otpSchema } from '@/lib/validationSchemas';
 
-// Turnstile test site key - always passes
-const TURNSTILE_SITE_KEY = '1x00000000000000000000AA';
+// Cloudflare Turnstile site key from environment variables
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
 
 const OTPAuthPage = () => {
   const [email, setEmail] = useState('');
@@ -291,7 +291,7 @@ const OTPAuthPage = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Security Verification (Test Mode)</Label>
+                    <Label>Security Verification</Label>
                     <TurnstileCaptcha
                       ref={captchaRef}
                       siteKey={TURNSTILE_SITE_KEY}
@@ -370,7 +370,7 @@ const OTPAuthPage = () => {
                   {timeLeft === 0 && (
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label>Security Verification for Resend (Test Mode)</Label>
+                        <Label>Security Verification for Resend</Label>
                         <TurnstileCaptcha
                           ref={captchaRef}
                           siteKey={TURNSTILE_SITE_KEY}
