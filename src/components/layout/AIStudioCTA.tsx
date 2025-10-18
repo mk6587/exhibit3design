@@ -41,7 +41,7 @@ export const AIStudioCTA = () => {
                 : 'opacity-0 translate-y-full'
             }`}
           >
-            5 Free Tokens
+            2 Free Tokens
           </span>
         </div>
       </Link>
@@ -86,7 +86,7 @@ export const AIStudioCTAMobile = () => {
                 : 'opacity-0 translate-y-full'
             }`}
           >
-            5 Free Tokens
+            2 Free Tokens
           </span>
         </div>
       </Link>

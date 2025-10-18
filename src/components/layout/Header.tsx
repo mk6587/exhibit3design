@@ -247,7 +247,7 @@ const Header = () => {
                 Login / Register
               </Link>
               <Link to="/pricing" className="mobile-nav-item hover:bg-flat-hover transition-colors font-semibold text-primary" onClick={() => setIsMenuOpen(false)}>
-                Get 5 Free Tokens
+                Get Started Free
               </Link>
             </>}
         </nav>

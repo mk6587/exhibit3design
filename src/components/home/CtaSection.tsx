@@ -15,11 +15,11 @@ const CtaSection = () => {
           Start Designing Faster Today
         </h2>
         <p className="text-xs md:text-base mb-4 md:mb-6 max-w-lg md:max-w-2xl mx-auto opacity-90 px-4">
-          Try AI editing for free with 5 tokens. No credit card required.
+          Try AI editing for free with 2 tokens. No credit card required.
         </p>
         <div className="flex justify-center px-4">
           <Button asChild size="lg" variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10 font-semibold">
-            <Link to="/pricing">Get 5 Free Tokens</Link>
+            <Link to="/pricing">Get Started Free</Link>
           </Button>
         </div>
         <p className="text-xs md:text-sm mt-3 md:mt-4 opacity-70 px-4">

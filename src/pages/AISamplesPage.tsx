@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { Sparkles, Calendar, Wand2, Users, Pencil, Video, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Sparkles, Calendar, Wand2, Users, Pencil, Video, ArrowRight, CheckCircle2, Image as ImageIcon, Film, RotateCw, UserPlus, Palette, Lightbulb, Eye } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
@@ -24,6 +26,10 @@ export default function AISamplesPage() {
   const [curatedSamples, setCuratedSamples] = useState<AICuratedSample[]>([]);
   const [loading, setLoading] = useState(true);
   const [hoveredSampleId, setHoveredSampleId] = useState<string | null>(null);
+  const [tryBeforeUseOpen, setTryBeforeUseOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+  const [mockOutput, setMockOutput] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     trackPageView('/ai-samples', 'AI Examples - Exhibition Design Gallery');
@@ -75,36 +81,94 @@ export default function AISamplesPage() {
     );
   }
 
-  const services = [
+  const imageServices = [
     {
-      icon: Video,
-      title: "360° Rotating Videos",
-      description: "Transform static booth images into dynamic 360° walkthroughs that showcase your design from every angle.",
-      benefits: ["Instant video generation", "Professional quality", "Multiple viewing angles"],
-      color: "from-purple-500 to-indigo-500"
-    },
-    {
-      icon: Users,
-      title: "Add Realistic Visitors",
+      icon: UserPlus,
+      title: "Adding Visitors",
       description: "Bring your exhibition stands to life by adding lifelike visitors and event attendees to your designs.",
       benefits: ["Natural crowd placement", "Diverse visitor types", "Realistic interactions"],
-      color: "from-blue-500 to-cyan-500"
-    },
-    {
-      icon: Pencil,
-      title: "Sketch to Render",
-      description: "Convert your booth designs into artistic pencil sketches or transform sketches into photorealistic renders.",
-      benefits: ["Artistic visualization", "Client presentations", "Concept development"],
-      color: "from-pink-500 to-rose-500"
+      color: "from-blue-500 to-cyan-500",
+      aiStudioLink: "/products",
+      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
     },
     {
       icon: Wand2,
-      title: "Magic Edit",
+      title: "Image Magic Edit",
       description: "Intelligently modify layouts, colors, materials, and elements with simple text commands.",
       benefits: ["Instant modifications", "Smart suggestions", "Unlimited iterations"],
-      color: "from-amber-500 to-orange-500"
+      color: "from-amber-500 to-orange-500",
+      aiStudioLink: "/products",
+      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png"
+    },
+    {
+      icon: Pencil,
+      title: "Image Artistic Mode",
+      description: "Convert your booth designs into artistic pencil sketches or transform sketches into photorealistic renders.",
+      benefits: ["Artistic visualization", "Client presentations", "Concept development"],
+      color: "from-pink-500 to-rose-500",
+      aiStudioLink: "/products",
+      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
+    },
+    {
+      icon: Lightbulb,
+      title: "Text to Image",
+      description: "Generate stunning exhibition stand visuals from text descriptions using advanced AI.",
+      benefits: ["Instant generation", "Creative freedom", "Multiple variations"],
+      color: "from-violet-500 to-purple-500",
+      aiStudioLink: "/products",
+      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png"
     }
   ];
+
+  const videoServices = [
+    {
+      icon: Film,
+      title: "Text or Image to Video",
+      description: "Transform static images or text prompts into dynamic video presentations of your exhibition designs.",
+      benefits: ["Dynamic presentations", "Engaging content", "Easy sharing"],
+      color: "from-green-500 to-emerald-500",
+      aiStudioLink: "/products",
+      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
+    },
+    {
+      icon: RotateCw,
+      title: "Rotating a Stand Video",
+      description: "Create stunning 360° rotating videos that showcase your exhibition stand from every angle.",
+      benefits: ["360° view", "Professional quality", "Client wow-factor"],
+      color: "from-purple-500 to-indigo-500",
+      aiStudioLink: "/products",
+      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png"
+    },
+    {
+      icon: Users,
+      title: "Visitors Walkthrough Video",
+      description: "Generate immersive walkthrough videos with realistic visitors exploring your exhibition space.",
+      benefits: ["Immersive experience", "Realistic scenarios", "Marketing ready"],
+      color: "from-cyan-500 to-blue-500",
+      aiStudioLink: "/products",
+      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
+    }
+  ];
+
+  const handleTryService = (service: any) => {
+    setSelectedService(service);
+    setMockOutput(null);
+    setTryBeforeUseOpen(true);
+  };
+
+  const handleMockGenerate = () => {
+    // Simulate AI processing
+    setTimeout(() => {
+      setMockOutput(selectedService.mockOutput);
+    }, 1500);
+  };
 
   return (
     <Layout
@@ -114,7 +178,7 @@ export default function AISamplesPage() {
     >
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
         {/* Hero Section */}
-        <section className="relative py-20 px-4 overflow-hidden">
+        <section className="relative py-16 px-4 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-purple-500/5 to-background"></div>
           <div className="container mx-auto max-w-6xl text-center relative z-10">
             <Badge className="mb-6 text-base px-4 py-2" variant="outline">
@@ -127,15 +191,111 @@ export default function AISamplesPage() {
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
               Professional AI tools that bring your exhibition stands to life. Generate 360° videos, add realistic visitors, create artistic sketches, and edit designs instantly — all powered by advanced AI technology.
             </p>
-            <div className="flex flex-wrap gap-4 justify-center">
-              <Button asChild size="lg" className="text-lg px-8">
-                <Link to="/products">
-                  Explore Designs <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="text-lg px-8">
-                <Link to="/pricing">View Pricing</Link>
-              </Button>
+          </div>
+        </section>
+
+        {/* See AI in Action - Quick Showcase */}
+        <section className="py-12 px-4 bg-gradient-to-r from-primary/5 via-purple-500/5 to-primary/5">
+          <div className="container mx-auto max-w-6xl text-center">
+            <Badge className="mb-4" variant="outline">
+              <Eye className="h-3 w-3 mr-1" />
+              See AI in Action
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">From Concept to Reality in Seconds</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Watch as our AI transforms static exhibition designs into dynamic, presentation-ready materials
+            </p>
+          </div>
+        </section>
+
+        {/* Three Core Pillars Story */}
+        <section className="py-20 px-4">
+          <div className="container mx-auto max-w-7xl">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Your Complete Exhibition Design Journey</h2>
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                From ready-made 3D files to AI-powered enhancements, we provide everything you need to create stunning exhibition stands
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              <Card className="border-2 hover:border-primary/50 transition-all group">
+                <CardContent className="p-8 text-center">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                    <Sparkles className="h-10 w-10 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4">Generate</h3>
+                  <p className="text-muted-foreground leading-relaxed mb-4">
+                    Start with professional, ready-made 3D design files created by exhibition experts. No design experience needed.
+                  </p>
+                  <ul className="text-sm space-y-2 text-left">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>Industry-standard 3D formats</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>Professionally designed layouts</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>Instant download access</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="border-2 hover:border-primary/50 transition-all group">
+                <CardContent className="p-8 text-center">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                    <Video className="h-10 w-10 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4">Visualize</h3>
+                  <p className="text-muted-foreground leading-relaxed mb-4">
+                    Transform static designs into dynamic presentations with AI-powered rotating videos, 360° walkthroughs, and realistic visitor simulations.
+                  </p>
+                  <ul className="text-sm space-y-2 text-left">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>360° rotating stand videos</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>Realistic visitor walkthroughs</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>Professional realism</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="border-2 hover:border-primary/50 transition-all group">
+                <CardContent className="p-8 text-center">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                    <Palette className="h-10 w-10 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4">Customize</h3>
+                  <p className="text-muted-foreground leading-relaxed mb-4">
+                    Fine-tune every detail with AI Magic Edit, artistic modes, and smart visitor placement for trade-show perfect results.
+                  </p>
+                  <ul className="text-sm space-y-2 text-left">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>Magic Edit with text commands</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>Pencil sketch artistic style</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>Trade-show accuracy</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </section>
@@ -167,22 +327,22 @@ export default function AISamplesPage() {
           </div>
         </section>
 
-        {/* Services Section */}
-        <section className="py-20 px-4">
+        {/* Image AI Services */}
+        <section className="py-16 px-4 bg-muted/30">
           <div className="container mx-auto max-w-7xl">
-            <div className="text-center mb-16">
+            <div className="text-center mb-12">
               <Badge className="mb-4" variant="outline">
-                <Wand2 className="h-3 w-3 mr-1" />
-                AI Services
+                <ImageIcon className="h-3 w-3 mr-1" />
+                Image Tools
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Powerful AI Tools at Your Fingertips</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Powerful Image AI Tools</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Each service is designed to streamline your workflow and deliver exceptional results
+                Transform and enhance your exhibition stand images with cutting-edge AI technology
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-8">
-              {services.map((service, idx) => {
+              {imageServices.map((service, idx) => {
                 const Icon = service.icon;
                 return (
                   <Card key={idx} className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50 overflow-hidden">
@@ -195,13 +355,95 @@ export default function AISamplesPage() {
                       <p className="text-muted-foreground mb-6 leading-relaxed">
                         {service.description}
                       </p>
-                      <div className="space-y-2">
+                      <div className="space-y-2 mb-6">
                         {service.benefits.map((benefit, bidx) => (
                           <div key={bidx} className="flex items-center gap-2 text-sm">
                             <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
                             <span>{benefit}</span>
                           </div>
                         ))}
+                      </div>
+                      <div className="flex gap-3">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleTryService(service)}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          Try Before Use
+                        </Button>
+                        <Button 
+                          asChild 
+                          size="sm"
+                        >
+                          <Link to={service.aiStudioLink}>
+                            Use in AI Studio <ArrowRight className="h-4 w-4 ml-2" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Video AI Services */}
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-7xl">
+            <div className="text-center mb-12">
+              <Badge className="mb-4" variant="outline">
+                <Film className="h-3 w-3 mr-1" />
+                Video Tools
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Dynamic Video AI Tools</h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Create engaging video content that brings your exhibition designs to life
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {videoServices.map((service, idx) => {
+                const Icon = service.icon;
+                return (
+                  <Card key={idx} className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50 overflow-hidden">
+                    <div className={`h-2 bg-gradient-to-r ${service.color}`}></div>
+                    <CardContent className="p-8">
+                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                        <Icon className="h-8 w-8 text-white" />
+                      </div>
+                      <h3 className="text-xl font-bold mb-3">{service.title}</h3>
+                      <p className="text-muted-foreground mb-6 leading-relaxed text-sm">
+                        {service.description}
+                      </p>
+                      <div className="space-y-2 mb-6">
+                        {service.benefits.map((benefit, bidx) => (
+                          <div key={bidx} className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+                            <span>{benefit}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleTryService(service)}
+                          className="text-xs"
+                        >
+                          <Eye className="h-3 w-3 mr-1" />
+                          Try
+                        </Button>
+                        <Button 
+                          asChild 
+                          size="sm"
+                          className="text-xs"
+                        >
+                          <Link to={service.aiStudioLink}>
+                            Use Now <ArrowRight className="h-3 w-3 ml-1" />
+                          </Link>
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -303,7 +545,7 @@ export default function AISamplesPage() {
                 <Sparkles className="h-16 w-16 mx-auto mb-6 text-primary" />
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Transform Your Designs?</h2>
                 <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                  Start with 5 free AI tokens. Experience the power of AI-driven exhibition design today.
+                  Start with 2 free AI tokens. Experience the power of AI-driven exhibition design today.
                 </p>
                 <div className="flex flex-wrap gap-4 justify-center">
                   <Button asChild size="lg" className="text-lg px-8">
@@ -311,15 +553,68 @@ export default function AISamplesPage() {
                       Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
                     </Link>
                   </Button>
-                  <Button asChild size="lg" variant="outline" className="text-lg px-8">
-                    <Link to="/products">View Templates</Link>
-                  </Button>
                 </div>
               </CardContent>
             </Card>
           </div>
         </section>
       </div>
+
+      {/* Try Before Use Dialog */}
+      <Dialog open={tryBeforeUseOpen} onOpenChange={setTryBeforeUseOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Try: {selectedService?.title}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            <div className="bg-muted/30 p-4 rounded-lg">
+              <p className="text-sm text-muted-foreground mb-4">
+                This is a demo preview. Sign up to use the real AI tool with your own images.
+              </p>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-semibold mb-2">Input Image (Sample)</p>
+                  <img 
+                    src={selectedService?.mockImage} 
+                    alt="Sample input" 
+                    className="w-full rounded-lg border-2"
+                  />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold mb-2">
+                    {mockOutput ? "Generated Output" : "Output Preview"}
+                  </p>
+                  {mockOutput ? (
+                    <img 
+                      src={mockOutput} 
+                      alt="Generated output" 
+                      className="w-full rounded-lg border-2 border-primary"
+                    />
+                  ) : (
+                    <div className="w-full aspect-video bg-muted rounded-lg border-2 border-dashed flex items-center justify-center">
+                      <p className="text-muted-foreground">Click Generate to see result</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 justify-center">
+              {!mockOutput ? (
+                <Button onClick={handleMockGenerate} size="lg">
+                  <Sparkles className="h-5 w-5 mr-2" />
+                  Generate (Demo)
+                </Button>
+              ) : (
+                <Button onClick={() => navigate('/pricing')} size="lg">
+                  <ArrowRight className="h-5 w-5 mr-2" />
+                  Get Started Free - Use Real AI
+                </Button>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }

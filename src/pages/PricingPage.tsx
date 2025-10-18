@@ -320,11 +320,11 @@ export default function PricingPage() {
                 Start with Free AI Trial
               </h2>
               <p className="text-lg text-muted-foreground mb-8">
-                Try our AI tools before subscribing. Get 5 free tokens and 1 sample file access. No credit card required.
+                Try our AI tools before subscribing. Get 2 free tokens and 1 sample file access. No credit card required.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" onClick={handleGetFreeTokens}>
-                  {user ? 'Try AI Studio' : 'Get 5 Free Tokens'}
+                  {user ? 'Try AI Studio' : 'Get Started Free'}
                 </Button>
                 <Button asChild size="lg" variant="outline">
                   <Link to="/ai-samples">See AI Examples</Link>
