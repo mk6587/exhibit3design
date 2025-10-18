@@ -324,7 +324,7 @@ export default function AISamplesPage() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="border-2 hover:border-colorful-blue transition-colors">
+              <Card className="border-2 hover:border-colorful-blue transition-colors bg-gradient-to-br from-colorful-blue/5 to-transparent">
                 <CardContent className="p-6 text-center">
                   <div className="w-16 h-16 rounded-full bg-colorful-blue/10 flex items-center justify-center mx-auto mb-4">
                     <Sparkles className="h-8 w-8 text-colorful-blue" />
@@ -350,7 +350,7 @@ export default function AISamplesPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:border-colorful-teal transition-colors">
+              <Card className="border-2 hover:border-colorful-teal transition-colors bg-gradient-to-br from-colorful-teal/5 to-transparent">
                 <CardContent className="p-6 text-center">
                   <div className="w-16 h-16 rounded-full bg-colorful-teal/10 flex items-center justify-center mx-auto mb-4">
                     <Video className="h-8 w-8 text-colorful-teal" />
@@ -376,7 +376,7 @@ export default function AISamplesPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:border-colorful-orange transition-colors">
+              <Card className="border-2 hover:border-colorful-orange transition-colors bg-gradient-to-br from-colorful-orange/5 to-transparent">
                 <CardContent className="p-6 text-center">
                   <div className="w-16 h-16 rounded-full bg-colorful-orange/10 flex items-center justify-center mx-auto mb-4">
                     <Palette className="h-8 w-8 text-colorful-orange" />
@@ -421,9 +421,9 @@ export default function AISamplesPage() {
                 { title: "Exhibition-Focused AI", description: "AI for exhibition design — flawless results, no prompt hassle.", color: "blue" }
               ].map((item, idx) => (
                 <Card key={idx} className={`border-2 transition-colors ${
-                  item.color === 'pink' ? 'hover:border-colorful-pink' : 
-                  item.color === 'green' ? 'hover:border-colorful-green' : 
-                  'hover:border-colorful-blue'
+                  item.color === 'pink' ? 'hover:border-colorful-pink bg-gradient-to-br from-colorful-pink/5 to-transparent' : 
+                  item.color === 'green' ? 'hover:border-colorful-green bg-gradient-to-br from-colorful-green/5 to-transparent' : 
+                  'hover:border-colorful-blue bg-gradient-to-br from-colorful-blue/5 to-transparent'
                 }`}>
                   <CardContent className="p-6 text-center">
                     <CheckCircle2 className={`h-10 w-10 mx-auto mb-3 ${
@@ -458,14 +458,14 @@ export default function AISamplesPage() {
               {imageServices.map((service, idx) => {
                 const Icon = service.icon;
                 const colorClasses = [
-                  { bg: 'bg-colorful-pink/10', text: 'text-colorful-pink', border: 'hover:border-colorful-pink' },
-                  { bg: 'bg-colorful-blue/10', text: 'text-colorful-blue', border: 'hover:border-colorful-blue' },
-                  { bg: 'bg-colorful-teal/10', text: 'text-colorful-teal', border: 'hover:border-colorful-teal' },
-                  { bg: 'bg-colorful-orange/10', text: 'text-colorful-orange', border: 'hover:border-colorful-orange' }
+                  { bg: 'bg-gradient-to-br from-colorful-pink/5 to-transparent', text: 'text-colorful-pink', border: 'hover:border-colorful-pink' },
+                  { bg: 'bg-gradient-to-br from-colorful-blue/5 to-transparent', text: 'text-colorful-blue', border: 'hover:border-colorful-blue' },
+                  { bg: 'bg-gradient-to-br from-colorful-teal/5 to-transparent', text: 'text-colorful-teal', border: 'hover:border-colorful-teal' },
+                  { bg: 'bg-gradient-to-br from-colorful-orange/5 to-transparent', text: 'text-colorful-orange', border: 'hover:border-colorful-orange' }
                 ];
                 const colors = colorClasses[idx % colorClasses.length];
                 return (
-                  <Card key={idx} className={`border-2 ${colors.border} transition-colors`}>
+                  <Card key={idx} className={`border-2 ${colors.border} transition-colors ${colors.bg}`}>
                     <CardContent className="p-6">
                       <div className={`w-12 h-12 rounded-lg ${colors.bg} flex items-center justify-center mb-4`}>
                         <Icon className={`h-6 w-6 ${colors.text}`} />
@@ -526,13 +526,13 @@ export default function AISamplesPage() {
               {videoServices.map((service, idx) => {
                 const Icon = service.icon;
                 const colorClasses = [
-                  { bg: 'bg-colorful-green/10', text: 'text-colorful-green', border: 'hover:border-colorful-green' },
-                  { bg: 'bg-colorful-pink/10', text: 'text-colorful-pink', border: 'hover:border-colorful-pink' },
-                  { bg: 'bg-colorful-blue/10', text: 'text-colorful-blue', border: 'hover:border-colorful-blue' }
+                  { bg: 'bg-gradient-to-br from-colorful-green/5 to-transparent', text: 'text-colorful-green', border: 'hover:border-colorful-green' },
+                  { bg: 'bg-gradient-to-br from-colorful-pink/5 to-transparent', text: 'text-colorful-pink', border: 'hover:border-colorful-pink' },
+                  { bg: 'bg-gradient-to-br from-colorful-blue/5 to-transparent', text: 'text-colorful-blue', border: 'hover:border-colorful-blue' }
                 ];
                 const colors = colorClasses[idx % colorClasses.length];
                 return (
-                  <Card key={idx} className={`border-2 ${colors.border} transition-colors`}>
+                  <Card key={idx} className={`border-2 ${colors.border} transition-colors ${colors.bg}`}>
                     <CardContent className="p-6">
                       <div className={`w-12 h-12 rounded-lg ${colors.bg} flex items-center justify-center mb-4`}>
                         <Icon className={`h-6 w-6 ${colors.text}`} />
