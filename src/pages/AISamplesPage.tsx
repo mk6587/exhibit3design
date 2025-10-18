@@ -221,7 +221,7 @@ export default function AISamplesPage() {
               Transform Exhibition Designs with AI
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Professional AI tools for 360° videos, realistic visitors, artistic sketches, and instant edits.
+              All-in-one AI suite for rotating videos, visitor scenes, sketches, and instant edits.
             </p>
           </div>
         </section>
