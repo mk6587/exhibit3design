@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface OTPAuthContextType {
   sendOTP: (email: string, passwordHash?: string, captchaToken?: string) => Promise<{ success: boolean; error?: string }>;
-  verifyOTP: (email: string, otp: string, captchaToken?: string) => Promise<{ success: boolean; error?: string; user?: any; magicLink?: string; isNewUser?: boolean }>;
+  verifyOTP: (email: string, otp: string, captchaToken?: string) => Promise<{ success: boolean; error?: string; errorType?: string; user?: any; magicLink?: string; isNewUser?: boolean }>;
   isLoading: boolean;
 }
 
@@ -94,16 +94,12 @@ export function OTPAuthProvider({ children }: OTPAuthProviderProps) {
       }
 
       if (data?.error) {
-        // Convert backend errors to user-friendly messages
-        let userMessage = data.error;
-        if (data.error.includes('No verification code found')) {
-          userMessage = 'Verification code has expired. Please request a new code.';
-        } else if (data.error.includes('Invalid')) {
-          userMessage = 'Invalid verification code. Please check and try again.';
-        } else if (data.error.includes('expired')) {
-          userMessage = 'Verification code has expired. Please request a new code.';
-        }
-        return { success: false, error: userMessage };
+        // Return both error message and errorType from backend
+        return { 
+          success: false, 
+          error: data.error,
+          errorType: data.errorType 
+        };
       }
 
       return { 

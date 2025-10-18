@@ -137,7 +137,41 @@ const OTPAuthPage = () => {
         }
       }
     } else {
-      setError(result.error || 'Invalid verification code');
+      // Show specific error messages based on error type
+      const errorMsg = result.error || 'Invalid verification code';
+      
+      if (result.errorType === 'code_expired') {
+        setError('This code has expired. Please request a new code.');
+        toast({
+          title: "Code Expired",
+          description: "Your verification code has expired. Click 'Resend' to get a new one.",
+          variant: "destructive",
+        });
+      } else if (result.errorType === 'code_already_used') {
+        setError('This code has already been used. Please request a new code.');
+        toast({
+          title: "Code Already Used",
+          description: "This verification code was already used. Please request a new one.",
+          variant: "destructive",
+        });
+      } else if (result.errorType === 'no_code_found') {
+        setError('No verification code found. Please request a new code.');
+        toast({
+          title: "No Code Found",
+          description: "We couldn't find a verification code for this email. Please request a new one.",
+          variant: "destructive",
+        });
+      } else if (result.errorType === 'incorrect_code') {
+        setError('Incorrect verification code. Please check and try again.');
+        toast({
+          title: "Incorrect Code",
+          description: "The code you entered is incorrect. Please double-check and try again.",
+          variant: "destructive",
+        });
+      } else {
+        setError(errorMsg);
+      }
+      
       setOTP('');
     }
   };
