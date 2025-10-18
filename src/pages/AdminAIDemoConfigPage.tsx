@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Save, Image as ImageIcon, Film } from "lucide-react";
+import { Loader2, Save, Image as ImageIcon, Film, Type } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 
 interface DemoConfig {
@@ -17,6 +18,7 @@ interface DemoConfig {
   service_type: 'image' | 'video';
   mock_input_url: string;
   mock_output_url: string;
+  mock_text_prompt?: string;
   is_active: boolean;
   display_order: number;
 }
@@ -121,6 +123,24 @@ export default function AdminAIDemoConfigPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-4">
+                    {config.service_key === 'text_to_image' && (
+                      <div className="grid gap-2">
+                        <Label htmlFor={`prompt-${config.id}`} className="flex items-center gap-2">
+                          <Type className="h-4 w-4" />
+                          Mock Text Prompt (Optional)
+                        </Label>
+                        <Textarea
+                          id={`prompt-${config.id}`}
+                          value={config.mock_text_prompt || ''}
+                          onChange={(e) => handleInputChange(config.id, 'mock_text_prompt' as keyof DemoConfig, e.target.value)}
+                          placeholder="A modern exhibition stand with LED screens..."
+                          rows={3}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          This text will be shown as a sample prompt in the demo
+                        </p>
+                      </div>
+                    )}
                     <div className="grid gap-2">
                       <Label htmlFor={`input-${config.id}`}>Input Image URL</Label>
                       <Input
@@ -142,7 +162,8 @@ export default function AdminAIDemoConfigPage() {
                     <Button
                       onClick={() => handleUpdate(config.id, {
                         mock_input_url: config.mock_input_url,
-                        mock_output_url: config.mock_output_url
+                        mock_output_url: config.mock_output_url,
+                        ...(config.service_key === 'text_to_image' && { mock_text_prompt: config.mock_text_prompt })
                       })}
                       disabled={saving === config.id}
                     >

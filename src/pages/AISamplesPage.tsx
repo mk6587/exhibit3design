@@ -29,6 +29,7 @@ interface DemoConfig {
   service_type: 'image' | 'video';
   mock_input_url: string;
   mock_output_url: string;
+  mock_text_prompt?: string;
   is_active: boolean;
   display_order: number;
 }
@@ -120,6 +121,7 @@ export default function AISamplesPage() {
     {
       icon: UserPlus,
       title: "Adding Visitors",
+      serviceKey: "adding_visitors",
       description: "Bring your exhibition stands to life by adding lifelike visitors and event attendees to your designs.",
       benefits: ["Natural crowd placement", "Diverse visitor types", "Realistic interactions"],
       color: "from-blue-500 to-cyan-500",
@@ -130,6 +132,7 @@ export default function AISamplesPage() {
     {
       icon: Wand2,
       title: "Image Magic Edit",
+      serviceKey: "image_magic_edit",
       description: "Intelligently modify layouts, colors, materials, and elements with simple text commands.",
       benefits: ["Instant modifications", "Smart suggestions", "Unlimited iterations"],
       color: "from-amber-500 to-orange-500",
@@ -140,6 +143,7 @@ export default function AISamplesPage() {
     {
       icon: Pencil,
       title: "Image Artistic Mode",
+      serviceKey: "image_artistic_mode",
       description: "Convert your booth designs into artistic pencil sketches or transform sketches into photorealistic renders.",
       benefits: ["Artistic visualization", "Client presentations", "Concept development"],
       color: "from-pink-500 to-rose-500",
@@ -150,6 +154,7 @@ export default function AISamplesPage() {
     {
       icon: Lightbulb,
       title: "Text to Image",
+      serviceKey: "text_to_image",
       description: "Generate stunning exhibition stand visuals from text descriptions using advanced AI.",
       benefits: ["Instant generation", "Creative freedom", "Multiple variations"],
       color: "from-violet-500 to-purple-500",
@@ -163,6 +168,7 @@ export default function AISamplesPage() {
     {
       icon: Film,
       title: "Text or Image to Video",
+      serviceKey: "text_image_to_video",
       description: "Transform static images or text prompts into dynamic video presentations of your exhibition designs.",
       benefits: ["Dynamic presentations", "Engaging content", "Easy sharing"],
       color: "from-green-500 to-emerald-500",
@@ -173,6 +179,7 @@ export default function AISamplesPage() {
     {
       icon: RotateCw,
       title: "Rotating a Stand Video",
+      serviceKey: "rotating_stand_video",
       description: "Create stunning 360° rotating videos that showcase your exhibition stand from every angle.",
       benefits: ["360° view", "Professional quality", "Client wow-factor"],
       color: "from-purple-500 to-indigo-500",
@@ -183,6 +190,7 @@ export default function AISamplesPage() {
     {
       icon: Users,
       title: "Visitors Walkthrough Video",
+      serviceKey: "visitors_walkthrough_video",
       description: "Generate immersive walkthrough videos with realistic visitors exploring your exhibition space.",
       benefits: ["Immersive experience", "Realistic scenarios", "Marketing ready"],
       color: "from-cyan-500 to-blue-500",
@@ -193,9 +201,10 @@ export default function AISamplesPage() {
   ];
 
   const handleTryService = (service: any) => {
+    const config = getConfigForService(service.serviceKey);
     setSelectedService(service);
     setMockOutput(null);
-    setTextPrompt("");
+    setTextPrompt(config?.mock_text_prompt || "");
     setUploadedImage(null);
     setTryBeforeUseOpen(true);
   };
@@ -625,7 +634,7 @@ export default function AISamplesPage() {
               </p>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  {selectedService?.title === "Text to Image" ? (
+                  {selectedService?.serviceKey === 'text_to_image' ? (
                     <div className="space-y-4">
                       <div>
                         <p className="text-sm font-semibold mb-2">Text Prompt</p>

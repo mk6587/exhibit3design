@@ -109,6 +109,7 @@ export type Database = {
           is_active: boolean
           mock_input_url: string
           mock_output_url: string
+          mock_text_prompt: string | null
           service_key: string
           service_name: string
           service_type: string
@@ -121,6 +122,7 @@ export type Database = {
           is_active?: boolean
           mock_input_url: string
           mock_output_url: string
+          mock_text_prompt?: string | null
           service_key: string
           service_name: string
           service_type: string
@@ -133,6 +135,7 @@ export type Database = {
           is_active?: boolean
           mock_input_url?: string
           mock_output_url?: string
+          mock_text_prompt?: string | null
           service_key?: string
           service_name?: string
           service_type?: string
