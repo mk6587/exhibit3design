@@ -194,17 +194,36 @@ export default function AISamplesPage() {
           </div>
         </section>
 
-        {/* See AI in Action - Quick Showcase */}
-        <section className="py-12 px-4 bg-gradient-to-r from-primary/5 via-purple-500/5 to-primary/5">
-          <div className="container mx-auto max-w-6xl text-center">
-            <Badge className="mb-4" variant="outline">
-              <Eye className="h-3 w-3 mr-1" />
-              See AI in Action
+        {/* See AI in Action */}
+        <section className="py-20 px-4 bg-gradient-to-br from-primary/10 via-purple-500/10 to-background relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(120,119,198,0.1),transparent_50%)]"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(236,72,153,0.1),transparent_50%)]"></div>
+          <div className="container mx-auto max-w-6xl text-center relative z-10">
+            <Badge className="mb-6 text-base px-6 py-2 shadow-lg" variant="outline">
+              <Eye className="h-4 w-4 mr-2" />
+              Real Examples
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">From Concept to Reality in Seconds</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Watch as our AI transforms static exhibition designs into dynamic, presentation-ready materials
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              See AI in Action
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-16 leading-relaxed">
+              Explore real transformations created with our AI tools. Hover to see the source images.
             </p>
+            
+            {/* From Concept to Reality Highlight */}
+            <div className="bg-card/50 backdrop-blur-sm border-2 border-primary/20 rounded-2xl p-12 shadow-2xl max-w-4xl mx-auto">
+              <div className="inline-flex items-center gap-2 text-primary mb-6">
+                <Sparkles className="h-6 w-6" />
+                <span className="text-sm font-semibold tracking-wide uppercase">The Magic Happens Here</span>
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <h3 className="text-3xl md:text-4xl font-bold mb-6">
+                From Concept to Reality in Seconds
+              </h3>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Watch as our AI transforms static exhibition designs into dynamic, presentation-ready materials
+              </p>
+            </div>
           </div>
         </section>
 
