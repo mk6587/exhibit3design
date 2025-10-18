@@ -321,11 +321,11 @@ export default function AISamplesPage() {
                   <ul className="text-sm space-y-2 text-left">
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                      <span>Industry-standard 3D formats</span>
+                      <span>Industry-standard 3D files</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                      <span>Professionally designed layouts</span>
+                      <span>Professional stand designs</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
@@ -373,7 +373,7 @@ export default function AISamplesPage() {
                   <ul className="text-sm space-y-2 text-left">
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                      <span>Magic Edit with text commands</span>
+                      <span>Magic Edit with text prompt</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
