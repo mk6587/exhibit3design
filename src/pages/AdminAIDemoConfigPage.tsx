@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, Save, Image as ImageIcon, Film } from "lucide-react";
-import AdminLayout from "@/components/layout/Layout";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 
 interface DemoConfig {
   id: string;
@@ -73,10 +73,7 @@ export default function AdminAIDemoConfigPage() {
 
   if (loading) {
     return (
-      <AdminLayout
-        title="AI Demo Configuration | Admin Panel"
-        description="Manage AI service demo configurations"
-      >
+      <AdminLayout>
         <div className="flex items-center justify-center min-h-screen">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -88,10 +85,7 @@ export default function AdminAIDemoConfigPage() {
   const videoConfigs = configs.filter(c => c.service_type === 'video');
 
   return (
-    <AdminLayout
-      title="AI Demo Configuration | Admin Panel"
-      description="Manage AI service demo configurations"
-    >
+    <AdminLayout>
       <div className="container mx-auto py-8 px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">AI Demo Configuration</h1>
