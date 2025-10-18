@@ -211,8 +211,12 @@ export default function AISamplesPage() {
     >
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
         {/* Hero Section - Flat Design */}
-        <section className="relative py-8 px-4 bg-background">
+        <section className="relative py-8 px-4 bg-gradient-to-br from-colorful-blue/5 via-colorful-teal/5 to-colorful-pink/5">
           <div className="container mx-auto max-w-5xl text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-colorful-blue/10 text-colorful-blue mb-4">
+              <Sparkles className="h-4 w-4" />
+              <span className="text-sm font-medium">AI-Powered Design Tools</span>
+            </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-3 text-foreground">
               Transform Exhibition Designs with AI
             </h1>
@@ -259,9 +263,9 @@ export default function AISamplesPage() {
                     const isVideo = sample.type === 'video';
 
                     return (
-                      <Card 
+                       <Card 
                         key={sample.id} 
-                        className="overflow-hidden group cursor-pointer transition-all duration-200 hover:shadow-md"
+                        className="overflow-hidden group cursor-pointer transition-all duration-200 hover:shadow-md hover:border-colorful-blue"
                         onMouseEnter={() => setHoveredSampleId(sample.id)}
                         onMouseLeave={() => setHoveredSampleId(null)}
                       >
@@ -320,10 +324,10 @@ export default function AISamplesPage() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="border-2 hover:border-primary transition-colors">
+              <Card className="border-2 hover:border-colorful-blue transition-colors">
                 <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <Sparkles className="h-8 w-8 text-primary" />
+                  <div className="w-16 h-16 rounded-full bg-colorful-blue/10 flex items-center justify-center mx-auto mb-4">
+                    <Sparkles className="h-8 w-8 text-colorful-blue" />
                   </div>
                   <h3 className="text-xl font-bold mb-3">Generate</h3>
                   <p className="text-muted-foreground mb-4">
@@ -331,25 +335,25 @@ export default function AISamplesPage() {
                   </p>
                   <ul className="text-sm space-y-2 text-left">
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-colorful-blue mt-0.5 flex-shrink-0" />
                       <span>Industry-standard 3D files</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-colorful-blue mt-0.5 flex-shrink-0" />
                       <span>Professional stand designs</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-colorful-blue mt-0.5 flex-shrink-0" />
                       <span>Instant download access</span>
                     </li>
                   </ul>
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:border-primary transition-colors">
+              <Card className="border-2 hover:border-colorful-teal transition-colors">
                 <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <Video className="h-8 w-8 text-primary" />
+                  <div className="w-16 h-16 rounded-full bg-colorful-teal/10 flex items-center justify-center mx-auto mb-4">
+                    <Video className="h-8 w-8 text-colorful-teal" />
                   </div>
                   <h3 className="text-xl font-bold mb-3">Visualize</h3>
                   <p className="text-muted-foreground mb-4">
@@ -357,25 +361,25 @@ export default function AISamplesPage() {
                   </p>
                   <ul className="text-sm space-y-2 text-left">
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-colorful-teal mt-0.5 flex-shrink-0" />
                       <span>Rotating stand videos</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-colorful-teal mt-0.5 flex-shrink-0" />
                       <span>Realistic visitor walkthroughs</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-colorful-teal mt-0.5 flex-shrink-0" />
                       <span>Professional realism</span>
                     </li>
                   </ul>
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:border-primary transition-colors">
+              <Card className="border-2 hover:border-colorful-orange transition-colors">
                 <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <Palette className="h-8 w-8 text-primary" />
+                  <div className="w-16 h-16 rounded-full bg-colorful-orange/10 flex items-center justify-center mx-auto mb-4">
+                    <Palette className="h-8 w-8 text-colorful-orange" />
                   </div>
                   <h3 className="text-xl font-bold mb-3">Customize</h3>
                   <p className="text-muted-foreground mb-4">
@@ -383,15 +387,15 @@ export default function AISamplesPage() {
                   </p>
                   <ul className="text-sm space-y-2 text-left">
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-colorful-orange mt-0.5 flex-shrink-0" />
                       <span>Magic Edit with text prompt</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-colorful-orange mt-0.5 flex-shrink-0" />
                       <span>Pencil sketch artistic style</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-colorful-orange mt-0.5 flex-shrink-0" />
                       <span>Exhibition-Focused AI</span>
                     </li>
                   </ul>
@@ -412,13 +416,21 @@ export default function AISamplesPage() {
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {[
-                { title: "10x Faster", description: "Generate variations and modifications in seconds instead of hours" },
-                { title: "Cost Effective", description: "Reduce design iteration costs by up to 90% with AI assistance" },
-                { title: "Exhibition-Focused AI", description: "AI for exhibition design — flawless results, no prompt hassle." }
+                { title: "10x Faster", description: "Generate variations and modifications in seconds instead of hours", color: "pink" },
+                { title: "Cost Effective", description: "Reduce design iteration costs by up to 90% with AI assistance", color: "green" },
+                { title: "Exhibition-Focused AI", description: "AI for exhibition design — flawless results, no prompt hassle.", color: "blue" }
               ].map((item, idx) => (
-                <Card key={idx} className="border-2 hover:border-primary transition-colors">
+                <Card key={idx} className={`border-2 transition-colors ${
+                  item.color === 'pink' ? 'hover:border-colorful-pink' : 
+                  item.color === 'green' ? 'hover:border-colorful-green' : 
+                  'hover:border-colorful-blue'
+                }`}>
                   <CardContent className="p-6 text-center">
-                    <CheckCircle2 className="h-10 w-10 mx-auto mb-3 text-primary" />
+                    <CheckCircle2 className={`h-10 w-10 mx-auto mb-3 ${
+                      item.color === 'pink' ? 'text-colorful-pink' : 
+                      item.color === 'green' ? 'text-colorful-green' : 
+                      'text-colorful-blue'
+                    }`} />
                     <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
                     <p className="text-muted-foreground">{item.description}</p>
                   </CardContent>
@@ -445,11 +457,18 @@ export default function AISamplesPage() {
             <div className="grid md:grid-cols-2 gap-6">
               {imageServices.map((service, idx) => {
                 const Icon = service.icon;
+                const colorClasses = [
+                  { bg: 'bg-colorful-pink/10', text: 'text-colorful-pink', border: 'hover:border-colorful-pink' },
+                  { bg: 'bg-colorful-blue/10', text: 'text-colorful-blue', border: 'hover:border-colorful-blue' },
+                  { bg: 'bg-colorful-teal/10', text: 'text-colorful-teal', border: 'hover:border-colorful-teal' },
+                  { bg: 'bg-colorful-orange/10', text: 'text-colorful-orange', border: 'hover:border-colorful-orange' }
+                ];
+                const colors = colorClasses[idx % colorClasses.length];
                 return (
-                  <Card key={idx} className="border-2 hover:border-primary transition-colors">
+                  <Card key={idx} className={`border-2 ${colors.border} transition-colors`}>
                     <CardContent className="p-6">
-                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                        <Icon className="h-6 w-6 text-primary" />
+                      <div className={`w-12 h-12 rounded-lg ${colors.bg} flex items-center justify-center mb-4`}>
+                        <Icon className={`h-6 w-6 ${colors.text}`} />
                       </div>
                       <h3 className="text-xl font-bold mb-2">{service.title}</h3>
                       <p className="text-muted-foreground mb-4 text-sm">
@@ -458,7 +477,7 @@ export default function AISamplesPage() {
                       <div className="space-y-2 mb-4">
                         {service.benefits.map((benefit, bidx) => (
                           <div key={bidx} className="flex items-center gap-2 text-sm">
-                            <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+                            <CheckCircle2 className={`h-4 w-4 ${colors.text} flex-shrink-0`} />
                             <span>{benefit}</span>
                           </div>
                         ))}
@@ -506,11 +525,17 @@ export default function AISamplesPage() {
             <div className="grid md:grid-cols-3 gap-6">
               {videoServices.map((service, idx) => {
                 const Icon = service.icon;
+                const colorClasses = [
+                  { bg: 'bg-colorful-green/10', text: 'text-colorful-green', border: 'hover:border-colorful-green' },
+                  { bg: 'bg-colorful-pink/10', text: 'text-colorful-pink', border: 'hover:border-colorful-pink' },
+                  { bg: 'bg-colorful-blue/10', text: 'text-colorful-blue', border: 'hover:border-colorful-blue' }
+                ];
+                const colors = colorClasses[idx % colorClasses.length];
                 return (
-                  <Card key={idx} className="border-2 hover:border-primary transition-colors">
+                  <Card key={idx} className={`border-2 ${colors.border} transition-colors`}>
                     <CardContent className="p-6">
-                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                        <Icon className="h-6 w-6 text-primary" />
+                      <div className={`w-12 h-12 rounded-lg ${colors.bg} flex items-center justify-center mb-4`}>
+                        <Icon className={`h-6 w-6 ${colors.text}`} />
                       </div>
                       <h3 className="text-lg font-bold mb-2">{service.title}</h3>
                       <p className="text-muted-foreground mb-4 text-sm">
@@ -519,7 +544,7 @@ export default function AISamplesPage() {
                       <div className="space-y-2 mb-4">
                         {service.benefits.map((benefit, bidx) => (
                           <div key={bidx} className="flex items-center gap-2 text-sm">
-                            <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+                            <CheckCircle2 className={`h-4 w-4 ${colors.text} flex-shrink-0`} />
                             <span>{benefit}</span>
                           </div>
                         ))}
@@ -552,16 +577,16 @@ export default function AISamplesPage() {
 
 
         {/* CTA Section - Flat Design */}
-        <section className="py-12 px-4 bg-background">
+        <section className="py-12 px-4 bg-gradient-to-r from-colorful-pink/5 via-colorful-blue/5 to-colorful-teal/5">
           <div className="container mx-auto max-w-4xl">
-            <Card className="border-2 border-primary">
+            <Card className="border-2 border-colorful-blue hover:border-colorful-pink transition-colors">
               <CardContent className="p-8 md:p-12 text-center">
-                <Sparkles className="h-12 w-12 mx-auto mb-4 text-primary" />
+                <Sparkles className="h-12 w-12 mx-auto mb-4 text-colorful-blue" />
                 <h2 className="text-3xl md:text-4xl font-bold mb-3">Ready to Transform Your Designs?</h2>
                 <p className="text-base text-muted-foreground mb-6 max-w-2xl mx-auto">
                   Start with 2 free AI tokens. Experience the power of AI-driven exhibition design today.
                 </p>
-                <Button asChild size="lg">
+                <Button asChild size="lg" className="bg-colorful-blue hover:bg-colorful-blue/90">
                   <Link to="/pricing">
                     Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>

@@ -60,6 +60,13 @@ export default {
 					surface: 'hsl(var(--flat-surface))',
 					border: 'hsl(var(--flat-border))',
 					hover: 'hsl(var(--flat-hover))'
+				},
+				colorful: {
+					blue: 'hsl(var(--color-blue))',
+					teal: 'hsl(var(--color-teal))',
+					orange: 'hsl(var(--color-orange))',
+					pink: 'hsl(var(--color-pink))',
+					green: 'hsl(var(--color-green))'
 				}
 			},
 			borderRadius: {

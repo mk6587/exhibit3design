@@ -35,6 +35,13 @@
 
     --radius: 0.125rem;
     
+    /* Colorful accents */
+    --color-blue: 210 100% 56%;
+    --color-teal: 174 72% 56%;
+    --color-orange: 25 95% 53%;
+    --color-pink: 330 81% 60%;
+    --color-green: 142 76% 45%;
+    
     /* Flat design specific variables */
     --flat-surface: 0 0% 99%;
     --flat-border: 214.3 31.8% 87%;
@@ -69,6 +76,13 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 260 84% 60%;
+    
+    /* Colorful accents for dark mode */
+    --color-blue: 210 100% 60%;
+    --color-teal: 174 72% 60%;
+    --color-orange: 25 95% 58%;
+    --color-pink: 330 81% 65%;
+    --color-green: 142 76% 50%;
     
     /* Flat design specific variables for dark mode */
     --flat-surface: 222.2 84% 6%;
