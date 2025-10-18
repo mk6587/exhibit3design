@@ -211,7 +211,7 @@ export default function AISamplesPage() {
             </p>
             
             {/* From Concept to Reality Highlight */}
-            <div className="bg-card/50 backdrop-blur-sm border-2 border-primary/20 rounded-2xl p-12 shadow-2xl max-w-4xl mx-auto">
+            <div className="bg-card/50 backdrop-blur-sm border-2 border-primary/20 rounded-2xl p-12 shadow-2xl max-w-4xl mx-auto mb-16">
               <div className="inline-flex items-center gap-2 text-primary mb-6">
                 <Sparkles className="h-6 w-6" />
                 <span className="text-sm font-semibold tracking-wide uppercase">The Magic Happens Here</span>
@@ -223,6 +223,77 @@ export default function AISamplesPage() {
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Watch as our AI transforms static exhibition designs into dynamic, presentation-ready materials
               </p>
+            </div>
+
+            {/* Real AI Examples Gallery */}
+            <div className="max-w-7xl mx-auto">
+              {curatedSamples.length === 0 ? (
+                <div className="text-center py-16">
+                  <Sparkles className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">No examples available</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Check back soon for AI transformation examples
+                  </p>
+                  <Button asChild>
+                    <Link to="/products">Browse Designs</Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {curatedSamples.map((sample) => {
+                    const isHovered = hoveredSampleId === sample.id;
+                    const displayImage = (isHovered && sample.before_image_url) 
+                      ? sample.before_image_url 
+                      : sample.after_image_url;
+                    const isVideo = sample.type === 'video';
+
+                    return (
+                      <Card 
+                        key={sample.id} 
+                        className="overflow-hidden group cursor-pointer hover:shadow-lg transition-all duration-300"
+                        onMouseEnter={() => setHoveredSampleId(sample.id)}
+                        onMouseLeave={() => setHoveredSampleId(null)}
+                      >
+                        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                          {isVideo && sample.after_video_url && !isHovered ? (
+                            <video
+                              src={sample.after_video_url}
+                              className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                              muted
+                              loop
+                              playsInline
+                              autoPlay
+                            />
+                          ) : (
+                            <img
+                              src={displayImage}
+                              alt={isHovered && sample.before_image_url ? "Source image" : sample.name}
+                              className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                              loading="lazy"
+                            />
+                          )}
+                          <Badge 
+                            className="absolute top-3 left-3 backdrop-blur-sm shadow-lg transition-all duration-300 bg-purple-600 text-white border-purple-600 hover:bg-purple-700"
+                          >
+                            {isHovered && sample.before_image_url ? "Source" : "AI Result"}
+                          </Badge>
+                        </div>
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <Calendar className="h-3 w-3" />
+                              <span>{formatDate(sample.created_at)}</span>
+                            </div>
+                            <Badge variant="outline" className="text-xs">
+                              {sample.mode_label}
+                            </Badge>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -472,89 +543,6 @@ export default function AISamplesPage() {
           </div>
         </section>
 
-        {/* AI Examples Grid */}
-        <section className="py-20 px-4 bg-muted/30">
-          <div className="container mx-auto max-w-7xl">
-            <div className="text-center mb-12">
-              <Badge className="mb-4" variant="outline">
-                <Sparkles className="h-3 w-3 mr-1" />
-                Real Examples
-              </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">See AI in Action</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Explore real transformations created with our AI tools. Hover to see the source images.
-              </p>
-            </div>
-
-            {curatedSamples.length === 0 ? (
-              <div className="text-center py-16">
-                <Sparkles className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No examples available</h3>
-                <p className="text-muted-foreground mb-6">
-                  Check back soon for AI transformation examples
-                </p>
-                <Button asChild>
-                  <Link to="/products">Browse Designs</Link>
-                </Button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {curatedSamples.map((sample) => {
-                  const isHovered = hoveredSampleId === sample.id;
-                  const displayImage = (isHovered && sample.before_image_url) 
-                    ? sample.before_image_url 
-                    : sample.after_image_url;
-                  const isVideo = sample.type === 'video';
-
-                  return (
-                    <Card 
-                      key={sample.id} 
-                      className="overflow-hidden group cursor-pointer hover:shadow-lg transition-all duration-300"
-                      onMouseEnter={() => setHoveredSampleId(sample.id)}
-                      onMouseLeave={() => setHoveredSampleId(null)}
-                    >
-                      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                        {isVideo && sample.after_video_url && !isHovered ? (
-                          <video
-                            src={sample.after_video_url}
-                            className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
-                            muted
-                            loop
-                            playsInline
-                            autoPlay
-                          />
-                        ) : (
-                          <img
-                            src={displayImage}
-                            alt={isHovered && sample.before_image_url ? "Source image" : sample.name}
-                            className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
-                            loading="lazy"
-                          />
-                        )}
-                        <Badge 
-                          className="absolute top-3 left-3 backdrop-blur-sm shadow-lg transition-all duration-300 bg-purple-600 text-white border-purple-600 hover:bg-purple-700"
-                        >
-                          {isHovered && sample.before_image_url ? "Source" : "AI Result"}
-                        </Badge>
-                      </div>
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Calendar className="h-3 w-3" />
-                            <span>{formatDate(sample.created_at)}</span>
-                          </div>
-                          <Badge variant="outline" className="text-xs">
-                            {sample.mode_label}
-                          </Badge>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </section>
 
         {/* CTA Section */}
         <section className="py-16 px-4">
