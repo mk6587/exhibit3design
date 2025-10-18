@@ -6,7 +6,8 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Activity, Clock } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Activity, Clock, Zap, Image as ImageIcon, Video } from "lucide-react";
 
 interface ActivityLog {
   id: string;
@@ -14,6 +15,16 @@ interface ActivityLog {
   action_details: any;
   created_at: string;
   admin_id: string;
+}
+
+interface AIGeneration {
+  id: string;
+  service_type: string;
+  prompt: string;
+  tokens_used: number;
+  created_at: string;
+  output_image_url: string | null;
+  input_image_url: string | null;
 }
 
 interface UserActivityDialogProps {
@@ -24,11 +35,14 @@ interface UserActivityDialogProps {
 
 export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityDialogProps) {
   const [activities, setActivities] = useState<ActivityLog[]>([]);
+  const [aiGenerations, setAiGenerations] = useState<AIGeneration[]>([]);
   const [loading, setLoading] = useState(true);
+  const [aiLoading, setAiLoading] = useState(true);
 
   useEffect(() => {
     if (open) {
       loadActivities();
+      loadAIGenerations();
     }
   }, [open, userId]);
 
@@ -48,6 +62,25 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
       toast.error('Failed to load activity log');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadAIGenerations = async () => {
+    setAiLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('ai_generation_history')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+      setAiGenerations(data || []);
+    } catch (error: any) {
+      toast.error('Failed to load AI usage history');
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -105,60 +138,170 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
     }
   };
 
+  const getServiceIcon = (serviceType: string) => {
+    switch (serviceType) {
+      case 'image_edit':
+        return <ImageIcon className="h-4 w-4" />;
+      case 'video_generation':
+        return <Video className="h-4 w-4" />;
+      default:
+        return <Zap className="h-4 w-4" />;
+    }
+  };
+
+  const getServiceLabel = (serviceType: string) => {
+    switch (serviceType) {
+      case 'image_edit':
+        return 'AI Image Edit';
+      case 'video_generation':
+        return 'AI Video Generation';
+      default:
+        return serviceType;
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh]">
+      <DialogContent className="max-w-3xl max-h-[85vh]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />
-            User Activity Log
+            User Activity & AI Usage
           </DialogTitle>
           <DialogDescription>
-            Recent actions performed on this user account
+            View admin actions and AI token usage history
           </DialogDescription>
         </DialogHeader>
         
-        <ScrollArea className="h-[500px] pr-4">
-          {loading ? (
-            <div className="space-y-4">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="space-y-2">
-                  <Skeleton className="h-6 w-32" />
-                  <Skeleton className="h-16 w-full" />
-                </div>
-              ))}
-            </div>
-          ) : activities.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No activity recorded yet</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {activities.map((activity) => {
-                const actionInfo = getActionLabel(activity.action_type);
-                return (
-                  <div
-                    key={activity.id}
-                    className="border rounded-lg p-4 space-y-2"
-                  >
-                    <div className="flex items-start justify-between">
-                      <Badge variant={actionInfo.variant as any}>
-                        {actionInfo.text}
-                      </Badge>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Clock className="h-3 w-3" />
-                        {format(new Date(activity.created_at), 'MMM dd, yyyy HH:mm')}
-                      </div>
+        <Tabs defaultValue="admin-actions" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="admin-actions" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              Admin Actions
+            </TabsTrigger>
+            <TabsTrigger value="ai-usage" className="flex items-center gap-2">
+              <Zap className="h-4 w-4" />
+              AI Usage History
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="admin-actions" className="mt-4">
+            <ScrollArea className="h-[500px] pr-4">
+              {loading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="h-6 w-32" />
+                      <Skeleton className="h-16 w-full" />
                     </div>
-                    
-                    {formatDetails(activity.action_type, activity.action_details)}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </ScrollArea>
+                  ))}
+                </div>
+              ) : activities.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No admin activity recorded yet</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {activities.map((activity) => {
+                    const actionInfo = getActionLabel(activity.action_type);
+                    return (
+                      <div
+                        key={activity.id}
+                        className="border rounded-lg p-4 space-y-2"
+                      >
+                        <div className="flex items-start justify-between">
+                          <Badge variant={actionInfo.variant as any}>
+                            {actionInfo.text}
+                          </Badge>
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <Clock className="h-3 w-3" />
+                            {format(new Date(activity.created_at), 'MMM dd, yyyy HH:mm')}
+                          </div>
+                        </div>
+                        
+                        {formatDetails(activity.action_type, activity.action_details)}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </ScrollArea>
+          </TabsContent>
+
+          <TabsContent value="ai-usage" className="mt-4">
+            <ScrollArea className="h-[500px] pr-4">
+              {aiLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="h-6 w-32" />
+                      <Skeleton className="h-24 w-full" />
+                    </div>
+                  ))}
+                </div>
+              ) : aiGenerations.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <Zap className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No AI usage recorded yet</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {aiGenerations.map((generation) => (
+                    <div
+                      key={generation.id}
+                      className="border rounded-lg p-4 space-y-3"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2">
+                          {getServiceIcon(generation.service_type)}
+                          <Badge variant="secondary">
+                            {getServiceLabel(generation.service_type)}
+                          </Badge>
+                          <Badge variant="outline" className="font-mono">
+                            {generation.tokens_used} token{generation.tokens_used !== 1 ? 's' : ''}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Clock className="h-3 w-3" />
+                          {format(new Date(generation.created_at), 'MMM dd, yyyy HH:mm')}
+                        </div>
+                      </div>
+
+                      <div className="text-sm text-muted-foreground">
+                        <p className="font-medium text-foreground mb-1">Prompt:</p>
+                        <p className="line-clamp-2">{generation.prompt}</p>
+                      </div>
+
+                      {generation.output_image_url && (
+                        <div className="flex gap-2">
+                          {generation.input_image_url && (
+                            <div className="flex-1">
+                              <p className="text-xs text-muted-foreground mb-1">Input:</p>
+                              <img 
+                                src={generation.input_image_url} 
+                                alt="Input"
+                                className="w-full h-32 object-cover rounded border"
+                              />
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <p className="text-xs text-muted-foreground mb-1">Output:</p>
+                            <img 
+                              src={generation.output_image_url} 
+                              alt="Output"
+                              className="w-full h-32 object-cover rounded border"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
