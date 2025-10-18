@@ -105,16 +105,16 @@ const Header = () => {
               variant="ghost" 
               size="sm" 
               onClick={handleAIStudioClick}
-              className="hidden md:flex items-center gap-1.5 hover:bg-muted px-2"
+              className="hidden md:flex items-center gap-1.5 hover:bg-muted px-2 relative"
             >
-              <Sparkles className="h-4 w-4 text-purple-600" />
-              <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+              <Sparkles className="h-4 w-4 text-purple-600 transition-none" />
+              <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-none">
                 AI Studio
               </span>
               {profile && aiTokens > 0 && (
                 <Badge 
                   variant="secondary" 
-                  className="ml-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0"
+                  className="ml-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10"
                 >
                   {aiTokens}
                 </Badge>
@@ -154,14 +154,14 @@ const Header = () => {
               onClick={handleAIStudioClick}
               className="md:hidden relative hover:bg-muted flex items-center gap-1 px-2"
             >
-              <Sparkles className="h-4 w-4 text-purple-600" />
-              <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+              <Sparkles className="h-4 w-4 text-purple-600 transition-none" />
+              <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-none">
                 AI Studio
               </span>
               {profile && aiTokens > 0 && (
                 <Badge 
                   variant="secondary" 
-                  className="ml-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0"
+                  className="ml-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10"
                 >
                   {aiTokens}
                 </Badge>
