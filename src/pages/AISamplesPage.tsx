@@ -22,8 +22,20 @@ interface AICuratedSample {
   created_at: string;
 }
 
+interface DemoConfig {
+  id: string;
+  service_key: string;
+  service_name: string;
+  service_type: 'image' | 'video';
+  mock_input_url: string;
+  mock_output_url: string;
+  is_active: boolean;
+  display_order: number;
+}
+
 export default function AISamplesPage() {
   const [curatedSamples, setCuratedSamples] = useState<AICuratedSample[]>([]);
+  const [demoConfigs, setDemoConfigs] = useState<DemoConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [hoveredSampleId, setHoveredSampleId] = useState<string | null>(null);
   const [tryBeforeUseOpen, setTryBeforeUseOpen] = useState(false);
@@ -34,7 +46,23 @@ export default function AISamplesPage() {
   useEffect(() => {
     trackPageView('/ai-samples', 'AI Examples - Exhibition Design Gallery');
     fetchCuratedSamples();
+    fetchDemoConfigs();
   }, []);
+
+  const fetchDemoConfigs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('ai_demo_configs')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+
+      if (error) throw error;
+      setDemoConfigs((data || []) as DemoConfig[]);
+    } catch (error) {
+      console.error('Error fetching demo configs:', error);
+    }
+  };
 
   const fetchCuratedSamples = async () => {
     try {
@@ -64,7 +92,12 @@ export default function AISamplesPage() {
     });
   };
 
-  if (loading) {
+  // Helper to get config for a service
+  const getConfigForService = (serviceKey: string) => {
+    return demoConfigs.find(c => c.service_key === serviceKey);
+  };
+
+  if (loading || demoConfigs.length === 0) {
     return (
       <Layout
       title="AI-Powered Exhibition Design History | Exhibit3Design"
@@ -89,8 +122,8 @@ export default function AISamplesPage() {
       benefits: ["Natural crowd placement", "Diverse visitor types", "Realistic interactions"],
       color: "from-blue-500 to-cyan-500",
       aiStudioLink: "/products",
-      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
-      mockOutput: "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
+      mockImage: getConfigForService('adding_visitors')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: getConfigForService('adding_visitors')?.mock_output_url || "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
     },
     {
       icon: Wand2,
@@ -99,8 +132,8 @@ export default function AISamplesPage() {
       benefits: ["Instant modifications", "Smart suggestions", "Unlimited iterations"],
       color: "from-amber-500 to-orange-500",
       aiStudioLink: "/products",
-      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
-      mockOutput: "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png"
+      mockImage: getConfigForService('image_magic_edit')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: getConfigForService('image_magic_edit')?.mock_output_url || "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png"
     },
     {
       icon: Pencil,
@@ -109,8 +142,8 @@ export default function AISamplesPage() {
       benefits: ["Artistic visualization", "Client presentations", "Concept development"],
       color: "from-pink-500 to-rose-500",
       aiStudioLink: "/products",
-      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
-      mockOutput: "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
+      mockImage: getConfigForService('image_artistic_mode')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: getConfigForService('image_artistic_mode')?.mock_output_url || "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
     },
     {
       icon: Lightbulb,
@@ -119,8 +152,8 @@ export default function AISamplesPage() {
       benefits: ["Instant generation", "Creative freedom", "Multiple variations"],
       color: "from-violet-500 to-purple-500",
       aiStudioLink: "/products",
-      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
-      mockOutput: "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png"
+      mockImage: getConfigForService('text_to_image')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: getConfigForService('text_to_image')?.mock_output_url || "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png"
     }
   ];
 
@@ -132,8 +165,8 @@ export default function AISamplesPage() {
       benefits: ["Dynamic presentations", "Engaging content", "Easy sharing"],
       color: "from-green-500 to-emerald-500",
       aiStudioLink: "/products",
-      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
-      mockOutput: "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
+      mockImage: getConfigForService('text_image_to_video')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: getConfigForService('text_image_to_video')?.mock_output_url || "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
     },
     {
       icon: RotateCw,
@@ -142,8 +175,8 @@ export default function AISamplesPage() {
       benefits: ["360° view", "Professional quality", "Client wow-factor"],
       color: "from-purple-500 to-indigo-500",
       aiStudioLink: "/products",
-      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
-      mockOutput: "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png"
+      mockImage: getConfigForService('rotating_stand_video')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: getConfigForService('rotating_stand_video')?.mock_output_url || "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png"
     },
     {
       icon: Users,
@@ -152,8 +185,8 @@ export default function AISamplesPage() {
       benefits: ["Immersive experience", "Realistic scenarios", "Marketing ready"],
       color: "from-cyan-500 to-blue-500",
       aiStudioLink: "/products",
-      mockImage: "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
-      mockOutput: "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
+      mockImage: getConfigForService('visitors_walkthrough_video')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
+      mockOutput: getConfigForService('visitors_walkthrough_video')?.mock_output_url || "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
     }
   ];
 

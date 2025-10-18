@@ -101,6 +101,45 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_demo_configs: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          is_active: boolean
+          mock_input_url: string
+          mock_output_url: string
+          service_key: string
+          service_name: string
+          service_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          mock_input_url: string
+          mock_output_url: string
+          service_key: string
+          service_name: string
+          service_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          mock_input_url?: string
+          mock_output_url?: string
+          service_key?: string
+          service_name?: string
+          service_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_generation_history: {
         Row: {
           created_at: string

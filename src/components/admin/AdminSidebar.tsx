@@ -9,6 +9,7 @@ import {
   LogOut,
   FileText,
   Shield,
+  MonitorPlay,
 } from "lucide-react";
 import {
   Sidebar,
@@ -37,6 +38,7 @@ const mainItems = [
 const settingsItems = [
   { title: "Plans", url: "/admin/plans", icon: Settings },
   { title: "AI Samples", url: "/admin/ai-samples", icon: Sparkles },
+  { title: "AI Demo Config", url: "/admin/ai-demo-config", icon: MonitorPlay },
   { title: "Security", url: "/admin/security", icon: Shield },
 ];
 

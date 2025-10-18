@@ -37,6 +37,7 @@ import AdminSubscriptionsPage from "./pages/AdminSubscriptionsPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import AdminPlansPage from "./pages/AdminPlansPage";
 import AdminAISamplesPage from "./pages/AdminAISamplesPage";
+import AdminAIDemoConfigPage from "./pages/AdminAIDemoConfigPage";
 import AdminFileRequestsPage from "./pages/AdminFileRequestsPage";
 import AdminSecurityPage from "./pages/AdminSecurityPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
@@ -140,6 +141,11 @@ const App = () => {
                       <Route path="/admin/ai-samples" element={
                         <ProtectedAdminRoute>
                           <AdminAISamplesPage />
+                        </ProtectedAdminRoute>
+                      } />
+                      <Route path="/admin/ai-demo-config" element={
+                        <ProtectedAdminRoute>
+                          <AdminAIDemoConfigPage />
                         </ProtectedAdminRoute>
                       } />
                       <Route path="/admin/security" element={
