@@ -292,6 +292,62 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, []);
 
+  // Set up realtime subscription for profile updates
+  useEffect(() => {
+    if (!user?.id) return;
+
+    console.log('Setting up realtime subscription for user:', user.id);
+
+    const channel = supabase
+      .channel('profile-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('Realtime profile update received:', payload);
+          
+          // Update profile state with new data
+          setProfile((currentProfile) => {
+            if (!currentProfile) return null;
+            
+            const newData = payload.new as Profile;
+            
+            // Update GA4 user properties with new token balances
+            if (newData.ai_tokens_balance !== currentProfile.ai_tokens_balance ||
+                newData.video_results_balance !== currentProfile.video_results_balance) {
+              console.log('Token balance changed - updating analytics');
+              
+              supabase.rpc('get_active_subscription', { 
+                p_user_id: user.id 
+              }).then(({ data: subscription }: any) => {
+                setUserProperties({
+                  user_id: user.id,
+                  subscription_tier: subscription?.[0]?.file_access_tier || 'free',
+                  subscription_status: subscription?.[0]?.status || 'inactive',
+                  ai_tokens_balance: newData.ai_tokens_balance || 0,
+                  video_results_balance: newData.video_results_balance || 0,
+                  max_files: subscription?.[0]?.max_files || 0
+                });
+              });
+            }
+            
+            return { ...currentProfile, ...newData };
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log('Cleaning up realtime subscription');
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
+
   // Email validation function
   const validateEmail = (email: string): { isValid: boolean; error?: string } => {
     // Basic format check
