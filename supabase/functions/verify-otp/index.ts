@@ -257,12 +257,16 @@ const handler = async (req: Request): Promise<Response> => {
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-    } else if (otpRecord.password_hash) {
-      // New user registration
+    } else {
+      // New user registration (with or without password)
+      console.log('🆕 Creating new user account');
       try {
+        // Generate a secure random password if none provided
+        const password = otpRecord.password_hash || crypto.randomUUID();
+        
         const { data, error } = await supabase.auth.admin.createUser({
           email: email,
-          password: otpRecord.password_hash,
+          password: password,
           email_confirm: true,
           user_metadata: {
             email_verified: true
@@ -270,18 +274,24 @@ const handler = async (req: Request): Promise<Response> => {
         });
 
         if (error) {
-          console.error('Error creating user:', error);
+          console.error('❌ Error creating user:', error);
           return new Response(
-            JSON.stringify({ error: 'Failed to create user account' }),
+            JSON.stringify({ error: 'Failed to create user account: ' + error.message }),
             { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
+
+        console.log('✅ User created successfully:', data.user.id);
 
         // Generate magic link for new user
         const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
           type: 'magiclink',
           email: email,
         });
+
+        if (linkError) {
+          console.error('⚠️ Error generating magic link:', linkError);
+        }
 
         authResponse = { 
           user: data.user, 
@@ -290,17 +300,12 @@ const handler = async (req: Request): Promise<Response> => {
           magicLink: linkData?.properties?.action_link
         };
       } catch (error) {
-        console.error('User creation failed:', error);
+        console.error('❌ User creation failed:', error);
         return new Response(
           JSON.stringify({ error: 'Failed to create user account' }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-    } else {
-      return new Response(
-        JSON.stringify({ error: 'User not found and no registration data provided' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
     }
 
     // Clean up OTP record
