@@ -14,6 +14,10 @@ serve(async (req) => {
   }
 
   try {
+    // Get request body for AI generation details
+    const requestBody = await req.json();
+    const { prompt, serviceType, inputImageUrl, outputImageUrl } = requestBody;
+
     // Get JWT token from Authorization header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -83,6 +87,24 @@ serve(async (req) => {
         }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    // Create AI generation history record
+    const { error: historyError } = await supabase
+      .from('ai_generation_history')
+      .insert({
+        user_id: userId,
+        prompt: prompt || 'AI Generation',
+        service_type: serviceType || 'image_edit',
+        input_image_url: inputImageUrl,
+        output_image_url: outputImageUrl || '',
+        tokens_used: 1,
+        is_public_sample: false
+      });
+
+    if (historyError) {
+      console.error('Error creating AI generation history:', historyError);
+      // Don't fail the request if history creation fails
     }
 
     // Get updated usage stats
