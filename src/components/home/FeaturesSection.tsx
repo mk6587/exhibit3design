@@ -31,7 +31,7 @@ const features = [
   {
     icon: Shield,
     title: "Free to Try",
-    description: "Get 5 AI tokens to test before subscribing. Experience the power yourself."
+    description: "Get 2 AI tokens to test before subscribing. Experience the power yourself."
   }
 ];
 
