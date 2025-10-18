@@ -15,7 +15,7 @@ const Index = () => {
   return (
     <Layout
       title="Exhibit3Design - AI-Powered Exhibition Stand Design Platform"
-      description="Transform exhibition stands instantly with AI. Upload your sketch, get photorealistic renders, 360° walkthroughs & presentation-ready visuals. No design experience needed."
+      description="Get a ready-made exhibition design file and enhance it with AI — rotating videos, visitors, sketches, and Magic Edit tools."
       keywords="AI exhibition design, AI stand design, 360 walkthrough generator, exhibition AI tools, trade show AI rendering, sketch to render AI, exhibition design automation"
       url="https://exhibit3design.com/"
     >
