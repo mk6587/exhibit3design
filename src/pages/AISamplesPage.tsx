@@ -210,29 +210,26 @@ export default function AISamplesPage() {
       keywords="AI exhibition tools, 360 booth video, AI visitors, sketch to render, magic edit exhibition design"
     >
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-        {/* Hero Section - Compact */}
-        <section className="relative py-8 px-4 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-purple-500/5 to-background"></div>
-          <div className="container mx-auto max-w-5xl text-center relative z-10">
-            <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-primary via-purple-600 to-primary bg-clip-text text-transparent">
+        {/* Hero Section - Flat Design */}
+        <section className="relative py-8 px-4 bg-background">
+          <div className="container mx-auto max-w-5xl text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-3 text-foreground">
               Transform Exhibition Designs with AI
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Professional AI tools for 360° videos, realistic visitors, artistic sketches, and instant edits.
             </p>
           </div>
         </section>
 
-        {/* See AI in Action - Compact */}
-        <section className="py-12 px-4 bg-gradient-to-br from-primary/10 via-purple-500/10 to-background relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(120,119,198,0.1),transparent_50%)]"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(236,72,153,0.1),transparent_50%)]"></div>
-          <div className="container mx-auto max-w-6xl text-center relative z-10">
-            <Badge className="mb-4 text-sm px-4 py-1.5" variant="outline">
-              <Eye className="h-3 w-3 mr-1.5" />
+        {/* See AI in Action - Flat Design */}
+        <section className="py-12 px-4 bg-muted/30">
+          <div className="container mx-auto max-w-6xl text-center">
+            <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-3">
+              <Eye className="h-4 w-4" />
               Real Examples
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-foreground">
               See AI in Action
             </h2>
             <p className="text-base text-muted-foreground max-w-2xl mx-auto mb-8">
@@ -264,7 +261,7 @@ export default function AISamplesPage() {
                     return (
                       <Card 
                         key={sample.id} 
-                        className="overflow-hidden group cursor-pointer hover:shadow-lg transition-all duration-300"
+                        className="overflow-hidden group cursor-pointer transition-all duration-200 hover:shadow-md"
                         onMouseEnter={() => setHoveredSampleId(sample.id)}
                         onMouseLeave={() => setHoveredSampleId(null)}
                       >
@@ -272,7 +269,7 @@ export default function AISamplesPage() {
                           {isVideo && sample.after_video_url && !isHovered ? (
                             <video
                               src={sample.after_video_url}
-                              className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                              className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
                               muted
                               loop
                               playsInline
@@ -282,12 +279,12 @@ export default function AISamplesPage() {
                             <img
                               src={displayImage}
                               alt={isHovered && sample.before_image_url ? "Source image" : sample.name}
-                              className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                              className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
                               loading="lazy"
                             />
                           )}
                           <Badge 
-                            className="absolute top-3 left-3 backdrop-blur-sm shadow-lg transition-all duration-300 bg-purple-600 text-white border-purple-600 hover:bg-purple-700"
+                            className="absolute top-3 left-3 bg-background/90 text-foreground border"
                           >
                             {isHovered && sample.before_image_url ? "Source" : "AI Result"}
                           </Badge>
@@ -312,24 +309,24 @@ export default function AISamplesPage() {
           </div>
         </section>
 
-        {/* Three Core Pillars Story */}
-        <section className="py-20 px-4">
+        {/* Three Core Pillars Story - Flat Design */}
+        <section className="py-16 px-4 bg-background">
           <div className="container mx-auto max-w-7xl">
-            <div className="text-center mb-16">
+            <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Your Complete Exhibition Design Journey</h2>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
                 From ready-made 3D files to AI-powered enhancements, we provide everything you need to create stunning exhibition stands
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              <Card className="border-2 hover:border-primary/50 transition-all group">
-                <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                    <Sparkles className="h-10 w-10 text-white" />
+            <div className="grid md:grid-cols-3 gap-6">
+              <Card className="border-2 hover:border-primary transition-colors">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <Sparkles className="h-8 w-8 text-primary" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4">Generate</h3>
-                  <p className="text-muted-foreground leading-relaxed mb-4">
+                  <h3 className="text-xl font-bold mb-3">Generate</h3>
+                  <p className="text-muted-foreground mb-4">
                     Start with professional, ready-made 3D design files created by exhibition experts. No design experience needed.
                   </p>
                   <ul className="text-sm space-y-2 text-left">
@@ -349,13 +346,13 @@ export default function AISamplesPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:border-primary/50 transition-all group">
-                <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                    <Video className="h-10 w-10 text-white" />
+              <Card className="border-2 hover:border-primary transition-colors">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <Video className="h-8 w-8 text-primary" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4">Visualize</h3>
-                  <p className="text-muted-foreground leading-relaxed mb-4">
+                  <h3 className="text-xl font-bold mb-3">Visualize</h3>
+                  <p className="text-muted-foreground mb-4">
                     Transform static designs into dynamic presentations with rotating videos, visitors' walkthroughs, and pencil sketches, magic edits.
                   </p>
                   <ul className="text-sm space-y-2 text-left">
@@ -375,13 +372,13 @@ export default function AISamplesPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:border-primary/50 transition-all group">
-                <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                    <Palette className="h-10 w-10 text-white" />
+              <Card className="border-2 hover:border-primary transition-colors">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <Palette className="h-8 w-8 text-primary" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4">Customize</h3>
-                  <p className="text-muted-foreground leading-relaxed mb-4">
+                  <h3 className="text-xl font-bold mb-3">Customize</h3>
+                  <p className="text-muted-foreground mb-4">
                     Fine-tune every detail with AI Magic Edit, artistic modes, and smart visitor placement for trade-show perfect results.
                   </p>
                   <ul className="text-sm space-y-2 text-left">
@@ -404,24 +401,24 @@ export default function AISamplesPage() {
           </div>
         </section>
 
-        {/* Value Proposition */}
-        <section className="py-16 px-4 bg-muted/30">
+        {/* Value Proposition - Flat Design */}
+        <section className="py-12 px-4 bg-muted/30">
           <div className="container mx-auto max-w-6xl">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose AI-Powered Design?</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Save time, reduce costs, and deliver stunning exhibition designs that win clients
               </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-6">
               {[
                 { title: "10x Faster", description: "Generate variations and modifications in seconds instead of hours" },
                 { title: "Cost Effective", description: "Reduce design iteration costs by up to 90% with AI assistance" },
                 { title: "Exhibition-Focused AI", description: "AI for exhibition design — flawless results, no prompt hassle." }
               ].map((item, idx) => (
-                <Card key={idx} className="border-2 hover:border-primary/50 transition-colors">
+                <Card key={idx} className="border-2 hover:border-primary transition-colors">
                   <CardContent className="p-6 text-center">
-                    <CheckCircle2 className="h-12 w-12 mx-auto mb-4 text-primary" />
+                    <CheckCircle2 className="h-10 w-10 mx-auto mb-3 text-primary" />
                     <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
                     <p className="text-muted-foreground">{item.description}</p>
                   </CardContent>
@@ -431,35 +428,34 @@ export default function AISamplesPage() {
           </div>
         </section>
 
-        {/* Image AI Services */}
-        <section className="py-16 px-4 bg-muted/30">
+        {/* Image AI Services - Flat Design */}
+        <section className="py-12 px-4 bg-background">
           <div className="container mx-auto max-w-7xl">
-            <div className="text-center mb-12">
-              <Badge className="mb-4" variant="outline">
-                <ImageIcon className="h-3 w-3 mr-1" />
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                <ImageIcon className="h-4 w-4" />
                 Image Tools
-              </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Powerful Image AI Tools</h2>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Powerful Image AI Tools</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Transform and enhance your exhibition stand images with cutting-edge AI technology
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-6">
               {imageServices.map((service, idx) => {
                 const Icon = service.icon;
                 return (
-                  <Card key={idx} className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50 overflow-hidden">
-                    <div className={`h-2 bg-gradient-to-r ${service.color}`}></div>
-                    <CardContent className="p-8">
-                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-                        <Icon className="h-8 w-8 text-white" />
+                  <Card key={idx} className="border-2 hover:border-primary transition-colors">
+                    <CardContent className="p-6">
+                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                        <Icon className="h-6 w-6 text-primary" />
                       </div>
-                      <h3 className="text-2xl font-bold mb-3">{service.title}</h3>
-                      <p className="text-muted-foreground mb-6 leading-relaxed">
+                      <h3 className="text-xl font-bold mb-2">{service.title}</h3>
+                      <p className="text-muted-foreground mb-4 text-sm">
                         {service.description}
                       </p>
-                      <div className="space-y-2 mb-6">
+                      <div className="space-y-2 mb-4">
                         {service.benefits.map((benefit, bidx) => (
                           <div key={bidx} className="flex items-center gap-2 text-sm">
                             <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
@@ -467,7 +463,7 @@ export default function AISamplesPage() {
                           </div>
                         ))}
                       </div>
-                      <div className="flex gap-3">
+                      <div className="flex gap-2">
                         <Button 
                           variant="outline" 
                           size="sm"
@@ -481,7 +477,7 @@ export default function AISamplesPage() {
                           size="sm"
                         >
                           <Link to={service.aiStudioLink}>
-                            Use in AI Studio <ArrowRight className="h-4 w-4 ml-2" />
+                            Use Now <ArrowRight className="h-4 w-4 ml-2" />
                           </Link>
                         </Button>
                       </div>
@@ -493,35 +489,34 @@ export default function AISamplesPage() {
           </div>
         </section>
 
-        {/* Video AI Services */}
-        <section className="py-16 px-4">
+        {/* Video AI Services - Flat Design */}
+        <section className="py-12 px-4 bg-muted/30">
           <div className="container mx-auto max-w-7xl">
-            <div className="text-center mb-12">
-              <Badge className="mb-4" variant="outline">
-                <Film className="h-3 w-3 mr-1" />
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                <Film className="h-4 w-4" />
                 Video Tools
-              </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Dynamic Video AI Tools</h2>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Dynamic Video AI Tools</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Create engaging video content that brings your exhibition designs to life
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-6">
               {videoServices.map((service, idx) => {
                 const Icon = service.icon;
                 return (
-                  <Card key={idx} className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50 overflow-hidden">
-                    <div className={`h-2 bg-gradient-to-r ${service.color}`}></div>
-                    <CardContent className="p-8">
-                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-                        <Icon className="h-8 w-8 text-white" />
+                  <Card key={idx} className="border-2 hover:border-primary transition-colors">
+                    <CardContent className="p-6">
+                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                        <Icon className="h-6 w-6 text-primary" />
                       </div>
-                      <h3 className="text-xl font-bold mb-3">{service.title}</h3>
-                      <p className="text-muted-foreground mb-6 leading-relaxed text-sm">
+                      <h3 className="text-lg font-bold mb-2">{service.title}</h3>
+                      <p className="text-muted-foreground mb-4 text-sm">
                         {service.description}
                       </p>
-                      <div className="space-y-2 mb-6">
+                      <div className="space-y-2 mb-4">
                         {service.benefits.map((benefit, bidx) => (
                           <div key={bidx} className="flex items-center gap-2 text-sm">
                             <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
@@ -534,7 +529,6 @@ export default function AISamplesPage() {
                           variant="outline" 
                           size="sm"
                           onClick={() => handleTryService(service)}
-                          className="text-xs"
                         >
                           <Eye className="h-3 w-3 mr-1" />
                           Try
@@ -542,7 +536,6 @@ export default function AISamplesPage() {
                         <Button 
                           asChild 
                           size="sm"
-                          className="text-xs"
                         >
                           <Link to={service.aiStudioLink}>
                             Use Now <ArrowRight className="h-3 w-3 ml-1" />
@@ -558,23 +551,21 @@ export default function AISamplesPage() {
         </section>
 
 
-        {/* CTA Section */}
-        <section className="py-16 px-4">
+        {/* CTA Section - Flat Design */}
+        <section className="py-12 px-4 bg-background">
           <div className="container mx-auto max-w-4xl">
-            <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-purple-500/5">
-              <CardContent className="p-12 text-center">
-                <Sparkles className="h-16 w-16 mx-auto mb-6 text-primary" />
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Transform Your Designs?</h2>
-                <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+            <Card className="border-2 border-primary">
+              <CardContent className="p-8 md:p-12 text-center">
+                <Sparkles className="h-12 w-12 mx-auto mb-4 text-primary" />
+                <h2 className="text-3xl md:text-4xl font-bold mb-3">Ready to Transform Your Designs?</h2>
+                <p className="text-base text-muted-foreground mb-6 max-w-2xl mx-auto">
                   Start with 2 free AI tokens. Experience the power of AI-driven exhibition design today.
                 </p>
-                <div className="flex flex-wrap gap-4 justify-center">
-                  <Button asChild size="lg" className="text-lg px-8">
-                    <Link to="/pricing">
-                      Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
-                    </Link>
-                  </Button>
-                </div>
+                <Button asChild size="lg">
+                  <Link to="/pricing">
+                    Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           </div>
