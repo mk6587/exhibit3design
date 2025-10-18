@@ -403,7 +403,7 @@ export default function AISamplesPage() {
               {[
                 { title: "10x Faster", description: "Generate variations and modifications in seconds instead of hours" },
                 { title: "Cost Effective", description: "Reduce design iteration costs by up to 90% with AI assistance" },
-                { title: "Exhibition-Focused AI", description: "AI built for exhibition design — perfect results, no effort." }
+                { title: "Exhibition-Focused AI", description: "AI for exhibition design — flawless results, no prompt hassle." }
               ].map((item, idx) => (
                 <Card key={idx} className="border-2 hover:border-primary/50 transition-colors">
                   <CardContent className="p-6 text-center">
