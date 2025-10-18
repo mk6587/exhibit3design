@@ -71,12 +71,25 @@ const OTPAuthPage = () => {
 
     if (!captchaToken) {
       setError('Please complete the security verification');
+      toast({
+        title: "Security Verification Required",
+        description: "Please complete the captcha to continue.",
+        variant: "destructive",
+      });
       return;
     }
 
+    console.log('📧 Sending OTP to:', email);
     const result = await sendOTP(email, undefined, captchaToken);
+    console.log('📧 Send OTP result:', result);
     
     if (result.success) {
+      console.log('✅ OTP sent successfully');
+      toast({
+        title: "Code Sent",
+        description: "Check your email for the verification code.",
+        variant: "default",
+      });
       setStep('otp');
       setTimeLeft(120); // 2 minutes
       // Reset captcha after successful send
@@ -87,10 +100,16 @@ const OTPAuthPage = () => {
         otpInputRef.current?.focus();
       }, 100);
     } else {
+      console.error('❌ Failed to send OTP:', result.error);
       // Reset captcha on error
       captchaRef.current?.reset();
       setCaptchaToken('');
       setError(result.error || 'Failed to send verification code');
+      toast({
+        title: "Failed to Send Code",
+        description: result.error || 'Failed to send verification code. Please try again.',
+        variant: "destructive",
+      });
     }
   };
 
