@@ -268,35 +268,67 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
                         </div>
                       </div>
 
-                      <div className="text-sm">
-                        <p className="font-medium text-foreground mb-2">User Prompt:</p>
-                        <div className="bg-muted/50 rounded-md p-3 border">
-                          <p className="text-muted-foreground whitespace-pre-wrap break-words">
-                            {generation.prompt}
-                          </p>
+                      {generation.prompt && generation.prompt !== 'AI Generation' && (
+                        <div className="text-sm">
+                          <p className="font-medium text-foreground mb-2">User Prompt:</p>
+                          <div className="bg-muted/50 rounded-md p-3 border">
+                            <p className="text-muted-foreground whitespace-pre-wrap break-words">
+                              {generation.prompt}
+                            </p>
+                          </div>
                         </div>
-                      </div>
+                      )}
 
                       {generation.output_image_url && (
-                        <div className="flex gap-2">
-                          {generation.input_image_url && (
+                        <div className="space-y-3">
+                          <div className="flex gap-2">
+                            {generation.input_image_url && (
+                              <div className="flex-1">
+                                <p className="text-xs font-medium text-muted-foreground mb-2">Input Image:</p>
+                                <a 
+                                  href={generation.input_image_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block group relative"
+                                >
+                                  <img 
+                                    src={generation.input_image_url} 
+                                    alt="Input"
+                                    className="w-full h-32 object-cover rounded border group-hover:opacity-90 transition-opacity"
+                                  />
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded">
+                                    <ImageIcon className="h-6 w-6 text-white" />
+                                  </div>
+                                </a>
+                              </div>
+                            )}
                             <div className="flex-1">
-                              <p className="text-xs text-muted-foreground mb-1">Input:</p>
-                              <img 
-                                src={generation.input_image_url} 
-                                alt="Input"
-                                className="w-full h-32 object-cover rounded border"
-                              />
+                              <p className="text-xs font-medium text-muted-foreground mb-2">Generated Output:</p>
+                              <a 
+                                href={generation.output_image_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block group relative"
+                              >
+                                <img 
+                                  src={generation.output_image_url} 
+                                  alt="Output"
+                                  className="w-full h-32 object-cover rounded border group-hover:opacity-90 transition-opacity"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded">
+                                  <ImageIcon className="h-6 w-6 text-white" />
+                                </div>
+                              </a>
                             </div>
-                          )}
-                          <div className="flex-1">
-                            <p className="text-xs text-muted-foreground mb-1">Output:</p>
-                            <img 
-                              src={generation.output_image_url} 
-                              alt="Output"
-                              className="w-full h-32 object-cover rounded border"
-                            />
                           </div>
+                          <a
+                            href={generation.output_image_url}
+                            download={`ai-generation-${generation.id}.png`}
+                            className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+                          >
+                            <ImageIcon className="h-4 w-4" />
+                            Download Output Image
+                          </a>
                         </div>
                       )}
                     </div>
