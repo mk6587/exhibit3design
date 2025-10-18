@@ -268,9 +268,13 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
                         </div>
                       </div>
 
-                      <div className="text-sm text-muted-foreground">
-                        <p className="font-medium text-foreground mb-1">Prompt:</p>
-                        <p className="line-clamp-2">{generation.prompt}</p>
+                      <div className="text-sm">
+                        <p className="font-medium text-foreground mb-2">User Prompt:</p>
+                        <div className="bg-muted/50 rounded-md p-3 border">
+                          <p className="text-muted-foreground whitespace-pre-wrap break-words">
+                            {generation.prompt}
+                          </p>
+                        </div>
                       </div>
 
                       {generation.output_image_url && (
