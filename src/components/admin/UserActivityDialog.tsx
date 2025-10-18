@@ -67,6 +67,7 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
 
   const loadAIGenerations = async () => {
     setAiLoading(true);
+    console.log('[AI Usage] Loading for userId:', userId);
     try {
       const { data, error } = await supabase
         .from('ai_generation_history')
@@ -75,10 +76,20 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
         .order('created_at', { ascending: false })
         .limit(50);
 
-      if (error) throw error;
+      console.log('[AI Usage] Query result:', { 
+        recordCount: data?.length || 0, 
+        error: error?.message,
+        userId 
+      });
+      
+      if (error) {
+        console.error('[AI Usage] Error:', error);
+        throw error;
+      }
       setAiGenerations(data || []);
     } catch (error: any) {
-      toast.error('Failed to load AI usage history');
+      console.error('[AI Usage] Failed to load:', error);
+      toast.error(`Failed to load AI usage history: ${error.message}`);
     } finally {
       setAiLoading(false);
     }
