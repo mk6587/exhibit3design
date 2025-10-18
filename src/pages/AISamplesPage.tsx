@@ -41,6 +41,8 @@ export default function AISamplesPage() {
   const [tryBeforeUseOpen, setTryBeforeUseOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
   const [mockOutput, setMockOutput] = useState<string | null>(null);
+  const [textPrompt, setTextPrompt] = useState("");
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -193,7 +195,20 @@ export default function AISamplesPage() {
   const handleTryService = (service: any) => {
     setSelectedService(service);
     setMockOutput(null);
+    setTextPrompt("");
+    setUploadedImage(null);
     setTryBeforeUseOpen(true);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setUploadedImage(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleMockGenerate = () => {
@@ -610,12 +625,44 @@ export default function AISamplesPage() {
               </p>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-semibold mb-2">Input Image (Sample)</p>
-                  <img 
-                    src={selectedService?.mockImage} 
-                    alt="Sample input" 
-                    className="w-full rounded-lg border-2"
-                  />
+                  {selectedService?.title === "Text to Image" ? (
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm font-semibold mb-2">Text Prompt</p>
+                        <textarea
+                          value={textPrompt}
+                          onChange={(e) => setTextPrompt(e.target.value)}
+                          placeholder="Describe the exhibition stand you want to generate..."
+                          className="w-full h-32 p-3 border-2 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary bg-background"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold mb-2">Or Upload Reference Image (Optional)</p>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="w-full p-2 border-2 rounded-lg bg-background"
+                        />
+                        {uploadedImage && (
+                          <img 
+                            src={uploadedImage} 
+                            alt="Uploaded reference"
+                            className="mt-3 w-full h-40 object-cover rounded-lg border-2"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm font-semibold mb-2">Input Image (Sample)</p>
+                      <img 
+                        src={selectedService?.mockImage} 
+                        alt="Sample input" 
+                        className="w-full rounded-lg border-2"
+                      />
+                    </>
+                  )}
                 </div>
                 <div>
                   <p className="text-sm font-semibold mb-2">
