@@ -342,12 +342,12 @@ export default function AISamplesPage() {
                   </div>
                   <h3 className="text-2xl font-bold mb-4">Visualize</h3>
                   <p className="text-muted-foreground leading-relaxed mb-4">
-                    Transform static designs into dynamic presentations with AI-powered rotating videos, 360° walkthroughs, and realistic visitor simulations.
+                    Transform static designs into dynamic presentations with rotating videos, visitors' walkthroughs, and pencil sketches, magic edits.
                   </p>
                   <ul className="text-sm space-y-2 text-left">
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                      <span>360° rotating stand videos</span>
+                      <span>Rotating stand videos</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
