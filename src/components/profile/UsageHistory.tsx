@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Zap, Image, Video, Calendar } from "lucide-react";
+import { Loader2, Zap, Image, Video, Calendar, Eye, Download } from "lucide-react";
 import { format } from "date-fns";
+import ImageViewer from "@/components/ui/image-viewer";
 
 interface AIGeneration {
   id: string;
@@ -13,12 +15,16 @@ interface AIGeneration {
   prompt: string;
   tokens_used: number;
   created_at: string;
-  output_image_url: string;
+  output_image_url: string | null;
+  input_image_url: string | null;
 }
 
 export function UsageHistory() {
   const [aiGenerations, setAiGenerations] = useState<AIGeneration[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerImages, setViewerImages] = useState<string[]>([]);
+  const [viewerIndex, setViewerIndex] = useState(0);
 
   useEffect(() => {
     loadUsageHistory();
@@ -71,6 +77,34 @@ export function UsageHistory() {
     }
   };
 
+  const handleViewImages = (inputUrl: string | null, outputUrl: string | null) => {
+    const images = [];
+    if (inputUrl) images.push(inputUrl);
+    if (outputUrl) images.push(outputUrl);
+    if (images.length === 0) return;
+    
+    setViewerImages(images);
+    setViewerIndex(0);
+    setViewerOpen(true);
+  };
+
+  const handleDownload = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+      toast.success('Download started');
+    } catch (error) {
+      toast.error('Failed to download image');
+    }
+  };
+
   if (loading) {
     return (
       <Card>
@@ -114,7 +148,7 @@ export function UsageHistory() {
                     <TableHead>Service</TableHead>
                     <TableHead>Prompt</TableHead>
                     <TableHead>Tokens Used</TableHead>
-                    <TableHead>Preview</TableHead>
+                    <TableHead className="w-[250px]">Preview</TableHead>
                     <TableHead>Date</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -140,13 +174,51 @@ export function UsageHistory() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {generation.output_image_url && (
-                          <img 
-                            src={generation.output_image_url} 
-                            alt="AI Output"
-                            className="w-12 h-12 object-cover rounded"
-                          />
-                        )}
+                        <div className="flex gap-2">
+                          {generation.input_image_url && (
+                            <div className="relative group">
+                              <div 
+                                onClick={() => handleViewImages(generation.input_image_url, generation.output_image_url)}
+                                className="cursor-pointer relative overflow-hidden rounded border w-20 h-20"
+                              >
+                                <img 
+                                  src={generation.input_image_url} 
+                                  alt="Input"
+                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Eye className="h-4 w-4 text-white" />
+                                </div>
+                              </div>
+                              <div className="absolute -top-1 -left-1 bg-primary text-primary-foreground text-[10px] px-1 rounded">
+                                Input
+                              </div>
+                            </div>
+                          )}
+                          {generation.output_image_url && (
+                            <div className="relative group">
+                              <div 
+                                onClick={() => handleViewImages(generation.input_image_url, generation.output_image_url)}
+                                className="cursor-pointer relative overflow-hidden rounded border w-20 h-20"
+                              >
+                                <img 
+                                  src={generation.output_image_url} 
+                                  alt="Output"
+                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Eye className="h-4 w-4 text-white" />
+                                </div>
+                              </div>
+                              <div className="absolute -top-1 -left-1 bg-secondary text-secondary-foreground text-[10px] px-1 rounded">
+                                Output
+                              </div>
+                            </div>
+                          )}
+                          {!generation.input_image_url && !generation.output_image_url && (
+                            <span className="text-xs text-muted-foreground">No preview</span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -162,6 +234,14 @@ export function UsageHistory() {
           )}
         </CardContent>
       </Card>
+
+      <ImageViewer
+        isOpen={viewerOpen}
+        onClose={() => setViewerOpen(false)}
+        images={viewerImages}
+        initialIndex={viewerIndex}
+        title="AI Generation Images"
+      />
     </div>
   );
 }
