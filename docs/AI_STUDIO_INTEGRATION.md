@@ -190,9 +190,119 @@ Enable detailed logging in browser console:
 **Issue**: Background service not starting
 - **Solution**: Ensure isAuthenticated=true and jwtToken is not null
 
+### Token Usage Tracking (CRITICAL)
+
+After a user successfully generates content (video/image), you **MUST** call the token tracking endpoint:
+
+```typescript
+// After successful AI generation, track token usage
+async function trackTokenUsage(
+  jwtToken: string,
+  generationData: {
+    prompt: string;
+    serviceType: 'image_edit' | 'video_generation' | 'image_generation';
+    inputImageUrl?: string;
+    outputImageUrl?: string;
+  }
+) {
+  try {
+    const response = await fetch(
+      'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/increment-ai-tokens',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(generationData),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('Token tracking failed:', error);
+      
+      if (response.status === 403) {
+        // User has no tokens remaining
+        alert('You have no AI tokens remaining. Please purchase more tokens.');
+        return false;
+      }
+      
+      if (response.status === 401) {
+        // Token expired, trigger re-authentication
+        window.location.href = 'https://exhibit3design.com/ai-studio-auth';
+        return false;
+      }
+    }
+
+    const result = await response.json();
+    console.log('✅ Token usage tracked:', result);
+    return true;
+  } catch (error) {
+    console.error('❌ Error tracking token usage:', error);
+    return false;
+  }
+}
+
+// Example integration in your AI generation flow:
+async function generateContent() {
+  const jwtToken = getStoredToken(); // From tokenStorage.ts
+  
+  // 1. Check if user has tokens BEFORE generation
+  const checkResponse = await fetch(
+    'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/check-ai-tokens',
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  
+  const tokenStatus = await checkResponse.json();
+  if (!tokenStatus.hasTokens) {
+    alert('You have no AI tokens remaining. Please purchase more tokens.');
+    return;
+  }
+  
+  // 2. Generate the content (your AI API call)
+  const result = await yourAIGenerationAPI({
+    prompt: userPrompt,
+    // ... other params
+  });
+  
+  // 3. CRITICAL: Track the token usage immediately after success
+  await trackTokenUsage(jwtToken, {
+    prompt: userPrompt,
+    serviceType: 'video_generation', // or 'image_edit', 'image_generation'
+    inputImageUrl: result.inputUrl,
+    outputImageUrl: result.outputUrl,
+  });
+  
+  return result;
+}
+```
+
+### Integration Checklist
+
+- [ ] Token accepted via URL parameter ✅
+- [ ] Background service starts automatically ✅
+- [ ] Token refreshes before expiration ✅
+- [ ] **Token usage tracked after each generation** ❌ **MISSING**
+- [ ] Check tokens before generation ❌ **MISSING**
+- [ ] Handle "no tokens" error gracefully ❌ **MISSING**
+- [ ] Logout on exhibit3design detected ✅
+- [ ] Auth lost triggers redirect ✅
+
 ### Support
 
 For issues with token refresh, check:
 1. Browser console for detailed logs
 2. Supabase Edge Function logs: https://supabase.com/dashboard/project/fipebdkvzdrljwwxccrj/functions/refresh-auth-token/logs
 3. Network tab for failed requests
+
+For issues with token tracking:
+1. Check increment-ai-tokens logs: https://supabase.com/dashboard/project/fipebdkvzdrljwwxccrj/functions/increment-ai-tokens/logs
+2. Verify JWT token is being sent in Authorization header
+3. Check if generation history appears in exhibit3design profile
