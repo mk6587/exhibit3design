@@ -97,6 +97,25 @@ export const AISamplesManagement = () => {
         return;
       }
 
+      // Validate required media URLs
+      if (sample.type === 'image' && !sample.after_image_url) {
+        toast({
+          title: "Error",
+          description: "After Image URL is required for image samples",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (sample.type === 'video' && !sample.after_video_url) {
+        toast({
+          title: "Error",
+          description: "After Video URL is required for video samples",
+          variant: "destructive"
+        });
+        return;
+      }
+
       if (editingSample) {
         // Update existing
         const { error } = await supabase
@@ -373,21 +392,32 @@ const SampleForm = ({ sample: initialSample, onSave, onCancel }: SampleFormProps
           </div>
         </div>
 
-        <Tabs defaultValue="before" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="before">Before Media</TabsTrigger>
-            <TabsTrigger value="after">After Media</TabsTrigger>
-          </TabsList>
-          <TabsContent value="before" className="space-y-4">
+        <div className="space-y-4 border rounded-lg p-4">
+          <h3 className="font-semibold text-lg">Media URLs</h3>
+          
+          <div className="space-y-2">
+            <Label>Before Image URL (Source/Input)</Label>
+            <Input
+              value={sample.before_image_url || ''}
+              onChange={(e) => setSample({ ...sample, before_image_url: e.target.value })}
+              placeholder="https://..."
+            />
+            <p className="text-xs text-muted-foreground">The original image shown on hover</p>
+          </div>
+
+          {sample.type === 'image' ? (
             <div className="space-y-2">
-              <Label>Before Image URL</Label>
+              <Label className="text-red-600">After Image URL (AI Result) *Required*</Label>
               <Input
-                value={sample.before_image_url || ''}
-                onChange={(e) => setSample({ ...sample, before_image_url: e.target.value })}
+                value={sample.after_image_url || ''}
+                onChange={(e) => setSample({ ...sample, after_image_url: e.target.value })}
                 placeholder="https://..."
+                className="border-red-200 focus:border-red-400"
               />
+              <p className="text-xs text-muted-foreground">The AI-generated result image (displayed by default)</p>
             </div>
-            {sample.type === 'video' && (
+          ) : (
+            <>
               <div className="space-y-2">
                 <Label>Before Video URL (optional)</Label>
                 <Input
@@ -396,31 +426,19 @@ const SampleForm = ({ sample: initialSample, onSave, onCancel }: SampleFormProps
                   placeholder="https://..."
                 />
               </div>
-            )}
-          </TabsContent>
-          <TabsContent value="after" className="space-y-4">
-            {sample.type === 'image' && (
               <div className="space-y-2">
-                <Label>After Image URL</Label>
-                <Input
-                  value={sample.after_image_url || ''}
-                  onChange={(e) => setSample({ ...sample, after_image_url: e.target.value })}
-                  placeholder="https://..."
-                />
-              </div>
-            )}
-            {sample.type === 'video' && (
-              <div className="space-y-2">
-                <Label>After Video URL</Label>
+                <Label className="text-red-600">After Video URL (AI Result) *Required*</Label>
                 <Input
                   value={sample.after_video_url || ''}
                   onChange={(e) => setSample({ ...sample, after_video_url: e.target.value })}
                   placeholder="https://..."
+                  className="border-red-200 focus:border-red-400"
                 />
+                <p className="text-xs text-muted-foreground">The AI-generated result video (displayed by default)</p>
               </div>
-            )}
-          </TabsContent>
-        </Tabs>
+            </>
+          )}
+        </div>
 
         <div className="space-y-2">
           <Label>External Link (optional)</Label>
