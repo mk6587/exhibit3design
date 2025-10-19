@@ -637,14 +637,10 @@ export default function AISamplesPage() {
                   {(selectedService?.serviceKey === 'text_to_image' || selectedService?.serviceKey === 'text_image_to_video') ? (
                     <div className="space-y-4">
                       <div>
-                        <p className="text-sm font-semibold mb-2 text-muted-foreground">Text Prompt</p>
-                        <textarea
-                          value={textPrompt}
-                          onChange={(e) => setTextPrompt(e.target.value)}
-                          placeholder={selectedService?.serviceKey === 'text_image_to_video' ? "Describe the video you want to generate..." : "Describe the exhibition stand you want to generate..."}
-                          disabled
-                          className="w-full h-32 p-3 border-2 rounded-lg resize-none bg-muted cursor-not-allowed opacity-50"
-                        />
+                        <p className="text-sm font-semibold mb-2">Text Prompt</p>
+                        <div className="w-full min-h-32 p-3 border-2 rounded-lg bg-muted/50 text-foreground">
+                          {textPrompt || "No prompt available"}
+                        </div>
                       </div>
                       <div>
                         <p className="text-sm font-semibold mb-2 text-muted-foreground">Or Upload Reference Image (Optional)</p>
