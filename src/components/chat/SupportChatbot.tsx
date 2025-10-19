@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { X, Send, MessageCircle, Bot } from "lucide-react";
+import { X, Send, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatMessage } from "./ChatMessage";
 import { supabase } from "@/integrations/supabase/client";
+import supportAgent from "@/assets/support-agent.png";
 
 interface Message {
   role: "user" | "assistant";
@@ -131,8 +132,12 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
     <Card className="fixed bottom-4 right-4 w-[400px] h-[600px] shadow-2xl z-50 flex flex-col animate-scale-in border-primary/20 overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 pt-4 px-6 bg-gradient-to-r from-primary/10 via-primary/5 to-background border-b border-primary/20">
         <CardTitle className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <MessageCircle className="h-5 w-5 text-primary animate-pulse" />
+          <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-primary/20 bg-white flex-shrink-0">
+            <img 
+              src={supportAgent} 
+              alt="Support Agent" 
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
             <div className="text-base font-semibold">Customer Support</div>
@@ -143,7 +148,7 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
           variant="ghost"
           size="icon"
           onClick={onClose}
-          className="h-8 w-8 hover:bg-primary/10 transition-colors"
+          className="h-8 w-8 hover:bg-primary/10 transition-colors flex-shrink-0"
         >
           <X className="h-4 w-4" />
         </Button>
@@ -158,10 +163,14 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
           ))}
           {isLoading && (
             <div className="flex gap-3 mb-4 animate-fade-in">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border border-primary/20">
-                <Bot className="h-5 w-5 text-primary animate-pulse" />
+              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20 bg-white flex-shrink-0">
+                <img 
+                  src={supportAgent} 
+                  alt="Support Agent" 
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="bg-gradient-to-br from-muted to-muted/50 px-5 py-4 rounded-2xl rounded-tl-sm border border-border/50">
+              <div className="bg-gradient-to-br from-muted to-muted/50 px-5 py-4 rounded-2xl rounded-tl-sm border border-border/50 max-w-[75%]">
                 <div className="flex gap-1.5">
                   <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                   <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
