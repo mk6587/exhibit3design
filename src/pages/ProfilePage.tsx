@@ -18,7 +18,7 @@ import { UsageHistory } from "@/components/profile/UsageHistory";
 import { SelectedFiles } from "@/components/profile/SelectedFiles";
 import { BillingHistory } from "@/components/profile/BillingHistory";
 import { toast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { profileUpdateSchema } from "@/lib/validationSchemas";
 import { trackPageView, trackProfileUpdate } from "@/services/ga4Analytics";
 
@@ -34,6 +34,8 @@ const ProfilePage = () => {
   const [stateRegion, setStateRegion] = useState("");
   const [postcode, setPostcode] = useState("");
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'profile';
 
   // Redirect if not logged in
   useEffect(() => {
@@ -199,7 +201,7 @@ const ProfilePage = () => {
             </Button>
           </div>
 
-          <Tabs defaultValue="profile" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={(value) => setSearchParams({ tab: value })} className="space-y-6">
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="profile" className="flex items-center gap-2">
                 <User className="h-4 w-4" />
