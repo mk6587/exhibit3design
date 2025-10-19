@@ -42,18 +42,22 @@ export function FileRequestsManagement() {
         .from('file_requests')
         .select(`
           *,
-          profiles!file_requests_user_id_fkey (
+          profiles:user_id (
             first_name,
             last_name
           )
         `)
         .order('requested_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('File requests error:', error);
+        throw error;
+      }
+      
       setRequests((data || []) as FileRequest[]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading file requests:', error);
-      toast.error('Failed to load file requests');
+      toast.error(`Failed to load file requests: ${error.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
