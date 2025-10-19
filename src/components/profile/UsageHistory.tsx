@@ -174,12 +174,13 @@ export function UsageHistory() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex gap-2">
+                        <div className="flex gap-3">
                           {generation.input_image_url && (
-                            <div className="relative group">
+                            <div className="flex flex-col gap-1 items-center">
+                              <span className="text-[10px] text-muted-foreground font-medium">Input</span>
                               <div 
                                 onClick={() => handleViewImages(generation.input_image_url, generation.output_image_url)}
-                                className="cursor-pointer relative overflow-hidden rounded border w-20 h-20"
+                                className="cursor-pointer relative overflow-hidden rounded border w-20 h-20 group"
                               >
                                 <img 
                                   src={generation.input_image_url} 
@@ -190,16 +191,14 @@ export function UsageHistory() {
                                   <Eye className="h-4 w-4 text-white" />
                                 </div>
                               </div>
-                              <div className="absolute -top-1 -left-1 bg-primary text-primary-foreground text-[10px] px-1 rounded">
-                                Input
-                              </div>
                             </div>
                           )}
                           {generation.output_image_url && (
-                            <div className="relative group">
+                            <div className="flex flex-col gap-1 items-center">
+                              <span className="text-[10px] text-muted-foreground font-medium">Output</span>
                               <div 
                                 onClick={() => handleViewImages(generation.input_image_url, generation.output_image_url)}
-                                className="cursor-pointer relative overflow-hidden rounded border w-20 h-20"
+                                className="cursor-pointer relative overflow-hidden rounded border w-20 h-20 group"
                               >
                                 <img 
                                   src={generation.output_image_url} 
@@ -209,9 +208,6 @@ export function UsageHistory() {
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
                                   <Eye className="h-4 w-4 text-white" />
                                 </div>
-                              </div>
-                              <div className="absolute -top-1 -left-1 bg-secondary text-secondary-foreground text-[10px] px-1 rounded">
-                                Output
                               </div>
                             </div>
                           )}
