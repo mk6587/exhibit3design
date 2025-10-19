@@ -28,12 +28,17 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    // Scroll to bottom when messages change
+    const scrollContainer = scrollRef.current;
+    if (scrollContainer) {
+      scrollContainer.scrollTop = scrollContainer.scrollHeight;
     }
-  }, [messages]);
+    // Alternative: smooth scroll to end element
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading]);
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -179,6 +184,7 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
               </div>
             </div>
           )}
+          <div ref={messagesEndRef} />
         </ScrollArea>
         
         <div className="border-t border-primary/10 p-4 bg-background/95 backdrop-blur-sm">

@@ -7,6 +7,29 @@ interface ChatMessageProps {
   content: string;
 }
 
+const renderContentWithLinks = (text: string) => {
+  // URL regex pattern
+  const urlPattern = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlPattern);
+  
+  return parts.map((part, index) => {
+    if (part.match(urlPattern)) {
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:opacity-80 transition-opacity font-medium"
+        >
+          {part}
+        </a>
+      );
+    }
+    return part;
+  });
+};
+
 export const ChatMessage = ({ role, content }: ChatMessageProps) => {
   const isUser = role === "user";
 
@@ -38,7 +61,7 @@ export const ChatMessage = ({ role, content }: ChatMessageProps) => {
         <div className="text-sm whitespace-pre-wrap break-words leading-relaxed">
           {content.split('\n').map((line, i) => (
             <p key={i} className={i > 0 ? "mt-2" : ""}>
-              {line}
+              {renderContentWithLinks(line)}
             </p>
           ))}
         </div>
