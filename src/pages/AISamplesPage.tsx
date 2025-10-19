@@ -125,7 +125,7 @@ export default function AISamplesPage() {
       description: "Bring your exhibition stands to life by adding lifelike visitors and event attendees to your designs.",
       benefits: ["Natural crowd placement", "Diverse visitor types", "Realistic interactions"],
       color: "from-blue-500 to-cyan-500",
-      aiStudioLink: "/products",
+      aiStudioLink: "https://ai.exhibit3design.com/?service=add-visitors",
       mockImage: getConfigForService('adding_visitors')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
       mockOutput: getConfigForService('adding_visitors')?.mock_output_url || "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
     },
@@ -136,7 +136,7 @@ export default function AISamplesPage() {
       description: "Intelligently modify layouts, colors, materials, and elements with simple text commands.",
       benefits: ["Instant modifications", "Smart suggestions", "Unlimited iterations"],
       color: "from-amber-500 to-orange-500",
-      aiStudioLink: "/products",
+      aiStudioLink: "https://ai.exhibit3design.com/?service=magic-edit",
       mockImage: getConfigForService('image_magic_edit')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
       mockOutput: getConfigForService('image_magic_edit')?.mock_output_url || "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png"
     },
@@ -147,7 +147,7 @@ export default function AISamplesPage() {
       description: "Convert your booth designs into artistic pencil sketches or transform sketches into photorealistic renders.",
       benefits: ["Artistic visualization", "Client presentations", "Concept development"],
       color: "from-pink-500 to-rose-500",
-      aiStudioLink: "/products",
+      aiStudioLink: "https://ai.exhibit3design.com/?service=artistic-mode",
       mockImage: getConfigForService('image_artistic_mode')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
       mockOutput: getConfigForService('image_artistic_mode')?.mock_output_url || "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
     },
@@ -158,7 +158,7 @@ export default function AISamplesPage() {
       description: "Generate stunning exhibition stand visuals from text descriptions using advanced AI.",
       benefits: ["Instant generation", "Creative freedom", "Multiple variations"],
       color: "from-violet-500 to-purple-500",
-      aiStudioLink: "/products",
+      aiStudioLink: "https://ai.exhibit3design.com/?service=text-to-image",
       mockImage: getConfigForService('text_to_image')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
       mockOutput: getConfigForService('text_to_image')?.mock_output_url || "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png"
     }
@@ -172,7 +172,7 @@ export default function AISamplesPage() {
       description: "Transform static images or text prompts into dynamic video presentations of your exhibition designs.",
       benefits: ["Dynamic presentations", "Engaging content", "Easy sharing"],
       color: "from-green-500 to-emerald-500",
-      aiStudioLink: "/products",
+      aiStudioLink: "https://ai.exhibit3design.com/?service=text-image-to-video",
       mockImage: getConfigForService('text_image_to_video')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
       mockOutput: getConfigForService('text_image_to_video')?.mock_output_url || "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
     },
@@ -183,7 +183,7 @@ export default function AISamplesPage() {
       description: "Create stunning 360° rotating videos that showcase your exhibition stand from every angle.",
       benefits: ["360° view", "Professional quality", "Client wow-factor"],
       color: "from-purple-500 to-indigo-500",
-      aiStudioLink: "/products",
+      aiStudioLink: "https://ai.exhibit3design.com/?service=rotating-stand",
       mockImage: getConfigForService('rotating_stand_video')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
       mockOutput: getConfigForService('rotating_stand_video')?.mock_output_url || "/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png"
     },
@@ -194,7 +194,7 @@ export default function AISamplesPage() {
       description: "Generate immersive walkthrough videos with realistic visitors exploring your exhibition space.",
       benefits: ["Immersive experience", "Realistic scenarios", "Marketing ready"],
       color: "from-cyan-500 to-blue-500",
-      aiStudioLink: "/products",
+      aiStudioLink: "https://ai.exhibit3design.com/?service=visitors-walkthrough",
       mockImage: getConfigForService('visitors_walkthrough_video')?.mock_input_url || "/lovable-uploads/c64f9532-61fc-4214-88d8-ecfd68194905.png",
       mockOutput: getConfigForService('visitors_walkthrough_video')?.mock_output_url || "/lovable-uploads/edab25b4-dc8b-45d0-a426-ad59d120c4e2.png"
     }
@@ -573,7 +573,7 @@ export default function AISamplesPage() {
                           </div>
                         ))}
                       </div>
-                      <div className="flex gap-2">
+                       <div className="flex gap-2">
                         <Button 
                           variant="outline" 
                           size="sm"
@@ -586,9 +586,9 @@ export default function AISamplesPage() {
                           asChild 
                           size="sm"
                         >
-                          <Link to={service.aiStudioLink}>
+                          <a href={service.aiStudioLink} target="_blank" rel="noopener noreferrer">
                             Use Now <ArrowRight className="h-3 w-3 ml-1" />
-                          </Link>
+                          </a>
                         </Button>
                       </div>
                     </CardContent>
@@ -702,7 +702,7 @@ export default function AISamplesPage() {
                     Generate (Demo)
                   </Button>
                   <Button asChild size="lg" variant="outline">
-                    <a href="https://ai.exhibit3design.com" target="_blank" rel="noopener noreferrer">
+                    <a href={selectedService?.aiStudioLink || "https://ai.exhibit3design.com"} target="_blank" rel="noopener noreferrer">
                       Use Now in AI Studio
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </a>
@@ -715,7 +715,7 @@ export default function AISamplesPage() {
                     Get Started Free
                   </Button>
                   <Button asChild size="lg" variant="outline">
-                    <a href="https://ai.exhibit3design.com" target="_blank" rel="noopener noreferrer">
+                    <a href={selectedService?.aiStudioLink || "https://ai.exhibit3design.com"} target="_blank" rel="noopener noreferrer">
                       Use Now in AI Studio
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </a>
