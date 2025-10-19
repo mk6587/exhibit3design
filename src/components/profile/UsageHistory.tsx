@@ -180,12 +180,16 @@ export function UsageHistory() {
                               <span className="text-[10px] text-muted-foreground font-medium">Input</span>
                               <div 
                                 onClick={() => handleViewImages(generation.input_image_url, generation.output_image_url)}
-                                className="cursor-pointer relative overflow-hidden rounded border w-20 h-20 group"
+                                className="cursor-pointer relative overflow-hidden rounded border w-20 h-20 bg-muted group"
                               >
                                 <img 
                                   src={generation.input_image_url} 
                                   alt="Input"
                                   className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.parentElement!.innerHTML = '<div class="flex items-center justify-center h-full text-xs text-muted-foreground">No image</div>';
+                                  }}
                                 />
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
                                   <Eye className="h-4 w-4 text-white" />
@@ -198,12 +202,16 @@ export function UsageHistory() {
                               <span className="text-[10px] text-muted-foreground font-medium">Output</span>
                               <div 
                                 onClick={() => handleViewImages(generation.input_image_url, generation.output_image_url)}
-                                className="cursor-pointer relative overflow-hidden rounded border w-20 h-20 group"
+                                className="cursor-pointer relative overflow-hidden rounded border w-20 h-20 bg-muted group"
                               >
                                 <img 
                                   src={generation.output_image_url} 
                                   alt="Output"
                                   className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.parentElement!.innerHTML = '<div class="flex items-center justify-center h-full text-xs text-muted-foreground">No image</div>';
+                                  }}
                                 />
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
                                   <Eye className="h-4 w-4 text-white" />
