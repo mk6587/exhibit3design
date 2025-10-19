@@ -1,8 +1,9 @@
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import SEOHead from "../SEO/SEOHead";
+import { ChatButton } from "../chat/ChatButton";
 
 interface LayoutProps {
   children: ReactNode;
@@ -13,6 +14,16 @@ interface LayoutProps {
 }
 
 const Layout = ({ children, title, description, keywords, url }: LayoutProps) => {
+  useEffect(() => {
+    const handleOpenChat = () => {
+      const chatButton = document.querySelector('[data-chat-button]') as HTMLButtonElement;
+      chatButton?.click();
+    };
+
+    window.addEventListener('openSupportChat', handleOpenChat);
+    return () => window.removeEventListener('openSupportChat', handleOpenChat);
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen relative">
       <SEOHead 
@@ -26,6 +37,7 @@ const Layout = ({ children, title, description, keywords, url }: LayoutProps) =>
         {children}
       </main>
       <Footer />
+      <ChatButton />
     </div>
   );
 };
