@@ -41,3 +41,15 @@ verify_jwt = false
 
 [functions.refresh-auth-token]
 verify_jwt = false
+
+[functions.reserve-tokens]
+verify_jwt = false
+
+[functions.commit-reservation]
+verify_jwt = false
+
+[functions.rollback-reservation]
+verify_jwt = false
+
+[functions.get-user-balance]
+verify_jwt = false

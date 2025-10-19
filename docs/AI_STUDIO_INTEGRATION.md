@@ -1,325 +1,525 @@
-# AI Studio Integration Guide
-## Token Refresh System Integration
+# AI Studio Integration Guide (NEW Reservation System)
 
-### Quick Start - Testing the Endpoint
+## 🎉 NEW: Token Reservation System
 
-#### 1. Test with cURL
-```bash
-# Replace YOUR_VALID_JWT_TOKEN with an actual token from exhibit3design
-curl -X POST https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/refresh-auth-token \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_VALID_JWT_TOKEN"
+**Status**: ✅ Active (as of 2025)  
+**Old System**: ❌ Deprecated - The old synchronous `increment-ai-tokens` approach is no longer recommended
 
-# Expected Response (Success):
+The new reservation-based system provides:
+- **Atomic token management** - Reserve before, commit on success, rollback on failure
+- **Race condition prevention** - Tokens are reserved upfront
+- **Better reliability** - Automatic cleanup of expired reservations
+- **Audit trail** - Complete transaction logging
+
+---
+
+## Architecture Overview
+
+```
+┌─────────────┐                    ┌──────────────────┐
+│             │  1. Reserve tokens │                  │
+│  AI Studio  ├───────────────────►│  exhibit3design  │
+│             │◄───────────────────┤  (Supabase)      │
+│             │  2. Reservation ID │                  │
+└──────┬──────┘                    └──────────────────┘
+       │
+       │ 3. Generate content
+       │    (AI Service)
+       │
+       ▼
+┌─────────────┐
+│ Success? ───┼───► 4a. Commit reservation
+│             │
+│ Failure? ───┼───► 4b. Rollback reservation
+└─────────────┘
+```
+
+---
+
+## Required APIs from exhibit3design
+
+### 1. POST `/reserve-tokens`
+
+Reserve tokens before AI generation starts.
+
+**Endpoint**: `https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/reserve-tokens`
+
+**Request**:
+```typescript
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "expiresAt": 1234567890000,
-  "userId": "user-uuid-here"
-}
-
-# Expected Response (Unauthorized):
-{
-  "error": "Invalid or expired token"
+  serviceType: 'image_edit' | 'image_generation' | 'image_inpaint' | 'text_to_video' | 'image_to_video',
+  tokensAmount: number
 }
 ```
 
-#### 2. Test with JavaScript (Browser Console)
-```javascript
-// Open AI Studio in browser, paste this in console:
-const testToken = "YOUR_VALID_JWT_TOKEN"; // Replace with real token
+**Response (Success - 200)**:
+```typescript
+{
+  reservationId: string,  // UUID for this reservation
+  newBalance: number      // User's available balance after reservation
+}
+```
 
-fetch('https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/refresh-auth-token', {
-  method: 'POST',
-  headers: {
-    'Authorization': `Bearer ${testToken}`
+**Response (Insufficient tokens - 403)**:
+```typescript
+{
+  error: "Insufficient tokens",
+  availableBalance: number,
+  required: number
+}
+```
+
+**Example**:
+```typescript
+const response = await fetch(
+  'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/reserve-tokens',
+  {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${jwtToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      serviceType: 'image_edit',
+      tokensAmount: 1
+    })
   }
-})
-  .then(r => r.json())
-  .then(data => console.log('✅ Refresh Success:', data))
-  .catch(err => console.error('❌ Refresh Failed:', err));
+);
+
+const { reservationId, newBalance } = await response.json();
 ```
 
-### Files to Copy to AI Studio
+---
 
-Copy these 5 files to your AI Studio project:
+### 2. POST `/commit-reservation`
 
-1. **src/utils/tokenStorage.ts** - Token persistence
-2. **src/services/tokenRefreshClient.ts** - HTTP client for refresh
-3. **src/utils/tokenApi.ts** - API client with 401 detection
-4. **src/services/backgroundAuthService.ts** - Background service orchestrator
-5. **src/hooks/useBackgroundAuth.tsx** - React integration hook
+Commit a reservation after successful AI generation.
 
-### Configuration Required
+**Endpoint**: `https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/commit-reservation`
 
-After copying files, update `tokenRefreshClient.ts`:
-
+**Request**:
 ```typescript
-// Change this line in tokenRefreshClient.ts:
-const REFRESH_ENDPOINT = 'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/refresh-auth-token';
+{
+  reservationId: string,
+  aiResultUrl: string  // URL of generated content
+}
 ```
 
-### Integration Example
-
+**Response (Success - 200)**:
 ```typescript
-// In your main AI Studio component (e.g., pages/Index.tsx):
-import { useState, useEffect } from 'react';
-import { useBackgroundAuth } from '@/hooks/useBackgroundAuth';
-import { saveTokenWithMetadata, clearTokenStorage } from '@/utils/tokenStorage';
-import { toast } from 'sonner';
+{
+  success: true,
+  newBalance: number  // Final balance after commit
+}
+```
 
-export default function AIStudioPage() {
-  const [jwtToken, setJwtToken] = useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+**Response (Failure - 404)**:
+```typescript
+{
+  error: "Reservation not found or already processed"
+}
+```
 
-  // Handle token from URL on mount
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const urlToken = params.get('token');
-    
-    if (urlToken) {
-      // Verify token and save it
-      verifyAndSaveToken(urlToken);
-      // Clean URL
-      window.history.replaceState({}, '', window.location.pathname);
+**Example**:
+```typescript
+await fetch(
+  'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/commit-reservation',
+  {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${jwtToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      reservationId: reservationId,
+      aiResultUrl: 'https://storage.example.com/result.jpg'
+    })
+  }
+);
+```
+
+---
+
+### 3. POST `/rollback-reservation`
+
+Rollback a reservation when AI generation fails.
+
+**Endpoint**: `https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/rollback-reservation`
+
+**Request**:
+```typescript
+{
+  reservationId: string,
+  reason: string  // Why it failed (for logging)
+}
+```
+
+**Response (Success - 200)**:
+```typescript
+{
+  success: true,
+  newBalance: number  // Balance after refund
+}
+```
+
+**Example**:
+```typescript
+await fetch(
+  'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/rollback-reservation',
+  {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${jwtToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      reservationId: reservationId,
+      reason: 'AI service timeout'
+    })
+  }
+);
+```
+
+---
+
+### 4. GET `/get-user-balance`
+
+Get user's current available balance and subscription info.
+
+**Endpoint**: `https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/get-user-balance`
+
+**Response (Success - 200)**:
+```typescript
+{
+  balance: number,              // Available balance (excluding reserved)
+  totalBalance: number,         // Total tokens
+  reservedTokens: number,       // Currently reserved tokens
+  subscriptionPlan: string,     // e.g. "Premium", "Basic", "Free"
+  isPremium: boolean
+}
+```
+
+**Example**:
+```typescript
+const response = await fetch(
+  'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/get-user-balance',
+  {
+    headers: {
+      'Authorization': `Bearer ${jwtToken}`
     }
-  }, []);
+  }
+);
 
-  const verifyAndSaveToken = async (token: string) => {
+const { balance, subscriptionPlan } = await response.json();
+```
+
+---
+
+## Complete Integration Flow
+
+### React/TypeScript Example
+
+```typescript
+import { useState } from 'react';
+
+interface ReservationState {
+  reservationId: string | null;
+  isGenerating: boolean;
+  error: string | null;
+}
+
+function AIGenerationComponent() {
+  const [state, setState] = useState<ReservationState>({
+    reservationId: null,
+    isGenerating: false,
+    error: null
+  });
+
+  const generateContent = async (serviceType: string, jwtToken: string) => {
+    let reservationId: string | null = null;
+
     try {
-      // Simple JWT decode to get expiration
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const expiresAt = payload.exp * 1000; // Convert to milliseconds
-      
-      saveTokenWithMetadata(token, expiresAt);
-      setJwtToken(token);
-      setIsAuthenticated(true);
-      toast.success('Authenticated successfully');
+      setState({ ...state, isGenerating: true, error: null });
+
+      // 1. Reserve tokens
+      const reserveResponse = await fetch(
+        'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/reserve-tokens',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            serviceType: serviceType,
+            tokensAmount: 1
+          })
+        }
+      );
+
+      if (!reserveResponse.ok) {
+        const error = await reserveResponse.json();
+        throw new Error(error.error || 'Failed to reserve tokens');
+      }
+
+      const { reservationId: resId, newBalance } = await reserveResponse.json();
+      reservationId = resId;
+
+      console.log(`Reserved! Balance: ${newBalance}`);
+
+      // 2. Call AI service
+      const aiResult = await callYourAIService(/* parameters */);
+
+      // 3. Commit on success
+      await fetch(
+        'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/commit-reservation',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            reservationId: reservationId,
+            aiResultUrl: aiResult.url
+          })
+        }
+      );
+
+      console.log('Success! Token committed');
+      setState({ reservationId: null, isGenerating: false, error: null });
+
     } catch (error) {
-      console.error('Token verification failed:', error);
-      toast.error('Invalid authentication token');
+      console.error('Generation failed:', error);
+
+      // 4. Rollback on failure
+      if (reservationId) {
+        try {
+          await fetch(
+            'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/rollback-reservation',
+            {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                reservationId: reservationId,
+                reason: error.message || 'Unknown error'
+              })
+            }
+          );
+          console.log('Tokens refunded');
+        } catch (rollbackError) {
+          console.error('Rollback failed:', rollbackError);
+        }
+      }
+
+      setState({
+        reservationId: null,
+        isGenerating: false,
+        error: error.message
+      });
     }
   };
 
-  // Integrate background auth service
-  useBackgroundAuth({
-    isAuthenticated,
-    jwtToken,
-    onTokenRefreshed: (newToken: string) => {
-      console.log('🔄 Token refreshed silently');
-      setJwtToken(newToken);
-      // Token is already saved by background service
-    },
-    onAuthLost: () => {
-      console.log('🚪 Authentication lost');
-      setIsAuthenticated(false);
-      setJwtToken(null);
-      clearTokenStorage();
-      toast.error('Session expired. Redirecting...');
-      
-      // Redirect back to exhibit3design
-      setTimeout(() => {
-        window.location.href = 'https://exhibit3design.com/ai-studio-auth';
-      }, 2000);
-    }
-  });
-
-  if (!isAuthenticated) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Authentication Required</h1>
-          <p className="text-muted-foreground">
-            Please authenticate via exhibit3design
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      {/* Your AI Studio UI here */}
-      <h1>AI Studio</h1>
-      <p>Authenticated with token: {jwtToken?.substring(0, 20)}...</p>
-    </div>
+    // Your UI here
+    <button onClick={() => generateContent('image_edit', yourJWT)}>
+      Generate
+    </button>
   );
 }
 ```
 
-### What Happens Automatically
+---
 
-Once integrated, the system will:
+## Data Flow Examples
 
-1. **Every 3 minutes**: Check if token needs refresh (< 10 min remaining)
-2. **Automatic Refresh**: Get new token from refresh-auth-token endpoint
-3. **Silent Update**: Update token in localStorage and state
-4. **Auth Verification**: Call check-ai-tokens to verify user still authenticated
-5. **Logout Detection**: Detect 401 responses and trigger onAuthLost callback
+### ✅ Successful Operation
 
-### Testing Checklist
-
-- [ ] Token accepted via URL parameter
-- [ ] Background service starts automatically
-- [ ] Token refreshes before expiration (check browser console)
-- [ ] Logout on exhibit3design detected within 3 minutes
-- [ ] Network failures handled gracefully
-- [ ] Auth lost triggers redirect to exhibit3design
-
-### Monitoring
-
-Enable detailed logging in browser console:
-```javascript
-// You'll see logs like:
-// [BackgroundAuth] Starting background service
-// [BackgroundAuth] Token needs refresh (8 min remaining)
-// [RefreshToken] Refreshing token...
-// [RefreshToken] Token refreshed successfully
+```
+1. User clicks "Edit Image"
+2. AI Studio → reserve-tokens (1 token)
+3. exhibit3design: Creates reservation, reserves token
+4. exhibit3design → AI Studio: { reservationId: "abc-123", newBalance: 4 }
+5. AI Studio: Calls Lovable AI, generates image
+6. AI Studio → commit-reservation
+7. exhibit3design: Deducts token, marks as committed
+8. exhibit3design → AI Studio: { success: true, newBalance: 4 }
 ```
 
-### Common Issues
+### ❌ Failed Operation
 
-**Issue**: "Missing or invalid authorization header"
-- **Solution**: Make sure JWT token is being passed in Authorization header
+```
+1. User clicks "Edit Image"
+2. AI Studio → reserve-tokens (1 token)
+3. exhibit3design → AI Studio: { reservationId: "xyz-789", newBalance: 4 }
+4. AI Studio: AI service fails (timeout/error)
+5. AI Studio → rollback-reservation
+6. exhibit3design: Refunds token, marks as rolled_back
+7. exhibit3design → AI Studio: { success: true, newBalance: 5 }
+```
 
-**Issue**: "User account is deactivated"
-- **Solution**: Check user status in exhibit3design database
+### ⏰ Expired Reservation
 
-**Issue**: "Server configuration error"
-- **Solution**: Verify SHARED_JWT_SECRET is configured in Supabase secrets
+```
+1. Reservation created but not committed/rolled back within 10 minutes
+2. Automatic cleanup runs (via cleanup_expired_reservations)
+3. Token automatically refunded to user
+4. Reservation marked as 'rolled_back' with reason 'Reservation expired'
+```
 
-**Issue**: Background service not starting
-- **Solution**: Ensure isAuthenticated=true and jwtToken is not null
+---
 
-### Token Usage Tracking (CRITICAL)
+## Authentication
 
-**IMPORTANT**: The endpoint is called `increment-ai-tokens` (NOT `increment-ai-usage`)
+All endpoints require a JWT token in the Authorization header:
 
-After a user successfully generates content (video/image), you **MUST** call the token tracking endpoint:
+```
+Authorization: Bearer <JWT_TOKEN>
+```
 
+The JWT must be generated using the `/generate-ai-token` endpoint from exhibit3design and contain:
+- `userId`: UUID of the user
+- `email`: User's email address
+- Expiration time (1 hour)
+
+---
+
+## Database Schema (exhibit3design)
+
+The following tables support the reservation system:
+
+### `token_reservations`
+```sql
+- id: UUID (primary key)
+- user_id: UUID
+- service_type: TEXT
+- tokens_amount: INTEGER
+- status: TEXT ('reserved', 'committed', 'rolled_back')
+- ai_result_url: TEXT (nullable)
+- failure_reason: TEXT (nullable)
+- created_at: TIMESTAMPTZ
+- updated_at: TIMESTAMPTZ
+- expires_at: TIMESTAMPTZ (10 minutes from creation)
+```
+
+### `token_transactions`
+```sql
+- id: UUID (primary key)
+- user_id: UUID
+- reservation_id: UUID (foreign key)
+- transaction_type: TEXT ('reserve', 'commit', 'rollback')
+- tokens_amount: INTEGER
+- balance_after: INTEGER
+- created_at: TIMESTAMPTZ
+```
+
+### `profiles` (updated)
+```sql
+- ai_tokens_balance: INTEGER (total tokens)
+- reserved_tokens: INTEGER (currently reserved)
+- Available balance = ai_tokens_balance - reserved_tokens
+```
+
+---
+
+## Error Handling
+
+### Common Errors
+
+| Status | Error | Cause | Solution |
+|--------|-------|-------|----------|
+| 401 | Invalid token | JWT expired or invalid | Refresh JWT token |
+| 403 | Insufficient tokens | Not enough available tokens | Ask user to purchase more |
+| 404 | Reservation not found | Invalid ID or already processed | Don't retry, start new reservation |
+| 500 | Internal server error | Database or server issue | Retry with exponential backoff |
+
+---
+
+## Automatic Cleanup
+
+Reservations expire after **10 minutes**. The system automatically:
+1. Refunds tokens to user's balance
+2. Marks reservation as 'rolled_back'
+3. Logs reason as 'Reservation expired'
+
+This prevents tokens being locked forever if AI Studio crashes or loses connection.
+
+---
+
+## Migration from Old System
+
+### ❌ OLD (Deprecated):
 ```typescript
-// After successful AI generation, track token usage
-async function trackTokenUsage(
-  jwtToken: string,
-  generationData: {
-    prompt: string;
-    serviceType: 'image_edit' | 'video_generation' | 'image_generation';
-    inputImageUrl?: string;
-    outputImageUrl?: string;
-  }
-) {
-  try {
-    const response = await fetch(
-      'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/increment-ai-tokens',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${jwtToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(generationData),
-      }
-    );
-
-    if (!response.ok) {
-      const error = await response.json();
-      console.error('Token tracking failed:', error);
-      
-      if (response.status === 403) {
-        // User has no tokens remaining
-        alert('You have no AI tokens remaining. Please purchase more tokens.');
-        return false;
-      }
-      
-      if (response.status === 401) {
-        // Token expired, trigger re-authentication
-        window.location.href = 'https://exhibit3design.com/ai-studio-auth';
-        return false;
-      }
-    }
-
-    const result = await response.json();
-    console.log('✅ Token usage tracked:', result);
-    return true;
-  } catch (error) {
-    console.error('❌ Error tracking token usage:', error);
-    return false;
-  }
-}
-
-// Example integration in your AI generation flow:
-async function generateContent() {
-  const jwtToken = getStoredToken(); // From tokenStorage.ts
-  
-  // 1. Check if user has tokens BEFORE generation
-  const checkResponse = await fetch(
-    'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/check-ai-tokens',
-    {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${jwtToken}`,
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-  
-  const tokenStatus = await checkResponse.json();
-  if (!tokenStatus.hasTokens) {
-    alert('You have no AI tokens remaining. Please purchase more tokens.');
-    return;
-  }
-  
-  // 2. Generate the content (your AI API call)
-  const result = await yourAIGenerationAPI({
-    prompt: userPrompt,
-    // ... other params
-  });
-  
-  // 3. CRITICAL: Track the token usage immediately after success
-  await trackTokenUsage(jwtToken, {
-    prompt: userPrompt,
-    serviceType: 'video_generation', // or 'image_edit', 'image_generation'
-    inputImageUrl: result.inputUrl,
-    outputImageUrl: result.outputUrl,
-  });
-  
-  return result;
-}
+// DON'T USE THIS ANYMORE
+await fetch('.../increment-ai-tokens', {
+  method: 'POST',
+  body: JSON.stringify({ prompt, serviceType })
+});
 ```
 
-### Integration Checklist
-
-- [ ] Token accepted via URL parameter ✅
-- [ ] Background service starts automatically ✅
-- [ ] Token refreshes before expiration ✅
-- [ ] **Token usage tracked after each generation** ❌ **MISSING**
-- [ ] Check tokens before generation ❌ **MISSING**
-- [ ] Handle "no tokens" error gracefully ❌ **MISSING**
-- [ ] Logout on exhibit3design detected ✅
-- [ ] Auth lost triggers redirect ✅
-
-### Support
-
-For issues with token refresh, check:
-1. Browser console for detailed logs
-2. Supabase Edge Function logs: https://supabase.com/dashboard/project/fipebdkvzdrljwwxccrj/functions/refresh-auth-token/logs
-3. Network tab for failed requests
-
-For issues with token tracking:
-1. **❌ COMMON ERROR**: Using wrong endpoint name
-   - ❌ WRONG: `increment-ai-usage` (returns 404)
-   - ✅ CORRECT: `increment-ai-tokens`
-2. Check increment-ai-tokens logs: https://supabase.com/dashboard/project/fipebdkvzdrljwwxccrj/functions/increment-ai-tokens/logs
-3. Verify JWT token is being sent in Authorization header
-4. Check if generation history appears in exhibit3design profile
-
-### Quick Fix: Endpoint Name
-
-If you're getting 404 errors, you're using the wrong endpoint name:
-
+### ✅ NEW (Recommended):
 ```typescript
-// ❌ WRONG - This endpoint doesn't exist:
-'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/increment-ai-usage'
+// 1. Reserve first
+const { reservationId } = await fetch('.../reserve-tokens', { ... });
 
-// ✅ CORRECT - Use this endpoint:
-'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/increment-ai-tokens'
+// 2. Generate
+const result = await generateAI();
+
+// 3a. Commit on success
+await fetch('.../commit-reservation', { reservationId, aiResultUrl });
+
+// OR 3b. Rollback on failure
+await fetch('.../rollback-reservation', { reservationId, reason });
 ```
+
+---
+
+## Troubleshooting
+
+### Issue: 403 Insufficient tokens
+- Check available balance with `/get-user-balance`
+- Remember: `available = total - reserved`
+- User might have pending reservations
+
+### Issue: 404 Reservation not found
+- Reservation might have expired (>10 minutes)
+- Reservation might already be committed/rolled back
+- Start a new reservation
+
+### Issue: Tokens not refunded
+- Check if rollback was called successfully
+- Check logs: https://supabase.com/dashboard/project/fipebdkvzdrljwwxccrj/functions/rollback-reservation/logs
+- Expired reservations are automatically cleaned up
+
+---
+
+## Logs & Monitoring
+
+View logs for each endpoint:
+- Reserve: https://supabase.com/dashboard/project/fipebdkvzdrljwwxccrj/functions/reserve-tokens/logs
+- Commit: https://supabase.com/dashboard/project/fipebdkvzdrljwwxccrj/functions/commit-reservation/logs
+- Rollback: https://supabase.com/dashboard/project/fipebdkvzdrljwwxccrj/functions/rollback-reservation/logs
+- Balance: https://supabase.com/dashboard/project/fipebdkvzdrljwwxccrj/functions/get-user-balance/logs
+
+---
+
+## Best Practices
+
+1. **Always reserve before generating** - Never start AI generation without a reservation
+2. **Always commit or rollback** - Don't leave reservations hanging
+3. **Handle errors gracefully** - Always rollback on error
+4. **Check balance first** - Call `/get-user-balance` before showing generation UI
+5. **Set timeouts** - If your AI service takes >5 minutes, increase reservation expiry
+6. **Log everything** - Keep track of reservationIds for debugging
+
+---
+
+## Support
+
+For issues or questions:
+- Check edge function logs in Supabase dashboard
+- Review `token_transactions` table for audit trail
+- Contact exhibit3design team with reservationId for investigation

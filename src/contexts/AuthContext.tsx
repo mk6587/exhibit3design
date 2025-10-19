@@ -20,6 +20,7 @@ interface Profile {
   ai_tokens_used: number;
   ai_tokens_limit: number;
   ai_tokens_balance: number;
+  reserved_tokens: number;
   free_tokens_claimed: boolean;
   video_results_used: number;
   video_results_balance: number;

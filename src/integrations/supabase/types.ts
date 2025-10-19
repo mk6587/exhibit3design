@@ -373,6 +373,7 @@ export type Database = {
           last_name: string | null
           phone_number: string | null
           postcode: string | null
+          reserved_tokens: number
           selected_files: Json | null
           state_region: string | null
           updated_at: string
@@ -399,6 +400,7 @@ export type Database = {
           last_name?: string | null
           phone_number?: string | null
           postcode?: string | null
+          reserved_tokens?: number
           selected_files?: Json | null
           state_region?: string | null
           updated_at?: string
@@ -425,6 +427,7 @@ export type Database = {
           last_name?: string | null
           phone_number?: string | null
           postcode?: string | null
+          reserved_tokens?: number
           selected_files?: Json | null
           state_region?: string | null
           updated_at?: string
@@ -607,6 +610,83 @@ export type Database = {
         }
         Relationships: []
       }
+      token_reservations: {
+        Row: {
+          ai_result_url: string | null
+          created_at: string
+          expires_at: string
+          failure_reason: string | null
+          id: string
+          service_type: string
+          status: string
+          tokens_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_result_url?: string | null
+          created_at?: string
+          expires_at?: string
+          failure_reason?: string | null
+          id?: string
+          service_type: string
+          status: string
+          tokens_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_result_url?: string | null
+          created_at?: string
+          expires_at?: string
+          failure_reason?: string | null
+          id?: string
+          service_type?: string
+          status?: string
+          tokens_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      token_transactions: {
+        Row: {
+          balance_after: number
+          created_at: string
+          id: string
+          reservation_id: string | null
+          tokens_amount: number
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          balance_after: number
+          created_at?: string
+          id?: string
+          reservation_id?: string | null
+          tokens_amount: number
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          balance_after?: number
+          created_at?: string
+          id?: string
+          reservation_id?: string | null
+          tokens_amount?: number
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "token_transactions_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "token_reservations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_activity_log: {
         Row: {
           action_details: Json | null
@@ -763,9 +843,21 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      cleanup_expired_reservations: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cleanup_old_otp_records: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      commit_reservation_atomic: {
+        Args: {
+          p_ai_result_url: string
+          p_reservation_id: string
+          p_user_id: string
+        }
+        Returns: Json
       }
       correct_user_tokens: {
         Args: {
@@ -974,6 +1066,18 @@ export type Database = {
       mask_sensitive_data: {
         Args: { data: string; mask_type?: string }
         Returns: string
+      }
+      reserve_tokens_atomic: {
+        Args: {
+          p_service_type: string
+          p_tokens_amount: number
+          p_user_id: string
+        }
+        Returns: Json
+      }
+      rollback_reservation_atomic: {
+        Args: { p_reason: string; p_reservation_id: string; p_user_id: string }
+        Returns: Json
       }
       set_order_token_session: {
         Args: { token: string }
