@@ -680,11 +680,24 @@ export default function AISamplesPage() {
                     {mockOutput ? "Generated Output" : "Output Preview"}
                   </p>
                   {mockOutput ? (
-                    <img 
-                      src={mockOutput} 
-                      alt="Generated output" 
-                      className="w-full rounded-lg border-2 border-primary"
-                    />
+                    selectedService?.serviceKey === 'text_image_to_video' || 
+                    selectedService?.serviceKey === 'rotating_stand_video' || 
+                    selectedService?.serviceKey === 'visitors_walkthrough_video' ? (
+                      <video 
+                        src={mockOutput} 
+                        controls
+                        autoPlay
+                        loop
+                        muted
+                        className="w-full rounded-lg border-2 border-primary"
+                      />
+                    ) : (
+                      <img 
+                        src={mockOutput} 
+                        alt="Generated output" 
+                        className="w-full rounded-lg border-2 border-primary"
+                      />
+                    )
                   ) : (
                     <div className="w-full aspect-video bg-muted rounded-lg border-2 border-dashed flex items-center justify-center">
                       <p className="text-muted-foreground">Click Generate to see result</p>
