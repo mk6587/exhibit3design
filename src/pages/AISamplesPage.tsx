@@ -696,15 +696,27 @@ export default function AISamplesPage() {
 
             <div className="flex gap-3 justify-center">
               {!mockOutput ? (
-                <Button onClick={handleMockGenerate} size="lg">
-                  <Sparkles className="h-5 w-5 mr-2" />
-                  Generate (Demo)
-                </Button>
+                <>
+                  <Button onClick={handleMockGenerate} size="lg">
+                    <Sparkles className="h-5 w-5 mr-2" />
+                    Generate (Demo)
+                  </Button>
+                  <Button onClick={() => navigate(selectedService?.aiStudioLink || '/products')} size="lg" variant="outline">
+                    Use Now in AI Studio
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </>
               ) : (
-                <Button onClick={() => navigate('/pricing')} size="lg">
-                  <ArrowRight className="h-5 w-5 mr-2" />
-                  Get Started Free - Use Real AI
-                </Button>
+                <>
+                  <Button onClick={() => navigate('/pricing')} size="lg">
+                    <ArrowRight className="h-5 w-5 mr-2" />
+                    Get Started Free
+                  </Button>
+                  <Button onClick={() => navigate(selectedService?.aiStudioLink || '/products')} size="lg" variant="outline">
+                    Use Now in AI Studio
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </>
               )}
             </div>
           </div>
