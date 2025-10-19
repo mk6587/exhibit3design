@@ -5,6 +5,7 @@ import supportAgent from "@/assets/support-agent.png";
 interface ChatMessageProps {
   role: "user" | "assistant";
   content: string;
+  imageUrl?: string;
 }
 
 const renderContentWithLinks = (text: string) => {
@@ -30,7 +31,7 @@ const renderContentWithLinks = (text: string) => {
   });
 };
 
-export const ChatMessage = ({ role, content }: ChatMessageProps) => {
+export const ChatMessage = ({ role, content, imageUrl }: ChatMessageProps) => {
   const isUser = role === "user";
 
   return (
@@ -58,6 +59,13 @@ export const ChatMessage = ({ role, content }: ChatMessageProps) => {
           ? "bg-gradient-to-br from-primary to-primary/90 text-primary-foreground rounded-tr-sm shadow-lg shadow-primary/20 max-w-[75%] ml-auto" 
           : "bg-gradient-to-br from-muted to-muted/50 rounded-tl-sm border border-border/50 max-w-[75%]"
       )}>
+        {imageUrl && (
+          <img 
+            src={imageUrl} 
+            alt="Uploaded" 
+            className="mb-3 max-w-full h-auto rounded-lg border border-border/30"
+          />
+        )}
         <div className="text-sm whitespace-pre-wrap break-words leading-relaxed">
           {content.split('\n').map((line, i) => (
             <p key={i} className={i > 0 ? "mt-2" : ""}>

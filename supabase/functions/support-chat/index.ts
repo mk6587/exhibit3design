@@ -1,11 +1,62 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
+import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+async function sendCriticalIssueEmail(messages: any[], userContext: string) {
+  const smtpHost = Deno.env.get('SMTP_HOST');
+  const smtpPort = parseInt(Deno.env.get('SMTP_PORT') || '587');
+  const smtpUser = Deno.env.get('SMTP_USER');
+  const smtpPassword = Deno.env.get('SMTP_PASSWORD');
+  const smtpFrom = Deno.env.get('SMTP_FROM_EMAIL') || smtpUser;
+
+  if (!smtpHost || !smtpUser || !smtpPassword) {
+    console.error('SMTP not configured');
+    return;
+  }
+
+  const client = new SMTPClient({
+    connection: {
+      hostname: smtpHost,
+      port: smtpPort,
+      tls: true,
+      auth: {
+        username: smtpUser,
+        password: smtpPassword,
+      },
+    },
+  });
+
+  const chatThread = messages.map((msg: any, i: number) => 
+    `${i + 1}. ${msg.role.toUpperCase()}: ${typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}`
+  ).join('\n\n');
+
+  try {
+    await client.send({
+      from: smtpFrom,
+      to: "info@exhibit3design.com",
+      subject: "🚨 Critical Support Chat Issue",
+      content: `A critical issue has been detected in the support chat.
+
+${userContext}
+
+CHAT THREAD:
+${chatThread}
+
+This email was automatically generated when a critical issue was detected.`,
+    });
+    console.log('Critical issue email sent successfully');
+  } catch (error) {
+    console.error('Failed to send critical issue email:', error);
+  } finally {
+    await client.close();
+  }
+}
 
 const SECURITY_POLICY = `
 CRITICAL SECURITY POLICY - YOU MUST FOLLOW THESE RULES:
@@ -41,7 +92,7 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, messageCount = 0 } = await req.json();
+    const { messages, messageCount = 0, hasImage = false } = await req.json();
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -149,17 +200,33 @@ ${userContext}
 `;
 
     // Check if escalation is needed
-    const lastMessage = messages[messages.length - 1]?.content?.toLowerCase() || '';
-    const needsEscalation = 
-      messageCount > 10 ||
-      lastMessage.includes('urgent') ||
+    const lastMessageContent = messages[messages.length - 1]?.content;
+    const lastMessage = (typeof lastMessageContent === 'string' ? lastMessageContent : 
+      Array.isArray(lastMessageContent) ? lastMessageContent.find((c: any) => c.type === 'text')?.text || '' : 
+      '').toLowerCase();
+    
+    const isCritical = 
       lastMessage.includes('critical') ||
       lastMessage.includes('emergency') ||
-      lastMessage.includes('help') ||
-      lastMessage.includes('not working') ||
+      lastMessage.includes('urgent') ||
       lastMessage.includes('broken') ||
+      lastMessage.includes('not working');
+    
+    const needsEscalation = 
+      messageCount > 10 ||
+      isCritical ||
+      lastMessage.includes('help') ||
       lastMessage.includes('problem') ||
       lastMessage.includes('issue');
+
+    // Send email for critical issues
+    if (isCritical && messageCount > 2) {
+      try {
+        await sendCriticalIssueEmail(messages, userContext);
+      } catch (emailError) {
+        console.error('Email notification failed:', emailError);
+      }
+    }
 
     const systemPrompt = `${SECURITY_POLICY}
 
@@ -186,13 +253,12 @@ ESCALATION SUGGESTION (use when appropriate):
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: hasImage ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages
         ],
         stream: true,
-        temperature: 0.7,
       }),
     });
 

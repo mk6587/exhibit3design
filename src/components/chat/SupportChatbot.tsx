@@ -1,16 +1,18 @@
 import { useState, useRef, useEffect } from "react";
-import { X, Send, MessageCircle } from "lucide-react";
+import { X, Send, MessageCircle, Paperclip, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatMessage } from "./ChatMessage";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import supportAgent from "@/assets/support-agent.png";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
+  imageUrl?: string;
 }
 
 interface SupportChatbotProps {
@@ -27,8 +29,11 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // Scroll to bottom when messages change
@@ -40,12 +45,54 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image must be less than 5MB");
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        toast.error("Please select an image file");
+        return;
+      }
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-    const userMessage: Message = { role: "user", content: input.trim() };
+  const removeImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const sendMessage = async () => {
+    if ((!input.trim() && !selectedImage) || isLoading) return;
+
+    let imageBase64 = null;
+    if (selectedImage) {
+      const reader = new FileReader();
+      imageBase64 = await new Promise<string>((resolve) => {
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(selectedImage);
+      });
+    }
+
+    const userMessage: Message = { 
+      role: "user", 
+      content: input.trim() || "I've shared an image",
+      imageUrl: imagePreview || undefined
+    };
     setMessages(prev => [...prev, userMessage]);
     setInput("");
+    removeImage();
     setIsLoading(true);
 
     try {
@@ -62,8 +109,15 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
             })
           },
           body: JSON.stringify({
-            messages: [...messages, userMessage],
-            messageCount: messages.length
+            messages: [...messages, userMessage].map(msg => ({
+              role: msg.role,
+              content: msg.imageUrl && imageBase64 ? [
+                { type: "text", text: msg.content },
+                { type: "image_url", image_url: { url: imageBase64 } }
+              ] : msg.content
+            })),
+            messageCount: messages.length,
+            hasImage: !!imageBase64
           }),
         }
       );
@@ -163,7 +217,7 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
         <ScrollArea className="flex-1 px-6 py-6" ref={scrollRef}>
           {messages.map((msg, idx) => (
             <div key={idx} className="animate-fade-in">
-              <ChatMessage role={msg.role} content={msg.content} />
+              <ChatMessage role={msg.role} content={msg.content} imageUrl={msg.imageUrl} />
             </div>
           ))}
           {isLoading && (
@@ -188,6 +242,21 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
         </ScrollArea>
         
         <div className="border-t border-primary/10 p-4 bg-background/95 backdrop-blur-sm">
+          {imagePreview && (
+            <div className="mb-2 relative inline-block">
+              <img 
+                src={imagePreview} 
+                alt="Preview" 
+                className="h-20 w-20 object-cover rounded-lg border-2 border-primary/20"
+              />
+              <button
+                onClick={removeImage}
+                className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          )}
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -195,6 +264,23 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
             }}
             className="flex gap-2"
           >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageSelect}
+              className="hidden"
+            />
+            <Button
+              type="button"
+              size="icon"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading}
+              className="h-11 w-11 border-primary/20 hover:bg-primary/10"
+            >
+              <Paperclip className="h-4 w-4" />
+            </Button>
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -205,7 +291,7 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
             <Button 
               type="submit" 
               size="icon" 
-              disabled={isLoading || !input.trim()}
+              disabled={isLoading || (!input.trim() && !selectedImage)}
               className="h-11 w-11 bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all hover:scale-105"
             >
               <Send className="h-4 w-4" />
