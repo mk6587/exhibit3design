@@ -23,49 +23,51 @@ const AboutPage = () => {
           
           <div className="prose max-w-none">
             <p className="lead text-lg mb-6">
-              Exhibit3Design offers a curated collection of professional exhibition stand designs, 
-              available for purchase and delivery for your next trade show project.
+              Exhibit3Design is an AI-powered platform built for the exhibition stand design industry.
+              We offer a curated collection of ready-made professional stand designs that you can instantly enhance with powerful AI tools — such as rotating videos, realistic visitors, artistic sketch rendering, and Magic Edit customization.
             </p>
             
             <h2 className="text-2xl font-semibold mt-8 mb-4">What We Offer</h2>
             <p>
-              Our design library features modern, professional exhibition stand concepts created specifically for the trade show industry. 
-              Each design comes as a complete package with multiple file formats, allowing you to adapt and customize them for your specific needs.
+              Our platform combines AI creativity with real-world design expertise.
+              Each ready-made design is optimized for practical exhibition use, featuring balanced layouts, clean aesthetics, and functional spaces for product display, interaction, and meetings.
+              You can preview, customize, and visualize your booth with AI before production — no endless prompting or trial and error.
             </p>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Professional Design Collection</h2>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">Why It's Different</h2>
             <p>
-              Every design in our collection has been carefully crafted with practical exhibition requirements in mind. 
-              We focus on clean aesthetics, functional layouts, and designs that work well in real exhibition environments. 
-              Our designs consider visitor flow, product display areas, and meeting spaces that are essential for successful trade shows.
+              Unlike traditional design libraries, Exhibit3Design uses AI trained specifically for exhibition design, removing the hassle of multiple tweaks and generic outputs.
+              You get accurate, presentation-ready visuals that align with trade show standards — instantly.
             </p>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Who Benefits from Our Designs</h2>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">Who Benefits</h2>
             <p>
-              Our design library serves various professionals in the exhibition industry:
+              Our platform is built for everyone in the exhibition ecosystem:
             </p>
             <ul className="list-disc pl-6 mb-6">
-              <li><strong>Exhibition contractors</strong> who need ready-to-use designs for client projects</li>
-              <li><strong>Design professionals</strong> looking for inspiration or starting points for custom work</li>
-              <li><strong>Marketing teams</strong> who need professional designs without the high cost of custom development</li>
-              <li><strong>Small businesses</strong> participating in trade shows who want professional-looking stands</li>
+              <li><strong>Exhibition contractors</strong> who need fast, professional concepts for client projects</li>
+              <li><strong>Design professionals</strong> seeking AI-assisted creativity and quick visualizations</li>
+              <li><strong>Marketing teams</strong> that want cost-effective booth designs for upcoming shows</li>
+              <li><strong>Small businesses</strong> looking for high-quality stands without custom design costs</li>
             </ul>
             
-            <h2 className="text-2xl font-semibold mt-8 mb-4">File Formats and Usage</h2>
+            <h2 className="text-2xl font-semibold mt-8 mb-4">File Formats and Customization</h2>
             <p>
-              Each design purchase includes multiple file formats (SKP, 3DS) that can be opened in most 3D software applications. 
-              This flexibility allows you to modify colors, materials, dimensions, and other elements to match your brand and 
-              specific requirements. The designs are created to be easily customizable while maintaining their professional appearance.
+              Each purchased design includes multiple 3D file formats (SKP, 3DS), compatible with popular design software.
+              You can adjust colors, materials, and dimensions — or use AI tools to instantly create new variations, add people, or render artistic views.
             </p>
             
             <h2 className="text-2xl font-semibold mt-8 mb-4">Delivery Process</h2>
             <p>
-              After purchase, your design files are prepared and processed for delivery. This process typically takes several hours 
-              to ensure you receive complete, high-quality files. You will be notified when your design files are ready for download.
+              AI-enhanced outputs such as rotating videos, visitor renders, or sketch visuals are generated within minutes after submission.
+              Design file packages (SKP, 3DS, etc.) are prepared and quality-checked before delivery, typically available within a few hours after purchase.
             </p>
             
             <h2 className="text-2xl font-semibold mt-8 mb-4">Our Commitment</h2>
-            <p>We focus on providing practical, professional designs that save you time and effort. Each design is created with attention to detail and real-world exhibition requirements, giving you a solid foundation for your next trade show project.</p>
+            <p>
+              At Exhibit3Design, our goal is to make professional exhibition design effortless.
+              We combine curated design expertise with AI automation to save you time, reduce design iteration costs, and deliver stunning, exhibition-ready visuals in just a few clicks.
+            </p>
           </div>
         </div>
       </div>
