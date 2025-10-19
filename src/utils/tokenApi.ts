@@ -77,9 +77,17 @@ export async function checkAITokens(jwtToken: string): Promise<{
 }
 
 /**
- * Increment AI tokens
+ * Increment AI tokens with optional generation details
  */
-export async function incrementAITokens(jwtToken: string): Promise<void> {
+export async function incrementAITokens(
+  jwtToken: string,
+  options?: {
+    prompt?: string;
+    serviceType?: string;
+    inputImageUrl?: string;
+    outputImageUrl?: string;
+  }
+): Promise<void> {
   try {
     const response = await fetch(
       'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/increment-ai-tokens',
@@ -88,7 +96,13 @@ export async function incrementAITokens(jwtToken: string): Promise<void> {
         headers: {
           'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+          prompt: options?.prompt || 'AI Generation',
+          serviceType: options?.serviceType || 'image_edit',
+          inputImageUrl: options?.inputImageUrl || null,
+          outputImageUrl: options?.outputImageUrl || null
+        })
       }
     );
 
