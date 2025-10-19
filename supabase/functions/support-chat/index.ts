@@ -32,25 +32,173 @@ async function sendCriticalIssueEmail(messages: any[], userContext: string) {
     },
   });
 
-  const chatThread = messages.map((msg: any, i: number) => 
-    `${i + 1}. ${msg.role.toUpperCase()}: ${typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}`
-  ).join('\n\n');
+  // Extract image from messages if present
+  let imageAttachment = null;
+  let imageBase64 = null;
+  
+  for (const msg of messages) {
+    if (Array.isArray(msg.content)) {
+      const imageContent = msg.content.find((c: any) => c.type === 'image_url');
+      if (imageContent?.image_url?.url) {
+        const base64Match = imageContent.image_url.url.match(/^data:image\/(.*?);base64,(.*)$/);
+        if (base64Match) {
+          const [, extension, data] = base64Match;
+          imageBase64 = data;
+          imageAttachment = {
+            filename: `chat-image.${extension}`,
+            content: data,
+            encoding: 'base64' as const,
+            contentType: `image/${extension}`,
+          };
+          break;
+        }
+      }
+    }
+  }
+
+  // Format chat thread as beautiful HTML
+  const chatMessagesHtml = messages.map((msg: any, i: number) => {
+    const isUser = msg.role === 'user';
+    let content = '';
+    let hasImage = false;
+    
+    if (typeof msg.content === 'string') {
+      content = msg.content.replace(/\n/g, '<br>');
+    } else if (Array.isArray(msg.content)) {
+      const textContent = msg.content.find((c: any) => c.type === 'text');
+      if (textContent?.text) {
+        content = textContent.text.replace(/\n/g, '<br>');
+      }
+      hasImage = msg.content.some((c: any) => c.type === 'image_url');
+    }
+    
+    return `
+      <div style="margin-bottom: 20px; display: flex; ${isUser ? 'justify-content: flex-end;' : 'justify-content: flex-start;'}">
+        <div style="max-width: 70%; background: ${isUser ? '#007bff' : '#f1f3f4'}; color: ${isUser ? '#ffffff' : '#000000'}; padding: 12px 16px; border-radius: 12px; ${isUser ? 'border-top-right-radius: 4px;' : 'border-top-left-radius: 4px;'}">
+          <div style="font-weight: 600; font-size: 12px; margin-bottom: 6px; opacity: 0.8;">
+            ${isUser ? '👤 USER' : '🤖 ASSISTANT'}
+          </div>
+          ${hasImage ? '<div style="margin-bottom: 8px; font-style: italic; opacity: 0.9;">📎 Image attached (see attachment)</div>' : ''}
+          <div style="font-size: 14px; line-height: 1.5;">
+            ${content}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    .context {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px 20px;
+      margin: 20px;
+      border-radius: 4px;
+    }
+    .context h3 {
+      margin: 0 0 10px 0;
+      color: #856404;
+      font-size: 16px;
+    }
+    .context p {
+      margin: 5px 0;
+      color: #856404;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .chat-thread {
+      padding: 20px;
+      background-color: #ffffff;
+    }
+    .chat-thread h2 {
+      margin: 0 0 20px 0;
+      font-size: 18px;
+      color: #333;
+      border-bottom: 2px solid #e9ecef;
+      padding-bottom: 10px;
+    }
+    .footer {
+      background-color: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+      color: #6c757d;
+      font-size: 12px;
+      border-top: 1px solid #dee2e6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚨 Critical Support Chat Issue Detected</h1>
+    </div>
+    
+    ${userContext ? `
+    <div class="context">
+      <h3>📋 User Context</h3>
+      <p>${userContext.replace(/\n/g, '<br>')}</p>
+    </div>
+    ` : ''}
+    
+    <div class="chat-thread">
+      <h2>💬 Chat Thread</h2>
+      ${chatMessagesHtml}
+    </div>
+    
+    <div class="footer">
+      This email was automatically generated when a critical issue was detected in the support chat.
+      <br>
+      <strong>Exhibit3Design Support System</strong>
+    </div>
+  </div>
+</body>
+</html>
+  `;
 
   try {
-    await client.send({
+    const emailOptions: any = {
       from: smtpFrom,
       to: "info@exhibit3design.com",
       subject: "🚨 Critical Support Chat Issue",
-      content: `A critical issue has been detected in the support chat.
+      html: htmlContent,
+    };
 
-${userContext}
+    if (imageAttachment) {
+      emailOptions.attachments = [imageAttachment];
+    }
 
-CHAT THREAD:
-${chatThread}
-
-This email was automatically generated when a critical issue was detected.`,
-    });
-    console.log('Critical issue email sent successfully');
+    await client.send(emailOptions);
+    console.log('Critical issue email sent successfully', imageAttachment ? 'with image attachment' : '');
   } catch (error) {
     console.error('Failed to send critical issue email:', error);
   } finally {
