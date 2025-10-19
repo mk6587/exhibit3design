@@ -192,6 +192,8 @@ Enable detailed logging in browser console:
 
 ### Token Usage Tracking (CRITICAL)
 
+**IMPORTANT**: The endpoint is called `increment-ai-tokens` (NOT `increment-ai-usage`)
+
 After a user successfully generates content (video/image), you **MUST** call the token tracking endpoint:
 
 ```typescript
@@ -303,6 +305,21 @@ For issues with token refresh, check:
 3. Network tab for failed requests
 
 For issues with token tracking:
-1. Check increment-ai-tokens logs: https://supabase.com/dashboard/project/fipebdkvzdrljwwxccrj/functions/increment-ai-tokens/logs
-2. Verify JWT token is being sent in Authorization header
-3. Check if generation history appears in exhibit3design profile
+1. **❌ COMMON ERROR**: Using wrong endpoint name
+   - ❌ WRONG: `increment-ai-usage` (returns 404)
+   - ✅ CORRECT: `increment-ai-tokens`
+2. Check increment-ai-tokens logs: https://supabase.com/dashboard/project/fipebdkvzdrljwwxccrj/functions/increment-ai-tokens/logs
+3. Verify JWT token is being sent in Authorization header
+4. Check if generation history appears in exhibit3design profile
+
+### Quick Fix: Endpoint Name
+
+If you're getting 404 errors, you're using the wrong endpoint name:
+
+```typescript
+// ❌ WRONG - This endpoint doesn't exist:
+'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/increment-ai-usage'
+
+// ✅ CORRECT - Use this endpoint:
+'https://fipebdkvzdrljwwxccrj.supabase.co/functions/v1/increment-ai-tokens'
+```
