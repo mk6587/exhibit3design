@@ -25,6 +25,7 @@ export function UsageHistory() {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerImages, setViewerImages] = useState<string[]>([]);
   const [viewerIndex, setViewerIndex] = useState(0);
+  const [imageLoadErrors, setImageLoadErrors] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadUsageHistory();
@@ -79,13 +80,21 @@ export function UsageHistory() {
 
   const handleViewImages = (inputUrl: string | null, outputUrl: string | null) => {
     const images = [];
-    if (inputUrl) images.push(inputUrl);
-    if (outputUrl) images.push(outputUrl);
+    if (inputUrl && !imageLoadErrors.has(inputUrl)) images.push(inputUrl);
+    if (outputUrl && !imageLoadErrors.has(outputUrl)) images.push(outputUrl);
     if (images.length === 0) return;
     
     setViewerImages(images);
     setViewerIndex(0);
     setViewerOpen(true);
+  };
+
+  const handleImageError = (url: string) => {
+    setImageLoadErrors(prev => new Set(prev).add(url));
+  };
+
+  const hasValidImage = (inputUrl: string | null, outputUrl: string | null) => {
+    return (inputUrl && !imageLoadErrors.has(inputUrl)) || (outputUrl && !imageLoadErrors.has(outputUrl));
   };
 
   const handleDownload = async (url: string, filename: string) => {
@@ -179,21 +188,24 @@ export function UsageHistory() {
                             <div className="flex flex-col gap-1 items-center">
                               <span className="text-[10px] text-muted-foreground font-medium">Input</span>
                               <div 
-                                onClick={() => handleViewImages(generation.input_image_url, generation.output_image_url)}
-                                className="cursor-pointer relative overflow-hidden rounded border w-20 h-20 bg-muted group"
+                                onClick={() => hasValidImage(generation.input_image_url, generation.output_image_url) && handleViewImages(generation.input_image_url, generation.output_image_url)}
+                                className={`relative overflow-hidden rounded border w-20 h-20 bg-muted ${hasValidImage(generation.input_image_url, generation.output_image_url) ? 'cursor-pointer group' : 'cursor-default'}`}
                               >
                                 <img 
                                   src={generation.input_image_url} 
                                   alt="Input"
                                   className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                                   onError={(e) => {
+                                    handleImageError(generation.input_image_url!);
                                     e.currentTarget.style.display = 'none';
                                     e.currentTarget.parentElement!.innerHTML = '<div class="flex items-center justify-center h-full text-xs text-muted-foreground">No image</div>';
                                   }}
                                 />
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <Eye className="h-4 w-4 text-white" />
-                                </div>
+                                {hasValidImage(generation.input_image_url, generation.output_image_url) && (
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Eye className="h-4 w-4 text-white" />
+                                  </div>
+                                )}
                               </div>
                             </div>
                           )}
@@ -201,21 +213,24 @@ export function UsageHistory() {
                             <div className="flex flex-col gap-1 items-center">
                               <span className="text-[10px] text-muted-foreground font-medium">Output</span>
                               <div 
-                                onClick={() => handleViewImages(generation.input_image_url, generation.output_image_url)}
-                                className="cursor-pointer relative overflow-hidden rounded border w-20 h-20 bg-muted group"
+                                onClick={() => hasValidImage(generation.input_image_url, generation.output_image_url) && handleViewImages(generation.input_image_url, generation.output_image_url)}
+                                className={`relative overflow-hidden rounded border w-20 h-20 bg-muted ${hasValidImage(generation.input_image_url, generation.output_image_url) ? 'cursor-pointer group' : 'cursor-default'}`}
                               >
                                 <img 
                                   src={generation.output_image_url} 
                                   alt="Output"
                                   className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                                   onError={(e) => {
+                                    handleImageError(generation.output_image_url!);
                                     e.currentTarget.style.display = 'none';
                                     e.currentTarget.parentElement!.innerHTML = '<div class="flex items-center justify-center h-full text-xs text-muted-foreground">No image</div>';
                                   }}
                                 />
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <Eye className="h-4 w-4 text-white" />
-                                </div>
+                                {hasValidImage(generation.input_image_url, generation.output_image_url) && (
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Eye className="h-4 w-4 text-white" />
+                                  </div>
+                                )}
                               </div>
                             </div>
                           )}
