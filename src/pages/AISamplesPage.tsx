@@ -634,14 +634,14 @@ export default function AISamplesPage() {
               </p>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  {(selectedService?.serviceKey === 'text_to_image' || selectedService?.serviceKey === 'text_image_to_video') ? (
+                  {selectedService?.serviceKey === 'text_to_image' ? (
                     <div className="space-y-4">
                       <div>
                         <p className="text-sm font-semibold mb-2 text-muted-foreground">Text Prompt</p>
                         <textarea
                           value={textPrompt}
                           onChange={(e) => setTextPrompt(e.target.value)}
-                          placeholder={selectedService?.serviceKey === 'text_image_to_video' ? "Describe the video you want to generate..." : "Describe the exhibition stand you want to generate..."}
+                          placeholder="Describe the exhibition stand you want to generate..."
                           disabled
                           className="w-full h-32 p-3 border-2 rounded-lg resize-none bg-muted cursor-not-allowed opacity-50"
                         />
