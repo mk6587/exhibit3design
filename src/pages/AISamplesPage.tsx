@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Sparkles, Calendar, Wand2, Users, Pencil, Video, ArrowRight, CheckCircle2, Image as ImageIcon, Film, RotateCw, UserPlus, Palette, Lightbulb, Eye } from "lucide-react";
+import { Sparkles, Calendar, Wand2, Users, Pencil, Video, ArrowRight, CheckCircle2, Image as ImageIcon, Film, RotateCw, UserPlus, Palette, Lightbulb, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { trackPageView } from "@/services/ga4Analytics";
+import { BeforeAfterSlider } from "@/components/home/BeforeAfterSlider";
 
 interface AICuratedSample {
   id: string;
@@ -38,7 +39,7 @@ export default function AISamplesPage() {
   const [curatedSamples, setCuratedSamples] = useState<AICuratedSample[]>([]);
   const [demoConfigs, setDemoConfigs] = useState<DemoConfig[]>([]);
   const [loading, setLoading] = useState(true);
-  const [hoveredSampleId, setHoveredSampleId] = useState<string | null>(null);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [tryBeforeUseOpen, setTryBeforeUseOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
   const [mockOutput, setMockOutput] = useState<string | null>(null);
@@ -278,60 +279,76 @@ export default function AISamplesPage() {
                   </Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {curatedSamples.map((sample) => {
-                    const isHovered = hoveredSampleId === sample.id;
-                    const displayImage = (isHovered && sample.before_image_url) 
-                      ? sample.before_image_url 
-                      : sample.after_image_url;
-                    const isVideo = sample.type === 'video';
-
-                    return (
-                       <Card 
-                        key={sample.id} 
-                        className="overflow-hidden group cursor-pointer transition-all duration-200 hover:shadow-md hover:border-colorful-blue"
-                        onMouseEnter={() => setHoveredSampleId(sample.id)}
-                        onMouseLeave={() => setHoveredSampleId(null)}
-                      >
-                        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                          {isVideo && sample.after_video_url && !isHovered ? (
-                            <video
-                              src={sample.after_video_url}
-                              className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
-                              muted
-                              loop
-                              playsInline
-                              autoPlay
-                            />
-                          ) : (
-                            <img
-                              src={displayImage}
-                              alt={isHovered && sample.before_image_url ? "Source image" : sample.name}
-                              className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
-                              loading="lazy"
-                            />
-                          )}
-                          <Badge 
-                            className="absolute top-3 left-3 bg-background/90 text-foreground border"
+                <>
+                  {/* Mobile: Carousel view */}
+                  <div className="md:hidden">
+                    <div className="relative">
+                      <BeforeAfterSlider
+                        beforeImage={curatedSamples[currentSlideIndex]?.before_image_url}
+                        afterImage={curatedSamples[currentSlideIndex]?.after_image_url}
+                        beforeVideo={curatedSamples[currentSlideIndex]?.before_video_url}
+                        afterVideo={curatedSamples[currentSlideIndex]?.after_video_url}
+                        mode={curatedSamples[currentSlideIndex]?.mode_label || ""}
+                      />
+                      
+                      {/* Navigation arrows */}
+                      {curatedSamples.length > 1 && (
+                        <>
+                          <button
+                            onClick={() => setCurrentSlideIndex((prev) => 
+                              prev === 0 ? curatedSamples.length - 1 : prev - 1
+                            )}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg z-10"
+                            aria-label="Previous slide"
                           >
-                            {isHovered && sample.before_image_url ? "Source" : "AI Result"}
-                          </Badge>
-                        </div>
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Calendar className="h-3 w-3" />
-                              <span>{formatDate(sample.created_at)}</span>
-                            </div>
-                            <Badge variant="outline" className="text-xs">
-                              {sample.mode_label}
-                            </Badge>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
+                            <ChevronLeft className="h-5 w-5 text-gray-800" />
+                          </button>
+                          <button
+                            onClick={() => setCurrentSlideIndex((prev) => 
+                              prev === curatedSamples.length - 1 ? 0 : prev + 1
+                            )}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg z-10"
+                            aria-label="Next slide"
+                          >
+                            <ChevronRight className="h-5 w-5 text-gray-800" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                    
+                    {/* Dots indicator */}
+                    {curatedSamples.length > 1 && (
+                      <div className="flex justify-center gap-2 mt-4">
+                        {curatedSamples.map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setCurrentSlideIndex(index)}
+                            className={`h-2 rounded-full transition-all ${
+                              index === currentSlideIndex
+                                ? "w-8 bg-primary"
+                                : "w-2 bg-muted-foreground/30"
+                            }`}
+                            aria-label={`Go to slide ${index + 1}`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Desktop: Grid view */}
+                  <div className="hidden md:grid md:grid-cols-2 gap-8">
+                    {curatedSamples.map((sample) => (
+                      <BeforeAfterSlider
+                        key={sample.id}
+                        beforeImage={sample.before_image_url}
+                        afterImage={sample.after_image_url}
+                        beforeVideo={sample.before_video_url}
+                        afterVideo={sample.after_video_url}
+                        mode={sample.mode_label}
+                      />
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           </div>
