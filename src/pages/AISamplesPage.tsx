@@ -634,24 +634,25 @@ export default function AISamplesPage() {
               </p>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  {selectedService?.serviceKey === 'text_to_image' ? (
+                  {(selectedService?.serviceKey === 'text_to_image' || selectedService?.serviceKey === 'text_image_to_video') ? (
                     <div className="space-y-4">
                       <div>
                         <p className="text-sm font-semibold mb-2">Text Prompt</p>
                         <textarea
                           value={textPrompt}
                           onChange={(e) => setTextPrompt(e.target.value)}
-                          placeholder="Describe the exhibition stand you want to generate..."
+                          placeholder={selectedService?.serviceKey === 'text_image_to_video' ? "Describe the video you want to generate..." : "Describe the exhibition stand you want to generate..."}
                           className="w-full h-32 p-3 border-2 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary bg-background"
                         />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold mb-2">Or Upload Reference Image (Optional)</p>
+                        <p className="text-sm font-semibold mb-2 text-muted-foreground">Or Upload Reference Image (Optional)</p>
                         <input
                           type="file"
                           accept="image/*"
                           onChange={handleImageUpload}
-                          className="w-full p-2 border-2 rounded-lg bg-background"
+                          disabled
+                          className="w-full p-2 border-2 rounded-lg bg-muted cursor-not-allowed opacity-50"
                         />
                         {uploadedImage && (
                           <img 
