@@ -128,44 +128,51 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
   if (!isOpen) return null;
 
   return (
-    <Card className="fixed bottom-4 right-4 w-[400px] h-[600px] shadow-2xl z-50 flex flex-col">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 border-b">
-        <CardTitle className="flex items-center gap-2">
-          <MessageCircle className="h-5 w-5 text-primary" />
-          Customer Support
+    <Card className="fixed bottom-4 right-4 w-[400px] h-[600px] shadow-2xl z-50 flex flex-col animate-scale-in border-primary/20 overflow-hidden">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 pt-4 px-6 bg-gradient-to-r from-primary/10 via-primary/5 to-background border-b border-primary/20">
+        <CardTitle className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <MessageCircle className="h-5 w-5 text-primary animate-pulse" />
+          </div>
+          <div>
+            <div className="text-base font-semibold">Customer Support</div>
+            <div className="text-xs text-muted-foreground font-normal">We typically reply instantly</div>
+          </div>
         </CardTitle>
         <Button
           variant="ghost"
           size="icon"
           onClick={onClose}
-          className="h-6 w-6"
+          className="h-8 w-8 hover:bg-primary/10 transition-colors"
         >
           <X className="h-4 w-4" />
         </Button>
       </CardHeader>
       
-      <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
-        <ScrollArea className="flex-1 px-4 py-4" ref={scrollRef}>
+      <CardContent className="flex-1 flex flex-col p-0 overflow-hidden bg-gradient-to-b from-background to-muted/20">
+        <ScrollArea className="flex-1 px-6 py-6" ref={scrollRef}>
           {messages.map((msg, idx) => (
-            <ChatMessage key={idx} role={msg.role} content={msg.content} />
+            <div key={idx} className="animate-fade-in">
+              <ChatMessage role={msg.role} content={msg.content} />
+            </div>
           ))}
           {isLoading && (
-            <div className="flex gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                <Bot className="h-4 w-4 animate-pulse" />
+            <div className="flex gap-3 mb-4 animate-fade-in">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border border-primary/20">
+                <Bot className="h-5 w-5 text-primary animate-pulse" />
               </div>
-              <div className="bg-muted px-4 py-3 rounded-lg">
-                <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="bg-gradient-to-br from-muted to-muted/50 px-5 py-4 rounded-2xl rounded-tl-sm border border-border/50">
+                <div className="flex gap-1.5">
+                  <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
               </div>
             </div>
           )}
         </ScrollArea>
         
-        <div className="border-t p-4">
+        <div className="border-t border-primary/10 p-4 bg-background/95 backdrop-blur-sm">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -178,9 +185,14 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your message..."
               disabled={isLoading}
-              className="flex-1"
+              className="flex-1 h-11 border-primary/20 focus-visible:ring-primary/50 bg-background"
             />
-            <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
+            <Button 
+              type="submit" 
+              size="icon" 
+              disabled={isLoading || !input.trim()}
+              className="h-11 w-11 bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all hover:scale-105"
+            >
               <Send className="h-4 w-4" />
             </Button>
           </form>
