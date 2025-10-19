@@ -26,12 +26,26 @@ interface SubscriptionPlan {
   display_order: number;
 }
 
+interface CurrentSubscription {
+  subscription_id: string;
+  plan_id: string;
+  plan_name: string;
+  plan_price: number;
+  file_access_tier: string;
+  ai_tokens_included: number;
+  video_results_included: number;
+  max_files: number;
+  status: string;
+  current_period_end: string;
+}
+
 export default function PricingPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPlanId, setCurrentPlanId] = useState<string | null>(null);
+  const [currentSubscription, setCurrentSubscription] = useState<CurrentSubscription | null>(null);
 
   useEffect(() => {
     trackPageView('/pricing', 'Pricing Plans - AI Exhibition Design');
@@ -81,6 +95,7 @@ export default function PricingPage() {
       
       if (data && data.length > 0) {
         setCurrentPlanId(data[0].plan_id);
+        setCurrentSubscription(data[0]);
       }
     } catch (error) {
       console.error('Error fetching current subscription:', error);
@@ -146,6 +161,72 @@ export default function PricingPage() {
             </p>
           </div>
         </section>
+
+        {/* Current Subscription Banner */}
+        {currentSubscription && (
+          <section className="px-4 pb-8">
+            <div className="container mx-auto max-w-4xl">
+              <Card className="border-primary/50 bg-primary/5">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-2xl flex items-center gap-2">
+                        <Check className="h-6 w-6 text-primary" />
+                        Your Current Plan
+                      </CardTitle>
+                      <CardDescription className="text-base mt-2">
+                        Active subscription details
+                      </CardDescription>
+                    </div>
+                    <Badge variant="outline" className="text-base px-4 py-1">
+                      {currentSubscription.status}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <h3 className="font-semibold text-lg mb-3">{currentSubscription.plan_name}</h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Price:</span>
+                          <span className="font-medium">€{currentSubscription.plan_price}/month</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Access Tier:</span>
+                          <span className="font-medium capitalize">{currentSubscription.file_access_tier}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Renewal Date:</span>
+                          <span className="font-medium">
+                            {new Date(currentSubscription.current_period_end).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg mb-3">Plan Benefits</h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Design Files:</span>
+                          <span className="font-medium">{currentSubscription.max_files}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">AI Image Edits:</span>
+                          <span className="font-medium">{currentSubscription.ai_tokens_included}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">AI Videos:</span>
+                          <span className="font-medium">{currentSubscription.video_results_included}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+        )}
 
         {/* Pricing Cards */}
         <section className="pb-16 px-4">
