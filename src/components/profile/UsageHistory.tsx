@@ -189,22 +189,24 @@ export function UsageHistory() {
                               <span className="text-[10px] text-muted-foreground font-medium">Input</span>
                               <div 
                                 onClick={() => hasValidImage(generation.input_image_url, generation.output_image_url) && handleViewImages(generation.input_image_url, generation.output_image_url)}
-                                className={`relative overflow-hidden rounded border w-20 h-20 bg-muted ${hasValidImage(generation.input_image_url, generation.output_image_url) ? 'cursor-pointer group' : 'cursor-default'}`}
+                                className={`relative overflow-hidden rounded border w-20 h-20 bg-muted flex items-center justify-center ${hasValidImage(generation.input_image_url, generation.output_image_url) ? 'cursor-pointer group' : 'cursor-default'}`}
                               >
-                                <img 
-                                  src={generation.input_image_url} 
-                                  alt="Input"
-                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                                  onError={(e) => {
-                                    handleImageError(generation.input_image_url!);
-                                    e.currentTarget.style.display = 'none';
-                                    e.currentTarget.parentElement!.innerHTML = '<div class="flex items-center justify-center h-full text-xs text-muted-foreground">No image</div>';
-                                  }}
-                                />
-                                {hasValidImage(generation.input_image_url, generation.output_image_url) && (
-                                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Eye className="h-4 w-4 text-white" />
-                                  </div>
+                                {imageLoadErrors.has(generation.input_image_url) ? (
+                                  <span className="text-xs text-muted-foreground">No image</span>
+                                ) : (
+                                  <>
+                                    <img 
+                                      src={generation.input_image_url} 
+                                      alt="Input"
+                                      className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                                      onError={() => handleImageError(generation.input_image_url!)}
+                                    />
+                                    {hasValidImage(generation.input_image_url, generation.output_image_url) && (
+                                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Eye className="h-4 w-4 text-white" />
+                                      </div>
+                                    )}
+                                  </>
                                 )}
                               </div>
                             </div>
@@ -214,22 +216,24 @@ export function UsageHistory() {
                               <span className="text-[10px] text-muted-foreground font-medium">Output</span>
                               <div 
                                 onClick={() => hasValidImage(generation.input_image_url, generation.output_image_url) && handleViewImages(generation.input_image_url, generation.output_image_url)}
-                                className={`relative overflow-hidden rounded border w-20 h-20 bg-muted ${hasValidImage(generation.input_image_url, generation.output_image_url) ? 'cursor-pointer group' : 'cursor-default'}`}
+                                className={`relative overflow-hidden rounded border w-20 h-20 bg-muted flex items-center justify-center ${hasValidImage(generation.input_image_url, generation.output_image_url) ? 'cursor-pointer group' : 'cursor-default'}`}
                               >
-                                <img 
-                                  src={generation.output_image_url} 
-                                  alt="Output"
-                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                                  onError={(e) => {
-                                    handleImageError(generation.output_image_url!);
-                                    e.currentTarget.style.display = 'none';
-                                    e.currentTarget.parentElement!.innerHTML = '<div class="flex items-center justify-center h-full text-xs text-muted-foreground">No image</div>';
-                                  }}
-                                />
-                                {hasValidImage(generation.input_image_url, generation.output_image_url) && (
-                                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Eye className="h-4 w-4 text-white" />
-                                  </div>
+                                {imageLoadErrors.has(generation.output_image_url) ? (
+                                  <span className="text-xs text-muted-foreground">No image</span>
+                                ) : (
+                                  <>
+                                    <img 
+                                      src={generation.output_image_url} 
+                                      alt="Output"
+                                      className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                                      onError={() => handleImageError(generation.output_image_url!)}
+                                    />
+                                    {hasValidImage(generation.input_image_url, generation.output_image_url) && (
+                                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Eye className="h-4 w-4 text-white" />
+                                      </div>
+                                    )}
+                                  </>
                                 )}
                               </div>
                             </div>
