@@ -640,56 +640,56 @@ export default function AISamplesPage() {
 
       {/* Try Before Use Dialog */}
       <Dialog open={tryBeforeUseOpen} onOpenChange={setTryBeforeUseOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto px-4 sm:px-6">
           <DialogHeader>
-            <DialogTitle className="text-2xl">Try: {selectedService?.title}</DialogTitle>
+            <DialogTitle className="text-xl sm:text-2xl">Try: {selectedService?.title}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-6">
-            <div className="bg-muted/30 p-4 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-4">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-muted/30 p-3 sm:p-4 rounded-lg">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
                 This is a demo preview. Sign up to use the real AI tool with your own images.
               </p>
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   {(selectedService?.serviceKey === 'text_to_image' || selectedService?.serviceKey === 'text_image_to_video') ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       <div>
-                        <p className="text-sm font-semibold mb-2">Text Prompt</p>
-                        <div className="w-full min-h-32 p-3 border-2 rounded-lg bg-muted/50 text-foreground">
+                        <p className="text-xs sm:text-sm font-semibold mb-2">Text Prompt</p>
+                        <div className="w-full min-h-24 sm:min-h-32 p-2 sm:p-3 border-2 rounded-lg bg-muted/50 text-foreground text-xs sm:text-sm">
                           {textPrompt || "No prompt available"}
                         </div>
                       </div>
                       <div>
-                        <p className="text-sm font-semibold mb-2 text-muted-foreground">Or Upload Reference Image (Optional)</p>
+                        <p className="text-xs sm:text-sm font-semibold mb-2 text-muted-foreground">Or Upload Reference Image (Optional)</p>
                         <input
                           type="file"
                           accept="image/*"
                           onChange={handleImageUpload}
                           disabled
-                          className="w-full p-2 border-2 rounded-lg bg-muted cursor-not-allowed opacity-50"
+                          className="w-full p-2 border-2 rounded-lg bg-muted cursor-not-allowed opacity-50 text-xs sm:text-sm"
                         />
                         {uploadedImage && (
                           <img 
                             src={uploadedImage} 
                             alt="Uploaded reference"
-                            className="mt-3 w-full h-40 object-cover rounded-lg border-2"
+                            className="mt-2 sm:mt-3 w-full h-32 sm:h-40 object-cover rounded-lg border-2"
                           />
                         )}
                       </div>
                     </div>
                   ) : (
                     <>
-                      <p className="text-sm font-semibold mb-2">Input Image (Sample)</p>
+                      <p className="text-xs sm:text-sm font-semibold mb-2">Input Image (Sample)</p>
                       <img 
                         src={selectedService?.mockImage} 
                         alt="Sample input" 
-                        className="w-full rounded-lg border-2"
+                        className="w-full max-w-full rounded-lg border-2 object-contain"
                       />
                     </>
                   )}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold mb-2">
+                  <p className="text-xs sm:text-sm font-semibold mb-2">
                     {mockOutput ? "Generated Output" : "Output Preview"}
                   </p>
                   {mockOutput ? (
@@ -702,48 +702,48 @@ export default function AISamplesPage() {
                         autoPlay
                         loop
                         muted
-                        className="w-full rounded-lg border-2 border-primary"
+                        className="w-full max-w-full rounded-lg border-2 border-primary"
                       />
                     ) : (
                       <img 
                         src={mockOutput} 
                         alt="Generated output" 
-                        className="w-full rounded-lg border-2 border-primary"
+                        className="w-full max-w-full rounded-lg border-2 border-primary object-contain"
                       />
                     )
                   ) : (
-                    <div className="w-full aspect-video bg-muted rounded-lg border-2 border-dashed flex items-center justify-center">
-                      <p className="text-muted-foreground">Click Generate to see result</p>
+                    <div className="w-full aspect-video bg-muted rounded-lg border-2 border-dashed flex items-center justify-center p-4">
+                      <p className="text-xs sm:text-sm text-muted-foreground text-center">Click Generate to see result</p>
                     </div>
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-3 justify-center">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
               {!mockOutput ? (
                 <>
-                  <Button onClick={handleMockGenerate} size="lg">
-                    <Sparkles className="h-5 w-5 mr-2" />
-                    Generate (Demo)
+                  <Button onClick={handleMockGenerate} size="default" className="w-full sm:w-auto">
+                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                    <span className="text-sm sm:text-base">Generate (Demo)</span>
                   </Button>
-                  <Button asChild size="lg" variant="outline">
+                  <Button asChild size="default" variant="outline" className="w-full sm:w-auto">
                     <a href={selectedService?.aiStudioLink || "https://ai.exhibit3design.com"} target="_blank" rel="noopener noreferrer">
-                      Use Now in AI Studio
-                      <ArrowRight className="h-4 w-4 ml-2" />
+                      <span className="text-sm sm:text-base">Use Now in AI Studio</span>
+                      <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-2" />
                     </a>
                   </Button>
                 </>
               ) : (
                 <>
-                  <Button onClick={() => navigate('/pricing')} size="lg">
-                    <ArrowRight className="h-5 w-5 mr-2" />
-                    Get Started Free
+                  <Button onClick={() => navigate('/pricing')} size="default" className="w-full sm:w-auto">
+                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                    <span className="text-sm sm:text-base">Get Started Free</span>
                   </Button>
-                  <Button asChild size="lg" variant="outline">
+                  <Button asChild size="default" variant="outline" className="w-full sm:w-auto">
                     <a href={selectedService?.aiStudioLink || "https://ai.exhibit3design.com"} target="_blank" rel="noopener noreferrer">
-                      Use Now in AI Studio
-                      <ArrowRight className="h-4 w-4 ml-2" />
+                      <span className="text-sm sm:text-base">Use Now in AI Studio</span>
+                      <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-2" />
                     </a>
                   </Button>
                 </>
