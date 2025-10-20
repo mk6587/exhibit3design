@@ -252,8 +252,8 @@ export default function AISamplesPage() {
         </section>
 
         {/* See AI in Action - Flat Design */}
-        <section className="py-12 px-4 bg-muted/30">
-          <div className="container mx-auto max-w-6xl text-center">
+        <section className="py-12 px-0 bg-muted/30">
+          <div className="container mx-auto px-4 text-center">
             <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-3">
               <Eye className="h-4 w-4" />
               Real Examples
