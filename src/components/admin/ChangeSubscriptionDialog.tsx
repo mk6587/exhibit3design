@@ -105,13 +105,13 @@ export function ChangeSubscriptionDialog({ open, onOpenChange, user, onUpdate }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="w-[95vw] sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Crown className="h-5 w-5" />
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Crown className="h-4 w-4 sm:h-5 sm:w-5" />
             Change Subscription Plan
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs sm:text-sm">
             Assign a new subscription plan to {user.first_name || user.email}
           </DialogDescription>
         </DialogHeader>

@@ -202,26 +202,28 @@ export function UserActivityDialog({ open, onOpenChange, userId }: UserActivityD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[85vh]">
+      <DialogContent className="max-w-3xl max-h-[85vh] w-[95vw] sm:w-full">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5" />
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Activity className="h-4 w-4 sm:h-5 sm:w-5" />
             User Activity & AI Usage
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs sm:text-sm">
             View admin actions and AI token usage history
           </DialogDescription>
         </DialogHeader>
         
         <Tabs defaultValue="admin-actions" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="admin-actions" className="flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Admin Actions
+            <TabsTrigger value="admin-actions" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <Activity className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Admin Actions</span>
+              <span className="sm:hidden">Actions</span>
             </TabsTrigger>
-            <TabsTrigger value="ai-usage" className="flex items-center gap-2">
-              <Zap className="h-4 w-4" />
-              AI Usage History
+            <TabsTrigger value="ai-usage" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <Zap className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">AI Usage History</span>
+              <span className="sm:hidden">AI Usage</span>
             </TabsTrigger>
           </TabsList>
 

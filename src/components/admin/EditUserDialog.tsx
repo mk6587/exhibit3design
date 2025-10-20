@@ -72,10 +72,10 @@ export function EditUserDialog({ open, onOpenChange, user, onUpdate }: EditUserD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="w-[95vw] sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit User Information</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-base sm:text-lg">Edit User Information</DialogTitle>
+          <DialogDescription className="text-xs sm:text-sm">
             Update user profile details
           </DialogDescription>
         </DialogHeader>

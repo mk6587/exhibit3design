@@ -79,16 +79,16 @@ export function AdjustTokensDialog({ open, onOpenChange, user, onUpdate }: Adjus
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="w-[95vw] sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Adjust User Tokens</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-base sm:text-lg">Adjust User Tokens</DialogTitle>
+          <DialogDescription className="text-xs sm:text-sm">
             Modify AI tokens and video results balance for {user.first_name || user.email}
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="aiTokens" className="flex items-center gap-2">
                 <Zap className="h-4 w-4 text-primary" />

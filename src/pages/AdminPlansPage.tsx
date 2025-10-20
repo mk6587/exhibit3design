@@ -261,12 +261,12 @@ export default function AdminPlansPage() {
         </Card>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-base sm:text-lg">
                 {editingPlan ? 'Edit Plan' : 'Create Plan'}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-xs sm:text-sm">
                 {editingPlan ? 'Update plan details' : 'Add a new subscription plan'}
               </DialogDescription>
             </DialogHeader>
@@ -290,7 +290,7 @@ export default function AdminPlansPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="price">Price (€)</Label>
                   <Input
@@ -320,7 +320,7 @@ export default function AdminPlansPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="ai_tokens">AI Tokens</Label>
                   <Input
@@ -381,7 +381,7 @@ export default function AdminPlansPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="is_active"
