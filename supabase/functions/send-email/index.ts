@@ -73,6 +73,7 @@ async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
   try {
     const { SMTPClient } = await import('https://deno.land/x/denomailer@1.6.0/mod.ts');
     
+    console.log('🔌 Initializing SMTP client...');
     const client = new SMTPClient({
       connection: {
         hostname: smtpConfig.host,
@@ -86,6 +87,12 @@ async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
     });
 
     console.log('📧 Connecting to SMTP server...');
+    console.log('🔐 Connection details:', {
+      hostname: smtpConfig.host,
+      port: smtpConfig.port,
+      tls: true,
+      authUser: smtpConfig.username
+    });
 
     // Prepare recipients
     const bccRecipients = emailRequest.bcc ? (Array.isArray(emailRequest.bcc) ? emailRequest.bcc : [emailRequest.bcc]) : [];
@@ -101,7 +108,16 @@ async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
     // Send email to all recipients
     for (const recipient of recipients) {
       try {
-        await client.send({
+        console.log(`📤 Attempting to send email to: ${recipient}`);
+        console.log(`📤 Email details:`, {
+          from: `Exhibit3Design <${smtpConfig.fromEmail}>`,
+          to: recipient,
+          subject: emailRequest.subject,
+          hasHtml: !!emailRequest.html,
+          htmlLength: emailRequest.html?.length || 0
+        });
+
+        const result = await client.send({
           from: `Exhibit3Design <${smtpConfig.fromEmail}>`,
           to: recipient,
           bcc: bccRecipients.length > 0 ? bccRecipients.join(', ') : undefined,
@@ -111,9 +127,15 @@ async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
           html: emailRequest.html,
         });
 
+        console.log(`✅ SMTP Response:`, result);
         console.log(`✅ Email sent successfully to: ${recipient}`);
-      } catch (sendError) {
+      } catch (sendError: any) {
         console.error(`❌ Failed to send email to ${recipient}:`, sendError);
+        console.error(`❌ Error details:`, {
+          message: sendError.message,
+          stack: sendError.stack,
+          name: sendError.name
+        });
         throw new Error(`Failed to send email to ${recipient}: ${sendError.message}`);
       }
     }
@@ -121,9 +143,30 @@ async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
     await client.close();
     console.log('✅ SMTP connection closed');
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ SMTP Error:', error);
-    throw new Error(`SMTP Error: ${error.message || error}`);
+    console.error('❌ Full error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      code: error.code
+    });
+    
+    // Provide more specific error messages
+    let errorMessage = 'SMTP Error: ';
+    if (error.message?.includes('authentication') || error.message?.includes('auth')) {
+      errorMessage += 'Authentication failed. Please verify SMTP credentials.';
+    } else if (error.message?.includes('connection') || error.message?.includes('connect')) {
+      errorMessage += 'Could not connect to SMTP server. Please check server address and port.';
+    } else if (error.message?.includes('timeout')) {
+      errorMessage += 'Connection timed out. The SMTP server might be unreachable.';
+    } else if (error.message?.includes('certificate') || error.message?.includes('TLS')) {
+      errorMessage += 'TLS/SSL certificate error. Please verify the SMTP server certificate.';
+    } else {
+      errorMessage += error.message || 'Unknown error occurred';
+    }
+    
+    throw new Error(errorMessage);
   }
 }
 
