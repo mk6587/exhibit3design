@@ -323,10 +323,10 @@ export default function AISamplesPage() {
                           <button
                             key={index}
                             onClick={() => setCurrentSlideIndex(index)}
-                            className={`h-2 rounded-full transition-all ${
+                            className={`w-3 h-3 rounded-full transition-all ${
                               index === currentSlideIndex
-                                ? "w-8 bg-primary"
-                                : "w-2 bg-muted-foreground/30"
+                                ? "bg-primary scale-110"
+                                : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
                             }`}
                             aria-label={`Go to slide ${index + 1}`}
                           />
