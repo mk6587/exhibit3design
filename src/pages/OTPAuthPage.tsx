@@ -23,7 +23,7 @@ const OTPAuthPage = () => {
   const [email, setEmail] = useState('');
   const [otp, setOTP] = useState('');
   const [step, setStep] = useState<'email' | 'otp'>('email');
-  const [timeLeft, setTimeLeft] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
   const [error, setError] = useState('');
   const [isResending, setIsResending] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string>('');
@@ -91,7 +91,7 @@ const OTPAuthPage = () => {
         variant: "default",
       });
       setStep('otp');
-      setTimeLeft(120); // 2 minutes
+      setTimeLeft(300); // 5 minutes
       // Reset captcha after successful send
       captchaRef.current?.reset();
       setCaptchaToken('');
@@ -217,7 +217,7 @@ const OTPAuthPage = () => {
     
     if (result.success) {
       console.log('✅ OTP resent successfully');
-      setTimeLeft(120);
+      setTimeLeft(300); // 5 minutes
       setOTP('');
       // Reset captcha after successful resend
       captchaRef.current?.reset();
