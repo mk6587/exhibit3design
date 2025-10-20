@@ -282,7 +282,7 @@ export default function AISamplesPage() {
                 <>
                   {/* Mobile: Carousel view */}
                   <div className="md:hidden">
-                    <div className="relative">
+                    <div className="relative max-w-full mx-auto mb-8 px-4">
                       <BeforeAfterSlider
                         beforeImage={curatedSamples[currentSlideIndex]?.before_image_url}
                         afterImage={curatedSamples[currentSlideIndex]?.after_image_url}
@@ -292,32 +292,29 @@ export default function AISamplesPage() {
                       />
                       
                       {/* Navigation arrows */}
-                      {curatedSamples.length > 1 && (
-                        <>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border z-10"
-                            onClick={() => setCurrentSlideIndex((prev) => 
-                              prev === 0 ? curatedSamples.length - 1 : prev - 1
-                            )}
-                            aria-label="Previous slide"
-                          >
-                            <ChevronLeft className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="absolute right-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border z-10"
-                            onClick={() => setCurrentSlideIndex((prev) => 
-                              prev === curatedSamples.length - 1 ? 0 : prev + 1
-                            )}
-                            aria-label="Next slide"
-                          >
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </>
-                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border"
+                        onClick={() => setCurrentSlideIndex((prev) => 
+                          prev === 0 ? curatedSamples.length - 1 : prev - 1
+                        )}
+                        aria-label="Previous slide"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border"
+                        onClick={() => setCurrentSlideIndex((prev) => 
+                          prev === curatedSamples.length - 1 ? 0 : prev + 1
+                        )}
+                        aria-label="Next slide"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
                     </div>
                     
                     {/* Dots indicator */}
