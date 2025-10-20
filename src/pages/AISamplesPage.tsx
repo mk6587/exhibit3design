@@ -294,24 +294,28 @@ export default function AISamplesPage() {
                       {/* Navigation arrows */}
                       {curatedSamples.length > 1 && (
                         <>
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border z-10"
                             onClick={() => setCurrentSlideIndex((prev) => 
                               prev === 0 ? curatedSamples.length - 1 : prev - 1
                             )}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg z-10"
                             aria-label="Previous slide"
                           >
-                            <ChevronLeft className="h-5 w-5 text-gray-800" />
-                          </button>
-                          <button
+                            <ChevronLeft className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border z-10"
                             onClick={() => setCurrentSlideIndex((prev) => 
                               prev === curatedSamples.length - 1 ? 0 : prev + 1
                             )}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg z-10"
                             aria-label="Next slide"
                           >
-                            <ChevronRight className="h-5 w-5 text-gray-800" />
-                          </button>
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
                         </>
                       )}
                     </div>
