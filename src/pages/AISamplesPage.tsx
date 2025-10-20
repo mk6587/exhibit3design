@@ -318,15 +318,15 @@ export default function AISamplesPage() {
                     
                     {/* Dots indicator */}
                     {curatedSamples.length > 1 && (
-                      <div className="flex justify-center gap-2 mt-4">
+                      <div className="flex justify-center gap-3 mt-6">
                         {curatedSamples.map((_, index) => (
                           <button
                             key={index}
                             onClick={() => setCurrentSlideIndex(index)}
-                            className={`w-3 h-3 rounded-full transition-all ${
+                            className={`transition-all rounded-full ${
                               index === currentSlideIndex
-                                ? "bg-primary scale-110"
-                                : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                                ? "w-12 h-3 bg-primary"
+                                : "w-3 h-3 bg-muted-foreground/30 hover:bg-muted-foreground/50"
                             }`}
                             aria-label={`Go to slide ${index + 1}`}
                           />
@@ -355,7 +355,7 @@ export default function AISamplesPage() {
         </section>
 
         {/* Three Core Pillars Story - Flat Design */}
-        <section className="py-16 px-4 bg-background">
+        <section className="py-8 px-4 bg-background">
           <div className="container mx-auto max-w-7xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Your Complete Exhibition Design Journey</h2>
