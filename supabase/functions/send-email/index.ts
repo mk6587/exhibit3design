@@ -52,6 +52,40 @@ interface WebhookEmailData {
   };
 }
 
+// Convert HTML to plain text
+function htmlToPlainText(html: string): string {
+  if (!html) return '';
+  
+  return html
+    // Remove script and style tags and their content
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+    // Replace common HTML entities
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    // Replace line breaks with newlines
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n\n')
+    .replace(/<\/div>/gi, '\n')
+    .replace(/<\/h[1-6]>/gi, '\n\n')
+    .replace(/<\/li>/gi, '\n')
+    // Remove all remaining HTML tags
+    .replace(/<[^>]+>/g, '')
+    // Clean up extra whitespace
+    .replace(/\n\s*\n\s*\n/g, '\n\n')
+    .trim();
+}
+
+// Generate unique Message-ID
+function generateMessageId(domain: string): string {
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 15);
+  return `<${timestamp}.${random}@${domain}>`;
+}
+
 // Enhanced SMTP client using denomailer
 async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
   console.log('📧 Sending email via SMTP');
@@ -105,6 +139,13 @@ async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
       }
     });
 
+    // Generate plain text if not provided
+    const plainText = emailRequest.text || (emailRequest.html ? htmlToPlainText(emailRequest.html) : '');
+    
+    // Generate Message-ID
+    const domain = smtpConfig.fromEmail.split('@')[1] || 'exhibit3design.com';
+    const messageId = generateMessageId(domain);
+    
     // Send email to all recipients
     for (const recipient of recipients) {
       try {
@@ -114,7 +155,9 @@ async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
           to: recipient,
           subject: emailRequest.subject,
           hasHtml: !!emailRequest.html,
-          htmlLength: emailRequest.html?.length || 0
+          hasPlainText: !!plainText,
+          htmlLength: emailRequest.html?.length || 0,
+          plainTextLength: plainText.length
         });
 
         const result = await client.send({
@@ -123,8 +166,17 @@ async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
           bcc: bccRecipients.length > 0 ? bccRecipients.join(', ') : undefined,
           cc: ccRecipients.length > 0 ? ccRecipients.join(', ') : undefined,
           subject: emailRequest.subject,
-          content: emailRequest.text || emailRequest.html || '',
+          content: plainText,
           html: emailRequest.html,
+          headers: {
+            'Message-ID': messageId,
+            'X-Mailer': 'Exhibit3Design Email System',
+            'Reply-To': smtpConfig.fromEmail,
+            'List-Unsubscribe': `<mailto:${smtpConfig.fromEmail}?subject=Unsubscribe>`,
+            'Precedence': 'bulk',
+            'X-Priority': '3',
+            'Importance': 'normal',
+          },
         });
 
         console.log(`✅ SMTP Response:`, result);
