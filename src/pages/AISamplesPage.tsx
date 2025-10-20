@@ -281,65 +281,59 @@ export default function AISamplesPage() {
               ) : (
                 <>
                   {/* Mobile: Carousel view */}
-                  <div className="md:hidden">
-                    <div className="relative max-w-full mx-auto mb-8 px-4">
-                      <BeforeAfterSlider
-                        beforeImage={curatedSamples[currentSlideIndex]?.before_image_url}
-                        afterImage={curatedSamples[currentSlideIndex]?.after_image_url}
-                        beforeVideo={curatedSamples[currentSlideIndex]?.before_video_url}
-                        afterVideo={curatedSamples[currentSlideIndex]?.after_video_url}
-                        mode={curatedSamples[currentSlideIndex]?.mode_label || ""}
-                      />
-                      
-                      {/* Navigation arrows */}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border"
-                        onClick={() => setCurrentSlideIndex((prev) => 
-                          prev === 0 ? curatedSamples.length - 1 : prev - 1
-                        )}
-                        aria-label="Previous slide"
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                      
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border"
-                        onClick={() => setCurrentSlideIndex((prev) => 
-                          prev === curatedSamples.length - 1 ? 0 : prev + 1
-                        )}
-                        aria-label="Next slide"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
+                  <div className="md:hidden relative max-w-full mx-auto mb-8 px-4">
+                    <BeforeAfterSlider
+                      beforeImage={curatedSamples[currentSlideIndex]?.before_image_url}
+                      afterImage={curatedSamples[currentSlideIndex]?.after_image_url}
+                      beforeVideo={curatedSamples[currentSlideIndex]?.before_video_url}
+                      afterVideo={curatedSamples[currentSlideIndex]?.after_video_url}
+                      mode={curatedSamples[currentSlideIndex]?.mode_label || ""}
+                    />
                     
-                    {/* Dots indicator */}
-                    {curatedSamples.length > 1 && (
-                      <div className="flex justify-center items-center gap-3 mt-4">
-                        {curatedSamples.map((_, index) => (
-                          <button
-                            key={index}
-                            onClick={() => setCurrentSlideIndex(index)}
-                            style={{ 
-                              width: '10px', 
-                              height: '10px',
-                              minWidth: '10px',
-                              minHeight: '10px'
-                            }}
-                            className={`rounded-full transition-all flex-shrink-0 ${
-                              index === currentSlideIndex
-                                ? "bg-primary"
-                                : "bg-muted-foreground/40"
-                            }`}
-                            aria-label={`Go to slide ${index + 1}`}
-                          />
-                        ))}
-                      </div>
-                    )}
+                    {/* Navigation arrows */}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border"
+                      onClick={() => setCurrentSlideIndex((prev) => 
+                        prev === 0 ? curatedSamples.length - 1 : prev - 1
+                      )}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border"
+                      onClick={() => setCurrentSlideIndex((prev) => 
+                        prev === curatedSamples.length - 1 ? 0 : prev + 1
+                      )}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+
+                    {/* Indicators */}
+                    <div className="flex justify-center items-center gap-3 mt-4">
+                      {curatedSamples.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentSlideIndex(index)}
+                          style={{ 
+                            width: '10px', 
+                            height: '10px',
+                            minWidth: '10px',
+                            minHeight: '10px'
+                          }}
+                          className={`rounded-full transition-all flex-shrink-0 ${
+                            index === currentSlideIndex
+                              ? "bg-primary"
+                              : "bg-muted-foreground/40"
+                          }`}
+                          aria-label={`View sample ${index + 1}`}
+                        />
+                      ))}
+                    </div>
                   </div>
 
                   {/* Desktop: Grid view */}
