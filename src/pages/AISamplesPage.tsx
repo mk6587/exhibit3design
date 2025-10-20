@@ -318,15 +318,21 @@ export default function AISamplesPage() {
                     
                     {/* Dots indicator */}
                     {curatedSamples.length > 1 && (
-                      <div className="flex justify-center gap-2 mt-4">
+                      <div className="flex justify-center items-center gap-3 mt-4">
                         {curatedSamples.map((_, index) => (
                           <button
                             key={index}
                             onClick={() => setCurrentSlideIndex(index)}
-                            className={`w-2.5 h-2.5 rounded-full transition-all ${
+                            style={{ 
+                              width: '10px', 
+                              height: '10px',
+                              minWidth: '10px',
+                              minHeight: '10px'
+                            }}
+                            className={`rounded-full transition-all flex-shrink-0 ${
                               index === currentSlideIndex
-                                ? "bg-primary scale-125"
-                                : "bg-gray-300 hover:bg-gray-400"
+                                ? "bg-primary"
+                                : "bg-muted-foreground/40"
                             }`}
                             aria-label={`Go to slide ${index + 1}`}
                           />
