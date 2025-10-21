@@ -363,22 +363,20 @@ const OTPAuthPage = () => {
 
                    <div className="space-y-2">
                     <Label>Security Verification</Label>
-                    <div className="overflow-x-auto">
-                      <TurnstileCaptcha
-                        ref={captchaRef}
-                        siteKey={TURNSTILE_SITE_KEY}
-                        onVerify={setCaptchaToken}
-                        onError={() => {
-                          setCaptchaToken('');
-                          setError('Security verification failed. Please try again.');
-                        }}
-                        onExpire={() => {
-                          setCaptchaToken('');
-                          setError('Security verification expired. Please verify again.');
-                        }}
-                        className="flex justify-center min-w-0"
-                      />
-                    </div>
+                    <TurnstileCaptcha
+                      ref={captchaRef}
+                      siteKey={TURNSTILE_SITE_KEY}
+                      onVerify={setCaptchaToken}
+                      onError={() => {
+                        setCaptchaToken('');
+                        setError('Security verification failed. Please try again.');
+                      }}
+                      onExpire={() => {
+                        setCaptchaToken('');
+                        setError('Security verification expired. Please verify again.');
+                      }}
+                      className="flex justify-center"
+                    />
                   </div>
 
                   {error && (
@@ -444,22 +442,20 @@ const OTPAuthPage = () => {
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <Label>Security Verification for Resend</Label>
-                        <div className="overflow-x-auto">
-                          <TurnstileCaptcha
-                            ref={captchaRef}
-                            siteKey={TURNSTILE_SITE_KEY}
-                            onVerify={setCaptchaToken}
-                            onError={() => {
-                              setCaptchaToken('');
-                              setError('Security verification failed. Please try again.');
-                            }}
-                            onExpire={() => {
-                              setCaptchaToken('');
-                              setError('Security verification expired. Please verify again.');
-                            }}
-                            className="flex justify-center min-w-0"
-                          />
-                        </div>
+                        <TurnstileCaptcha
+                          ref={captchaRef}
+                          siteKey={TURNSTILE_SITE_KEY}
+                          onVerify={setCaptchaToken}
+                          onError={() => {
+                            setCaptchaToken('');
+                            setError('Security verification failed. Please try again.');
+                          }}
+                          onExpire={() => {
+                            setCaptchaToken('');
+                            setError('Security verification expired. Please verify again.');
+                          }}
+                          className="flex justify-center"
+                        />
                       </div>
                       <div className="text-center">
                         <Button

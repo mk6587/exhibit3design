@@ -18,18 +18,6 @@ export interface TurnstileCaptchaRef {
 export const TurnstileCaptcha = forwardRef<TurnstileCaptchaRef, TurnstileCaptchaProps>(
   ({ siteKey, onVerify, onError, onExpire, className, theme = 'auto', size = 'normal' }, ref) => {
     const turnstileRef = useRef<TurnstileInstance>();
-    const [isMobile, setIsMobile] = React.useState(false);
-
-    React.useEffect(() => {
-      const checkMobile = () => {
-        setIsMobile(window.innerWidth < 640);
-      };
-      
-      checkMobile();
-      window.addEventListener('resize', checkMobile);
-      
-      return () => window.removeEventListener('resize', checkMobile);
-    }, []);
 
     useImperativeHandle(ref, () => ({
       reset: () => {
@@ -47,7 +35,7 @@ export const TurnstileCaptcha = forwardRef<TurnstileCaptchaRef, TurnstileCaptcha
           onExpire={onExpire}
           options={{
             theme,
-            size: isMobile ? 'compact' : size,
+            size,
             refreshExpired: 'auto',
           }}
         />

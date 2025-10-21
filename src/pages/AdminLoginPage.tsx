@@ -126,29 +126,27 @@ const AdminLoginPage = () => {
               />
             </div>
             <div className="space-y-2">
-              <div className="overflow-x-auto">
-                <TurnstileCaptcha
-                  ref={captchaRef}
-                  siteKey={TURNSTILE_SITE_KEY}
-                  onVerify={(token) => setCaptchaToken(token)}
-                  onError={() => {
-                    toast({
-                      title: "Verification error",
-                      description: "Failed to load security verification. Please refresh the page.",
-                      variant: "destructive",
-                    });
-                  }}
-                  onExpire={() => {
-                    setCaptchaToken('');
-                    toast({
-                      title: "Verification expired",
-                      description: "Please verify again",
-                      variant: "destructive",
-                    });
-                  }}
-                  className="flex justify-center min-w-0"
-                />
-              </div>
+              <TurnstileCaptcha
+                ref={captchaRef}
+                siteKey={TURNSTILE_SITE_KEY}
+                onVerify={(token) => setCaptchaToken(token)}
+                onError={() => {
+                  toast({
+                    title: "Verification error",
+                    description: "Failed to load security verification. Please refresh the page.",
+                    variant: "destructive",
+                  });
+                }}
+                onExpire={() => {
+                  setCaptchaToken('');
+                  toast({
+                    title: "Verification expired",
+                    description: "Please verify again",
+                    variant: "destructive",
+                  });
+                }}
+                className="flex justify-center"
+              />
             </div>
             <Button type="submit" className="w-full" disabled={loading || !captchaToken}>
               {loading ? 'Logging in...' : 'Login'}
