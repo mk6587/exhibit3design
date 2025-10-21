@@ -130,38 +130,33 @@ export const AIShowcaseSection = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border"
+              className="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-background/90 hover:bg-background backdrop-blur-sm border-2 shadow-lg"
               onClick={handlePrevious}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
             </Button>
             
             <Button
               variant="ghost"
               size="icon"
-              className="absolute right-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 hover:bg-background/90 backdrop-blur-sm border"
+              className="absolute right-0 top-1/2 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-background/90 hover:bg-background backdrop-blur-sm border-2 shadow-lg"
               onClick={handleNext}
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-5 w-5 md:h-6 md:w-6" />
             </Button>
 
             {/* Indicators */}
-            <div className="flex justify-center items-center gap-3 mt-4">
+            <div className="flex justify-center items-center gap-2 mt-6">
               {aiSamples.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
-                  style={{ 
-                    width: '10px', 
-                    height: '10px',
-                    minWidth: '10px',
-                    minHeight: '10px'
-                  }}
-                  className={`rounded-full transition-all flex-shrink-0 ${
+                  className={`rounded-full transition-all flex-shrink-0 touch-manipulation ${
                     index === currentIndex
-                      ? "bg-primary"
-                      : "bg-muted-foreground/40"
+                      ? "w-3 h-3 bg-primary"
+                      : "w-2.5 h-2.5 bg-muted-foreground/40"
                   }`}
+                  style={{ minWidth: index === currentIndex ? '12px' : '10px', minHeight: index === currentIndex ? '12px' : '10px' }}
                   aria-label={`View sample ${index + 1}`}
                 />
               ))}
