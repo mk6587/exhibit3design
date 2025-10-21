@@ -2,33 +2,47 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PC0B0J35TR"></script>
+    <!-- Defer analytics scripts to reduce initial page load -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-PC0B0J35TR', {
-        'referrer_policy': 'no-referrer-when-downgrade',
-        'send_page_view': true
+      // Load Google Analytics after page load
+      window.addEventListener('load', function() {
+        var gaScript = document.createElement('script');
+        gaScript.async = true;
+        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-PC0B0J35TR';
+        document.head.appendChild(gaScript);
+        
+        gaScript.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-PC0B0J35TR', {
+            'referrer_policy': 'no-referrer-when-downgrade',
+            'send_page_view': true
+          });
+        };
+      });
+      
+      // Load Google Tag Manager after page load
+      window.addEventListener('load', function() {
+        var gtmScript = document.createElement('script');
+        gtmScript.async = true;
+        gtmScript.src = 'https://www.googletagmanager.com/gtag/js?id=AW-11548212580';
+        document.head.appendChild(gtmScript);
+        
+        gtmScript.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'AW-11548212580', {
+            'referrer_policy': 'no-referrer-when-downgrade'
+          });
+        };
       });
     </script>
 
-    <!-- Google Tag Manager -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-11548212580"></script>
+    <!-- Hotjar - Deferred -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'AW-11548212580', {
-        'referrer_policy': 'no-referrer-when-downgrade'
-      });
-    </script>
-
-    <!-- Hotjar Tracking Code for Site 2801136 (name missing) -->
-    <script>
+      window.addEventListener('load', function() {
         (function(h,o,t,j,a,r){
             h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
             h._hjSettings={hjid:2801136,hjsv:6};
@@ -37,15 +51,18 @@
             r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
             a.appendChild(r);
         })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+      });
     </script>
 
-    <!-- Microsoft Clarity -->
+    <!-- Microsoft Clarity - Deferred -->
     <script type="text/javascript">
+      window.addEventListener('load', function() {
         (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
             t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
         })(window, document, "clarity", "script", "sq7zae35f7");
+      });
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

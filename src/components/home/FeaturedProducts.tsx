@@ -183,7 +183,15 @@ const FeaturedProducts = () => {
                     <div className="p-1">
                       <div className="bg-card rounded-lg shadow-sm border overflow-hidden h-full">
                         <div className="aspect-[4/3] relative overflow-hidden">
-                          <img src={product.images?.[0] || "/placeholder.svg"} alt={product.title} className="object-cover w-full h-full hover:scale-105 transition-transform duration-300" loading="lazy" />
+                          <img 
+                            src={product.images?.[0] || "/placeholder.svg"} 
+                            alt={product.title}
+                            width={800}
+                            height={600}
+                            className="object-cover w-full h-full hover:scale-105 transition-transform duration-300" 
+                            loading="lazy"
+                            decoding="async"
+                          />
                         </div>
                         
                         <div className="p-4 space-y-3">

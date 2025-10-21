@@ -38,9 +38,20 @@ const ProductCard = ({
       {/* Image Container */}
       <div className="relative h-5/6 overflow-hidden">
         <Link to={`/product/${product.id}`} className="block w-full h-full">
-          <img src={product.image} alt={product.title} className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-95 group-hover:scale-[1.02]" onContextMenu={handleImageClick} onClick={handleImageClick} onError={e => {
-          (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
-        }} />
+          <img 
+            src={product.image} 
+            alt={product.title}
+            width={800}
+            height={600}
+            className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-95 group-hover:scale-[1.02]" 
+            loading="lazy"
+            decoding="async"
+            onContextMenu={handleImageClick} 
+            onClick={handleImageClick} 
+            onError={e => {
+              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
+            }} 
+          />
         </Link>
         
         {/* Hover Overlay with AI Studio Button */}
