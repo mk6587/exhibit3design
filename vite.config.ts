@@ -22,15 +22,42 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
-          'supabase': ['@supabase/supabase-js'],
-          'utils': ['clsx', 'tailwind-merge', 'date-fns'],
+        manualChunks: (id) => {
+          // Vendor chunks
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'react-vendor';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'ui-vendor';
+            }
+            if (id.includes('@supabase')) {
+              return 'supabase';
+            }
+            if (id.includes('lucide-react')) {
+              return 'icons';
+            }
+            if (id.includes('recharts') || id.includes('date-fns')) {
+              return 'charts';
+            }
+            return 'vendor';
+          }
+          
+          // Admin pages in separate chunk
+          if (id.includes('/pages/Admin')) {
+            return 'admin';
+          }
+          
+          // Payment pages in separate chunk
+          if (id.includes('/pages/Payment')) {
+            return 'payment';
+          }
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 800,
     minify: 'esbuild',
+    cssCodeSplit: true,
+    reportCompressedSize: false,
   },
 }));
