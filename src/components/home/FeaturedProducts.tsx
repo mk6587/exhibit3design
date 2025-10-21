@@ -3,7 +3,7 @@ import { useProducts } from "@/contexts/ProductsContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "@/components/ui/rich-text-editor.css";
 const FeaturedProducts = () => {
   const {
@@ -14,6 +14,8 @@ const FeaturedProducts = () => {
   const [posterLoaded, setPosterLoaded] = useState(false);
   const [posterError, setPosterError] = useState(false);
   const [minDisplayTime, setMinDisplayTime] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
@@ -37,6 +39,16 @@ const FeaturedProducts = () => {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
+
+  // Lazy load video after poster is shown
+  useEffect(() => {
+    if (posterLoaded) {
+      const timer = setTimeout(() => {
+        setShouldLoadVideo(true);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [posterLoaded]);
   if (loading) {
     return <>
         {/* Full-width video section - Loading State */}
@@ -75,28 +87,50 @@ const FeaturedProducts = () => {
       <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
         {hasVideo && videoUrl ? <>
             {/* Poster image - using img tag for better control */}
-            <img src={posterUrl} alt="Exhibition Stand Hero" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" style={{
-          opacity: videoLoaded && minDisplayTime ? 0 : 1,
-          pointerEvents: videoLoaded && minDisplayTime ? 'none' : 'auto'
-        }} onLoad={() => {
-          setPosterLoaded(true);
-          console.log('Poster image loaded successfully');
-        }} onError={e => {
-          setPosterError(true);
-          console.error('Poster image loading error:', e);
-        }} />
+            <img 
+              src={posterUrl} 
+              alt="Exhibition Stand Hero" 
+              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" 
+              style={{
+                opacity: videoLoaded && minDisplayTime ? 0 : 1,
+                pointerEvents: videoLoaded && minDisplayTime ? 'none' : 'auto'
+              }} 
+              loading="lazy"
+              onLoad={() => {
+                setPosterLoaded(true);
+                console.log('Poster image loaded successfully');
+              }} 
+              onError={e => {
+                setPosterError(true);
+                console.error('Poster image loading error:', e);
+              }} 
+            />
             
-            {/* Video - hidden until fully loaded and minimum time passed */}
-            <video className="w-full h-full object-cover transition-opacity duration-500" style={{
-          opacity: videoLoaded && minDisplayTime ? 1 : 0
-        }} autoPlay loop muted playsInline preload="auto" onCanPlayThrough={handleVideoCanPlay} onLoadedData={() => {
-          console.log('Video loaded and ready');
-        }} onError={e => {
-          console.error('Video loading error:', e);
-        }}>
-              <source src={videoUrl} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+            {/* Video - loaded after poster, hidden until fully ready */}
+            {shouldLoadVideo && (
+              <video 
+                ref={videoRef}
+                className="w-full h-full object-cover transition-opacity duration-500" 
+                style={{
+                  opacity: videoLoaded && minDisplayTime ? 1 : 0
+                }} 
+                autoPlay 
+                loop 
+                muted 
+                playsInline 
+                preload="metadata" 
+                onCanPlayThrough={handleVideoCanPlay} 
+                onLoadedData={() => {
+                  console.log('Video loaded and ready');
+                }} 
+                onError={e => {
+                  console.error('Video loading error:', e);
+                }}
+              >
+                <source src={videoUrl} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
             
             {/* Overlay */}
             <div className="absolute inset-0 bg-black/20" />

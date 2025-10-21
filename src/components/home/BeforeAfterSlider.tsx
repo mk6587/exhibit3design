@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
+import LazyImage from "@/components/performance/LazyImage";
 
 interface BeforeAfterSliderProps {
   beforeImage?: string;
@@ -18,7 +19,10 @@ export const BeforeAfterSlider = ({
 }: BeforeAfterSliderProps) => {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
+  const [isInView, setIsInView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const videoAfterRef = useRef<HTMLVideoElement>(null);
+  const videoBeforeRef = useRef<HTMLVideoElement>(null);
 
   const handleMove = (clientX: number) => {
     if (!containerRef.current) return;
@@ -60,6 +64,35 @@ export const BeforeAfterSlider = ({
     };
   }, [isDragging]);
 
+  // Intersection Observer for lazy loading
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsInView(true);
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Play videos when in view
+  useEffect(() => {
+    if (isInView) {
+      videoAfterRef.current?.play();
+      videoBeforeRef.current?.play();
+    }
+  }, [isInView]);
+
   return (
     <div className="relative w-full">
       {/* Mode badge */}
@@ -80,21 +113,26 @@ export const BeforeAfterSlider = ({
         {/* After image/video (full background) */}
         <div className="absolute inset-0">
           {afterVideo ? (
-            <video
-              src={afterVideo}
-              className="w-full h-full object-cover"
-              autoPlay
-              loop
-              muted
-              playsInline
-            />
-          ) : (
-            <img
+            isInView ? (
+              <video
+                ref={videoAfterRef}
+                src={afterVideo}
+                className="w-full h-full object-cover"
+                loop
+                muted
+                playsInline
+                preload="metadata"
+              />
+            ) : (
+              <div className="w-full h-full bg-muted" />
+            )
+          ) : afterImage ? (
+            <LazyImage
               src={afterImage}
               alt="AI transformed design"
               className="w-full h-full object-cover"
             />
-          )}
+          ) : null}
         </div>
 
         {/* Before image/video (clipped) */}
@@ -105,21 +143,26 @@ export const BeforeAfterSlider = ({
           }}
         >
           {beforeVideo ? (
-            <video
-              src={beforeVideo}
-              className="w-full h-full object-cover"
-              autoPlay
-              loop
-              muted
-              playsInline
-            />
-          ) : (
-            <img
+            isInView ? (
+              <video
+                ref={videoBeforeRef}
+                src={beforeVideo}
+                className="w-full h-full object-cover"
+                loop
+                muted
+                playsInline
+                preload="metadata"
+              />
+            ) : (
+              <div className="w-full h-full bg-muted" />
+            )
+          ) : beforeImage ? (
+            <LazyImage
               src={beforeImage}
               alt="Original design"
               className="w-full h-full object-cover"
             />
-          )}
+          ) : null}
         </div>
 
         {/* Slider line and handle */}

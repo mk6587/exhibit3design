@@ -1,13 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useProtectedExternalLink } from "@/hooks/useProtectedExternalLink";
+import LazyImage from "@/components/performance/LazyImage";
 
 export const HeroSection = () => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [posterLoaded, setPosterLoaded] = useState(false);
   const [posterError, setPosterError] = useState(false);
   const [minDisplayTime, setMinDisplayTime] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const { navigateToProtectedLink } = useProtectedExternalLink();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const videoUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos-public/exhibit_hp_video.mp4";
   const posterUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg";
@@ -27,6 +30,16 @@ export const HeroSection = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Lazy load video after poster is shown
+  useEffect(() => {
+    if (posterLoaded) {
+      const timer = setTimeout(() => {
+        setShouldLoadVideo(true);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [posterLoaded]);
+
   return (
     <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
       {hasVideo && videoUrl ? (
@@ -34,42 +47,40 @@ export const HeroSection = () => {
           <img 
             src={posterUrl} 
             alt="Exhibition Stand Hero" 
-            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" 
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
             style={{
               opacity: videoLoaded && minDisplayTime ? 0 : 1,
               pointerEvents: videoLoaded && minDisplayTime ? 'none' : 'auto'
-            }} 
-            onLoad={() => {
-              setPosterLoaded(true);
-              console.log('Poster image loaded successfully');
-            }} 
-            onError={(e) => {
-              setPosterError(true);
-              console.error('Poster image loading error:', e);
-            }} 
+            }}
+            loading="lazy"
+            onLoad={() => setPosterLoaded(true)}
+            onError={() => setPosterError(true)}
           />
           
-          <video 
-            className="w-full h-full object-cover transition-opacity duration-500" 
-            style={{
-              opacity: videoLoaded && minDisplayTime ? 1 : 0
-            }} 
-            autoPlay 
-            loop 
-            muted 
-            playsInline 
-            preload="auto" 
-            onCanPlayThrough={handleVideoCanPlay} 
-            onLoadedData={() => {
-              console.log('Video loaded and ready');
-            }} 
-            onError={(e) => {
-              console.error('Video loading error:', e);
-            }}
-          >
-            <source src={videoUrl} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          {shouldLoadVideo && (
+            <video 
+              ref={videoRef}
+              className="w-full h-full object-cover transition-opacity duration-500" 
+              style={{
+                opacity: videoLoaded && minDisplayTime ? 1 : 0
+              }} 
+              autoPlay 
+              loop 
+              muted 
+              playsInline 
+              preload="metadata" 
+              onCanPlayThrough={handleVideoCanPlay} 
+              onLoadedData={() => {
+                console.log('Video loaded and ready');
+              }} 
+              onError={(e) => {
+                console.error('Video loading error:', e);
+              }}
+            >
+              <source src={videoUrl} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          )}
           
           <div className="absolute inset-0 bg-black/20" />
           
