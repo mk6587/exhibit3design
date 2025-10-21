@@ -52,7 +52,7 @@ export const HeroSection = () => {
               opacity: videoLoaded && minDisplayTime ? 0 : 1,
               pointerEvents: videoLoaded && minDisplayTime ? 'none' : 'auto'
             }}
-            loading="lazy"
+            fetchPriority="high"
             onLoad={() => setPosterLoaded(true)}
             onError={() => setPosterError(true)}
           />

@@ -66,6 +66,17 @@ export const BeforeAfterSlider = ({
 
   // Intersection Observer for lazy loading
   useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Check if already in viewport on mount
+    const rect = containerRef.current.getBoundingClientRect();
+    const isAlreadyVisible = rect.top < window.innerHeight && rect.bottom > 0;
+    
+    if (isAlreadyVisible) {
+      setIsInView(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -78,9 +89,7 @@ export const BeforeAfterSlider = ({
       { threshold: 0.1, rootMargin: '50px' }
     );
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
+    observer.observe(containerRef.current);
 
     return () => observer.disconnect();
   }, []);
@@ -88,8 +97,12 @@ export const BeforeAfterSlider = ({
   // Play videos when in view
   useEffect(() => {
     if (isInView) {
-      videoAfterRef.current?.play();
-      videoBeforeRef.current?.play();
+      videoAfterRef.current?.play().catch(() => {
+        // Autoplay prevented, that's okay
+      });
+      videoBeforeRef.current?.play().catch(() => {
+        // Autoplay prevented, that's okay
+      });
     }
   }, [isInView]);
 
