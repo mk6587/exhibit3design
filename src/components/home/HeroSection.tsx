@@ -8,7 +8,6 @@ export const HeroSection = () => {
   const [posterLoaded, setPosterLoaded] = useState(false);
   const [posterError, setPosterError] = useState(false);
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
-  const [userInteracted, setUserInteracted] = useState(false);
   const { navigateToProtectedLink } = useProtectedExternalLink();
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -22,53 +21,16 @@ export const HeroSection = () => {
     setVideoLoaded(true);
   };
 
-  // Only load video after user interaction or on mobile devices
+  // Load video after poster loads (both mobile and desktop)
   useEffect(() => {
-    // Detect mobile device
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
-      || window.innerWidth < 768;
-
-    if (isMobile) {
-      // On mobile, load video after poster loads (no hover available)
-      if (posterLoaded) {
-        const timer = setTimeout(() => {
-          setShouldLoadVideo(true);
-        }, 500);
-        return () => clearTimeout(timer);
-      }
-    } else {
-      // On desktop, load after interaction or delay
-      const handleInteraction = () => {
-        setUserInteracted(true);
-      };
-
-      // Load video after 5 seconds OR on interaction
-      const delayTimer = setTimeout(() => {
+    if (posterLoaded) {
+      // Short delay after poster loads to ensure smooth transition
+      const timer = setTimeout(() => {
         setShouldLoadVideo(true);
-      }, 5000);
-
-      const section = sectionRef.current;
-      if (section) {
-        section.addEventListener('mouseenter', handleInteraction);
-        section.addEventListener('click', handleInteraction);
-      }
-
-      return () => {
-        clearTimeout(delayTimer);
-        if (section) {
-          section.removeEventListener('mouseenter', handleInteraction);
-          section.removeEventListener('click', handleInteraction);
-        }
-      };
+      }, 800);
+      return () => clearTimeout(timer);
     }
   }, [posterLoaded]);
-
-  // Load video when user interacts (desktop only)
-  useEffect(() => {
-    if (userInteracted && posterLoaded) {
-      setShouldLoadVideo(true);
-    }
-  }, [userInteracted, posterLoaded]);
 
   return (
     <section ref={sectionRef} className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
