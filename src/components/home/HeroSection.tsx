@@ -100,7 +100,7 @@ export const HeroSection = () => {
               textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6)'
             }}
           >
-            Your design can spin like this — in one click.
+            Your Exhibition Stand Design Can Spin Like This — in One Click
           </h1>
           
           <p 
@@ -109,7 +109,7 @@ export const HeroSection = () => {
               textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6)'
             }}
           >
-            Show clients your stand in motion, instantly.
+            Download 3D booth designs and transform them with AI: 360° videos, photorealistic renders, instant customization
           </p>
           
           <div className="flex justify-center">

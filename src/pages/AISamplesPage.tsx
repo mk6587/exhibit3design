@@ -230,9 +230,9 @@ export default function AISamplesPage() {
 
   return (
     <Layout
-      title="AI-Powered Exhibition Design Tools | Exhibit3Design"
-      description="Discover AI tools that transform exhibition stand designs: 360° videos, realistic visitors, sketch conversions, and magic editing. See real examples."
-      keywords="AI exhibition tools, 360 booth video, AI visitors, sketch to render, magic edit exhibition design"
+      title="AI Exhibition Design Examples | 360° Booth Videos & Transformations | Exhibit3Design"
+      description="See real AI transformations of exhibition stands: 360° rotating videos, photorealistic visitor scenes, artistic sketch conversions, and instant Magic Edit results. AI-powered booth design tools for trade shows and events. View examples and try before subscribing."
+      keywords="AI exhibition tools, 360 booth video, AI visitors exhibition, sketch to render, magic edit exhibition design, rotating stand video, exhibition stand AI examples, AI booth transformation, photorealistic booth rendering, exhibition design AI samples, AI walkthrough video, booth rendering examples, exhibition AI demonstration, trade show AI tools, AI exhibition visualization, instant booth renders, exhibition AI showcase, AI design transformation, booth video generation, exhibition AI gallery, 3D booth AI, AI stand customization examples, exhibition rendering tools, AI booth design samples"
     >
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
         {/* Hero Section - Flat Design */}

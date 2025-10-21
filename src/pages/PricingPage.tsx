@@ -141,9 +141,9 @@ export default function PricingPage() {
 
   return (
     <Layout
-      title="AI-Powered Exhibition Design Plans | Exhibit3Design Pricing"
-      description="Access professional exhibition designs with AI transformation tools. Plans include AI tokens, 360° video generation, instant renders, and commercial licensing. Try free."
-      keywords="AI design pricing, exhibition AI tools subscription, AI rendering plans, 360 video AI, exhibition design AI pricing"
+      title="Exhibition Design Pricing | AI Booth Design Plans & 3D Downloads | Exhibit3Design"
+      description="Professional exhibition stand design plans with AI tools. Access 3D booth files (SKP, 3DS), AI-powered 360° videos, instant photorealistic renders, Magic Edit customization, and commercial licensing. Plans from free trial to agency-level access. Try AI tools free before subscribing."
+      keywords="AI design pricing, exhibition AI tools subscription, AI rendering plans, 360 video AI pricing, exhibition design subscription, booth design plans, AI booth pricing, trade show design subscription, 3D booth download pricing, exhibition AI subscription, photorealistic rendering plans, booth customization pricing, AI exhibition membership, design file subscription, exhibition design cost, AI booth tools pricing, trade show AI plans"
       url="https://exhibit3design.com/pricing"
     >
       <div className="min-h-screen bg-gradient-to-b from-background via-muted/10 to-background">
@@ -154,10 +154,10 @@ export default function PricingPage() {
               Flexible Pricing
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Simple, Transparent Pricing
+              Exhibition Design Pricing Plans: AI Tools + 3D Files
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              From free trial to agency-level plans. Get access to professional exhibition stand designs and powerful AI editing tools.
+              From free trial to professional plans. Access ready-made 3D booth designs (SKP, 3DS formats) and AI-powered transformation tools: 360° videos, photorealistic renders, Magic Edit customization.
             </p>
           </div>
         </section>
@@ -366,27 +366,27 @@ export default function PricingPage() {
         {/* FAQ or Additional Info */}
         <section className="py-16 px-4 bg-muted/30">
           <div className="container mx-auto max-w-4xl text-center">
-            <h2 className="text-3xl font-bold mb-6">All Plans Include</h2>
+            <h2 className="text-3xl font-bold mb-6">All Exhibition Design Plans Include</h2>
             <div className="grid md:grid-cols-3 gap-6 text-left">
               <div className="p-6 bg-card rounded-lg border">
                 <Check className="h-8 w-8 text-primary mb-3" />
-                <h3 className="font-semibold mb-2">Commercial License</h3>
+                <h3 className="font-semibold mb-2">Commercial License for Trade Shows</h3>
                 <p className="text-sm text-muted-foreground">
-                  Use designs for client work and commercial projects
+                  Use booth designs for client work and commercial exhibition projects
                 </p>
               </div>
               <div className="p-6 bg-card rounded-lg border">
                 <Sparkles className="h-8 w-8 text-primary mb-3" />
-                <h3 className="font-semibold mb-2">AI-Powered Tools</h3>
+                <h3 className="font-semibold mb-2">AI-Powered Booth Customization</h3>
                 <p className="text-sm text-muted-foreground">
-                  Instant customization with Runware Gemini & Kling
+                  Instant stand customization with AI: 360° videos, renders, Magic Edit
                 </p>
               </div>
               <div className="p-6 bg-card rounded-lg border">
                 <Zap className="h-8 w-8 text-primary mb-3" />
-                <h3 className="font-semibold mb-2">All File Formats</h3>
+                <h3 className="font-semibold mb-2">Multiple 3D File Formats</h3>
                 <p className="text-sm text-muted-foreground">
-                  Download in SKP, 3DS, PDF, and more formats
+                  Download exhibition designs in SKP, 3DS, PDF formats for any software
                 </p>
               </div>
             </div>
@@ -398,14 +398,14 @@ export default function PricingPage() {
           <section className="py-16 px-4">
             <div className="container mx-auto max-w-4xl text-center">
               <h2 className="text-3xl font-bold mb-4">
-                Start with Free AI Trial
+                Start with Free AI Exhibition Design Trial
               </h2>
               <p className="text-lg text-muted-foreground mb-8">
-                Try our AI tools before subscribing. Get 2 free AI tokens to test our powerful AI editing capabilities. No credit card required.
+                Try our AI booth design tools before subscribing. Get 2 free AI tokens to test 360° videos, photorealistic renders, and Magic Edit. No credit card required.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" onClick={handleGetFreeTokens}>
-                  {user ? 'Try AI Studio' : 'Get Started Free'}
+                  {user ? 'Try AI Studio' : 'Get Free Exhibition AI Tokens'}
                 </Button>
                 <Button asChild size="lg" variant="outline">
                   <Link to="/ai-samples">See AI Examples</Link>

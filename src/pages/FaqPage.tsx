@@ -63,9 +63,9 @@ const faqItems = [
 const FaqPage = () => {
   return (
     <Layout
-      title="FAQ - AI Exhibition Design Tools | Exhibit3Design"
-      description="Common questions about AI-powered exhibition design, AI tokens, 360° video generation, subscriptions, and instant rendering tools."
-      keywords="AI design FAQ, exhibition AI questions, AI tools help, design subscription FAQ"
+      title="FAQ - Exhibition Stand Design Questions | AI Tools & 3D Downloads | Exhibit3Design"
+      description="Common questions about AI-powered exhibition design tools, 3D booth file downloads, AI tokens, 360° video generation, photorealistic rendering, subscriptions, file formats (SKP, 3DS), and instant booth customization. Get answers about our AI exhibition design platform."
+      keywords="exhibition design FAQ, AI exhibition questions, 3D booth download FAQ, exhibition AI tools help, booth design subscription FAQ, exhibition stand design questions, AI rendering FAQ, 360 video booth FAQ, sketch to render help, magic edit FAQ, exhibition file formats, booth design tokens, AI design subscription, exhibition design help, trade show booth FAQ, booth customization questions, AI booth tools FAQ, exhibition design pricing, 3D stand design FAQ, booth rendering questions, AI exhibition platform help"
       url="https://exhibit3design.com/faq"
     >
       <div className="container mx-auto px-4 py-12">

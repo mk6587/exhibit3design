@@ -94,9 +94,9 @@ const ContactPage = () => {
     }
   };
   return <Layout
-      title="Contact AI Exhibition Design Experts | Exhibit3Design"
-      description="Get help with AI-powered exhibition design tools, subscriptions, or custom projects. Contact our team for AI design support and consultation."
-      keywords="exhibition design contact, AI design support, exhibition AI help, design consultation"
+      title="Contact Exhibition Design Experts | AI Booth Design Support | Exhibit3Design"
+      description="Get help with AI-powered exhibition design tools, 3D booth downloads, subscriptions, or custom trade show projects. Contact our exhibition design team for AI design support, consultation, and technical assistance. We respond within 24 hours."
+      keywords="exhibition design contact, AI design support, exhibition AI help, booth design consultation, trade show design support, exhibition design inquiry, AI exhibition support, booth design help, 3D design assistance, exhibition AI consultation, trade show design contact, booth customization support"
       url="https://exhibit3design.com/contact"
     >
       <div className="container mx-auto px-4 py-12">

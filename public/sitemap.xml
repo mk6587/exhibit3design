@@ -1,50 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://www.exhibit3design.com/</loc>
-    <lastmod>2025-10-17</lastmod>
+    <lastmod>2025-10-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://exhibit3design.com/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png</image:loc>
+      <image:title>Exhibition Stand Design AI Platform</image:title>
+      <image:caption>AI-powered exhibition booth design with 360 rendering</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://www.exhibit3design.com/products</loc>
-    <lastmod>2025-10-17</lastmod>
+    <lastmod>2025-10-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.exhibit3design.com/pricing</loc>
-    <lastmod>2025-10-17</lastmod>
+    <lastmod>2025-10-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.exhibit3design.com/ai-samples</loc>
-    <lastmod>2025-10-17</lastmod>
+    <lastmod>2025-10-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.exhibit3design.com/about</loc>
-    <lastmod>2025-10-17</lastmod>
+    <lastmod>2025-10-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.exhibit3design.com/contact</loc>
-    <lastmod>2025-10-17</lastmod>
+    <lastmod>2025-10-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.exhibit3design.com/faq</loc>
-    <lastmod>2025-10-17</lastmod>
+    <lastmod>2025-10-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.exhibit3design.com/privacy</loc>
-    <lastmod>2025-10-17</lastmod>
+    <lastmod>2025-10-21</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
