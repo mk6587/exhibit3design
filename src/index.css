@@ -255,6 +255,11 @@ html, body {
   }
 }
 
+/* Safe area support for mobile devices */
+.safe-area-pb {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
 /* Hide external welcome modals, auth forms, and success popups */
 [data-testid*="welcome"],
 [class*="welcome-modal"],

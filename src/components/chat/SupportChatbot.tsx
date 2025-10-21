@@ -188,10 +188,10 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
   if (!isOpen) return null;
 
   return (
-    <Card className="fixed bottom-4 right-4 w-[400px] h-[600px] shadow-2xl z-50 flex flex-col animate-scale-in border-primary/20 overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 pt-4 px-6 bg-gradient-to-r from-primary/10 via-primary/5 to-background border-b border-primary/20">
-        <CardTitle className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-primary/20 bg-white flex-shrink-0">
+    <Card className="fixed bottom-0 right-0 md:bottom-4 md:right-4 w-full md:w-[400px] h-[100dvh] md:h-[600px] md:max-h-[calc(100vh-2rem)] shadow-2xl z-50 flex flex-col animate-scale-in border-primary/20 overflow-hidden md:rounded-lg rounded-none">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 pt-3 md:pb-4 md:pt-4 px-4 md:px-6 bg-gradient-to-r from-primary/10 via-primary/5 to-background border-b border-primary/20 flex-shrink-0">
+        <CardTitle className="flex items-center gap-2 md:gap-3">
+          <div className="h-9 w-9 md:h-10 md:w-10 rounded-full overflow-hidden border-2 border-primary/20 bg-white flex-shrink-0">
             <img 
               src={supportAgent} 
               alt="Support Agent" 
@@ -199,8 +199,8 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
             />
           </div>
           <div>
-            <div className="text-base font-semibold">Customer Support</div>
-            <div className="text-xs text-muted-foreground font-normal">We typically reply instantly</div>
+            <div className="text-sm md:text-base font-semibold">Customer Support</div>
+            <div className="text-xs text-muted-foreground font-normal hidden md:block">We typically reply instantly</div>
           </div>
         </CardTitle>
         <Button
@@ -214,7 +214,7 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
       </CardHeader>
       
       <CardContent className="flex-1 flex flex-col p-0 overflow-hidden bg-gradient-to-b from-background to-muted/20">
-        <ScrollArea className="flex-1 px-6 py-6" ref={scrollRef}>
+        <ScrollArea className="flex-1 px-4 py-4 md:px-6 md:py-6" ref={scrollRef}>
           {messages.map((msg, idx) => (
             <div key={idx} className="animate-fade-in">
               <ChatMessage role={msg.role} content={msg.content} imageUrl={msg.imageUrl} />
@@ -241,7 +241,7 @@ export const SupportChatbot = ({ isOpen, onClose }: SupportChatbotProps) => {
           <div ref={messagesEndRef} />
         </ScrollArea>
         
-        <div className="border-t border-primary/10 p-4 bg-background/95 backdrop-blur-sm">
+        <div className="border-t border-primary/10 p-3 md:p-4 bg-background/95 backdrop-blur-sm flex-shrink-0 safe-area-pb">
           {imagePreview && (
             <div className="mb-2 relative inline-block">
               <img 
