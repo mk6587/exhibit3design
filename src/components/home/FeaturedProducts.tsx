@@ -89,13 +89,14 @@ const FeaturedProducts = () => {
             {/* Poster image - using img tag for better control */}
             <img 
               src={posterUrl} 
-              alt="Exhibition Stand Hero" 
+              alt="Exhibition Stand Hero"
+              width={1920}
+              height={600}
               className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" 
               style={{
                 opacity: videoLoaded && minDisplayTime ? 0 : 1,
                 pointerEvents: videoLoaded && minDisplayTime ? 'none' : 'auto'
-              }} 
-              fetchPriority="high"
+              }}
               onLoad={() => {
                 setPosterLoaded(true);
                 console.log('Poster image loaded successfully');
