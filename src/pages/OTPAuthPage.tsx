@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { otpSchema } from '@/lib/validationSchemas';
+import { trackPageView, trackAuthEvent } from '@/services/ga4Analytics';
 
 // Cloudflare Turnstile site key from environment variables
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
@@ -36,6 +37,11 @@ const OTPAuthPage = () => {
   // Refs for focus management
   const otpInputRef = useRef<HTMLInputElement>(null);
   const captchaRef = useRef<TurnstileCaptchaRef>(null);
+
+  // Track page view
+  useEffect(() => {
+    trackPageView('/auth', 'Login - Secure Authentication');
+  }, []);
 
   // Redirect if already logged in
   useEffect(() => {

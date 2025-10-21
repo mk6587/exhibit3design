@@ -9,6 +9,7 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { useToast } from '@/hooks/use-toast';
 import { adminLoginSchema } from '@/lib/validationSchemas';
 import { TurnstileCaptcha, TurnstileCaptchaRef } from '@/components/ui/turnstile-captcha';
+import { trackPageView } from '@/services/ga4Analytics';
 
 // Cloudflare Turnstile site key from environment variables
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
@@ -23,6 +24,11 @@ const AdminLoginPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+
+  // Track page view
+  useEffect(() => {
+    trackPageView('/admin-login', 'Admin Login - Secure Access');
+  }, []);
 
   // Redirect if already authenticated
   useEffect(() => {
