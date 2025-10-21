@@ -18,7 +18,7 @@ interface SendOTPRequest {
 }
 
 // Turnstile validation function
-async function validateTurnstileCaptcha(token: string, secretKey: string): Promise<boolean> {
+async function validateTurnstileCaptcha(token: string, secretKey: string, remoteIp?: string): Promise<boolean> {
   // Always pass validation for test tokens or test site key tokens
   if (token === 'test-token' || token.startsWith('XXXX.')) {
     console.log('🧪 Test captcha token detected - auto-passing validation');
@@ -26,18 +26,33 @@ async function validateTurnstileCaptcha(token: string, secretKey: string): Promi
   }
   
   try {
+    const formData = new URLSearchParams({
+      secret: secretKey,
+      response: token,
+    });
+    
+    // Add remote IP if available (important for mobile validation)
+    if (remoteIp) {
+      formData.append('remoteip', remoteIp);
+    }
+    
+    console.log('🔐 Validating Turnstile with params:', {
+      hasSecret: !!secretKey,
+      hasToken: !!token,
+      hasRemoteIp: !!remoteIp,
+      remoteIp: remoteIp
+    });
+    
     const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: new URLSearchParams({
-        secret: secretKey,
-        response: token,
-      }),
+      body: formData,
     });
 
     const result = await response.json();
+    console.log('🔐 Turnstile validation result:', result);
     return result.success === true;
   } catch (error) {
     console.error('Turnstile validation error:', error);
@@ -98,10 +113,15 @@ const handler = async (req: Request): Promise<Response> => {
         );
       }
 
-      console.log('🔐 Validating captcha token');
-      const captchaValid = await validateTurnstileCaptcha(captchaToken, turnstileSecretKey);
+      // Get client IP from headers
+      const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0] || 
+                       req.headers.get('x-real-ip') || 
+                       'unknown';
+      
+      console.log('🔐 Validating captcha token for IP:', clientIp);
+      const captchaValid = await validateTurnstileCaptcha(captchaToken, turnstileSecretKey, clientIp);
       if (!captchaValid) {
-        console.log('❌ Captcha validation failed for email:', email);
+        console.log('❌ Captcha validation failed for email:', email, 'IP:', clientIp);
         return new Response(
           JSON.stringify({ error: 'Security verification failed. Please try again.' }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
