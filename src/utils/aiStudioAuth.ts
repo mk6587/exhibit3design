@@ -25,14 +25,23 @@ export async function generateAIStudioToken(userId: string, email: string): Prom
 
 /**
  * Opens AI Studio with authentication token
+ * Opens the window immediately to avoid popup blockers, then updates the URL
  */
 export async function openAIStudio(userId: string, email: string) {
+  // Open window immediately (synchronously) to avoid popup blockers
+  const newWindow = window.open('about:blank', '_blank');
+  
+  if (!newWindow) {
+    throw new Error('Popup blocked. Please allow popups for this site.');
+  }
+
   try {
     const token = await generateAIStudioToken(userId, email);
     const url = `${AI_STUDIO_URL}?token=${encodeURIComponent(token)}`;
-    window.open(url, '_blank');
+    newWindow.location.href = url;
   } catch (error) {
     console.error('Error opening AI Studio:', error);
+    newWindow.close();
     throw error;
   }
 }
