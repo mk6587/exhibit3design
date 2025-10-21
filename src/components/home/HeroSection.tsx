@@ -7,10 +7,11 @@ export const HeroSection = () => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [posterLoaded, setPosterLoaded] = useState(false);
   const [posterError, setPosterError] = useState(false);
-  const [minDisplayTime, setMinDisplayTime] = useState(false);
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
   const { navigateToProtectedLink } = useProtectedExternalLink();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   const videoUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos-public/exhibit_hp_video.mp4";
   const posterUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg";
@@ -18,30 +19,45 @@ export const HeroSection = () => {
   const aiStudioUrl = "https://ai.exhibit3design.com/?service=rotate-360";
 
   const handleVideoCanPlay = () => {
-    if (minDisplayTime) {
-      setVideoLoaded(true);
-    }
+    setVideoLoaded(true);
   };
 
+  // Only load video after user interaction or long delay to save bandwidth
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setMinDisplayTime(true);
-    }, 1000);
-    return () => clearTimeout(timer);
+    const handleInteraction = () => {
+      setUserInteracted(true);
+    };
+
+    // Load video only after 5 seconds of being on page OR on user interaction
+    const delayTimer = setTimeout(() => {
+      setShouldLoadVideo(true);
+    }, 5000);
+
+    // Or load immediately on hover/click
+    const section = sectionRef.current;
+    if (section) {
+      section.addEventListener('mouseenter', handleInteraction);
+      section.addEventListener('click', handleInteraction);
+    }
+
+    return () => {
+      clearTimeout(delayTimer);
+      if (section) {
+        section.removeEventListener('mouseenter', handleInteraction);
+        section.removeEventListener('click', handleInteraction);
+      }
+    };
   }, []);
 
-  // Lazy load video after poster is shown
+  // Load video when user interacts
   useEffect(() => {
-    if (posterLoaded) {
-      const timer = setTimeout(() => {
-        setShouldLoadVideo(true);
-      }, 100);
-      return () => clearTimeout(timer);
+    if (userInteracted && posterLoaded) {
+      setShouldLoadVideo(true);
     }
-  }, [posterLoaded]);
+  }, [userInteracted, posterLoaded]);
 
   return (
-    <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
+    <section ref={sectionRef} className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
       {hasVideo && videoUrl ? (
         <>
           <img 
@@ -51,8 +67,8 @@ export const HeroSection = () => {
             height={600}
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
             style={{
-              opacity: videoLoaded && minDisplayTime ? 0 : 1,
-              pointerEvents: videoLoaded && minDisplayTime ? 'none' : 'auto'
+              opacity: videoLoaded ? 0 : 1,
+              pointerEvents: videoLoaded ? 'none' : 'auto'
             }}
             onLoad={() => setPosterLoaded(true)}
             onError={() => setPosterError(true)}
@@ -63,13 +79,13 @@ export const HeroSection = () => {
               ref={videoRef}
               className="w-full h-full object-cover transition-opacity duration-500" 
               style={{
-                opacity: videoLoaded && minDisplayTime ? 1 : 0
+                opacity: videoLoaded ? 1 : 0
               }} 
               autoPlay 
               loop 
               muted 
               playsInline 
-              preload="metadata" 
+              preload="none"
               onCanPlayThrough={handleVideoCanPlay} 
               onLoadedData={() => {
                 console.log('Video loaded and ready');

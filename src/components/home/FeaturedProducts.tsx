@@ -13,9 +13,10 @@ const FeaturedProducts = () => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [posterLoaded, setPosterLoaded] = useState(false);
   const [posterError, setPosterError] = useState(false);
-  const [minDisplayTime, setMinDisplayTime] = useState(false);
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   // Filter products to show only featured ones
   const featuredProducts = products.filter(product => product.featured);
@@ -25,30 +26,43 @@ const FeaturedProducts = () => {
   const posterUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg";
   const hasVideo = true; // Since we have a direct video URL
 
-  // Ensure poster displays for at least 1 second
   const handleVideoCanPlay = () => {
-    if (minDisplayTime) {
-      setVideoLoaded(true);
-    }
+    setVideoLoaded(true);
   };
 
-  // Set minimum display time after 1 second
+  // Only load video after user interaction or long delay to save bandwidth
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setMinDisplayTime(true);
-    }, 1000);
-    return () => clearTimeout(timer);
+    const handleInteraction = () => {
+      setUserInteracted(true);
+    };
+
+    // Load video only after 5 seconds OR on user interaction
+    const delayTimer = setTimeout(() => {
+      setShouldLoadVideo(true);
+    }, 5000);
+
+    // Or load immediately on hover/click
+    const section = sectionRef.current;
+    if (section) {
+      section.addEventListener('mouseenter', handleInteraction);
+      section.addEventListener('click', handleInteraction);
+    }
+
+    return () => {
+      clearTimeout(delayTimer);
+      if (section) {
+        section.removeEventListener('mouseenter', handleInteraction);
+        section.removeEventListener('click', handleInteraction);
+      }
+    };
   }, []);
 
-  // Lazy load video after poster is shown
+  // Load video when user interacts
   useEffect(() => {
-    if (posterLoaded) {
-      const timer = setTimeout(() => {
-        setShouldLoadVideo(true);
-      }, 100);
-      return () => clearTimeout(timer);
+    if (userInteracted && posterLoaded) {
+      setShouldLoadVideo(true);
     }
-  }, [posterLoaded]);
+  }, [userInteracted, posterLoaded]);
   if (loading) {
     return <>
         {/* Full-width video section - Loading State */}
@@ -84,7 +98,7 @@ const FeaturedProducts = () => {
   }
   return <>
       {/* Full-width hero section */}
-      <section className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
+      <section ref={sectionRef} className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-secondary">
         {hasVideo && videoUrl ? <>
             {/* Poster image - using img tag for better control */}
             <img 
@@ -94,8 +108,8 @@ const FeaturedProducts = () => {
               height={600}
               className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" 
               style={{
-                opacity: videoLoaded && minDisplayTime ? 0 : 1,
-                pointerEvents: videoLoaded && minDisplayTime ? 'none' : 'auto'
+                opacity: videoLoaded ? 0 : 1,
+                pointerEvents: videoLoaded ? 'none' : 'auto'
               }}
               onLoad={() => {
                 setPosterLoaded(true);
@@ -113,17 +127,17 @@ const FeaturedProducts = () => {
                 ref={videoRef}
                 className="w-full h-full object-cover transition-opacity duration-500" 
                 style={{
-                  opacity: videoLoaded && minDisplayTime ? 1 : 0
+                  opacity: videoLoaded ? 1 : 0
                 }} 
                 autoPlay 
                 loop 
                 muted 
                 playsInline 
-                preload="metadata" 
+                preload="none"
                 onCanPlayThrough={handleVideoCanPlay} 
                 onLoadedData={() => {
                   console.log('Video loaded and ready');
-                }} 
+                }}
                 onError={e => {
                   console.error('Video loading error:', e);
                 }}
