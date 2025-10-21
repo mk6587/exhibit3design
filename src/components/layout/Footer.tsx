@@ -57,9 +57,7 @@ const Footer = () => {
               <li>
                 <Link to="/auth" className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20" style={{
                 WebkitTapHighlightColor: 'transparent'
-              }}>
-                  Login
-                </Link>
+              }}>Login / Register</Link>
               </li>
               <li>
                 <Link to="/auth" className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20" style={{
