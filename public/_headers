@@ -5,8 +5,10 @@
   X-XSS-Protection: 1; mode=block
   Referrer-Policy: no-referrer-when-downgrade
 
-# Cache static assets for 1 year
-/assets/*
+# Cache JavaScript and CSS bundles for 1 year (with hash in filename)
+/assets/*.js
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*.css
   Cache-Control: public, max-age=31536000, immutable
 
 # Cache images for 30 days
@@ -43,4 +45,6 @@
 
 # Don't cache HTML
 /*.html
+  Cache-Control: public, max-age=0, must-revalidate
+/
   Cache-Control: public, max-age=0, must-revalidate
