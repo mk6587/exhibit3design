@@ -15,6 +15,7 @@ import ErrorBoundary from "@/components/ui/error-boundary";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
 import { hideWelcomeModals } from "./utils/hideWelcomeModal";
 import { lazyRetry } from "./utils/lazyRetry";
+import { PageSkeleton } from "@/components/ui/page-skeleton";
 
 // CRITICAL: Homepage loads immediately (no lazy) for best UX and zero white screens
 import Index from "./pages/Index";
@@ -64,7 +65,6 @@ const ProtectedAdminRoute = lazy(() => lazyRetry(() => import("./components/admi
 
 // Loading fallback component - Shows while lazy routes are loading
 const PageLoader = () => {
-  const { PageSkeleton } = require("@/components/ui/page-skeleton");
   return <PageSkeleton />;
 };
 
