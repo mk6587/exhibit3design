@@ -248,7 +248,7 @@ export default function AISamplesPage() {
         </section>
 
         {/* See AI in Action - Flat Design */}
-        <section className="py-12 px-0 bg-muted/30">
+        <section className="py-12 px-0 bg-muted/30 pb-8">
           <div className="container mx-auto px-4 text-center">
             <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-3">
               <Eye className="h-4 w-4" />
@@ -352,7 +352,7 @@ export default function AISamplesPage() {
         </section>
 
         {/* Image AI Services - Flat Design */}
-        <section className="py-12 px-4 bg-background">
+        <section className="py-8 px-4 bg-background">
           <div className="container mx-auto max-w-7xl">
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-3">
