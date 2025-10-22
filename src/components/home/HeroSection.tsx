@@ -58,7 +58,7 @@ export const HeroSection = () => {
       
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center text-white px-4">
-          <h1 className="text-2xl md:text-3xl font-bold mb-2" style={{
+          <h1 className="text-lg md:text-2xl font-bold mb-2" style={{
           textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6)'
         }}>Your Booth Design Can Spin Like This</h1>
           
