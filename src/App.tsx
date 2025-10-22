@@ -14,51 +14,60 @@ import { OTPAuthProvider } from "@/contexts/OTPAuthContext";
 import ErrorBoundary from "@/components/ui/error-boundary";
 import HashConfirmationHandler from "./components/HashConfirmationHandler";
 import { hideWelcomeModals } from "./utils/hideWelcomeModal";
+import { lazyRetry } from "./utils/lazyRetry";
 
-// Lazy load pages for better code splitting
-const Index = lazy(() => import("./pages/Index"));
-const ProductsPage = lazy(() => import("./pages/ProductsPage"));
-const ProductDetailPage = lazy(() => import("./pages/ProductDetailPage"));
-const AboutPage = lazy(() => import("./pages/AboutPage"));
-const ContactPage = lazy(() => import("./pages/ContactPage"));
-const FaqPage = lazy(() => import("./pages/FaqPage"));
-const ProfilePage = lazy(() => import("./pages/ProfilePage"));
-const PaymentSuccessPage = lazy(() => import("./pages/PaymentSuccessPage"));
-const PaymentFailedPage = lazy(() => import("./pages/PaymentFailedPage"));
-const PaymentCancelledPage = lazy(() => import("./pages/PaymentCancelledPage"));
-const PaymentErrorPage = lazy(() => import("./pages/PaymentErrorPage"));
-const OTPAuthPage = lazy(() => import("./pages/OTPAuthPage"));
-const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
-const EmailConfirmationPage = lazy(() => import("./pages/EmailConfirmationPage"));
-const PricingPage = lazy(() => import("./pages/PricingPage"));
-const AISamplesPage = lazy(() => import("./pages/AISamplesPage"));
-const SubscriptionCheckoutPage = lazy(() => import("./pages/SubscriptionCheckoutPage"));
-const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
-const SitemapPage = lazy(() => import("./pages/SitemapPage"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const ForbiddenPage = lazy(() => import("./pages/ForbiddenPage"));
+// CRITICAL: Homepage loads immediately (no lazy) for best UX and zero white screens
+import Index from "./pages/Index";
 
-// Admin pages - lazy loaded
-const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage"));
-const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
-const AdminPage = lazy(() => import("./pages/AdminPage"));
-const AdminProductCreatePage = lazy(() => import("./pages/AdminProductCreatePage"));
-const AdminProductEditPage = lazy(() => import("./pages/AdminProductEditPage"));
-const AdminSubscriptionsPage = lazy(() => import("./pages/AdminSubscriptionsPage"));
-const AdminUsersPage = lazy(() => import("./pages/AdminUsersPage"));
-const AdminPlansPage = lazy(() => import("./pages/AdminPlansPage"));
-const AdminAISamplesPage = lazy(() => import("./pages/AdminAISamplesPage"));
-const AdminAIDemoConfigPage = lazy(() => import("./pages/AdminAIDemoConfigPage"));
-const AdminFileRequestsPage = lazy(() => import("./pages/AdminFileRequestsPage"));
-const AdminSecurityPage = lazy(() => import("./pages/AdminSecurityPage"));
-const ProtectedAdminRoute = lazy(() => import("./components/admin/ProtectedAdminRoute"));
+// High-traffic pages with retry logic
+const ProductsPage = lazy(() => lazyRetry(() => import("./pages/ProductsPage")));
+const ProductDetailPage = lazy(() => lazyRetry(() => import("./pages/ProductDetailPage")));
+const PricingPage = lazy(() => lazyRetry(() => import("./pages/PricingPage")));
+const AISamplesPage = lazy(() => lazyRetry(() => import("./pages/AISamplesPage")));
+const ProfilePage = lazy(() => lazyRetry(() => import("./pages/ProfilePage")));
 
-// Loading fallback component
+// Secondary pages with retry logic
+const AboutPage = lazy(() => lazyRetry(() => import("./pages/AboutPage")));
+const ContactPage = lazy(() => lazyRetry(() => import("./pages/ContactPage")));
+const FaqPage = lazy(() => lazyRetry(() => import("./pages/FaqPage")));
+const PrivacyPolicyPage = lazy(() => lazyRetry(() => import("./pages/PrivacyPolicyPage")));
+const SitemapPage = lazy(() => lazyRetry(() => import("./pages/SitemapPage")));
+const NotFound = lazy(() => lazyRetry(() => import("./pages/NotFound")));
+const ForbiddenPage = lazy(() => lazyRetry(() => import("./pages/ForbiddenPage")));
+
+// Auth pages with retry logic
+const OTPAuthPage = lazy(() => lazyRetry(() => import("./pages/OTPAuthPage")));
+const ResetPasswordPage = lazy(() => lazyRetry(() => import("./pages/ResetPasswordPage")));
+const EmailConfirmationPage = lazy(() => lazyRetry(() => import("./pages/EmailConfirmationPage")));
+
+// Payment pages with retry logic
+const PaymentSuccessPage = lazy(() => lazyRetry(() => import("./pages/PaymentSuccessPage")));
+const PaymentFailedPage = lazy(() => lazyRetry(() => import("./pages/PaymentFailedPage")));
+const PaymentCancelledPage = lazy(() => lazyRetry(() => import("./pages/PaymentCancelledPage")));
+const PaymentErrorPage = lazy(() => lazyRetry(() => import("./pages/PaymentErrorPage")));
+const SubscriptionCheckoutPage = lazy(() => lazyRetry(() => import("./pages/SubscriptionCheckoutPage")));
+
+// Admin pages - lazy loaded with retry (low priority)
+const AdminLoginPage = lazy(() => lazyRetry(() => import("./pages/AdminLoginPage")));
+const AdminDashboardPage = lazy(() => lazyRetry(() => import("./pages/AdminDashboardPage")));
+const AdminPage = lazy(() => lazyRetry(() => import("./pages/AdminPage")));
+const AdminProductCreatePage = lazy(() => lazyRetry(() => import("./pages/AdminProductCreatePage")));
+const AdminProductEditPage = lazy(() => lazyRetry(() => import("./pages/AdminProductEditPage")));
+const AdminSubscriptionsPage = lazy(() => lazyRetry(() => import("./pages/AdminSubscriptionsPage")));
+const AdminUsersPage = lazy(() => lazyRetry(() => import("./pages/AdminUsersPage")));
+const AdminPlansPage = lazy(() => lazyRetry(() => import("./pages/AdminPlansPage")));
+const AdminAISamplesPage = lazy(() => lazyRetry(() => import("./pages/AdminAISamplesPage")));
+const AdminAIDemoConfigPage = lazy(() => lazyRetry(() => import("./pages/AdminAIDemoConfigPage")));
+const AdminFileRequestsPage = lazy(() => lazyRetry(() => import("./pages/AdminFileRequestsPage")));
+const AdminSecurityPage = lazy(() => lazyRetry(() => import("./pages/AdminSecurityPage")));
+const ProtectedAdminRoute = lazy(() => lazyRetry(() => import("./components/admin/ProtectedAdminRoute")));
+
+// Loading fallback component - Shows while lazy routes are loading
 const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-screen bg-background">
+  <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-secondary/20">
     <div className="text-center">
       <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-      <p className="text-lg text-foreground">Loading...</p>
+      <p className="text-lg font-medium text-foreground">Loading...</p>
     </div>
   </div>
 );
