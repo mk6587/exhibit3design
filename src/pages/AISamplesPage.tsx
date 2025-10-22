@@ -419,6 +419,73 @@ export default function AISamplesPage() {
           </div>
         </section>
 
+        {/* Video AI Services - Flat Design */}
+        <section className="py-8 px-4 bg-muted/30">
+          <div className="container mx-auto max-w-7xl">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                <Film className="h-4 w-4" />
+                Video Tools
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Dynamic Video AI Tools</h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Create engaging video content that brings your exhibition designs to life
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {videoServices.map((service, idx) => {
+                const Icon = service.icon;
+                const colorClasses = [
+                  { bg: 'bg-gradient-to-br from-colorful-green/5 to-transparent', text: 'text-colorful-green', border: 'hover:border-colorful-green' },
+                  { bg: 'bg-gradient-to-br from-colorful-pink/5 to-transparent', text: 'text-colorful-pink', border: 'hover:border-colorful-pink' },
+                  { bg: 'bg-gradient-to-br from-colorful-blue/5 to-transparent', text: 'text-colorful-blue', border: 'hover:border-colorful-blue' }
+                ];
+                const colors = colorClasses[idx % colorClasses.length];
+                return (
+                  <Card key={idx} className={`border-2 ${colors.border} transition-colors ${colors.bg}`}>
+                    <CardContent className="p-6">
+                      <div className={`w-12 h-12 rounded-lg ${colors.bg} flex items-center justify-center mb-4`}>
+                        <Icon className={`h-6 w-6 ${colors.text}`} />
+                      </div>
+                      <h3 className="text-lg font-bold mb-2">{service.title}</h3>
+                      <p className="text-muted-foreground mb-4 text-sm">
+                        {service.description}
+                      </p>
+                      <div className="space-y-2 mb-4">
+                        {service.benefits.map((benefit, bidx) => (
+                          <div key={bidx} className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className={`h-4 w-4 ${colors.text} flex-shrink-0`} />
+                            <span>{benefit}</span>
+                          </div>
+                        ))}
+                      </div>
+                       <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleTryService(service)}
+                        >
+                          <Eye className="h-3 w-3 mr-1" />
+                          Try
+                        </Button>
+                        <Button 
+                          asChild 
+                          size="sm"
+                        >
+                          <a href={service.aiStudioLink} target="_blank" rel="noopener noreferrer">
+                            Use Now <ArrowRight className="h-3 w-3 ml-1" />
+                          </a>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         {/* Three Core Pillars Story - Flat Design */}
         <section className="py-8 px-4 bg-muted/30">
           <div className="container mx-auto max-w-7xl">
@@ -546,75 +613,7 @@ export default function AISamplesPage() {
           </div>
         </section>
 
-        {/* Video AI Services - Flat Design */}
-        <section className="py-8 px-4 bg-muted/30">
-          <div className="container mx-auto max-w-7xl">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                <Film className="h-4 w-4" />
-                Video Tools
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-3">Dynamic Video AI Tools</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Create engaging video content that brings your exhibition designs to life
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {videoServices.map((service, idx) => {
-                const Icon = service.icon;
-                const colorClasses = [
-                  { bg: 'bg-gradient-to-br from-colorful-green/5 to-transparent', text: 'text-colorful-green', border: 'hover:border-colorful-green' },
-                  { bg: 'bg-gradient-to-br from-colorful-pink/5 to-transparent', text: 'text-colorful-pink', border: 'hover:border-colorful-pink' },
-                  { bg: 'bg-gradient-to-br from-colorful-blue/5 to-transparent', text: 'text-colorful-blue', border: 'hover:border-colorful-blue' }
-                ];
-                const colors = colorClasses[idx % colorClasses.length];
-                return (
-                  <Card key={idx} className={`border-2 ${colors.border} transition-colors ${colors.bg}`}>
-                    <CardContent className="p-6">
-                      <div className={`w-12 h-12 rounded-lg ${colors.bg} flex items-center justify-center mb-4`}>
-                        <Icon className={`h-6 w-6 ${colors.text}`} />
-                      </div>
-                      <h3 className="text-lg font-bold mb-2">{service.title}</h3>
-                      <p className="text-muted-foreground mb-4 text-sm">
-                        {service.description}
-                      </p>
-                      <div className="space-y-2 mb-4">
-                        {service.benefits.map((benefit, bidx) => (
-                          <div key={bidx} className="flex items-center gap-2 text-sm">
-                            <CheckCircle2 className={`h-4 w-4 ${colors.text} flex-shrink-0`} />
-                            <span>{benefit}</span>
-                          </div>
-                        ))}
-                      </div>
-                       <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleTryService(service)}
-                        >
-                          <Eye className="h-3 w-3 mr-1" />
-                          Try
-                        </Button>
-                        <Button 
-                          asChild 
-                          size="sm"
-                        >
-                          <a href={service.aiStudioLink} target="_blank" rel="noopener noreferrer">
-                            Use Now <ArrowRight className="h-3 w-3 ml-1" />
-                          </a>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-
-        {/* CTA Section - Flat Design */}
+        {/* Value Proposition - Flat Design */}
         <section className="py-12 px-4 bg-gradient-to-r from-colorful-pink/5 via-colorful-blue/5 to-colorful-teal/5">
           <div className="container mx-auto max-w-4xl">
             <Card className="border-2 border-colorful-blue hover:border-colorful-pink transition-colors">
