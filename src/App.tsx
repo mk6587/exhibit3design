@@ -55,8 +55,11 @@ const ProtectedAdminRoute = lazy(() => import("./components/admin/ProtectedAdmin
 
 // Loading fallback component
 const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+  <div className="flex items-center justify-center min-h-screen bg-background">
+    <div className="text-center">
+      <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <p className="text-lg text-foreground">Loading...</p>
+    </div>
   </div>
 );
 
@@ -66,6 +69,21 @@ const App = () => {
   // Hide any external welcome modals on app load
   useEffect(() => {
     hideWelcomeModals();
+    
+    // Handle chunk loading errors (common in production builds)
+    const handleChunkError = (e: ErrorEvent) => {
+      if (
+        e.message?.includes('Loading chunk') ||
+        e.message?.includes('Failed to fetch dynamically imported module') ||
+        e.message?.includes('error loading dynamically imported module')
+      ) {
+        console.error('Chunk loading error detected, reloading...');
+        window.location.reload();
+      }
+    };
+    
+    window.addEventListener('error', handleChunkError);
+    return () => window.removeEventListener('error', handleChunkError);
   }, []);
 
   return (
