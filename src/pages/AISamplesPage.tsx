@@ -676,11 +676,22 @@ export default function AISamplesPage() {
                   ) : (
                     <>
                       <p className="text-xs sm:text-sm font-semibold mb-2">Input Image (Sample)</p>
-                      <img 
-                        src={selectedService?.mockImage} 
-                        alt="Sample input" 
-                        className="w-full max-w-full rounded-lg border-2 object-contain"
-                      />
+                      {selectedService?.mockImage ? (
+                        <img 
+                          src={selectedService.mockImage} 
+                          alt="Sample input" 
+                          className="w-full aspect-video rounded-lg border-2 object-cover"
+                          loading="eager"
+                          onError={(e) => {
+                            console.error('Failed to load input image:', selectedService.mockImage);
+                            e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23f0f0f0" width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" fill="%23999"%3EImage not available%3C/text%3E%3C/svg%3E';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full aspect-video bg-muted rounded-lg border-2 flex items-center justify-center">
+                          <p className="text-xs text-muted-foreground">No sample image available</p>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
@@ -698,13 +709,14 @@ export default function AISamplesPage() {
                         autoPlay
                         loop
                         muted
-                        className="w-full max-w-full rounded-lg border-2 border-primary"
+                        className="w-full aspect-video rounded-lg border-2 border-primary"
                       />
                     ) : (
                       <img 
                         src={mockOutput} 
                         alt="Generated output" 
-                        className="w-full max-w-full rounded-lg border-2 border-primary object-contain"
+                        className="w-full aspect-video rounded-lg border-2 border-primary object-cover"
+                        loading="eager"
                       />
                     )
                   ) : (
