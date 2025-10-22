@@ -64,26 +64,29 @@ export const BeforeAfterSlider = ({
     };
   }, [isDragging]);
 
-  // Intersection Observer for lazy loading - only load when actually visible
+  // Reset and re-observe when media URLs change (for carousel navigation)
   useEffect(() => {
+    setSliderPosition(50);
+    setIsInView(false);
+    
+    // Re-observe the container for new content
     if (!containerRef.current) return;
-
+    
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setIsInView(true);
-            observer.disconnect();
           }
         });
       },
-      { threshold: 0.1, rootMargin: '0px' } // Load only when in viewport
+      { threshold: 0.1, rootMargin: '0px' }
     );
-
+    
     observer.observe(containerRef.current);
-
+    
     return () => observer.disconnect();
-  }, []);
+  }, [beforeImage, afterImage, beforeVideo, afterVideo]);
 
   // Play videos when in view
   useEffect(() => {
