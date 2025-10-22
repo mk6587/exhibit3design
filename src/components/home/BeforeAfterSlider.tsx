@@ -20,6 +20,7 @@ export const BeforeAfterSlider = ({
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const [isInView, setIsInView] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const videoAfterRef = useRef<HTMLVideoElement>(null);
   const videoBeforeRef = useRef<HTMLVideoElement>(null);
@@ -64,41 +65,22 @@ export const BeforeAfterSlider = ({
     };
   }, [isDragging]);
 
-  // Reset and re-observe when media URLs change (for carousel navigation)
+  // Immediate load and observe when URLs change
   useEffect(() => {
     setSliderPosition(50);
-    setIsInView(false);
+    setIsLoaded(false);
+    setIsInView(true); // Start loading immediately
     
-    // Re-observe the container for new content
-    if (!containerRef.current) return;
-    
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsInView(true);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '0px' }
-    );
-    
-    observer.observe(containerRef.current);
-    
-    return () => observer.disconnect();
-  }, [beforeImage, afterImage, beforeVideo, afterVideo]);
-
-  // Play videos when in view
-  useEffect(() => {
-    if (isInView) {
-      videoAfterRef.current?.play().catch(() => {
-        // Autoplay prevented, that's okay
-      });
-      videoBeforeRef.current?.play().catch(() => {
-        // Autoplay prevented, that's okay
-      });
+    // Start loading videos immediately
+    if (videoAfterRef.current) {
+      videoAfterRef.current.load();
+      videoAfterRef.current.play().catch(() => {});
     }
-  }, [isInView]);
+    if (videoBeforeRef.current) {
+      videoBeforeRef.current.load();
+      videoBeforeRef.current.play().catch(() => {});
+    }
+  }, [beforeImage, afterImage, beforeVideo, afterVideo]);
 
   return (
     <div className="relative w-full">
@@ -120,19 +102,15 @@ export const BeforeAfterSlider = ({
         {/* After image/video (full background) */}
         <div className="absolute inset-0">
           {afterVideo ? (
-            isInView ? (
-              <video
-                ref={videoAfterRef}
-                src={afterVideo}
-                className="w-full h-full object-cover"
-                loop
-                muted
-                playsInline
-                preload="none"
-              />
-            ) : (
-              <div className="w-full h-full bg-muted animate-pulse" />
-            )
+            <video
+              ref={videoAfterRef}
+              src={afterVideo}
+              className="w-full h-full object-cover"
+              loop
+              muted
+              playsInline
+              preload="auto"
+            />
           ) : afterImage ? (
             <LazyImage
               src={afterImage}
@@ -150,19 +128,15 @@ export const BeforeAfterSlider = ({
           }}
         >
           {beforeVideo ? (
-            isInView ? (
-              <video
-                ref={videoBeforeRef}
-                src={beforeVideo}
-                className="w-full h-full object-cover"
-                loop
-                muted
-                playsInline
-                preload="none"
-              />
-            ) : (
-              <div className="w-full h-full bg-muted animate-pulse" />
-            )
+            <video
+              ref={videoBeforeRef}
+              src={beforeVideo}
+              className="w-full h-full object-cover"
+              loop
+              muted
+              playsInline
+              preload="auto"
+            />
           ) : beforeImage ? (
             <LazyImage
               src={beforeImage}
