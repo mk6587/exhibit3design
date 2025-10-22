@@ -76,11 +76,15 @@ export const AIShowcaseSection = () => {
   };
 
   const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + aiSamples.length) % aiSamples.length);
+    const newIndex = (currentIndex - 1 + aiSamples.length) % aiSamples.length;
+    console.log('Previous clicked:', { currentIndex, newIndex, totalSamples: aiSamples.length });
+    setCurrentIndex(newIndex);
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % aiSamples.length);
+    const newIndex = (currentIndex + 1) % aiSamples.length;
+    console.log('Next clicked:', { currentIndex, newIndex, totalSamples: aiSamples.length });
+    setCurrentIndex(newIndex);
   };
 
   if (isLoading) {
@@ -119,6 +123,7 @@ export const AIShowcaseSection = () => {
         {isMobile ? (
           <div className="relative max-w-full mx-auto mb-8 px-4">
             <BeforeAfterSlider
+              key={`mobile-${currentIndex}-${aiSamples[currentIndex]?.id}`}
               beforeImage={aiSamples[currentIndex].before_image_url}
               afterImage={aiSamples[currentIndex].after_image_url}
               beforeVideo={aiSamples[currentIndex].before_video_url}
