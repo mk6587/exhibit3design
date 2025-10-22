@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { trackPageView } from "@/services/ga4Analytics";
 import { BeforeAfterSlider } from "@/components/home/BeforeAfterSlider";
+import { PageSkeleton } from "@/components/ui/page-skeleton";
 
 interface AICuratedSample {
   id: string;
@@ -108,12 +109,7 @@ export default function AISamplesPage() {
       description="View your AI-generated exhibition designs, 360° walkthroughs, and instant transformations. Track all your AI-powered design creations."
       keywords="AI design history, generated exhibition designs, AI transformation results, 360 walkthrough history"
       >
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading your AI generations...</p>
-          </div>
-        </div>
+        <PageSkeleton />
       </Layout>
     );
   }

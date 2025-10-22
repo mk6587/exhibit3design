@@ -130,10 +130,9 @@ export default function EmailConfirmationPage() {
             <div className="flex justify-center mb-6">
               {loading && (
                 <div className="relative">
-                  <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping"></div>
-                  <Loader2 className="h-16 w-16 animate-spin text-primary relative z-10" />
+                  <Sparkles className="h-16 w-16 text-primary animate-pulse relative z-10" />
                 </div>
-               )}
+              )}
               {error && (
                 <div className="relative">
                   <div className="absolute inset-0 bg-destructive/20 rounded-full"></div>

@@ -21,6 +21,7 @@ import { toast } from "@/hooks/use-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { profileUpdateSchema } from "@/lib/validationSchemas";
 import { trackPageView, trackProfileUpdate } from "@/services/ga4Analytics";
+import { PageSkeleton } from "@/components/ui/page-skeleton";
 
 const ProfilePage = () => {
   const { user, profile, loading: authLoading, updateProfile, signOut } = useAuth();
@@ -166,12 +167,7 @@ const ProfilePage = () => {
     console.log('ProfilePage: Auth loading...');
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-16 flex justify-center items-center">
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-            <p className="text-muted-foreground">Loading your profile...</p>
-          </div>
-        </div>
+        <PageSkeleton />
       </Layout>
     );
   }

@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { initiateSubscriptionPayment } from "@/services/subscriptionPaymentService";
 import { Loader2, CreditCard } from "lucide-react";
 import { trackPageView, trackSubscriptionEvent, trackButtonClick } from "@/services/ga4Analytics";
+import { PageSkeleton } from "@/components/ui/page-skeleton";
 
 const checkoutSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -163,10 +164,7 @@ export default function SubscriptionCheckoutPage() {
   if (loading) {
     return (
       <Layout title="Loading...">
-        <div className="container mx-auto max-w-2xl py-16 text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-          <p className="mt-4 text-muted-foreground">Loading checkout...</p>
-        </div>
+        <PageSkeleton />
       </Layout>
     );
   }
