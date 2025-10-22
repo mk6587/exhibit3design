@@ -279,6 +279,7 @@ export default function AISamplesPage() {
                   {/* Mobile: Carousel view */}
                   <div className="md:hidden relative max-w-full mx-auto mb-8 px-4">
                     <BeforeAfterSlider
+                      key={`mobile-samples-${currentSlideIndex}-${curatedSamples[currentSlideIndex]?.id}`}
                       beforeImage={curatedSamples[currentSlideIndex]?.before_image_url}
                       afterImage={curatedSamples[currentSlideIndex]?.after_image_url}
                       beforeVideo={curatedSamples[currentSlideIndex]?.before_video_url}
@@ -291,9 +292,11 @@ export default function AISamplesPage() {
                       variant="ghost"
                       size="icon"
                       className="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-background/90 hover:bg-background backdrop-blur-sm border-2 shadow-lg"
-                      onClick={() => setCurrentSlideIndex((prev) => 
-                        prev === 0 ? curatedSamples.length - 1 : prev - 1
-                      )}
+                      onClick={() => {
+                        const newIndex = currentSlideIndex === 0 ? curatedSamples.length - 1 : currentSlideIndex - 1;
+                        console.log('Previous clicked:', { currentSlideIndex, newIndex, total: curatedSamples.length });
+                        setCurrentSlideIndex(newIndex);
+                      }}
                     >
                       <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
                     </Button>
@@ -302,9 +305,11 @@ export default function AISamplesPage() {
                       variant="ghost"
                       size="icon"
                       className="absolute right-0 top-1/2 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-background/90 hover:bg-background backdrop-blur-sm border-2 shadow-lg"
-                      onClick={() => setCurrentSlideIndex((prev) => 
-                        prev === curatedSamples.length - 1 ? 0 : prev + 1
-                      )}
+                      onClick={() => {
+                        const newIndex = currentSlideIndex === curatedSamples.length - 1 ? 0 : currentSlideIndex + 1;
+                        console.log('Next clicked:', { currentSlideIndex, newIndex, total: curatedSamples.length });
+                        setCurrentSlideIndex(newIndex);
+                      }}
                     >
                       <ChevronRight className="h-5 w-5 md:h-6 md:w-6" />
                     </Button>
