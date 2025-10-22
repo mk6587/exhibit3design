@@ -351,6 +351,74 @@ export default function AISamplesPage() {
           </div>
         </section>
 
+        {/* Image AI Services - Flat Design */}
+        <section className="py-12 px-4 bg-background">
+          <div className="container mx-auto max-w-7xl">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                <ImageIcon className="h-4 w-4" />
+                Image Tools
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Powerful Image AI Tools</h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Transform and enhance your exhibition stand images with cutting-edge AI technology
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {imageServices.map((service, idx) => {
+                const Icon = service.icon;
+                const colorClasses = [
+                  { bg: 'bg-gradient-to-br from-colorful-pink/5 to-transparent', text: 'text-colorful-pink', border: 'hover:border-colorful-pink' },
+                  { bg: 'bg-gradient-to-br from-colorful-blue/5 to-transparent', text: 'text-colorful-blue', border: 'hover:border-colorful-blue' },
+                  { bg: 'bg-gradient-to-br from-colorful-teal/5 to-transparent', text: 'text-colorful-teal', border: 'hover:border-colorful-teal' },
+                  { bg: 'bg-gradient-to-br from-colorful-orange/5 to-transparent', text: 'text-colorful-orange', border: 'hover:border-colorful-orange' }
+                ];
+                const colors = colorClasses[idx % colorClasses.length];
+                return (
+                  <Card key={idx} className={`border-2 ${colors.border} transition-colors ${colors.bg}`}>
+                    <CardContent className="p-6">
+                      <div className={`w-12 h-12 rounded-lg ${colors.bg} flex items-center justify-center mb-4`}>
+                        <Icon className={`h-6 w-6 ${colors.text}`} />
+                      </div>
+                      <h3 className="text-xl font-bold mb-2">{service.title}</h3>
+                      <p className="text-muted-foreground mb-4 text-sm">
+                        {service.description}
+                      </p>
+                      <div className="space-y-2 mb-4">
+                        {service.benefits.map((benefit, bidx) => (
+                          <div key={bidx} className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className={`h-4 w-4 ${colors.text} flex-shrink-0`} />
+                            <span>{benefit}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleTryService(service)}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          Try Before Use
+                        </Button>
+                        <Button 
+                          asChild 
+                          size="sm"
+                        >
+                          <Link to={service.aiStudioLink}>
+                            Use Now <ArrowRight className="h-4 w-4 ml-2" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         {/* Three Core Pillars Story - Flat Design */}
         <section className="py-8 px-4 bg-background">
           <div className="container mx-auto max-w-7xl">
@@ -474,74 +542,6 @@ export default function AISamplesPage() {
                   </CardContent>
                 </Card>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Image AI Services - Flat Design */}
-        <section className="py-12 px-4 bg-background">
-          <div className="container mx-auto max-w-7xl">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                <ImageIcon className="h-4 w-4" />
-                Image Tools
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-3">Powerful Image AI Tools</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Transform and enhance your exhibition stand images with cutting-edge AI technology
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              {imageServices.map((service, idx) => {
-                const Icon = service.icon;
-                const colorClasses = [
-                  { bg: 'bg-gradient-to-br from-colorful-pink/5 to-transparent', text: 'text-colorful-pink', border: 'hover:border-colorful-pink' },
-                  { bg: 'bg-gradient-to-br from-colorful-blue/5 to-transparent', text: 'text-colorful-blue', border: 'hover:border-colorful-blue' },
-                  { bg: 'bg-gradient-to-br from-colorful-teal/5 to-transparent', text: 'text-colorful-teal', border: 'hover:border-colorful-teal' },
-                  { bg: 'bg-gradient-to-br from-colorful-orange/5 to-transparent', text: 'text-colorful-orange', border: 'hover:border-colorful-orange' }
-                ];
-                const colors = colorClasses[idx % colorClasses.length];
-                return (
-                  <Card key={idx} className={`border-2 ${colors.border} transition-colors ${colors.bg}`}>
-                    <CardContent className="p-6">
-                      <div className={`w-12 h-12 rounded-lg ${colors.bg} flex items-center justify-center mb-4`}>
-                        <Icon className={`h-6 w-6 ${colors.text}`} />
-                      </div>
-                      <h3 className="text-xl font-bold mb-2">{service.title}</h3>
-                      <p className="text-muted-foreground mb-4 text-sm">
-                        {service.description}
-                      </p>
-                      <div className="space-y-2 mb-4">
-                        {service.benefits.map((benefit, bidx) => (
-                          <div key={bidx} className="flex items-center gap-2 text-sm">
-                            <CheckCircle2 className={`h-4 w-4 ${colors.text} flex-shrink-0`} />
-                            <span>{benefit}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleTryService(service)}
-                        >
-                          <Eye className="h-4 w-4 mr-2" />
-                          Try Before Use
-                        </Button>
-                        <Button 
-                          asChild 
-                          size="sm"
-                        >
-                          <Link to={service.aiStudioLink}>
-                            Use Now <ArrowRight className="h-4 w-4 ml-2" />
-                          </Link>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
             </div>
           </div>
         </section>
