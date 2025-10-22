@@ -69,21 +69,6 @@ const App = () => {
   // Hide any external welcome modals on app load
   useEffect(() => {
     hideWelcomeModals();
-    
-    // Handle chunk loading errors (common in production builds)
-    const handleChunkError = (e: ErrorEvent) => {
-      if (
-        e.message?.includes('Loading chunk') ||
-        e.message?.includes('Failed to fetch dynamically imported module') ||
-        e.message?.includes('error loading dynamically imported module')
-      ) {
-        console.error('Chunk loading error detected, reloading...');
-        window.location.reload();
-      }
-    };
-    
-    window.addEventListener('error', handleChunkError);
-    return () => window.removeEventListener('error', handleChunkError);
   }, []);
 
   return (

@@ -23,39 +23,21 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Vendor chunks
+          // Consolidate all node_modules into ONE stable vendor chunk
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'react-vendor';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'ui-vendor';
-            }
-            if (id.includes('@supabase')) {
-              return 'supabase';
-            }
-            if (id.includes('lucide-react')) {
-              return 'icons';
-            }
-            if (id.includes('recharts') || id.includes('date-fns')) {
-              return 'charts';
-            }
             return 'vendor';
           }
           
-          // Admin pages in separate chunk
+          // Admin pages separate (changes infrequently)
           if (id.includes('/pages/Admin')) {
             return 'admin';
           }
           
-          // Payment pages in separate chunk
-          if (id.includes('/pages/Payment')) {
-            return 'payment';
-          }
+          // Everything else stays in main chunk
         },
       },
     },
-    chunkSizeWarningLimit: 800,
+    chunkSizeWarningLimit: 1000,
     minify: 'esbuild',
     cssCodeSplit: true,
     reportCompressedSize: false,
