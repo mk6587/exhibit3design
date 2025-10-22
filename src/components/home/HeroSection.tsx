@@ -64,7 +64,7 @@ export const HeroSection = () => {
           
           <p className="text-base md:text-lg font-normal mb-6" style={{
           textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6)'
-        }}>Download ready-made 3D stand designs and enhance them with AI — add visitors, edit or add objects, and create rotating videos in seconds.</p>
+        }}>Add visitors, edit objects, and create rotating videos with AI.</p>
           
           <div className="flex justify-center">
             <Button size="lg" variant="outline" className="bg-purple-600/40 text-white border-purple-400/70 hover:bg-purple-600/50" onClick={() => navigateToProtectedLink(aiStudioUrl)}>
