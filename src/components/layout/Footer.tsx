@@ -91,19 +91,7 @@ const Footer = () => {
             </ul>
           </div>
           
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Contact</h3>
-            <address className="text-sm text-muted-foreground not-italic">
-              <p>
-                Phone: 
-                <a href="https://wa.me/447508879096" target="_blank" rel="noopener noreferrer" className="inline-block py-2 px-1 ml-1 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20" style={{
-                WebkitTapHighlightColor: 'transparent'
-              }}>
-                  +44 7508 879096
-                </a>
-              </p>
-            </address>
-          </div>
+          
         </div>
         
         <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
