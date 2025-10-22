@@ -64,18 +64,9 @@ export const BeforeAfterSlider = ({
     };
   }, [isDragging]);
 
-  // Intersection Observer for lazy loading
+  // Intersection Observer for lazy loading - only load when actually visible
   useEffect(() => {
     if (!containerRef.current) return;
-
-    // Check if already in viewport on mount
-    const rect = containerRef.current.getBoundingClientRect();
-    const isAlreadyVisible = rect.top < window.innerHeight && rect.bottom > 0;
-    
-    if (isAlreadyVisible) {
-      setIsInView(true);
-      return;
-    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -86,7 +77,7 @@ export const BeforeAfterSlider = ({
           }
         });
       },
-      { threshold: 0.1, rootMargin: '50px' }
+      { threshold: 0.1, rootMargin: '0px' } // Load only when in viewport
     );
 
     observer.observe(containerRef.current);
@@ -134,10 +125,10 @@ export const BeforeAfterSlider = ({
                 loop
                 muted
                 playsInline
-                preload="metadata"
+                preload="none"
               />
             ) : (
-              <div className="w-full h-full bg-muted" />
+              <div className="w-full h-full bg-muted animate-pulse" />
             )
           ) : afterImage ? (
             <LazyImage
@@ -164,10 +155,10 @@ export const BeforeAfterSlider = ({
                 loop
                 muted
                 playsInline
-                preload="metadata"
+                preload="none"
               />
             ) : (
-              <div className="w-full h-full bg-muted" />
+              <div className="w-full h-full bg-muted animate-pulse" />
             )
           ) : beforeImage ? (
             <LazyImage

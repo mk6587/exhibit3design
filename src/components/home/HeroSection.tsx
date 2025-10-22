@@ -20,13 +20,12 @@ export const HeroSection = () => {
     setVideoLoaded(true);
   };
 
-  // Load video after poster loads (both mobile and desktop)
+  // Load video after poster loads with longer delay to prioritize other content
   useEffect(() => {
     if (posterLoaded) {
-      // Short delay after poster loads to ensure smooth transition
       const timer = setTimeout(() => {
         setShouldLoadVideo(true);
-      }, 800);
+      }, 1500); // Increased delay to let other content load first
       return () => clearTimeout(timer);
     }
   }, [posterLoaded]);
