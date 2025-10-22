@@ -52,12 +52,12 @@ const FeaturesSection = () => {
             return (
               <div 
                 key={index} 
-                className="text-center p-4 md:p-6"
+                className="flex flex-col items-center text-center p-4 md:p-6"
               >
-                <div className="mb-3 flex items-center justify-center w-8 h-8 md:w-12 md:h-12 bg-primary rounded-lg mx-auto">
-                  <IconComponent className="h-4 w-4 md:h-6 md:w-6 text-primary-foreground" />
+                <div className="mb-3 flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-primary rounded-lg shrink-0">
+                  <IconComponent className="h-5 w-5 md:h-7 md:w-7 text-primary-foreground" />
                 </div>
-                <h3 className="font-semibold mb-2 text-xs md:text-sm text-foreground">
+                <h3 className="font-semibold mb-2 text-xs md:text-base text-foreground">
                   {feature.title}
                 </h3>
                 <p className="text-xs md:text-sm text-muted-foreground leading-relaxed hidden md:block">
