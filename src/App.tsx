@@ -61,6 +61,7 @@ const AdminAISamplesPage = lazy(() => lazyRetry(() => import("./pages/AdminAISam
 const AdminAIDemoConfigPage = lazy(() => lazyRetry(() => import("./pages/AdminAIDemoConfigPage")));
 const AdminFileRequestsPage = lazy(() => lazyRetry(() => import("./pages/AdminFileRequestsPage")));
 const AdminSecurityPage = lazy(() => lazyRetry(() => import("./pages/AdminSecurityPage")));
+const AdminBlogSamplePage = lazy(() => lazyRetry(() => import("./pages/AdminBlogSamplePage")));
 const ProtectedAdminRoute = lazy(() => lazyRetry(() => import("./components/admin/ProtectedAdminRoute")));
 
 // Loading fallback component - Shows while lazy routes are loading
@@ -167,6 +168,11 @@ const App = () => {
                         <Route path="/admin/security" element={
                           <ProtectedAdminRoute>
                             <AdminSecurityPage />
+                          </ProtectedAdminRoute>
+                        } />
+                        <Route path="/admin/blog-sample" element={
+                          <ProtectedAdminRoute>
+                            <AdminBlogSamplePage />
                           </ProtectedAdminRoute>
                         } />
                         <Route path="/sitemap.xml" element={<SitemapPage />} />
