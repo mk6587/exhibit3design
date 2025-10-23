@@ -24,7 +24,7 @@ interface BlogSample {
 }
 
 export default function AdminBlogSamplePage() {
-  const [keyword, setKeyword] = useState("Exhibition Stand Design Ideas for 2025");
+  const [keyword, setKeyword] = useState("Top 10 benefits of using AI in booth design");
   const [isGenerating, setIsGenerating] = useState(false);
   const [sample, setSample] = useState<BlogSample | null>(null);
 
