@@ -56,3 +56,12 @@ verify_jwt = false
 
 [functions.support-chat]
 verify_jwt = false
+
+[functions.generate-sample-blog]
+verify_jwt = false
+
+[functions.generate-blog-post]
+verify_jwt = false
+
+[functions.auto-generate-blog]
+verify_jwt = false
