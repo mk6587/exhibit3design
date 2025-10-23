@@ -39,13 +39,21 @@ Requirements:
    - Use keyword naturally (1-2% density)
    - Include long-tail variations
    - Add statistics and insights
-   - Use bullet points and numbered lists
+   - Use bullet points and numbered lists extensively
    - Professional but engaging tone
-6. CTAs (Call-to-Actions): Place 3 CTAs strategically
+6. Readability (Target: 75-80+ score):
+   - Keep sentences SHORT (15-20 words max)
+   - Use simple, everyday vocabulary
+   - Write in active voice
+   - Break content into short paragraphs (3-4 sentences)
+   - Use transition words (however, therefore, meanwhile)
+   - Avoid jargon and complex terminology
+   - Use subheadings frequently for easy scanning
+7. CTAs (Call-to-Actions): Place 3 CTAs strategically
    - After introduction: "Try AI Studio for Free"
    - Mid-article: "Browse Our Products"
    - End of article: "View Pricing Plans"
-7. Internal Links: Suggest 6-8 relevant internal links
+8. Internal Links: Suggest 6-8 relevant internal links
    - /products
    - /ai-samples
    - /pricing
