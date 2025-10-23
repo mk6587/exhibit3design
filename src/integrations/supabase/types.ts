@@ -233,6 +233,191 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      blog_post_categories: {
+        Row: {
+          category_id: string
+          created_at: string
+          id: string
+          post_id: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          id?: string
+          post_id: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_post_categories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "blog_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blog_post_categories_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_posts: {
+        Row: {
+          ai_metadata: Json | null
+          author_id: string | null
+          content: string
+          created_at: string
+          ctas: Json | null
+          featured_image_url: string | null
+          generated_keyword: string | null
+          id: string
+          internal_links: Json | null
+          keywords: string[] | null
+          meta_description: string
+          published_at: string | null
+          quality_score: number | null
+          readability_score: number | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+          view_count: number
+          word_count: number | null
+        }
+        Insert: {
+          ai_metadata?: Json | null
+          author_id?: string | null
+          content: string
+          created_at?: string
+          ctas?: Json | null
+          featured_image_url?: string | null
+          generated_keyword?: string | null
+          id?: string
+          internal_links?: Json | null
+          keywords?: string[] | null
+          meta_description: string
+          published_at?: string | null
+          quality_score?: number | null
+          readability_score?: number | null
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+          view_count?: number
+          word_count?: number | null
+        }
+        Update: {
+          ai_metadata?: Json | null
+          author_id?: string | null
+          content?: string
+          created_at?: string
+          ctas?: Json | null
+          featured_image_url?: string | null
+          generated_keyword?: string | null
+          id?: string
+          internal_links?: Json | null
+          keywords?: string[] | null
+          meta_description?: string
+          published_at?: string | null
+          quality_score?: number | null
+          readability_score?: number | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          view_count?: number
+          word_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      blog_settings: {
+        Row: {
+          auto_generate_enabled: boolean
+          created_at: string
+          generation_frequency: string
+          id: string
+          posts_per_page: number
+          seo_settings: Json | null
+          site_title: string
+          tagline: string | null
+          topics_source: string
+          updated_at: string
+        }
+        Insert: {
+          auto_generate_enabled?: boolean
+          created_at?: string
+          generation_frequency?: string
+          id?: string
+          posts_per_page?: number
+          seo_settings?: Json | null
+          site_title?: string
+          tagline?: string | null
+          topics_source?: string
+          updated_at?: string
+        }
+        Update: {
+          auto_generate_enabled?: boolean
+          created_at?: string
+          generation_frequency?: string
+          id?: string
+          posts_per_page?: number
+          seo_settings?: Json | null
+          site_title?: string
+          tagline?: string | null
+          topics_source?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       file_requests: {
         Row: {
           admin_notes: string | null
@@ -835,22 +1020,10 @@ export type Database = {
           is_admin: boolean
         }[]
       }
-      cleanup_expired_guest_tokens: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      cleanup_expired_otps: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      cleanup_expired_reservations: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      cleanup_old_otp_records: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      cleanup_expired_guest_tokens: { Args: never; Returns: undefined }
+      cleanup_expired_otps: { Args: never; Returns: undefined }
+      cleanup_expired_reservations: { Args: never; Returns: undefined }
+      cleanup_old_otp_records: { Args: never; Returns: undefined }
       commit_reservation_atomic: {
         Args: {
           p_ai_result_url: string
@@ -881,10 +1054,7 @@ export type Database = {
           success: boolean
         }[]
       }
-      current_user_is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      current_user_is_admin: { Args: never; Returns: boolean }
       deduct_ai_tokens: {
         Args: { p_amount: number; p_user_id: string }
         Returns: boolean
@@ -903,18 +1073,9 @@ export type Database = {
         Args: { p_count: number; p_user_id: string }
         Returns: boolean
       }
-      delete_otp_by_email: {
-        Args: { search_email: string }
-        Returns: boolean
-      }
-      delete_used_otp: {
-        Args: { otp_id: string }
-        Returns: boolean
-      }
-      encrypt_sensitive_data: {
-        Args: { data: string }
-        Returns: string
-      }
+      delete_otp_by_email: { Args: { search_email: string }; Returns: boolean }
+      delete_used_otp: { Args: { otp_id: string }; Returns: boolean }
+      encrypt_sensitive_data: { Args: { data: string }; Returns: string }
       find_otp_by_email: {
         Args: { search_email: string }
         Returns: {
@@ -927,12 +1088,9 @@ export type Database = {
           verified: boolean
         }[]
       }
-      generate_order_token: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      generate_order_token: { Args: never; Returns: string }
       generate_secure_order_token: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           expires_at: string
           token: string
@@ -967,10 +1125,7 @@ export type Database = {
           id: string
         }[]
       }
-      get_default_video_url: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      get_default_video_url: { Args: never; Returns: string }
       get_guest_order_by_token: {
         Args: { order_token_param: string }
         Returns: {
@@ -1003,10 +1158,7 @@ export type Database = {
           video_results_limit: number
         }[]
       }
-      grant_free_tokens: {
-        Args: { p_user_id: string }
-        Returns: boolean
-      }
+      grant_free_tokens: { Args: { p_user_id: string }; Returns: boolean }
       grant_tokens_atomic: {
         Args: {
           p_ai_tokens: number
@@ -1024,10 +1176,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      hash_otp_code: {
-        Args: { otp_code: string }
-        Returns: string
-      }
+      hash_otp_code: { Args: { otp_code: string }; Returns: string }
       insert_otp_registration: {
         Args: {
           p_email: string
@@ -1037,14 +1186,8 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_admin: {
-        Args: { user_id: string }
-        Returns: boolean
-      }
-      is_current_user_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_admin: { Args: { user_id: string }; Returns: boolean }
+      is_current_user_admin: { Args: never; Returns: boolean }
       log_admin_login_attempt: {
         Args: { p_email: string; p_ip_address: string; p_success: boolean }
         Returns: undefined
@@ -1079,10 +1222,7 @@ export type Database = {
         Args: { p_reason: string; p_reservation_id: string; p_user_id: string }
         Returns: Json
       }
-      set_order_token_session: {
-        Args: { token: string }
-        Returns: undefined
-      }
+      set_order_token_session: { Args: { token: string }; Returns: undefined }
       transfer_guest_order_data: {
         Args: { p_email: string; p_user_id: string }
         Returns: {
@@ -1096,10 +1236,7 @@ export type Database = {
           success: boolean
         }[]
       }
-      validate_payment_update: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      validate_payment_update: { Args: never; Returns: boolean }
       verify_guest_order_access: {
         Args: { order_id_param: string; order_token_param: string }
         Returns: boolean

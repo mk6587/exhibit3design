@@ -44,6 +44,12 @@ const settingsItems = [
   { title: "Security", url: "/admin/security", icon: Shield },
 ];
 
+const blogItems = [
+  { title: "Blog Posts", url: "/admin/blog-posts", icon: FileText },
+  { title: "Categories", url: "/admin/blog-categories", icon: FileText },
+  { title: "Settings", url: "/admin/blog-settings", icon: Settings },
+];
+
 export function AdminSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
@@ -90,6 +96,25 @@ export function AdminSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} end className={getNavCls}>
+                      <item.icon className={`h-4 w-4 ${collapsed ? '' : 'mr-2'}`} />
+                      {!collapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Blog Academy */}
+        <SidebarGroup>
+          {!collapsed && <SidebarGroupLabel>Blog Academy</SidebarGroupLabel>}
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {blogItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavCls}>
                       <item.icon className={`h-4 w-4 ${collapsed ? '' : 'mr-2'}`} />
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>
