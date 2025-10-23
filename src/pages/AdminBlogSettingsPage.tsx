@@ -179,6 +179,9 @@ export default function AdminBlogSettingsPage() {
                   <SelectItem value="monthly">Monthly</SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground">
+                Cron runs daily at 9:00 AM UTC. Weekly/monthly settings coming soon.
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -195,6 +198,43 @@ export default function AdminBlogSettingsPage() {
                   <SelectItem value="queue">Generation Queue</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="pt-4 border-t">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={async () => {
+                  try {
+                    setSaving(true);
+                    const { data, error } = await supabase.functions.invoke('auto-generate-blog');
+                    if (error) throw error;
+                    if (data.success) {
+                      toast.success('Blog post generated successfully!');
+                    } else {
+                      toast.info(data.message || 'Generation skipped');
+                    }
+                  } catch (error) {
+                    console.error('Test generation error:', error);
+                    toast.error('Failed to generate blog post');
+                  } finally {
+                    setSaving(false);
+                  }
+                }}
+                disabled={saving}
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  'Test Generate Now'
+                )}
+              </Button>
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                Manually trigger blog generation to test the AI workflow
+              </p>
             </div>
           </CardContent>
         </Card>

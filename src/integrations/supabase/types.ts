@@ -266,6 +266,41 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_generation_log: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          keyword: string | null
+          post_id: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          keyword?: string | null
+          post_id?: string | null
+          status: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          keyword?: string | null
+          post_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_generation_log_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blog_post_categories: {
         Row: {
           category_id: string
@@ -1236,6 +1271,7 @@ export type Database = {
           success: boolean
         }[]
       }
+      trigger_auto_blog_generation: { Args: never; Returns: undefined }
       validate_payment_update: { Args: never; Returns: boolean }
       verify_guest_order_access: {
         Args: { order_id_param: string; order_token_param: string }
