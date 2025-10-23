@@ -79,14 +79,11 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <button onClick={() => {
-                const event = new CustomEvent('openSupportChat');
-                window.dispatchEvent(event);
-              }} className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20 w-full text-left" style={{
+                <Link to="/academy" className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20" style={{
                 WebkitTapHighlightColor: 'transparent'
               }}>
-                  Customer Support
-                </button>
+                  Academy
+                </Link>
               </li>
             </ul>
           </div>
