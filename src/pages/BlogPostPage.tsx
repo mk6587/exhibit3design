@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/SEO/SEOHead";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, Eye, Clock, ArrowLeft, Share2, Facebook, Twitter, Linkedin } from "lucide-react";
 import { format } from "date-fns";
@@ -84,7 +86,7 @@ export default function BlogPostPage() {
 
   const readingTime = Math.ceil((post?.word_count || 0) / 200);
 
-  const shareUrl = `${window.location.origin}/blog/${slug}`;
+  const shareUrl = `${window.location.origin}/academy/${slug}`;
   
   const handleShare = (platform: string) => {
     const title = post?.title || '';
@@ -138,7 +140,7 @@ export default function BlogPostPage() {
             The blog post you're looking for doesn't exist or has been removed.
           </p>
           <Button asChild>
-            <Link to="/blog">Browse All Posts</Link>
+            <Link to="/academy">Browse All Posts</Link>
           </Button>
         </div>
       </Layout>
@@ -148,24 +150,59 @@ export default function BlogPostPage() {
   return (
     <Layout>
       <SEOHead
-        title={`${post.title} | Exhibit3Design Blog`}
+        title={`${post.title} | Exhibit3Design Academy`}
         description={post.meta_description}
-        url={`https://exhibit3design.com/blog/${post.slug}`}
+        url={`https://exhibit3design.com/academy/${post.slug}`}
         image={post.featured_image_url || undefined}
         keywords={post.keywords.join(', ')}
         type="article"
       />
+      
+      {/* Article Schema Markup */}
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": post.title,
+            "description": post.meta_description,
+            "image": post.featured_image_url || "https://exhibit3design.com/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png",
+            "datePublished": post.published_at,
+            "dateModified": post.published_at,
+            "author": {
+              "@type": "Organization",
+              "name": "Exhibit3Design"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Exhibit3Design",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://exhibit3design.com/lovable-uploads/0506236c-c7c8-420c-9bd1-d00f4d4dec3d.png"
+              }
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": `https://exhibit3design.com/academy/${post.slug}`
+            },
+            "keywords": post.keywords.join(', '),
+            "wordCount": post.word_count,
+            "articleBody": post.content.replace(/<[^>]*>/g, '')
+          })}
+        </script>
+      </Helmet>
 
       <article className="py-12">
         <div className="container mx-auto px-4">
-          {/* Back Button */}
+          {/* Breadcrumbs */}
           <div className="max-w-4xl mx-auto mb-8">
-            <Button variant="ghost" asChild>
-              <Link to="/blog">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Blog
-              </Link>
-            </Button>
+            <Breadcrumbs
+              items={[
+                { label: "Home", href: "/" },
+                { label: "Academy", href: "/academy" },
+                { label: post.title }
+              ]}
+            />
           </div>
 
           {/* Article Header */}
@@ -262,7 +299,7 @@ export default function BlogPostPage() {
                 {relatedPosts.map((relatedPost) => (
                   <Link
                     key={relatedPost.id}
-                    to={`/blog/${relatedPost.slug}`}
+                    to={`/academy/${relatedPost.slug}`}
                     className="group"
                   >
                     <Card className="overflow-hidden h-full hover:shadow-lg transition-shadow">
