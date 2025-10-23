@@ -61,10 +61,13 @@ const AdminAISamplesPage = lazy(() => lazyRetry(() => import("./pages/AdminAISam
 const AdminAIDemoConfigPage = lazy(() => lazyRetry(() => import("./pages/AdminAIDemoConfigPage")));
 const AdminFileRequestsPage = lazy(() => lazyRetry(() => import("./pages/AdminFileRequestsPage")));
 const AdminSecurityPage = lazy(() => lazyRetry(() => import("./pages/AdminSecurityPage")));
+const BlogPage = lazy(() => lazyRetry(() => import("./pages/BlogPage")));
+const BlogPostPage = lazy(() => lazyRetry(() => import("./pages/BlogPostPage")));
 const AdminBlogSamplePage = lazy(() => lazyRetry(() => import("./pages/AdminBlogSamplePage")));
 const AdminBlogSettingsPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogSettingsPage")));
 const AdminBlogCategoriesPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogCategoriesPage")));
 const AdminBlogPostsPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogPostsPage")));
+const AdminBlogPostEditPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogPostEditPage")));
 const ProtectedAdminRoute = lazy(() => lazyRetry(() => import("./components/admin/ProtectedAdminRoute")));
 
 // Loading fallback component - Shows while lazy routes are loading
@@ -193,6 +196,13 @@ const App = () => {
                             <AdminBlogPostsPage />
                           </ProtectedAdminRoute>
                         } />
+                        <Route path="/admin/blog-posts/:id" element={
+                          <ProtectedAdminRoute>
+                            <AdminBlogPostEditPage />
+                          </ProtectedAdminRoute>
+                        } />
+                        <Route path="/blog" element={<BlogPage />} />
+                        <Route path="/blog/:slug" element={<BlogPostPage />} />
                         <Route path="/sitemap.xml" element={<SitemapPage />} />
                         <Route path="/pricing" element={<PricingPage />} />
                         <Route path="/subscription-checkout" element={<SubscriptionCheckoutPage />} />
