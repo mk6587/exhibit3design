@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import LazyImage from "@/components/performance/LazyImage";
 
 interface BeforeAfterSliderProps {
@@ -65,21 +66,41 @@ export const BeforeAfterSlider = ({
     };
   }, [isDragging]);
 
-  // Immediate load and observe when URLs change
+  // Lazy load videos when in viewport
   useEffect(() => {
     setSliderPosition(50);
     setIsLoaded(false);
-    setIsInView(true); // Start loading immediately
     
-    // Start loading videos immediately
-    if (videoAfterRef.current) {
-      videoAfterRef.current.load();
-      videoAfterRef.current.play().catch(() => {});
-    }
-    if (videoBeforeRef.current) {
-      videoBeforeRef.current.load();
-      videoBeforeRef.current.play().catch(() => {});
-    }
+    if (!containerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsInView(true);
+            
+            // Load and play videos when visible
+            setTimeout(() => {
+              if (videoAfterRef.current) {
+                videoAfterRef.current.load();
+                videoAfterRef.current.play().catch(() => {});
+              }
+              if (videoBeforeRef.current) {
+                videoBeforeRef.current.load();
+                videoBeforeRef.current.play().catch(() => {});
+              }
+            }, 100);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+
+    observer.observe(containerRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
   }, [beforeImage, afterImage, beforeVideo, afterVideo]);
 
   return (
@@ -99,17 +120,25 @@ export const BeforeAfterSlider = ({
         ref={containerRef}
         className="relative aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden shadow-2xl cursor-ew-resize select-none"
       >
+        {/* Loading skeleton */}
+        {!isInView && (
+          <div className="absolute inset-0">
+            <Skeleton className="w-full h-full" />
+          </div>
+        )}
+        
         {/* After image/video (full background) */}
         <div className="absolute inset-0">
           {afterVideo ? (
             <video
               ref={videoAfterRef}
-              src={afterVideo}
+              src={isInView ? afterVideo : undefined}
               className="w-full h-full object-cover"
               loop
               muted
               playsInline
-              preload="auto"
+              preload="metadata"
+              onLoadedData={() => setIsLoaded(true)}
             />
           ) : afterImage ? (
             <LazyImage
@@ -130,12 +159,12 @@ export const BeforeAfterSlider = ({
           {beforeVideo ? (
             <video
               ref={videoBeforeRef}
-              src={beforeVideo}
+              src={isInView ? beforeVideo : undefined}
               className="w-full h-full object-cover"
               loop
               muted
               playsInline
-              preload="auto"
+              preload="metadata"
             />
           ) : beforeImage ? (
             <LazyImage

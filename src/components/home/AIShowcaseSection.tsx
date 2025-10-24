@@ -91,8 +91,14 @@ export const AIShowcaseSection = () => {
     return (
       <section className="py-16 md:py-24 bg-gradient-to-b from-background via-muted/20 to-background">
         <div className="container mx-auto px-4">
-          <div className="text-center">
-            <p className="text-muted-foreground">Loading...</p>
+          <div className="text-center mb-8 md:mb-16">
+            <div className="h-10 w-3/4 mx-auto bg-muted animate-pulse rounded mb-4" />
+            <div className="h-6 w-1/2 mx-auto bg-muted animate-pulse rounded" />
+          </div>
+          <div className="max-w-7xl mx-auto grid grid-cols-2 gap-4 md:gap-6 lg:gap-8">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="aspect-[16/9] bg-muted animate-pulse rounded-xl" />
+            ))}
           </div>
         </div>
       </section>
