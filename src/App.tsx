@@ -71,6 +71,7 @@ const AdminBlogPostsPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogP
 const DynamicSitemapPage = lazy(() => lazyRetry(() => import("./pages/DynamicSitemapPage")));
 const AdminBlogPostEditPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogPostEditPage")));
 const AdminGenerateBlogImagesPage = lazy(() => lazyRetry(() => import("./pages/AdminGenerateBlogImagesPage")));
+const AdminBlogCleanupPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogCleanupPage")));
 const ProtectedAdminRoute = lazy(() => lazyRetry(() => import("./components/admin/ProtectedAdminRoute")));
 
 // Loading fallback component - Shows while lazy routes are loading
@@ -202,6 +203,11 @@ const App = () => {
                         <Route path="/admin/generate-blog-images" element={
                           <ProtectedAdminRoute>
                             <AdminGenerateBlogImagesPage />
+                          </ProtectedAdminRoute>
+                        } />
+                        <Route path="/admin/blog-cleanup" element={
+                          <ProtectedAdminRoute>
+                            <AdminBlogCleanupPage />
                           </ProtectedAdminRoute>
                         } />
                         <Route path="/admin/blog-posts" element={

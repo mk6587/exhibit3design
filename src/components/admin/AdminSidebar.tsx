@@ -15,6 +15,8 @@ import {
   ChevronDown,
   ChevronRight,
   Newspaper,
+  Image,
+  Eraser,
 } from "lucide-react";
 import {
   Sidebar,
@@ -50,6 +52,8 @@ const menuStructure = [
       { title: "Blog Generator", url: "/admin/blog-generator", icon: Sparkles },
       { title: "Blog Posts", url: "/admin/blog-posts", icon: FileText },
       { title: "Quick Generate", url: "/admin/blog-sample", icon: FileCheck },
+      { title: "Generate Images", url: "/admin/generate-blog-images", icon: Image },
+      { title: "Cleanup Content", url: "/admin/blog-cleanup", icon: Eraser },
       { title: "Categories", url: "/admin/blog-categories", icon: FileText },
       { title: "Settings", url: "/admin/blog-settings", icon: Settings },
     ],

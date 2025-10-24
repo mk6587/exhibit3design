@@ -65,3 +65,9 @@ verify_jwt = false
 
 [functions.auto-generate-blog]
 verify_jwt = false
+
+[functions.generate-blog-images]
+verify_jwt = false
+
+[functions.cleanup-blog-content]
+verify_jwt = false
