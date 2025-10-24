@@ -284,7 +284,7 @@ export default function BlogPostPage() {
           {/* Article Content */}
           <div className="max-w-4xl mx-auto">
             <div 
-              className="prose prose-lg max-w-none [&>p]:mb-4 [&>h1]:mb-4 [&>h2]:mb-4 [&>h3]:mb-4 [&>ul]:mb-4 [&>ol]:mb-4"
+              className="prose prose-lg max-w-none [&>p]:mb-4 [&>h1]:mb-4 [&>h1]:font-bold [&>h2]:mb-4 [&>h2]:font-bold [&>h3]:mb-4 [&>h3]:font-bold [&>h4]:mb-4 [&>h4]:font-bold [&>ul]:mb-4 [&>ol]:mb-4"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
           </div>

@@ -61,11 +61,21 @@ Requirements:
    - /contact
    - Related blog topics
 
+CRITICAL HTML FORMATTING:
+- Use <h2> for main section headings (bold, large)
+- Use <h3> for subsection headings (bold, medium)
+- Use <h4> for minor headings (bold, small)
+- All headings MUST be bold by default
+- Use <p> for paragraphs with single line breaks
+- Use <strong> for emphasis within text
+- Use <ul> and <li> for bullet lists
+- Use <ol> and <li> for numbered lists
+
 Format the response as JSON:
 {
   "title": "...",
   "metaDescription": "...",
-  "content": "... (full HTML with h2, h3, p, ul, ol tags)",
+  "content": "... (full HTML with h2, h3, h4, p, ul, ol, strong tags - headings must be wrapped properly)",
   "keywords": ["primary", "secondary", "tertiary"],
   "internalLinks": [
     {"text": "link text", "url": "/path", "placement": "after paragraph X"},
