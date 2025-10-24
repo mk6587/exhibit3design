@@ -210,6 +210,8 @@ const App = () => {
                         } />
                         <Route path="/academy" element={<BlogPage />} />
                         <Route path="/academy/:slug" element={<BlogPostPage />} />
+                        <Route path="/blog" element={<BlogPage />} />
+                        <Route path="/blog/:slug" element={<BlogPostPage />} />
                         <Route path="/sitemap.xml" element={<DynamicSitemapPage />} />
                         <Route path="/pricing" element={<PricingPage />} />
                         <Route path="/subscription-checkout" element={<SubscriptionCheckoutPage />} />
