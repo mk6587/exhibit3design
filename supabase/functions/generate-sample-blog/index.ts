@@ -119,20 +119,37 @@ Format the response as JSON:
     // Extract JSON from the response (might be wrapped in markdown code blocks)
     let articleData;
     try {
-      const jsonMatch = contentText.match(/```json\n([\s\S]*?)\n```/) || contentText.match(/\{[\s\S]*\}/);
+      // Try to extract JSON from markdown code blocks or find raw JSON
+      const jsonMatch = contentText.match(/```json\s*([\s\S]*?)\s*```/) || contentText.match(/```\s*([\s\S]*?)\s*```/) || contentText.match(/(\{[\s\S]*\})/);
       const jsonString = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : contentText;
-      articleData = JSON.parse(jsonString);
+      
+      console.log('Attempting to parse JSON, length:', jsonString.length);
+      articleData = JSON.parse(jsonString.trim());
+      
+      // Validate that we have the required fields
+      if (!articleData.content || !articleData.title) {
+        throw new Error('Missing required fields in AI response');
+      }
+      
+      // Clean content: remove any JSON artifacts that might have leaked in
+      articleData.content = articleData.content.replace(/```json[\s\S]*?```/g, '').trim();
+      
+      console.log('Successfully parsed article data, content length:', articleData.content.length);
     } catch (e) {
       console.error('Failed to parse AI response as JSON:', e);
-      // Fallback: return raw content
+      console.error('Raw response:', contentText.substring(0, 500));
+      
+      // Fallback: return raw content stripped of JSON
+      const cleanContent = contentText.replace(/```json[\s\S]*?```/g, '').replace(/\{[\s\S]*?"content":\s*"/g, '').replace(/",\s*"keywords"[\s\S]*/g, '').trim();
+      
       articleData = {
         title: `${keyword} - Expert Guide`,
         metaDescription: `Learn everything about ${keyword}. Expert tips and insights from Exhibit3Design.`,
-        content: contentText,
+        content: cleanContent || contentText,
         keywords: [keyword],
         internalLinks: [],
         ctas: [],
-        wordCount: contentText.split(' ').length,
+        wordCount: (cleanContent || contentText).split(' ').length,
         readabilityScore: 60
       };
     }
