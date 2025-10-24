@@ -35,15 +35,29 @@ export const FeaturedProductsGrid = () => {
           Featured Designs
         </h2>
         
-        <div className="px-4 md:px-0">
+        {/* Scroll indicator for mobile */}
+        <div className="flex md:hidden justify-center items-center gap-2 mb-4 animate-pulse">
+          <span className="text-sm text-muted-foreground">Swipe to see more</span>
+          <svg 
+            className="w-5 h-5 text-primary animate-bounce" 
+            fill="none" 
+            strokeWidth="2" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path d="M13 5l7 7-7 7M5 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        
+        <div className="px-4 md:px-0 relative">
           {featuredProducts.length > 0 ? <Carousel opts={{
           align: "start",
           loop: true
         }} className="w-full">
-              <CarouselContent className="-ml-2 md:-ml-4">
-                {featuredProducts.map(product => <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
+              <CarouselContent className="-ml-2 md:-ml-4 md:animate-none">
+                {featuredProducts.map((product, index) => <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
                     <div className="p-1">
-                      <div className="bg-card rounded-lg shadow-sm border overflow-hidden h-full">
+                      <div className={`bg-card rounded-lg shadow-sm border overflow-hidden h-full transition-all ${index === 0 ? 'md:animate-none animate-pulse' : ''}`}>
                         <div className="aspect-[4/3] relative overflow-hidden">
                           <img src={product.images?.[0] || "/placeholder.svg"} alt={product.title} className="object-cover w-full h-full hover:scale-105 transition-transform duration-300" loading="lazy" />
                         </div>
