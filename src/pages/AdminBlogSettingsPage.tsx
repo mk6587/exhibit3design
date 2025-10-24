@@ -12,12 +12,11 @@ import { Loader2, Save } from "lucide-react";
 
 interface BlogSettings {
   id: string;
-  site_title: string;
-  tagline: string;
-  posts_per_page: number;
   auto_generate_enabled: boolean;
-  generation_frequency: 'daily' | 'weekly' | 'monthly';
+  auto_approve_enabled: boolean;
   topics_source: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export default function AdminBlogSettingsPage() {
@@ -54,11 +53,8 @@ export default function AdminBlogSettingsPage() {
       const { error } = await supabase
         .from('blog_settings')
         .update({
-          site_title: settings.site_title,
-          tagline: settings.tagline,
-          posts_per_page: settings.posts_per_page,
           auto_generate_enabled: settings.auto_generate_enabled,
-          generation_frequency: settings.generation_frequency,
+          auto_approve_enabled: settings.auto_approve_enabled,
           topics_source: settings.topics_source,
         })
         .eq('id', settings.id);
@@ -105,44 +101,6 @@ export default function AdminBlogSettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>General Settings</CardTitle>
-            <CardDescription>Basic blog configuration</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="site_title">Site Title</Label>
-              <Input
-                id="site_title"
-                value={settings.site_title}
-                onChange={(e) => setSettings({ ...settings, site_title: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="tagline">Tagline</Label>
-              <Input
-                id="tagline"
-                value={settings.tagline || ''}
-                onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="posts_per_page">Posts Per Page</Label>
-              <Input
-                id="posts_per_page"
-                type="number"
-                min="1"
-                max="50"
-                value={settings.posts_per_page}
-                onChange={(e) => setSettings({ ...settings, posts_per_page: parseInt(e.target.value) })}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
             <CardTitle>AI Content Generation</CardTitle>
             <CardDescription>Configure automatic blog post generation</CardDescription>
           </CardHeader>
@@ -162,26 +120,19 @@ export default function AdminBlogSettingsPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="generation_frequency">Generation Frequency</Label>
-              <Select
-                value={settings.generation_frequency}
-                onValueChange={(value: 'daily' | 'weekly' | 'monthly') => 
-                  setSettings({ ...settings, generation_frequency: value })
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Auto-Approve Generated Posts</Label>
+                <p className="text-sm text-muted-foreground">
+                  Publish posts automatically without manual review
+                </p>
+              </div>
+              <Switch
+                checked={settings.auto_approve_enabled}
+                onCheckedChange={(checked) => 
+                  setSettings({ ...settings, auto_approve_enabled: checked })
                 }
-              >
-                <SelectTrigger id="generation_frequency">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="daily">Daily</SelectItem>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                Cron runs daily at 9:00 AM UTC. Weekly/monthly settings coming soon.
-              </p>
+              />
             </div>
 
             <div className="space-y-2">
@@ -194,7 +145,7 @@ export default function AdminBlogSettingsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="file">BLOG_TOPICS.md File</SelectItem>
+                  <SelectItem value="docs/BLOG_TOPICS.md">BLOG_TOPICS.md File</SelectItem>
                   <SelectItem value="queue">Generation Queue</SelectItem>
                 </SelectContent>
               </Select>

@@ -40,12 +40,13 @@ const settingsItems = [
   { title: "Plans", url: "/admin/plans", icon: Settings },
   { title: "AI Samples", url: "/admin/ai-samples", icon: Sparkles },
   { title: "AI Demo Config", url: "/admin/ai-demo-config", icon: MonitorPlay },
-  { title: "AI Blog Generator", url: "/admin/blog-sample", icon: Sparkles },
   { title: "Security", url: "/admin/security", icon: Shield },
 ];
 
 const blogItems = [
+  { title: "Blog Generator", url: "/admin/blog-generator", icon: Sparkles },
   { title: "Blog Posts", url: "/admin/blog-posts", icon: FileText },
+  { title: "Quick Generate", url: "/admin/blog-sample", icon: FileCheck },
   { title: "Categories", url: "/admin/blog-categories", icon: FileText },
   { title: "Settings", url: "/admin/blog-settings", icon: Settings },
 ];

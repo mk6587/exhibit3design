@@ -416,38 +416,26 @@ export type Database = {
       }
       blog_settings: {
         Row: {
+          auto_approve_enabled: boolean
           auto_generate_enabled: boolean
           created_at: string
-          generation_frequency: string
           id: string
-          posts_per_page: number
-          seo_settings: Json | null
-          site_title: string
-          tagline: string | null
           topics_source: string
           updated_at: string
         }
         Insert: {
+          auto_approve_enabled?: boolean
           auto_generate_enabled?: boolean
           created_at?: string
-          generation_frequency?: string
           id?: string
-          posts_per_page?: number
-          seo_settings?: Json | null
-          site_title?: string
-          tagline?: string | null
           topics_source?: string
           updated_at?: string
         }
         Update: {
+          auto_approve_enabled?: boolean
           auto_generate_enabled?: boolean
           created_at?: string
-          generation_frequency?: string
           id?: string
-          posts_per_page?: number
-          seo_settings?: Json | null
-          site_title?: string
-          tagline?: string | null
           topics_source?: string
           updated_at?: string
         }

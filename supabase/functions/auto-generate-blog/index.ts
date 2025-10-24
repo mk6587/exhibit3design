@@ -27,7 +27,7 @@ serve(async (req) => {
     // Step 1: Check if auto-generation is enabled
     const { data: settings, error: settingsError } = await supabase
       .from('blog_settings')
-      .select('auto_generate_enabled, topics_source')
+      .select('auto_generate_enabled, auto_approve_enabled')
       .single();
 
     if (settingsError) {
@@ -45,20 +45,7 @@ serve(async (req) => {
       });
     }
 
-    // Step 2: Load topics from BLOG_TOPICS.md
-    console.log('Loading topics from BLOG_TOPICS.md...');
-    const topicsFileUrl = `${SUPABASE_URL}/storage/v1/object/public/docs/BLOG_TOPICS.md`;
-    
-    // For now, use hardcoded topics until file storage is set up
-    const topics = [
-      "How AI is transforming exhibition stand design",
-      "Top 10 benefits of using AI in booth design",
-      "AI vs. traditional 3D design — what's faster and smarter?",
-      "How AI saves hours in trade show visualization",
-      "AI exhibition design workflow: from idea to render",
-    ];
-
-    // Step 3: Check how many posts have been generated today
+    // Step 2: Check how many posts have been generated today
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
@@ -82,7 +69,7 @@ serve(async (req) => {
       });
     }
 
-    // Step 4: Get existing post titles to avoid duplicates
+    // Step 3: Get existing post titles to avoid duplicates
     const { data: existingPosts, error: existingError } = await supabase
       .from('blog_posts')
       .select('generated_keyword');
@@ -94,8 +81,19 @@ serve(async (req) => {
 
     const usedKeywords = new Set(existingPosts?.map(p => p.generated_keyword) || []);
 
+    // Step 4: Load topics from BLOG_TOPICS.md - hardcoded list
+    const topics = [
+      // A. AI Exhibition Design (Core Content)
+      { keyword: "How AI is transforming exhibition stand design", category: "A" },
+      { keyword: "Top 10 benefits of using AI in booth design", category: "A" },
+      { keyword: "AI vs. traditional 3D design — what's faster and smarter?", category: "A" },
+      { keyword: "How AI saves hours in trade show visualization", category: "A" },
+      { keyword: "AI exhibition design workflow: from idea to render", category: "A" },
+      // Add more topics as needed - this is just a sample
+    ];
+
     // Step 5: Find an unused topic
-    const availableTopics = topics.filter(topic => !usedKeywords.has(topic));
+    const availableTopics = topics.filter(topic => !usedKeywords.has(topic.keyword));
     
     if (availableTopics.length === 0) {
       console.log('No unused topics available');
@@ -109,28 +107,23 @@ serve(async (req) => {
 
     // Select a random topic from available ones
     const selectedTopic = availableTopics[Math.floor(Math.random() * availableTopics.length)];
-    console.log('Selected topic:', selectedTopic);
+    console.log('Selected topic:', selectedTopic.keyword);
 
     // Step 6: Call the generate-blog-post function
-    const generateResponse = await fetch(`${SUPABASE_URL}/functions/v1/generate-blog-post`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        keyword: selectedTopic,
-        categoryIds: [] // Can be enhanced to auto-assign categories
-      })
+    const generateResponse = await supabase.functions.invoke('generate-blog-post', {
+      body: {
+        keyword: selectedTopic.keyword,
+        categoryIds: [], // Can be enhanced to auto-assign categories based on topic.category
+        autoApprove: settings.auto_approve_enabled
+      }
     });
 
-    if (!generateResponse.ok) {
-      const errorText = await generateResponse.text();
-      console.error('Blog generation failed:', errorText);
-      throw new Error(`Blog generation failed: ${errorText}`);
+    if (generateResponse.error) {
+      console.error('Blog generation failed:', generateResponse.error);
+      throw new Error(`Blog generation failed: ${JSON.stringify(generateResponse.error)}`);
     }
 
-    const result = await generateResponse.json();
+    const result = generateResponse.data;
     console.log('Blog post generated successfully:', result);
 
     return new Response(JSON.stringify({

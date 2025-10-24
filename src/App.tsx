@@ -64,6 +64,7 @@ const AdminSecurityPage = lazy(() => lazyRetry(() => import("./pages/AdminSecuri
 const BlogPage = lazy(() => lazyRetry(() => import("./pages/BlogPage")));
 const BlogPostPage = lazy(() => lazyRetry(() => import("./pages/BlogPostPage")));
 const AdminBlogSamplePage = lazy(() => lazyRetry(() => import("./pages/AdminBlogSamplePage")));
+const AdminBlogGeneratorPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogGeneratorPage")));
 const AdminBlogSettingsPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogSettingsPage")));
 const AdminBlogCategoriesPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogCategoriesPage")));
 const AdminBlogPostsPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogPostsPage")));
@@ -180,6 +181,11 @@ const App = () => {
                         <Route path="/admin/blog-sample" element={
                           <ProtectedAdminRoute>
                             <AdminBlogSamplePage />
+                          </ProtectedAdminRoute>
+                        } />
+                        <Route path="/admin/blog-generator" element={
+                          <ProtectedAdminRoute>
+                            <AdminBlogGeneratorPage />
                           </ProtectedAdminRoute>
                         } />
                         <Route path="/admin/blog-settings" element={
