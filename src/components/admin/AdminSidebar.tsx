@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
+import { useState } from "react";
 import {
   LayoutDashboard,
   Crown,
@@ -11,44 +12,58 @@ import {
   Shield,
   MonitorPlay,
   FileCheck,
+  ChevronDown,
+  ChevronRight,
+  Newspaper,
 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-const mainItems = [
-  { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
-  { title: "Products", url: "/admin/products", icon: Package },
-  { title: "File Requests", url: "/admin/file-requests", icon: FileText },
-  { title: "Subscriptions", url: "/admin/subscriptions", icon: Crown },
-  { title: "Users", url: "/admin/users", icon: Users },
-];
-
-const settingsItems = [
-  { title: "Plans", url: "/admin/plans", icon: Settings },
-  { title: "AI Samples", url: "/admin/ai-samples", icon: Sparkles },
-  { title: "AI Demo Config", url: "/admin/ai-demo-config", icon: MonitorPlay },
-  { title: "Security", url: "/admin/security", icon: Shield },
-];
-
-const blogItems = [
-  { title: "Blog Generator", url: "/admin/blog-generator", icon: Sparkles },
-  { title: "Blog Posts", url: "/admin/blog-posts", icon: FileText },
-  { title: "Quick Generate", url: "/admin/blog-sample", icon: FileCheck },
-  { title: "Categories", url: "/admin/blog-categories", icon: FileText },
-  { title: "Settings", url: "/admin/blog-settings", icon: Settings },
+const menuStructure = [
+  {
+    title: "Main",
+    icon: LayoutDashboard,
+    children: [
+      { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
+      { title: "Products", url: "/admin/products", icon: Package },
+      { title: "File Requests", url: "/admin/file-requests", icon: FileText },
+      { title: "Subscriptions", url: "/admin/subscriptions", icon: Crown },
+      { title: "Users", url: "/admin/users", icon: Users },
+    ],
+  },
+  {
+    title: "Blog Academy",
+    icon: Newspaper,
+    children: [
+      { title: "Blog Generator", url: "/admin/blog-generator", icon: Sparkles },
+      { title: "Blog Posts", url: "/admin/blog-posts", icon: FileText },
+      { title: "Quick Generate", url: "/admin/blog-sample", icon: FileCheck },
+      { title: "Categories", url: "/admin/blog-categories", icon: FileText },
+      { title: "Settings", url: "/admin/blog-settings", icon: Settings },
+    ],
+  },
+  {
+    title: "Settings",
+    icon: Settings,
+    children: [
+      { title: "Plans", url: "/admin/plans", icon: Settings },
+      { title: "AI Samples", url: "/admin/ai-samples", icon: Sparkles },
+      { title: "AI Demo Config", url: "/admin/ai-demo-config", icon: MonitorPlay },
+      { title: "Security", url: "/admin/security", icon: Shield },
+    ],
+  },
 ];
 
 export function AdminSidebar() {
@@ -59,12 +74,37 @@ export function AdminSidebar() {
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
 
-  const isActive = (path: string) => currentPath === path;
+  // State to track which parent sections are open
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
+    // Initialize with the section that contains the current route open
+    const initial: Record<string, boolean> = {};
+    menuStructure.forEach(section => {
+      const hasActiveChild = section.children.some(child => 
+        child.url === currentPath || (child.url === "/admin" && currentPath === "/admin")
+      );
+      initial[section.title] = hasActiveChild || section.title === "Main";
+    });
+    return initial;
+  });
+
+  const isActive = (path: string) => {
+    if (path === "/admin") {
+      return currentPath === "/admin";
+    }
+    return currentPath === path;
+  };
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
     isActive
       ? "bg-primary/10 text-primary font-medium hover:bg-primary/20"
       : "hover:bg-muted/50";
+
+  const toggleSection = (title: string) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [title]: !prev[title]
+    }));
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -88,59 +128,63 @@ export function AdminSidebar() {
           )}
         </div>
 
-        {/* Main Navigation */}
+        {/* Hierarchical Navigation */}
         <SidebarGroup>
-          {!collapsed && <SidebarGroupLabel>Main</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={item.url} end className={getNavCls}>
-                      <item.icon className={`h-4 w-4 ${collapsed ? '' : 'mr-2'}`} />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+              {menuStructure.map((section) => {
+                const isOpen = openSections[section.title];
+                const hasActiveChild = section.children.some(child => isActive(child.url));
 
-        {/* Blog Academy */}
-        <SidebarGroup>
-          {!collapsed && <SidebarGroupLabel>Blog Academy</SidebarGroupLabel>}
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {blogItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={item.url} className={getNavCls}>
-                      <item.icon className={`h-4 w-4 ${collapsed ? '' : 'mr-2'}`} />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+                return (
+                  <Collapsible
+                    key={section.title}
+                    open={isOpen}
+                    onOpenChange={() => toggleSection(section.title)}
+                  >
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton
+                          className={`w-full justify-between ${
+                            hasActiveChild ? 'bg-primary/5 font-medium' : ''
+                          }`}
+                        >
+                          <div className="flex items-center">
+                            <section.icon className={`h-4 w-4 ${collapsed ? '' : 'mr-2'}`} />
+                            {!collapsed && <span>{section.title}</span>}
+                          </div>
+                          {!collapsed && (
+                            isOpen ? (
+                              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            )
+                          )}
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
 
-        {/* Settings Navigation */}
-        <SidebarGroup>
-          {!collapsed && <SidebarGroupLabel>Settings</SidebarGroupLabel>}
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {settingsItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={item.url} className={getNavCls}>
-                      <item.icon className={`h-4 w-4 ${collapsed ? '' : 'mr-2'}`} />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                      <CollapsibleContent>
+                        <SidebarMenu className="ml-4 border-l border-border">
+                          {section.children.map((item) => (
+                            <SidebarMenuItem key={item.title}>
+                              <SidebarMenuButton asChild>
+                                <NavLink 
+                                  to={item.url} 
+                                  end={item.url === "/admin"}
+                                  className={getNavCls}
+                                >
+                                  <item.icon className={`h-4 w-4 ${collapsed ? '' : 'mr-2'}`} />
+                                  {!collapsed && <span>{item.title}</span>}
+                                </NavLink>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          ))}
+                        </SidebarMenu>
+                      </CollapsibleContent>
+                    </SidebarMenuItem>
+                  </Collapsible>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
