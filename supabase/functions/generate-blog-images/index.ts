@@ -22,14 +22,31 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch blog posts without featured images
-    const { data: posts, error: fetchError } = await supabase
-      .from('blog_posts')
-      .select('id, title, meta_description, slug')
-      .eq('status', 'published')
-      .is('featured_image_url', null);
+    // Check if this is a single post request (from trigger) or batch request
+    const requestBody = await req.json().catch(() => ({}));
+    let posts;
 
-    if (fetchError) throw fetchError;
+    if (requestBody.post_id) {
+      // Single post request from trigger
+      const { data: post, error: fetchError } = await supabase
+        .from('blog_posts')
+        .select('id, title, meta_description, slug')
+        .eq('id', requestBody.post_id)
+        .single();
+
+      if (fetchError) throw fetchError;
+      posts = post ? [post] : [];
+    } else {
+      // Batch request from admin
+      const { data: postsData, error: fetchError } = await supabase
+        .from('blog_posts')
+        .select('id, title, meta_description, slug')
+        .eq('status', 'published')
+        .is('featured_image_url', null);
+
+      if (fetchError) throw fetchError;
+      posts = postsData || [];
+    }
 
     if (!posts || posts.length === 0) {
       return new Response(
