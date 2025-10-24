@@ -1,156 +1,287 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Sparkles, Image as ImageIcon, FileText, Link2, Target } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2, Sparkles, Image as ImageIcon, FileText, Link2, Target, Save, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-interface BlogSample {
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+interface BlogPost {
   title: string;
+  slug: string;
   metaDescription: string;
   content: string;
+  excerpt: string;
   keywords: string[];
   internalLinks: Array<{ text: string; url: string; placement: string }>;
   ctas: Array<{ text: string; url: string; placement: string }>;
   wordCount: number;
   readabilityScore: number;
-  featuredImage: string | null;
-  generatedAt: string;
-  keyword: string;
-  qualityScore: number;
+  featuredImageUrl: string | null;
 }
 
 export default function AdminBlogSamplePage() {
-  const [keyword, setKeyword] = useState("Top 10 benefits of using AI in booth design");
+  const [keyword, setKeyword] = useState("");
+  const [customInstructions, setCustomInstructions] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [sample, setSample] = useState<BlogSample | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [generatedPost, setGeneratedPost] = useState<BlogPost | null>(null);
 
-  const generateSample = async () => {
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    const { data, error } = await supabase
+      .from('blog_categories')
+      .select('*')
+      .order('name');
+    
+    if (error) {
+      console.error('Error fetching categories:', error);
+      return;
+    }
+    
+    setCategories(data || []);
+  };
+
+  const generatePost = async () => {
     if (!keyword.trim()) {
-      toast.error("Please enter a keyword");
+      toast.error("Please enter a keyword or topic");
       return;
     }
 
     setIsGenerating(true);
-    setSample(null);
+    setGeneratedPost(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke('generate-sample-blog', {
-        body: { keyword: keyword.trim() }
+      const { data, error } = await supabase.functions.invoke('generate-blog-post', {
+        body: { 
+          keyword: keyword.trim(),
+          categoryIds: selectedCategories,
+          customInstructions: customInstructions.trim() || undefined
+        }
       });
 
       if (error) throw error;
 
-      setSample(data);
-      toast.success("Sample blog post generated successfully!");
+      if (data?.post) {
+        setGeneratedPost(data.post);
+        toast.success("Blog post generated successfully!");
+      }
     } catch (error) {
       console.error('Generation error:', error);
-      toast.error(error instanceof Error ? error.message : "Failed to generate sample");
+      toast.error(error instanceof Error ? error.message : "Failed to generate blog post");
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const getQualityColor = (score: number) => {
-    if (score >= 90) return "bg-green-500";
-    if (score >= 75) return "bg-blue-500";
-    if (score >= 60) return "bg-yellow-500";
-    return "bg-red-500";
+  const savePost = async () => {
+    if (!generatedPost) return;
+
+    setIsSaving(true);
+
+    try {
+      // The post is already saved in the database by the edge function
+      // This button just confirms and shows success
+      toast.success("Blog post is ready to publish! Go to Blog Posts to manage it.");
+      
+      // Reset form
+      setKeyword("");
+      setCustomInstructions("");
+      setSelectedCategories([]);
+      setGeneratedPost(null);
+    } catch (error) {
+      console.error('Save error:', error);
+      toast.error("Failed to confirm post save");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const toggleCategory = (categoryId: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(categoryId)
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    );
   };
 
   return (
     <AdminLayout>
       <div className="p-6 max-w-6xl mx-auto space-y-6">
         <div>
-          <h1 className="text-3xl font-bold mb-2">AI Blog Content Sample Generator</h1>
+          <h1 className="text-3xl font-bold mb-2">AI Blog Content Generator</h1>
           <p className="text-muted-foreground">
-            Test the automated blog generation system by creating a sample article. This will show you exactly what content the AI will produce.
+            Generate complete, SEO-optimized blog posts with AI-generated content and featured images
           </p>
         </div>
 
+        <Alert>
+          <Sparkles className="h-4 w-4" />
+          <AlertDescription>
+            Each generated post is automatically saved as a draft. You can publish it from the Blog Posts page.
+          </AlertDescription>
+        </Alert>
+
         <Card>
           <CardHeader>
-            <CardTitle>Generate Sample Article</CardTitle>
+            <CardTitle>Generate New Blog Post</CardTitle>
             <CardDescription>
-              Enter a keyword or topic to generate a complete blog post with AI-generated content and image
+              Enter a topic and optional instructions to create a full blog article with AI
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex gap-2">
+            <div className="space-y-2">
+              <Label htmlFor="keyword">Topic / Keyword *</Label>
               <Input
-                placeholder="e.g., Exhibition Stand Design Ideas for 2025"
+                id="keyword"
+                placeholder="e.g., Top 10 Exhibition Stand Design Trends for 2025"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && generateSample()}
                 disabled={isGenerating}
               />
-              <Button 
-                onClick={generateSample}
-                disabled={isGenerating}
-                className="whitespace-nowrap"
-              >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Generate Sample
-                  </>
-                )}
-              </Button>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="instructions">Custom Instructions (Optional)</Label>
+              <Textarea
+                id="instructions"
+                placeholder="e.g., Focus on sustainability, include case studies, target event organizers..."
+                value={customInstructions}
+                onChange={(e) => setCustomInstructions(e.target.value)}
+                disabled={isGenerating}
+                rows={3}
+              />
+            </div>
+
+            {categories.length > 0 && (
+              <div className="space-y-2">
+                <Label>Categories (Optional)</Label>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((category) => (
+                    <div key={category.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`cat-${category.id}`}
+                        checked={selectedCategories.includes(category.id)}
+                        onCheckedChange={() => toggleCategory(category.id)}
+                        disabled={isGenerating}
+                      />
+                      <label
+                        htmlFor={`cat-${category.id}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {category.name}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <Button 
+              onClick={generatePost}
+              disabled={isGenerating || !keyword.trim()}
+              className="w-full"
+              size="lg"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Generating... (30-60 seconds)
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate Blog Post
+                </>
+              )}
+            </Button>
             
             {isGenerating && (
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p>⏳ This may take 30-60 seconds...</p>
-                <p>🤖 AI is writing a 1500+ word article</p>
-                <p>🎨 AI is generating a featured image</p>
-                <p>🔗 AI is placing CTAs and internal links</p>
+              <div className="text-sm text-muted-foreground space-y-2 p-4 bg-muted rounded-lg">
+                <p className="font-medium">⏳ Please wait while AI creates your content...</p>
+                <p>📝 Writing 1500+ word article</p>
+                <p>🎨 Generating featured image</p>
+                <p>🔗 Adding CTAs and internal links</p>
+                <p>✅ Optimizing for SEO</p>
               </div>
             )}
           </CardContent>
         </Card>
 
-        {sample && (
+        {generatedPost && (
           <div className="space-y-6">
-            {/* Quality Score Card */}
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              <Button 
+                onClick={savePost}
+                disabled={isSaving}
+                size="lg"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Confirm & Continue
+                  </>
+                )}
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => window.open('/admin/blog-posts', '_blank')}
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                View All Posts
+              </Button>
+            </div>
+
+            {/* Quality Metrics */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Content Quality Analysis</span>
-                  <Badge className={getQualityColor(sample.qualityScore)}>
-                    Score: {sample.qualityScore}/100
-                  </Badge>
-                </CardTitle>
+                <CardTitle>Content Metrics</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <div className="text-2xl font-bold">{sample.wordCount}</div>
+                  <div className="text-2xl font-bold">{generatedPost.wordCount}</div>
                   <div className="text-sm text-muted-foreground">Words</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold">{sample.internalLinks.length}</div>
+                  <div className="text-2xl font-bold">{generatedPost.internalLinks.length}</div>
                   <div className="text-sm text-muted-foreground">Internal Links</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold">{sample.ctas.length}</div>
+                  <div className="text-2xl font-bold">{generatedPost.ctas.length}</div>
                   <div className="text-sm text-muted-foreground">CTAs</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold">{sample.readabilityScore}</div>
+                  <div className="text-2xl font-bold">{generatedPost.readabilityScore}</div>
                   <div className="text-sm text-muted-foreground">Readability</div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Featured Image */}
-            {sample.featuredImage && (
+            {generatedPost.featuredImageUrl && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -160,9 +291,9 @@ export default function AdminBlogSamplePage() {
                 </CardHeader>
                 <CardContent>
                   <img 
-                    src={sample.featuredImage} 
-                    alt={sample.title}
-                    className="w-full rounded-lg"
+                    src={generatedPost.featuredImageUrl} 
+                    alt={generatedPost.title}
+                    className="w-full rounded-lg max-h-96 object-cover"
                   />
                 </CardContent>
               </Card>
@@ -178,79 +309,75 @@ export default function AdminBlogSamplePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h2 className="text-2xl font-bold mb-2">{sample.title}</h2>
-                  <p className="text-muted-foreground italic">{sample.metaDescription}</p>
+                  <h2 className="text-2xl font-bold mb-2">{generatedPost.title}</h2>
+                  <p className="text-muted-foreground italic mb-4">{generatedPost.metaDescription}</p>
+                  {generatedPost.excerpt && (
+                    <p className="text-sm text-muted-foreground">{generatedPost.excerpt}</p>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  {sample.keywords.map((kw, i) => (
+                  {generatedPost.keywords.map((kw, i) => (
                     <Badge key={i} variant="outline">{kw}</Badge>
                   ))}
                 </div>
 
                 <div 
-                  className="prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: sample.content }}
+                  className="prose prose-sm max-w-none dark:prose-invert"
+                  dangerouslySetInnerHTML={{ __html: generatedPost.content }}
                 />
               </CardContent>
             </Card>
 
             {/* CTAs */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="w-5 h-5" />
-                  Call-to-Actions ({sample.ctas.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {sample.ctas.map((cta, i) => (
-                    <div key={i} className="flex items-center gap-2 p-2 bg-muted rounded">
-                      <Badge variant="secondary">{i + 1}</Badge>
-                      <span className="font-medium">{cta.text}</span>
-                      <span className="text-muted-foreground">→</span>
-                      <code className="text-sm">{cta.url}</code>
-                      <span className="text-xs text-muted-foreground ml-auto">{cta.placement}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            {generatedPost.ctas.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="w-5 h-5" />
+                    Call-to-Actions ({generatedPost.ctas.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {generatedPost.ctas.map((cta, i) => (
+                      <div key={i} className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                        <Badge variant="secondary">{i + 1}</Badge>
+                        <span className="font-medium">{cta.text}</span>
+                        <span className="text-muted-foreground">→</span>
+                        <code className="text-sm">{cta.url}</code>
+                        <span className="text-xs text-muted-foreground ml-auto">{cta.placement}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Internal Links */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Link2 className="w-5 h-5" />
-                  Internal Links ({sample.internalLinks.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {sample.internalLinks.map((link, i) => (
-                    <div key={i} className="flex items-center gap-2 p-2 bg-muted rounded">
-                      <Badge variant="outline">{i + 1}</Badge>
-                      <span>{link.text}</span>
-                      <span className="text-muted-foreground">→</span>
-                      <code className="text-sm">{link.url}</code>
-                      <span className="text-xs text-muted-foreground ml-auto">{link.placement}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Generation Metadata */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-sm text-muted-foreground space-y-1">
-                  <p><strong>Generated:</strong> {new Date(sample.generatedAt).toLocaleString()}</p>
-                  <p><strong>Keyword:</strong> {sample.keyword}</p>
-                  <p><strong>Model:</strong> google/gemini-2.5-flash (text) + google/gemini-2.5-flash-image-preview (image)</p>
-                </div>
-              </CardContent>
-            </Card>
+            {generatedPost.internalLinks.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Link2 className="w-5 h-5" />
+                    Internal Links ({generatedPost.internalLinks.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {generatedPost.internalLinks.map((link, i) => (
+                      <div key={i} className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                        <Badge variant="outline">{i + 1}</Badge>
+                        <span>{link.text}</span>
+                        <span className="text-muted-foreground">→</span>
+                        <code className="text-sm">{link.url}</code>
+                        <span className="text-xs text-muted-foreground ml-auto">{link.placement}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         )}
       </div>
