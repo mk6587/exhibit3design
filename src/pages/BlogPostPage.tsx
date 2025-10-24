@@ -205,9 +205,20 @@ export default function BlogPostPage() {
             />
           </div>
 
+          {/* Featured Image */}
+          {post.featured_image_url && (
+            <div className="max-w-4xl mx-auto mb-8">
+              <img
+                src={post.featured_image_url}
+                alt={post.title}
+                className="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg"
+              />
+            </div>
+          )}
+
           {/* Article Header */}
           <header className="max-w-4xl mx-auto mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="text-2xl font-bold mb-6">
               {post.title}
             </h1>
             
@@ -270,21 +281,10 @@ export default function BlogPostPage() {
             </div>
           </header>
 
-          {/* Featured Image */}
-          {post.featured_image_url && (
-            <div className="max-w-4xl mx-auto mb-12">
-              <img
-                src={post.featured_image_url}
-                alt={post.title}
-                className="w-full rounded-lg shadow-lg"
-              />
-            </div>
-          )}
-
           {/* Article Content */}
           <div className="max-w-4xl mx-auto">
             <div 
-              className="prose prose-lg max-w-none"
+              className="prose prose-lg max-w-none [&>p]:mb-4 [&>h1]:mb-4 [&>h2]:mb-4 [&>h3]:mb-4 [&>ul]:mb-4 [&>ol]:mb-4"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
           </div>
@@ -338,10 +338,10 @@ export default function BlogPostPage() {
                   Try our AI-powered design tools and transform your exhibition concepts into reality
                 </p>
                 <div className="flex gap-4 justify-center">
-                  <Button asChild>
+                  <Button asChild className="underline decoration-2 underline-offset-4">
                     <Link to="/ai-samples">Try AI Studio</Link>
                   </Button>
-                  <Button variant="outline" asChild>
+                  <Button variant="outline" asChild className="underline decoration-2 underline-offset-4">
                     <Link to="/products">Browse Designs</Link>
                   </Button>
                 </div>
