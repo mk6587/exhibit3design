@@ -176,18 +176,30 @@ export default function AdminBlogGeneratorPage() {
   };
 
   const updateSettings = async () => {
-    const { error } = await supabase
-      .from('blog_settings')
-      .update({
-        auto_generate_enabled: autoGenerate,
-        auto_approve_enabled: autoApprove
-      })
-      .eq('id', (await supabase.from('blog_settings').select('id').single()).data?.id);
+    try {
+      // First, get the settings id
+      const { data: settingsData, error: fetchError } = await supabase
+        .from('blog_settings')
+        .select('id')
+        .single();
 
-    if (error) {
-      toast({ title: "Failed to update settings", variant: "destructive" });
-    } else {
+      if (fetchError) throw fetchError;
+
+      // Then update the settings
+      const { error: updateError } = await supabase
+        .from('blog_settings')
+        .update({
+          auto_generate_enabled: autoGenerate,
+          auto_approve_enabled: autoApprove
+        })
+        .eq('id', settingsData.id);
+
+      if (updateError) throw updateError;
+
       toast({ title: "Settings updated successfully" });
+    } catch (error) {
+      console.error('Settings update error:', error);
+      toast({ title: "Failed to update settings", variant: "destructive" });
     }
   };
 
