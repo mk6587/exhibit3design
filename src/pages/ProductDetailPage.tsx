@@ -28,25 +28,24 @@ import { useAuth } from "@/contexts/AuthContext";
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const { getProductById, loading } = useProducts();
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("specifications");
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   
   const product = getProductById(parseInt(id!));
-  
-  // Check if user has free trial (no active subscription)
-  const [hasFreeAccess, setHasFreeAccess] = useState(false);
   
   useEffect(() => {
     const checkSubscription = async () => {
       if (!user) {
-        setHasFreeAccess(false);
+        setHasActiveSubscription(false);
         return;
       }
       
       const supabase = (await import("@/integrations/supabase/client")).supabase;
       const { data } = await supabase.rpc('get_active_subscription', { p_user_id: user.id });
       
-      setHasFreeAccess(!data || data.length === 0);
+      // User has active subscription if data exists and has a plan
+      setHasActiveSubscription(data && data.length > 0);
     };
     
     checkSubscription();
@@ -177,26 +176,35 @@ const ProductDetailPage = () => {
             
             {/* CTA Buttons */}
             <div className="space-y-3">
-              {hasFreeAccess && user ? (
-                <SelectFileButton 
-                  productId={product.id}
-                  productName={product.title}
-                />
+              {hasActiveSubscription && user ? (
+                <>
+                  <SelectFileButton 
+                    productId={product.id}
+                    productName={product.title}
+                  />
+                  <Button asChild size="lg" variant="outline" className="w-full">
+                    <Link to="/ai-samples">
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      See AI Customization Examples
+                    </Link>
+                  </Button>
+                </>
               ) : (
-                <TryInAIStudioButton 
-                  productId={product.id}
-                  productTitle={product.title}
-                  variant="default"
-                  size="lg"
-                  className="w-full"
-                />
+                <>
+                  <Button asChild size="lg" className="w-full">
+                    <Link to="/pricing">
+                      <Lock className="mr-2 h-4 w-4" />
+                      Get Premium
+                    </Link>
+                  </Button>
+                  <Button asChild size="lg" variant="outline" className="w-full">
+                    <Link to="/ai-samples">
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      See AI Customization Examples
+                    </Link>
+                  </Button>
+                </>
               )}
-              <Button asChild size="lg" variant="outline" className="w-full">
-                <Link to="/ai-samples">
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  See AI Customization Examples
-                </Link>
-              </Button>
             </div>
           </div>
         </div>
