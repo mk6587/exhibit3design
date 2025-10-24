@@ -55,15 +55,14 @@ const ProductCard = ({
             }} 
           />
           
-          {/* Premium Badge - Always visible for non-sample designs */}
+          {/* Premium Badge - Crown icon for non-sample designs */}
           {isPremium && (
             <div className="absolute top-2 right-2 z-10">
               <Badge 
                 variant="secondary"
-                className="bg-amber-500/90 hover:bg-amber-500 text-white text-xs font-semibold px-2 py-1 rounded-sm border-0 shadow-lg backdrop-blur-sm flex items-center gap-1"
+                className="bg-amber-500/90 hover:bg-amber-500 text-white p-1.5 rounded-sm border-0 shadow-lg backdrop-blur-sm"
               >
-                <Crown className="h-3 w-3" />
-                PREMIUM
+                <Crown className="h-3.5 w-3.5" />
               </Badge>
             </div>
           )}
