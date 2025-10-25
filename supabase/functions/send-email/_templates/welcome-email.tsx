@@ -52,7 +52,7 @@ export const WelcomeEmail = ({
             <ul style={benefitsList}>
               <li style={benefitItem}>👥 Add realistic visitors to your exhibition booth designs</li>
               <li style={benefitItem}>✨ Magic edit your booth design with AI-powered modifications</li>
-              <li style={benefitItem}>🎨 Transform sketches into photorealistic 3D booth renders</li>
+              <li style={benefitItem}>🎨 Add eye-catching graphic banners to your booth instantly</li>
             </ul>
             
             <Link
