@@ -50,9 +50,9 @@ export const WelcomeEmail = ({
               Your 2 free AI tokens are waiting! Use them to:
             </Text>
             <ul style={benefitsList}>
-              <li style={benefitItem}>✨ Generate custom exhibition stand designs</li>
-              <li style={benefitItem}>🎨 Transform your ideas into professional 3D renders</li>
-              <li style={benefitItem}>⚡ Get instant design variations and concepts</li>
+              <li style={benefitItem}>👥 Add realistic visitors to your exhibition booth designs</li>
+              <li style={benefitItem}>✨ Magic edit your booth design with AI-powered modifications</li>
+              <li style={benefitItem}>🎨 Transform sketches into photorealistic 3D booth renders</li>
             </ul>
             
             <Link
