@@ -2,29 +2,16 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import React from 'npm:react@18.3.1';
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0';
 import { renderAsync } from 'npm:@react-email/components@0.0.22';
+import { Resend } from 'npm:resend@4.0.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// SMTP configuration from Supabase secrets
-const smtpConfig = {
-  host: Deno.env.get('SMTP_HOST') as string,
-  port: parseInt(Deno.env.get('SMTP_PORT') || '587'),
-  username: Deno.env.get('SMTP_USER') as string,
-  password: Deno.env.get('SMTP_PASSWORD') as string,
-  fromEmail: Deno.env.get('SMTP_FROM_EMAIL') as string,
-};
-
-// Log SMTP configuration (without password) for debugging
-console.log('🔧 SMTP Configuration:', {
-  host: smtpConfig.host,
-  port: smtpConfig.port,
-  username: smtpConfig.username,
-  fromEmail: smtpConfig.fromEmail,
-  hasPassword: !!smtpConfig.password
-});
+// Initialize Resend with API key
+const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string);
+const fromEmail = 'Exhibit3Design <onboarding@resend.dev>'; // Update this to your verified domain
 
 interface EmailRequest {
   to: string | string[];
@@ -52,173 +39,37 @@ interface WebhookEmailData {
   };
 }
 
-// Convert HTML to plain text
-function htmlToPlainText(html: string): string {
-  if (!html) return '';
-  
-  return html
-    // Remove script and style tags and their content
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
-    // Replace common HTML entities
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    // Replace line breaks with newlines
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/p>/gi, '\n\n')
-    .replace(/<\/div>/gi, '\n')
-    .replace(/<\/h[1-6]>/gi, '\n\n')
-    .replace(/<\/li>/gi, '\n')
-    // Remove all remaining HTML tags
-    .replace(/<[^>]+>/g, '')
-    // Clean up extra whitespace
-    .replace(/\n\s*\n\s*\n/g, '\n\n')
-    .trim();
-}
-
-// Generate unique Message-ID
-function generateMessageId(domain: string): string {
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 15);
-  return `<${timestamp}.${random}@${domain}>`;
-}
-
-// Enhanced SMTP client using denomailer
-async function sendSMTPEmail(emailRequest: EmailRequest): Promise<void> {
-  console.log('📧 Sending email via SMTP');
-  console.log('📧 SMTP Config:', { 
-    host: smtpConfig.host, 
-    port: smtpConfig.port, 
-    username: smtpConfig.username,
-    fromEmail: smtpConfig.fromEmail 
-  });
-
-  // Validate recipients
-  const recipients = Array.isArray(emailRequest.to) ? emailRequest.to : [emailRequest.to];
-  for (const recipient of recipients) {
-    if (!recipient || !recipient.includes('@')) {
-      throw new Error(`Invalid email address: ${recipient}`);
-    }
-  }
+// Send email via Resend
+async function sendResendEmail(emailRequest: EmailRequest): Promise<void> {
+  console.log('📧 Sending email via Resend');
+  console.log('📧 To:', emailRequest.to);
+  console.log('📧 Subject:', emailRequest.subject);
 
   try {
-    const { SMTPClient } = await import('https://deno.land/x/denomailer@1.6.0/mod.ts');
+    const recipients = Array.isArray(emailRequest.to) ? emailRequest.to : [emailRequest.to];
     
-    console.log('🔌 Initializing SMTP client...');
-    const client = new SMTPClient({
-      connection: {
-        hostname: smtpConfig.host,
-        port: smtpConfig.port,
-        tls: true,
-        auth: {
-          username: smtpConfig.username,
-          password: smtpConfig.password,
-        },
-      },
-    });
-
-    console.log('📧 Connecting to SMTP server...');
-    console.log('🔐 Connection details:', {
-      hostname: smtpConfig.host,
-      port: smtpConfig.port,
-      tls: true,
-      authUser: smtpConfig.username
-    });
-
-    // Prepare recipients
-    const bccRecipients = emailRequest.bcc ? (Array.isArray(emailRequest.bcc) ? emailRequest.bcc : [emailRequest.bcc]) : [];
-    const ccRecipients = emailRequest.cc ? (Array.isArray(emailRequest.cc) ? emailRequest.cc : [emailRequest.cc]) : [];
-
-    // Validate BCC and CC recipients
-    [...bccRecipients, ...ccRecipients].forEach(email => {
-      if (email && !email.includes('@')) {
-        throw new Error(`Invalid email address: ${email}`);
-      }
-    });
-
-    // Generate plain text if not provided
-    const plainText = emailRequest.text || (emailRequest.html ? htmlToPlainText(emailRequest.html) : '');
-    
-    // Generate Message-ID
-    const domain = smtpConfig.fromEmail.split('@')[1] || 'exhibit3design.com';
-    const messageId = generateMessageId(domain);
-    
-    // Send email to all recipients
+    // Send to each recipient
     for (const recipient of recipients) {
-      try {
-        console.log(`📤 Attempting to send email to: ${recipient}`);
-        console.log(`📤 Email details:`, {
-          from: `Exhibit3Design <${smtpConfig.fromEmail}>`,
-          to: recipient,
-          subject: emailRequest.subject,
-          hasHtml: !!emailRequest.html,
-          hasPlainText: !!plainText,
-          htmlLength: emailRequest.html?.length || 0,
-          plainTextLength: plainText.length
-        });
+      const { data, error } = await resend.emails.send({
+        from: fromEmail,
+        to: recipient,
+        bcc: emailRequest.bcc ? (Array.isArray(emailRequest.bcc) ? emailRequest.bcc : [emailRequest.bcc]) : undefined,
+        cc: emailRequest.cc ? (Array.isArray(emailRequest.cc) ? emailRequest.cc : [emailRequest.cc]) : undefined,
+        subject: emailRequest.subject,
+        html: emailRequest.html || '',
+        text: emailRequest.text,
+      });
 
-        const result = await client.send({
-          from: `Exhibit3Design <${smtpConfig.fromEmail}>`,
-          to: recipient,
-          bcc: bccRecipients.length > 0 ? bccRecipients.join(', ') : undefined,
-          cc: ccRecipients.length > 0 ? ccRecipients.join(', ') : undefined,
-          subject: emailRequest.subject,
-          content: plainText,
-          html: emailRequest.html,
-          headers: {
-            'Message-ID': messageId,
-            'X-Mailer': 'Exhibit3Design Email System',
-            'Reply-To': smtpConfig.fromEmail,
-            'List-Unsubscribe': `<mailto:${smtpConfig.fromEmail}?subject=Unsubscribe>`,
-            'Precedence': 'bulk',
-            'X-Priority': '3',
-            'Importance': 'normal',
-          },
-        });
-
-        console.log(`✅ SMTP Response:`, result);
-        console.log(`✅ Email sent successfully to: ${recipient}`);
-      } catch (sendError: any) {
-        console.error(`❌ Failed to send email to ${recipient}:`, sendError);
-        console.error(`❌ Error details:`, {
-          message: sendError.message,
-          stack: sendError.stack,
-          name: sendError.name
-        });
-        throw new Error(`Failed to send email to ${recipient}: ${sendError.message}`);
+      if (error) {
+        console.error('❌ Resend error:', error);
+        throw new Error(`Failed to send email: ${error.message}`);
       }
-    }
 
-    await client.close();
-    console.log('✅ SMTP connection closed');
-    
-  } catch (error: any) {
-    console.error('❌ SMTP Error:', error);
-    console.error('❌ Full error details:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name,
-      code: error.code
-    });
-    
-    // Provide more specific error messages
-    let errorMessage = 'SMTP Error: ';
-    if (error.message?.includes('authentication') || error.message?.includes('auth')) {
-      errorMessage += 'Authentication failed. Please verify SMTP credentials.';
-    } else if (error.message?.includes('connection') || error.message?.includes('connect')) {
-      errorMessage += 'Could not connect to SMTP server. Please check server address and port.';
-    } else if (error.message?.includes('timeout')) {
-      errorMessage += 'Connection timed out. The SMTP server might be unreachable.';
-    } else if (error.message?.includes('certificate') || error.message?.includes('TLS')) {
-      errorMessage += 'TLS/SSL certificate error. Please verify the SMTP server certificate.';
-    } else {
-      errorMessage += error.message || 'Unknown error occurred';
+      console.log('✅ Email sent successfully via Resend:', data);
     }
-    
-    throw new Error(errorMessage);
+  } catch (error: any) {
+    console.error('❌ Error sending email:', error);
+    throw new Error(`Email sending failed: ${error.message}`);
   }
 }
 
@@ -431,9 +282,9 @@ const handler = async (req: Request): Promise<Response> => {
       emailRequest = await req.json();
     }
 
-    // Validate SMTP configuration
-    if (!smtpConfig.host || !smtpConfig.username || !smtpConfig.password || !smtpConfig.fromEmail) {
-      throw new Error('SMTP configuration incomplete');
+    // Validate Resend configuration
+    if (!Deno.env.get('RESEND_API_KEY')) {
+      throw new Error('RESEND_API_KEY is not configured');
     }
 
     // Render template if specified
@@ -464,8 +315,8 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('📧 Sending email to:', emailRequest.to);
     console.log('📧 Subject:', emailRequest.subject);
 
-    // Send email via SMTP
-    await sendSMTPEmail(emailRequest);
+    // Send email via Resend
+    await sendResendEmail(emailRequest);
 
     console.log('✅ Email sent successfully');
 
