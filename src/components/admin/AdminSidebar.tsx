@@ -17,6 +17,7 @@ import {
   Newspaper,
   Image,
   Eraser,
+  Mail,
 } from "lucide-react";
 import {
   Sidebar,
@@ -66,6 +67,7 @@ const menuStructure = [
       { title: "AI Samples", url: "/admin/ai-samples", icon: Sparkles },
       { title: "AI Demo Config", url: "/admin/ai-demo-config", icon: MonitorPlay },
       { title: "Security", url: "/admin/security", icon: Shield },
+      { title: "Bulk Email", url: "/admin/bulk-email", icon: Mail },
     ],
   },
 ];

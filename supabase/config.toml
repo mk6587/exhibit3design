@@ -71,3 +71,6 @@ verify_jwt = false
 
 [functions.cleanup-blog-content]
 verify_jwt = false
+
+[functions.send-bulk-welcome-emails]
+verify_jwt = true

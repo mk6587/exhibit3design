@@ -67,6 +67,7 @@ const AdminBlogSamplePage = lazy(() => lazyRetry(() => import("./pages/AdminBlog
 const AdminBlogGeneratorPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogGeneratorPage")));
 const AdminBlogSettingsPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogSettingsPage")));
 const AdminBlogCategoriesPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogCategoriesPage")));
+const AdminBulkEmailPage = lazy(() => lazyRetry(() => import("./pages/AdminBulkEmailPage")));
 const AdminBlogPostsPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogPostsPage")));
 const DynamicSitemapPage = lazy(() => lazyRetry(() => import("./pages/DynamicSitemapPage")));
 const AdminBlogPostEditPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogPostEditPage")));
@@ -218,6 +219,11 @@ const App = () => {
                         <Route path="/admin/blog-posts/:id" element={
                           <ProtectedAdminRoute>
                             <AdminBlogPostEditPage />
+                          </ProtectedAdminRoute>
+                        } />
+                        <Route path="/admin/bulk-email" element={
+                          <ProtectedAdminRoute>
+                            <AdminBulkEmailPage />
                           </ProtectedAdminRoute>
                         } />
                         <Route path="/academy" element={<BlogPage />} />
