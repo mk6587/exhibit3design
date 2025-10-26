@@ -26,7 +26,7 @@ export const SignupConfirmationEmail = ({
   user_email,
 }: SignupConfirmationEmailProps) => {
   const confirmationUrl = `${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to || `${supabase_url}/`}`
-  const aiStudioUrl = `https://fipebdkvzdrljwwxccrj.supabase.co/`
+  const aiStudioUrl = `https://www.exhibit3design.com/`
 
   return (
     <Html>

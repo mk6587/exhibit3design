@@ -67,7 +67,7 @@ const handler = async (req: Request): Promise<Response> => {
               props: {
                 user_email: user.email,
                 first_name: profile?.first_name || null,
-                ai_studio_url: 'https://fipebdkvzdrljwwxccrj.supabase.co'
+                ai_studio_url: 'https://www.exhibit3design.com'
               }
             }
           }
