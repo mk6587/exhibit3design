@@ -40,35 +40,7 @@ const CATEGORY_INSTRUCTIONS: Record<string, string> = {
   "T": "Explain how to start using Exhibit3Design AI tools. Include a 3-step guide and highlight the 2 free token offer. End with a strong CTA."
 };
 
-// All 200+ topics from BLOG_TOPICS.md
-const ALL_TOPICS = [
-  // A. AI Exhibition Design (Core Content)
-  { category: "A", keyword: "How AI is transforming exhibition stand design" },
-  { category: "A", keyword: "Top 10 benefits of using AI in booth design" },
-  { category: "A", keyword: "AI vs. traditional 3D design — what's faster and smarter?" },
-  { category: "A", keyword: "How AI saves hours in trade show visualization" },
-  { category: "A", keyword: "AI exhibition design workflow: from idea to render" },
-  { category: "A", keyword: "Common mistakes AI tools can fix in booth layouts" },
-  { category: "A", keyword: "Real-world examples of AI-powered stand design" },
-  { category: "A", keyword: "How AI improves creativity for exhibition designers" },
-  { category: "A", keyword: "Why every stand designer should try AI visualization tools" },
-  { category: "A", keyword: "How to turn your concept sketch into a 3D AI render" },
-  
-  // B. 3D Booth Design & Visualization
-  { category: "B", keyword: "How to create realistic booth renders" },
-  { category: "B", keyword: "Top 5 3D modeling software for exhibition designers" },
-  { category: "B", keyword: "How to export your SketchUp booth for AI enhancement" },
-  { category: "B", keyword: "3D lighting setup tips for booth realism" },
-  { category: "B", keyword: "Differences between 3D renders and AI renders" },
-  { category: "B", keyword: "3D modeling mistakes to avoid in trade show design" },
-  { category: "B", keyword: "How to make small booths look bigger in renders" },
-  { category: "B", keyword: "3D texturing tips for exhibition walls and floors" },
-  { category: "B", keyword: "AI vs. CGI — which gives better booth visuals?" },
-  { category: "B", keyword: "How to make exhibition booths look photorealistic" },
-  
-  // Add all remaining topics from BLOG_TOPICS.md...
-  // For brevity, showing structure - you would add all 200+ topics
-];
+import { ALL_BLOG_TOPICS as ALL_TOPICS } from '@/data/blogTopics';
 
 interface Category {
   id: string;
