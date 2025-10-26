@@ -11,7 +11,7 @@ const corsHeaders = {
 
 // Initialize Resend with API key
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string);
-const fromEmail = 'Exhibit3Design <onboarding@resend.dev>'; // Update this to your verified domain
+const fromEmail = 'Exhibit3Design <noreply@exhibit3design.com>';
 
 interface EmailRequest {
   to: string | string[];
