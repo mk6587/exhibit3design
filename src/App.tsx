@@ -234,6 +234,7 @@ const App = () => {
                         <Route path="/pricing" element={<PricingPage />} />
                         <Route path="/subscription-checkout" element={<SubscriptionCheckoutPage />} />
                         <Route path="/ai-samples" element={<AISamplesPage />} />
+                        <Route path="/ai-sample" element={<AISamplesPage />} />
                         <Route path="/403" element={<ForbiddenPage />} />
                         
                         <Route path="*" element={<NotFound />} />
