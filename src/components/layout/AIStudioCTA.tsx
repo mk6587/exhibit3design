@@ -24,7 +24,7 @@ export const AIStudioCTA = () => {
     >
       <Link to="/auth" className="flex items-center gap-1.5">
         <Sparkles className="h-4 w-4 text-purple-600 relative z-10" />
-        <div className="relative h-5 w-24 overflow-hidden">
+        <div className="relative h-5 w-32 overflow-hidden">
           <span 
             className={`absolute inset-0 flex items-center justify-start text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-all duration-500 ${
               showFreeTokens 
@@ -69,7 +69,7 @@ export const AIStudioCTAMobile = () => {
     >
       <Link to="/auth" className="flex items-center gap-1">
         <Sparkles className="h-4 w-4 text-purple-600 relative z-10" />
-        <div className="relative h-5 w-28 overflow-hidden">
+        <div className="relative h-5 w-32 overflow-hidden">
           <span 
             className={`absolute inset-0 flex items-center justify-start text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-all duration-500 ${
               showFreeTokens 
