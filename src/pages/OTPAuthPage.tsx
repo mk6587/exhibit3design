@@ -148,18 +148,12 @@ const OTPAuthPage = () => {
     
     if (result.success) {
       if (result.magicLink) {
-        // Simply redirect to the magic link - let Supabase handle the authentication
-        // The redirect will be handled by AuthContext after successful login
+        // Redirect to the magic link - AuthContext will handle the post-login redirect
+        // to any stored URL (like AI Studio) after authentication completes
         window.location.href = result.magicLink;
       } else {
-        // Check for stored redirect URL
-        const redirectUrl = sessionStorage.getItem('auth_redirect_url');
-        if (redirectUrl) {
-          sessionStorage.removeItem('auth_redirect_url');
-          window.location.href = redirectUrl;
-        } else {
-          navigate('/');
-        }
+        // Fallback: navigate to home if no magic link
+        navigate('/');
       }
     } else {
       // Show specific error messages based on error type

@@ -211,13 +211,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             window.dispatchEvent(new CustomEvent('authStateChanged'));
           }, 1000);
           
-          // Handle post-login redirect
+          // Handle post-login redirect to stored URL (e.g., AI Studio)
           setTimeout(() => {
             const redirectUrl = sessionStorage.getItem('auth_redirect_url');
             if (redirectUrl) {
               sessionStorage.removeItem('auth_redirect_url');
-              console.log('Redirecting to stored URL:', redirectUrl);
-              window.location.href = redirectUrl;
+              console.log('🔄 Redirecting authenticated user to stored URL:', redirectUrl);
+              // Use a longer delay to ensure auth state is fully established
+              setTimeout(() => {
+                window.location.href = redirectUrl;
+              }, 1000);
             }
           }, 500);
         }
