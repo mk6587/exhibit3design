@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { keyword, categoryIds } = await req.json();
+    const { keyword, categoryIds, autoApprove } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -252,7 +252,7 @@ Style: Photorealistic, modern, professional, clean lines`;
         meta_description: articleData.metaDescription,
         keywords: articleData.keywords,
         featured_image_url: featuredImageUrl,
-        status: 'draft',
+        status: autoApprove ? 'published' : 'draft',
         readability_score: articleData.readabilityScore || 0,
         quality_score: qualityScore,
         word_count: articleData.wordCount || 0,
