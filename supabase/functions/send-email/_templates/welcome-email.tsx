@@ -26,7 +26,7 @@ export const WelcomeEmail = ({
   return (
     <Html>
       <Head />
-      <Preview>Welcome to Exhibit3Design - You've Got 2 FREE AI Tokens!</Preview>
+      <Preview>Welcome to Exhibit3Design - Your FREE Starter Pack is Ready!</Preview>
       <Body style={main}>
         <Container style={container}>
           <Heading style={h1}>🎉 Welcome to Exhibit3Design, {userName}!</Heading>
@@ -37,22 +37,21 @@ export const WelcomeEmail = ({
 
           <div style={highlightBox}>
             <Text style={highlightText}>
-              <strong>🎁 You've Got 2 FREE AI Tokens!</strong>
+              <strong>🎁 Your FREE Starter Pack is Ready!</strong>
             </Text>
             <Text style={highlightSubtext}>
-              Start creating stunning exhibition designs with our AI Studio right away.
+              1 AI Token + 1 Video Result to kickstart your exhibition design journey.
             </Text>
           </div>
 
           <div style={ctaSection}>
             <Heading style={h2}>Ready to Create Something Amazing?</Heading>
             <Text style={text}>
-              Your 2 free AI tokens are waiting! Use them to:
+              Your free starter pack includes:
             </Text>
             <ul style={benefitsList}>
-              <li style={benefitItem}>👥 Add realistic visitors to your exhibition booth designs</li>
-              <li style={benefitItem}>✨ Magic edit your booth design with AI-powered modifications</li>
-              <li style={benefitItem}>🎨 Add eye-catching graphic banners to your booth instantly</li>
+              <li style={benefitItem}>🎨 <strong>1 AI Token</strong> - Add visitors, magic edit designs, or create graphic banners</li>
+              <li style={benefitItem}>🎬 <strong>1 Video Result</strong> - Generate stunning video presentations of your exhibition booth</li>
             </ul>
             
             <Link
@@ -66,8 +65,8 @@ export const WelcomeEmail = ({
 
           <div style={urgencyBox}>
             <Text style={urgencyText}>
-              💡 <strong>Pro Tip:</strong> Your free tokens are perfect for exploring what's possible. 
-              Try them out and see how AI can transform your exhibition design workflow!
+              💡 <strong>Pro Tip:</strong> Start with the AI Studio to enhance your booth design, then use your video result to create a stunning presentation. 
+              See how AI can transform your exhibition design workflow!
             </Text>
           </div>
 
