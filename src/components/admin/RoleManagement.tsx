@@ -72,10 +72,14 @@ export function RoleManagement() {
 
       if (deleteError) throw deleteError;
 
-      // Then insert new role
+      // Then insert new role - explicitly type to handle nullable user_id
       const { error: insertError } = await supabase
         .from('user_roles')
-        .insert([{ admin_agent_id: agentId, role }]);
+        .insert([{ 
+          admin_agent_id: agentId, 
+          role,
+          user_id: null as any // TypeScript workaround until types regenerate
+        }]);
 
       if (insertError) throw insertError;
     },
