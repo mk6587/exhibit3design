@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Shield, UserCog, FileEdit, Users, UserPlus } from "lucide-react";
+import { Shield, UserCog, FileEdit, Users, UserPlus, Edit } from "lucide-react";
 import { CreateAdminAgentDialog } from "./CreateAdminAgentDialog";
+import { EditAdminAgentDialog } from "./EditAdminAgentDialog";
 
 const ROLE_DESCRIPTIONS = {
   super_admin: {
@@ -37,6 +38,8 @@ export function RoleManagement() {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [newRole, setNewRole] = useState<string>("");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState<any>(null);
 
   // Fetch all admin agents with their roles
   const { data: adminUsers, isLoading } = useQuery({
@@ -150,7 +153,23 @@ export function RoleManagement() {
       <CreateAdminAgentDialog 
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ['admin-users'] })}
       />
+
+      {selectedAgent && (
+        <EditAdminAgentDialog
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          agent={{
+            id: selectedAgent.id,
+            username: selectedAgent.username,
+            email: selectedAgent.email,
+            role: selectedAgent.user_roles?.[0]?.role || 'operator',
+            is_active: selectedAgent.is_active
+          }}
+          onSuccess={() => queryClient.invalidateQueries({ queryKey: ['admin-users'] })}
+        />
+      )}
 
       {/* Role Descriptions */}
       <div className="grid gap-4 md:grid-cols-3">
@@ -214,6 +233,18 @@ export function RoleManagement() {
                       <Badge variant={agent.is_active ? "default" : "secondary"}>
                         {agent.is_active ? "Active" : "Inactive"}
                       </Badge>
+
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedAgent(agent);
+                          setEditDialogOpen(true);
+                        }}
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
+                      </Button>
                       
                       {selectedUser === agent.id ? (
                         <div className="flex items-center gap-2">

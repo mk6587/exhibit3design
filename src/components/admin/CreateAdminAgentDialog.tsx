@@ -38,6 +38,7 @@ const createAgentSchema = z.object({
 interface CreateAdminAgentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 }
 
 const ROLE_INFO = {
@@ -61,7 +62,7 @@ const ROLE_INFO = {
   }
 };
 
-export function CreateAdminAgentDialog({ open, onOpenChange }: CreateAdminAgentDialogProps) {
+export function CreateAdminAgentDialog({ open, onOpenChange, onSuccess }: CreateAdminAgentDialogProps) {
   const { hasPermission } = useAdmin();
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
@@ -115,6 +116,7 @@ export function CreateAdminAgentDialog({ open, onOpenChange }: CreateAdminAgentD
       setFormData({ username: "", email: "", password: "", role: "" });
       setErrors({});
       onOpenChange(false);
+      onSuccess?.();
     },
     onError: (error: Error) => {
       toast.error(`Failed to create agent: ${error.message}`);
