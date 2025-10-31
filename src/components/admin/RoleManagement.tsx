@@ -204,6 +204,9 @@ export function RoleManagement() {
                         <div className="text-sm text-muted-foreground">
                           {agent.email}
                         </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Role: {roleInfo?.label || 'No role assigned'}
+                        </div>
                       </div>
                     </div>
 
