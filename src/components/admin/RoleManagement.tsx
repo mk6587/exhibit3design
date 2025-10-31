@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Shield, UserCog, FileEdit, Users } from "lucide-react";
+import { Shield, UserCog, FileEdit, Users, UserPlus } from "lucide-react";
+import { CreateAdminAgentDialog } from "./CreateAdminAgentDialog";
 
 const ROLE_DESCRIPTIONS = {
   super_admin: {
@@ -35,6 +36,7 @@ export function RoleManagement() {
   const queryClient = useQueryClient();
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [newRole, setNewRole] = useState<string>("");
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   // Fetch all admin users with their roles
   const { data: adminUsers, isLoading } = useQuery({
@@ -108,15 +110,28 @@ export function RoleManagement() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <UserCog className="h-5 w-5" />
-            Role Management
-          </CardTitle>
-          <CardDescription>
-            Manage admin roles and permissions
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <UserCog className="h-5 w-5" />
+                Role Management
+              </CardTitle>
+              <CardDescription>
+                Manage admin roles and permissions
+              </CardDescription>
+            </div>
+            <Button onClick={() => setCreateDialogOpen(true)}>
+              <UserPlus className="h-4 w-4 mr-2" />
+              Create Admin Agent
+            </Button>
+          </div>
         </CardHeader>
       </Card>
+
+      <CreateAdminAgentDialog 
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      />
 
       {/* Role Descriptions */}
       <div className="grid gap-4 md:grid-cols-3">
