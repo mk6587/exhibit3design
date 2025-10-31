@@ -38,7 +38,7 @@ export function RoleManagement() {
   const [newRole, setNewRole] = useState<string>("");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
-  // Fetch all admin users with their roles
+  // Fetch all admin agents with their roles
   const { data: adminUsers, isLoading } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
@@ -49,14 +49,29 @@ export function RoleManagement() {
           username,
           email,
           is_active,
-          last_login,
-          admins!inner(id),
-          user_roles!inner(role)
+          last_login
         `)
         .order('username');
 
       if (error) throw error;
-      return data;
+
+      // Fetch roles for each agent
+      const agentsWithRoles = await Promise.all(
+        (data || []).map(async (agent) => {
+          const { data: roleData } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('admin_agent_id', agent.id)
+            .maybeSingle();
+
+          return {
+            ...agent,
+            user_roles: roleData ? [roleData] : []
+          };
+        })
+      );
+
+      return agentsWithRoles;
     },
     enabled: hasPermission('super_admin')
   });
