@@ -5,11 +5,19 @@ import { User } from '@supabase/supabase-js';
 
 export type AdminRole = 'super_admin' | 'content_creator' | 'operator';
 
+interface AdminAgent {
+  id: string;
+  email: string;
+  username: string;
+  role: AdminRole | null;
+}
+
 interface AdminContextType {
   isAuthenticated: boolean;
   isAdmin: boolean;
   adminRole: AdminRole | null;
   user: User | null;
+  adminAgent: AdminAgent | null;
   login: (email: string, password: string, captchaToken?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   checkAdminStatus: (userId: string) => Promise<boolean>;
@@ -27,6 +35,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminRole, setAdminRole] = useState<AdminRole | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [adminAgent, setAdminAgent] = useState<AdminAgent | null>(null);
   const lastActivityRef = useRef<number>(Date.now());
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -98,8 +107,10 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
       // Only handle sign out events
       if (event === 'SIGNED_OUT') {
         setUser(null);
+        setAdminAgent(null);
         setIsAdmin(false);
         setIsAuthenticated(false);
+        setAdminRole(null);
       } else if (event === 'SIGNED_IN' && session?.user) {
         // Just set the user, admin check is handled by login function
         setUser(session.user);
@@ -151,7 +162,46 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
         };
       }
 
-      // Step 2: Attempt Supabase authentication
+      // Step 2: Check if this is an admin agent
+      const { data: agentCheck } = await supabase
+        .from('admin_agents')
+        .select('id')
+        .eq('email', email)
+        .single();
+
+      if (agentCheck) {
+        // This is an admin agent - verify credentials
+        const verifyResponse = await supabase.functions.invoke('verify-admin-agent', {
+          body: { email, password }
+        });
+
+        if (verifyResponse.error || !verifyResponse.data?.success) {
+          // Log failed auth attempt
+          await supabase.functions.invoke('log-admin-attempt', {
+            body: { email, success: false }
+          });
+          return { 
+            success: false, 
+            error: verifyResponse.data?.error || 'Invalid credentials'
+          };
+        }
+
+        // Log successful login
+        await supabase.functions.invoke('log-admin-attempt', {
+          body: { email, success: true }
+        });
+
+        // Set admin agent session
+        const agent = verifyResponse.data.agent;
+        setAdminAgent(agent);
+        setAdminRole(agent.role as AdminRole);
+        setIsAdmin(true);
+        setIsAuthenticated(true);
+        lastActivityRef.current = Date.now();
+        return { success: true };
+      }
+
+      // Step 3: Fall back to regular Supabase authentication for regular users with admin roles
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -171,7 +221,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
       if (data.user) {
         setUser(data.user);
         
-        // Step 3: Check admin status
+        // Check admin status
         const adminStatus = await checkAdminStatus(data.user.id);
         
         if (!adminStatus) {
@@ -206,6 +256,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     setIsAdmin(false);
     setAdminRole(null);
     setUser(null);
+    setAdminAgent(null);
   };
 
   const hasPermission = (permission: 'super_admin' | 'content_creator' | 'operator'): boolean => {
@@ -223,7 +274,8 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
       isAuthenticated, 
       isAdmin, 
       adminRole,
-      user, 
+      user,
+      adminAgent,
       login, 
       logout, 
       checkAdminStatus, 
