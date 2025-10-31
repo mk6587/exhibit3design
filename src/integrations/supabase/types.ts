@@ -1171,6 +1171,13 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_user_admin_role: {
+        Args: { p_user_id: string }
+        Returns: {
+          is_active: boolean
+          role: string
+        }[]
+      }
       get_user_token_balance: {
         Args: { p_user_id: string }
         Returns: {
@@ -1192,6 +1199,12 @@ export type Database = {
         }
         Returns: Json
       }
+      has_any_admin_role: { Args: { p_user_id: string }; Returns: boolean }
+      has_content_creator_role: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
+      has_operator_role: { Args: { p_user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1199,6 +1212,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_super_admin_role: { Args: { p_user_id: string }; Returns: boolean }
       hash_otp_code: { Args: { otp_code: string }; Returns: string }
       insert_otp_registration: {
         Args: {
@@ -1278,7 +1292,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role: "super_admin" | "content_creator" | "operator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1406,7 +1420,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
+      app_role: ["super_admin", "content_creator", "operator", "user"],
     },
   },
 } as const

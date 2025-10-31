@@ -45,6 +45,7 @@ const menuStructure = [
       { title: "Subscriptions", url: "/admin/subscriptions", icon: Crown },
       { title: "Users", url: "/admin/users", icon: Users },
     ],
+    requiredRole: null
   },
   {
     title: "Blog Academy",
@@ -58,6 +59,7 @@ const menuStructure = [
       { title: "Categories", url: "/admin/blog-categories", icon: FileText },
       { title: "Settings", url: "/admin/blog-settings", icon: Settings },
     ],
+    requiredRole: 'content_creator'
   },
   {
     title: "Settings",
@@ -66,16 +68,18 @@ const menuStructure = [
       { title: "Plans", url: "/admin/plans", icon: Settings },
       { title: "AI Samples", url: "/admin/ai-samples", icon: Sparkles },
       { title: "AI Demo Config", url: "/admin/ai-demo-config", icon: MonitorPlay },
+      { title: "Role Management", url: "/admin/roles", icon: Shield },
       { title: "Security", url: "/admin/security", icon: Shield },
       { title: "Bulk Email", url: "/admin/bulk-email", icon: Mail },
     ],
+    requiredRole: 'super_admin'
   },
 ];
 
 export function AdminSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
-  const { logout } = useAdmin();
+  const { logout, hasPermission } = useAdmin();
   const navigate = useNavigate();
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
@@ -139,6 +143,11 @@ export function AdminSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {menuStructure.map((section) => {
+                // Check if user has permission to see this section
+                if (section.requiredRole && !hasPermission(section.requiredRole as any)) {
+                  return null;
+                }
+                
                 const isOpen = openSections[section.title];
                 const hasActiveChild = section.children.some(child => isActive(child.url));
 

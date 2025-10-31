@@ -3,14 +3,18 @@ import React, { createContext, useContext, useState, useEffect, useRef } from 'r
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
+export type AdminRole = 'super_admin' | 'content_creator' | 'operator';
+
 interface AdminContextType {
   isAuthenticated: boolean;
   isAdmin: boolean;
+  adminRole: AdminRole | null;
   user: User | null;
   login: (email: string, password: string, captchaToken?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   checkAdminStatus: (userId: string) => Promise<boolean>;
   refreshActivity: () => void;
+  hasPermission: (permission: 'super_admin' | 'content_creator' | 'operator') => boolean;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -21,6 +25,7 @@ const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
 export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminRole, setAdminRole] = useState<AdminRole | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const lastActivityRef = useRef<number>(Date.now());
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -38,7 +43,21 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
 
       // RPC returns an array, get the first result
       const result = Array.isArray(data) ? data[0] : data;
-      return !!(result?.is_admin && result?.is_active);
+      const isAdminUser = !!(result?.is_admin && result?.is_active);
+      
+      // Get admin role if user is admin
+      if (isAdminUser) {
+        const { data: roleData, error: roleError } = await supabase
+          .rpc('get_user_admin_role', { p_user_id: userId });
+
+        if (!roleError && roleData && roleData.length > 0) {
+          setAdminRole(roleData[0].role as AdminRole);
+        }
+      } else {
+        setAdminRole(null);
+      }
+      
+      return isAdminUser;
     } catch (error) {
       console.error('Error in checkAdminStatus:', error);
       return false;
@@ -185,11 +204,32 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     await supabase.auth.signOut();
     setIsAuthenticated(false);
     setIsAdmin(false);
+    setAdminRole(null);
     setUser(null);
   };
 
+  const hasPermission = (permission: 'super_admin' | 'content_creator' | 'operator'): boolean => {
+    if (!adminRole) return false;
+    
+    // Super admin has all permissions
+    if (adminRole === 'super_admin') return true;
+    
+    // Check specific role permissions
+    return adminRole === permission;
+  };
+
   return (
-    <AdminContext.Provider value={{ isAuthenticated, isAdmin, user, login, logout, checkAdminStatus, refreshActivity }}>
+    <AdminContext.Provider value={{ 
+      isAuthenticated, 
+      isAdmin, 
+      adminRole,
+      user, 
+      login, 
+      logout, 
+      checkAdminStatus, 
+      refreshActivity,
+      hasPermission
+    }}>
       {children}
     </AdminContext.Provider>
   );
