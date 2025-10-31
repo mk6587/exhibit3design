@@ -11,17 +11,20 @@ interface VerifyRequest {
 }
 
 /**
- * Verify password against PBKDF2 hash
+ * Verify password against PBKDF2 hash (matches create-admin-agent format)
+ * Format: salt (16 bytes) + hash (32 bytes) as hex string
  */
 async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
   try {
-    const [iterations, salt, hash] = storedHash.split(':');
-    
     const encoder = new TextEncoder();
-    const passwordData = encoder.encode(password);
-    const saltData = hexToUint8Array(salt);
+    const combined = storedHash.match(/.{2}/g)?.map(byte => parseInt(byte, 16)) || [];
     
-    const keyMaterial = await crypto.subtle.importKey(
+    const salt = new Uint8Array(combined.slice(0, 16));
+    const storedHashBytes = combined.slice(16);
+    
+    const passwordData = encoder.encode(password);
+    
+    const key = await crypto.subtle.importKey(
       'raw',
       passwordData,
       'PBKDF2',
@@ -29,37 +32,26 @@ async function verifyPassword(password: string, storedHash: string): Promise<boo
       ['deriveBits']
     );
     
-    const derivedBits = await crypto.subtle.deriveBits(
+    const hashBuffer = await crypto.subtle.deriveBits(
       {
         name: 'PBKDF2',
-        salt: saltData,
-        iterations: parseInt(iterations),
+        salt: salt,
+        iterations: 100000,
         hash: 'SHA-256'
       },
-      keyMaterial,
+      key,
       256
     );
     
-    const derivedHash = uint8ArrayToHex(new Uint8Array(derivedBits));
-    return derivedHash === hash;
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    
+    // Constant-time comparison
+    return hashArray.length === storedHashBytes.length &&
+      hashArray.every((byte, i) => byte === storedHashBytes[i]);
   } catch (error) {
     console.error('Error verifying password:', error);
     return false;
   }
-}
-
-function hexToUint8Array(hex: string): Uint8Array {
-  const bytes = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < hex.length; i += 2) {
-    bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
-  }
-  return bytes;
-}
-
-function uint8ArrayToHex(bytes: Uint8Array): string {
-  return Array.from(bytes)
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
 }
 
 Deno.serve(async (req) => {
