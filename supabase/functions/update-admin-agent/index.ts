@@ -12,6 +12,7 @@ interface UpdateAgentRequest {
   password?: string;
   role?: string;
   isActive?: boolean;
+  callerAgentId?: string; // For admin agent authentication
 }
 
 /**
@@ -60,38 +61,62 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Authenticate the caller
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'No authorization header' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
-      );
+    const { agentId, username, email, password, role, isActive, callerAgentId } = await req.json() as UpdateAgentRequest;
+
+    let callerId: string;
+
+    // Try to authenticate as admin agent first
+    if (callerAgentId) {
+      // Verify the admin agent exists and is active
+      const { data: agent, error: agentError } = await supabaseAdmin
+        .from('admin_agents')
+        .select('id, is_active')
+        .eq('id', callerAgentId)
+        .single();
+
+      if (agentError || !agent || !agent.is_active) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Invalid admin agent' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+        );
+      }
+
+      callerId = callerAgentId;
+    } else {
+      // Fall back to regular Supabase auth
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'No authorization provided' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+        );
+      }
+
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+
+      if (authError || !user) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Invalid token' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+        );
+      }
+
+      callerId = user.id;
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
-
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Invalid token' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
-      );
-    }
-
-    // Check if user has super admin role
+    // Check if caller has super admin role
     const { data: roleCheck, error: roleError } = await supabaseAdmin.rpc('has_super_admin_role', {
-      p_user_id: user.id
+      p_user_id: callerId
     });
 
     if (roleError || !roleCheck) {
+      console.error('Role check error:', roleError);
       return new Response(
         JSON.stringify({ success: false, error: 'Super admin privileges required' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
       );
     }
-
-    const { agentId, username, email, password, role, isActive } = await req.json() as UpdateAgentRequest;
 
     console.log('Updating admin agent:', agentId);
 

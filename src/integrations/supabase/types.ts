@@ -1301,6 +1301,13 @@ export type Database = {
         }
         Returns: Json
       }
+      has_admin_agent_role: {
+        Args: {
+          p_agent_id: string
+          p_role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
       has_any_admin_role: { Args: { p_user_id: string }; Returns: boolean }
       has_content_creator_role: {
         Args: { p_user_id: string }

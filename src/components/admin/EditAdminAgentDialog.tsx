@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Switch } from "@/components/ui/switch";
+import { useAdmin } from "@/contexts/AdminContext";
 
 interface EditAdminAgentDialogProps {
   open: boolean;
@@ -35,6 +36,7 @@ export function EditAdminAgentDialog({ open, onOpenChange, agent, onSuccess }: E
   const [isActive, setIsActive] = useState(agent.is_active);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { adminAgent } = useAdmin();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +50,8 @@ export function EditAdminAgentDialog({ open, onOpenChange, agent, onSuccess }: E
           email,
           password: password || undefined,
           role,
-          isActive
+          isActive,
+          callerAgentId: adminAgent?.id // Pass admin agent ID for authentication
         }
       });
 
