@@ -43,14 +43,14 @@ export function RoleManagement() {
     queryKey: ['admin-users'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('admins')
+        .from('admin_agents')
         .select(`
           id,
-          user_id,
           username,
           email,
           is_active,
           last_login,
+          admins!inner(id),
           user_roles!inner(role)
         `)
         .order('username');
@@ -63,19 +63,19 @@ export function RoleManagement() {
 
   // Update user role mutation
   const updateRoleMutation = useMutation({
-    mutationFn: async ({ userId, role }: { userId: string; role: 'super_admin' | 'content_creator' | 'operator' }) => {
+    mutationFn: async ({ agentId, role }: { agentId: string; role: 'super_admin' | 'content_creator' | 'operator' }) => {
       // First, delete existing role
       const { error: deleteError } = await supabase
         .from('user_roles')
         .delete()
-        .eq('user_id', userId);
+        .eq('admin_agent_id', agentId);
 
       if (deleteError) throw deleteError;
 
       // Then insert new role
       const { error: insertError } = await supabase
         .from('user_roles')
-        .insert([{ user_id: userId, role }]);
+        .insert([{ admin_agent_id: agentId, role }]);
 
       if (insertError) throw insertError;
     },
@@ -166,14 +166,14 @@ export function RoleManagement() {
             </div>
           ) : adminUsers && adminUsers.length > 0 ? (
             <div className="space-y-4">
-              {adminUsers.map((admin: any) => {
-                const role = admin.user_roles?.[0]?.role || 'user';
+              {adminUsers.map((agent: any) => {
+                const role = agent.user_roles?.[0]?.role || 'user';
                 const roleInfo = ROLE_DESCRIPTIONS[role as keyof typeof ROLE_DESCRIPTIONS];
                 const Icon = roleInfo?.icon || UserCog;
 
                 return (
                   <div
-                    key={admin.id}
+                    key={agent.id}
                     className="flex items-center justify-between p-4 border rounded-lg"
                   >
                     <div className="flex items-center gap-4">
@@ -181,19 +181,19 @@ export function RoleManagement() {
                         <Icon className="h-4 w-4" />
                       </div>
                       <div>
-                        <div className="font-medium">{admin.username}</div>
+                        <div className="font-medium">{agent.username}</div>
                         <div className="text-sm text-muted-foreground">
-                          {admin.email}
+                          {agent.email}
                         </div>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-4">
-                      <Badge variant={admin.is_active ? "default" : "secondary"}>
-                        {admin.is_active ? "Active" : "Inactive"}
+                      <Badge variant={agent.is_active ? "default" : "secondary"}>
+                        {agent.is_active ? "Active" : "Inactive"}
                       </Badge>
                       
-                      {selectedUser === admin.user_id ? (
+                      {selectedUser === agent.id ? (
                         <div className="flex items-center gap-2">
                           <Select value={newRole} onValueChange={setNewRole}>
                             <SelectTrigger className="w-[180px]">
@@ -212,7 +212,7 @@ export function RoleManagement() {
                             onClick={() => {
                               if (newRole) {
                                 updateRoleMutation.mutate({
-                                  userId: admin.user_id,
+                                  agentId: agent.id,
                                   role: newRole as 'super_admin' | 'content_creator' | 'operator'
                                 });
                               }
@@ -237,7 +237,7 @@ export function RoleManagement() {
                           size="sm"
                           variant="outline"
                           onClick={() => {
-                            setSelectedUser(admin.user_id);
+                            setSelectedUser(agent.id);
                             setNewRole(role);
                           }}
                         >

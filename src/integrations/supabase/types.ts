@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_agents: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          last_login: string | null
+          password_hash: string
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          last_login?: string | null
+          password_hash: string
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          last_login?: string | null
+          password_hash?: string
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
       admin_ip_whitelist: {
         Row: {
           created_at: string
@@ -70,6 +103,7 @@ export type Database = {
       }
       admins: {
         Row: {
+          admin_agent_id: string | null
           created_at: string
           email: string
           id: string
@@ -80,6 +114,7 @@ export type Database = {
           username: string
         }
         Insert: {
+          admin_agent_id?: string | null
           created_at?: string
           email: string
           id?: string
@@ -90,6 +125,7 @@ export type Database = {
           username: string
         }
         Update: {
+          admin_agent_id?: string | null
           created_at?: string
           email?: string
           id?: string
@@ -99,7 +135,15 @@ export type Database = {
           user_id?: string
           username?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "admins_admin_agent_id_fkey"
+            columns: ["admin_agent_id"]
+            isOneToOne: false
+            referencedRelation: "admin_agents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ai_demo_configs: {
         Row: {
@@ -927,24 +971,35 @@ export type Database = {
       }
       user_roles: {
         Row: {
+          admin_agent_id: string | null
           created_at: string | null
           id: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Insert: {
+          admin_agent_id?: string | null
           created_at?: string | null
           id?: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Update: {
+          admin_agent_id?: string | null
           created_at?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_admin_agent_id_fkey"
+            columns: ["admin_agent_id"]
+            isOneToOne: false
+            referencedRelation: "admin_agents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_subscriptions: {
         Row: {

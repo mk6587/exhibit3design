@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3'
+import * as bcrypt from 'https://deno.land/x/bcrypt@v0.4.1/mod.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -78,33 +79,46 @@ serve(async (req) => {
       )
     }
 
-    // Create user in auth.users
-    const { data: newUser, error: createUserError } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: {
-        username
-      }
-    })
+    // Check if email or username already exists in admin_agents
+    const { data: existingAgent } = await supabaseAdmin
+      .from('admin_agents')
+      .select('email, username')
+      .or(`email.eq.${email},username.eq.${username}`)
+      .single()
 
-    if (createUserError) {
-      console.error('Error creating user:', createUserError)
-      
-      // Provide more user-friendly error messages
-      let errorMessage = createUserError.message
-      if (createUserError.message.includes('already been registered')) {
-        errorMessage = 'This email address is already registered in the system'
-      }
-      
+    if (existingAgent) {
+      const field = existingAgent.email === email ? 'email' : 'username'
       return new Response(
-        JSON.stringify({ error: errorMessage }),
+        JSON.stringify({ error: `This ${field} is already registered in the system` }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    if (!newUser.user) {
-      throw new Error('User creation failed')
+    // Hash the password
+    const passwordHash = await bcrypt.hash(password)
+
+    // Create admin agent
+    const { data: newAgent, error: createAgentError } = await supabaseAdmin
+      .from('admin_agents')
+      .insert({
+        username,
+        email,
+        password_hash: passwordHash,
+        is_active: true
+      })
+      .select()
+      .single()
+
+    if (createAgentError) {
+      console.error('Error creating admin agent:', createAgentError)
+      return new Response(
+        JSON.stringify({ error: createAgentError.message }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (!newAgent) {
+      throw new Error('Admin agent creation failed')
     }
 
     try {
@@ -112,15 +126,15 @@ serve(async (req) => {
       const { error: adminError } = await supabaseAdmin
         .from('admins')
         .insert({
-          user_id: newUser.user.id,
+          admin_agent_id: newAgent.id,
           username,
           email,
           is_active: true
         })
 
       if (adminError) {
-        // Rollback: delete the auth user
-        await supabaseAdmin.auth.admin.deleteUser(newUser.user.id)
+        // Rollback: delete the admin agent
+        await supabaseAdmin.from('admin_agents').delete().eq('id', newAgent.id)
         throw adminError
       }
 
@@ -128,14 +142,14 @@ serve(async (req) => {
       const { error: roleInsertError } = await supabaseAdmin
         .from('user_roles')
         .insert({
-          user_id: newUser.user.id,
+          admin_agent_id: newAgent.id,
           role
         })
 
       if (roleInsertError) {
-        // Rollback: delete admin and auth user
-        await supabaseAdmin.from('admins').delete().eq('user_id', newUser.user.id)
-        await supabaseAdmin.auth.admin.deleteUser(newUser.user.id)
+        // Rollback: delete admin and admin agent
+        await supabaseAdmin.from('admins').delete().eq('admin_agent_id', newAgent.id)
+        await supabaseAdmin.from('admin_agents').delete().eq('id', newAgent.id)
         throw roleInsertError
       }
 
@@ -143,7 +157,7 @@ serve(async (req) => {
         JSON.stringify({
           success: true,
           message: 'Admin agent created successfully',
-          userId: newUser.user.id
+          agentId: newAgent.id
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
