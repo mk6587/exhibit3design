@@ -56,9 +56,12 @@ const AdminLoginPage = () => {
       // Validate credentials with Zod
       const validatedData = adminLoginSchema.parse({ email, password });
 
+      console.log('🔐 Attempting login with:', validatedData.email);
       const result = await login(validatedData.email, validatedData.password, captchaToken);
+      console.log('🔐 Login result:', result);
       
       if (result.success) {
+        console.log('✅ Login successful, navigating to admin...');
         toast({
           title: "Login successful",
           description: "Welcome back!",

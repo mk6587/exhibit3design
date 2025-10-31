@@ -163,16 +163,21 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       // Step 2: Check if this is an admin agent using secure function
+      console.log('🔍 Checking if email is admin agent:', email);
       const { data: isAgentEmail, error: agentCheckError } = await supabase
         .rpc('is_admin_agent_email', { p_email: email });
+      console.log('🔍 Is admin agent?', isAgentEmail, 'Error:', agentCheckError);
 
       if (!agentCheckError && isAgentEmail) {
+        console.log('✅ Email is admin agent, verifying credentials...');
         // This is an admin agent - verify credentials
         const verifyResponse = await supabase.functions.invoke('verify-admin-agent', {
           body: { email, password }
         });
+        console.log('🔐 Verify response:', verifyResponse);
 
         if (verifyResponse.error || !verifyResponse.data?.success) {
+          console.log('❌ Admin agent verification failed');
           // Log failed auth attempt
           await supabase.functions.invoke('log-admin-attempt', {
             body: { email, success: false }
@@ -190,11 +195,13 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
 
         // Set admin agent session
         const agent = verifyResponse.data.agent;
+        console.log('✅ Admin agent verified, setting session:', agent);
         setAdminAgent(agent);
         setAdminRole(agent.role as AdminRole);
         setIsAdmin(true);
         setIsAuthenticated(true);
         lastActivityRef.current = Date.now();
+        console.log('✅ Admin context state updated - authenticated:', true);
         return { success: true };
       }
 
