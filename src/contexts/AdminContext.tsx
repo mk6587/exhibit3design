@@ -162,14 +162,11 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
         };
       }
 
-      // Step 2: Check if this is an admin agent
-      const { data: agentCheck } = await supabase
-        .from('admin_agents')
-        .select('id')
-        .eq('email', email)
-        .single();
+      // Step 2: Check if this is an admin agent using secure function
+      const { data: isAgentEmail, error: agentCheckError } = await supabase
+        .rpc('is_admin_agent_email', { p_email: email });
 
-      if (agentCheck) {
+      if (!agentCheckError && isAgentEmail) {
         // This is an admin agent - verify credentials
         const verifyResponse = await supabase.functions.invoke('verify-admin-agent', {
           body: { email, password }

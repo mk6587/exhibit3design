@@ -1333,6 +1333,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { user_id: string }; Returns: boolean }
+      is_admin_agent_email: { Args: { p_email: string }; Returns: boolean }
       is_current_user_admin: { Args: never; Returns: boolean }
       log_admin_login_attempt: {
         Args: { p_email: string; p_ip_address: string; p_success: boolean }
