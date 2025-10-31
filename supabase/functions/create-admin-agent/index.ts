@@ -1,13 +1,73 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3'
 
-// Hash password using Web Crypto API
+// Secure password hashing using PBKDF2 (Web Crypto API)
 async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder()
-  const data = encoder.encode(password)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+  const salt = crypto.getRandomValues(new Uint8Array(16))
+  const passwordData = encoder.encode(password)
+  
+  const key = await crypto.subtle.importKey(
+    'raw',
+    passwordData,
+    'PBKDF2',
+    false,
+    ['deriveBits']
+  )
+  
+  const hashBuffer = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt: salt,
+      iterations: 100000, // OWASP recommended minimum
+      hash: 'SHA-256'
+    },
+    key,
+    256
+  )
+  
   const hashArray = Array.from(new Uint8Array(hashBuffer))
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+  const saltArray = Array.from(salt)
+  
+  // Store salt + hash together (salt is first 16 bytes)
+  const combined = [...saltArray, ...hashArray]
+  return combined.map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+// Verify password against stored hash
+async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
+  const encoder = new TextEncoder()
+  const combined = storedHash.match(/.{2}/g)?.map(byte => parseInt(byte, 16)) || []
+  
+  const salt = new Uint8Array(combined.slice(0, 16))
+  const storedHashBytes = combined.slice(16)
+  
+  const passwordData = encoder.encode(password)
+  
+  const key = await crypto.subtle.importKey(
+    'raw',
+    passwordData,
+    'PBKDF2',
+    false,
+    ['deriveBits']
+  )
+  
+  const hashBuffer = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt: salt,
+      iterations: 100000,
+      hash: 'SHA-256'
+    },
+    key,
+    256
+  )
+  
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  
+  // Constant-time comparison
+  return hashArray.length === storedHashBytes.length &&
+    hashArray.every((byte, i) => byte === storedHashBytes[i])
 }
 
 const corsHeaders = {
