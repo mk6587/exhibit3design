@@ -91,6 +91,25 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // Check initial auth state
     const initAuth = async () => {
+      // Check for stored admin agent session first
+      const storedAgent = localStorage.getItem('admin_agent');
+      if (storedAgent) {
+        try {
+          const agent = JSON.parse(storedAgent);
+          console.log('🔄 Restoring admin agent session:', agent);
+          setAdminAgent(agent);
+          setAdminRole(agent.role as AdminRole);
+          setIsAdmin(true);
+          setIsAuthenticated(true);
+          lastActivityRef.current = Date.now();
+          return;
+        } catch (error) {
+          console.error('Failed to restore admin agent session:', error);
+          localStorage.removeItem('admin_agent');
+        }
+      }
+
+      // Fall back to regular Supabase session
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (currentUser) {
         setUser(currentUser);
@@ -196,6 +215,16 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
         // Set admin agent session
         const agent = verifyResponse.data.agent;
         console.log('✅ Admin agent verified, setting session:', agent);
+        
+        // Store admin agent data in localStorage for persistence
+        localStorage.setItem('admin_agent', JSON.stringify({
+          id: agent.id,
+          email: agent.email,
+          name: agent.name,
+          role: agent.role,
+          loginTime: Date.now()
+        }));
+        
         setAdminAgent(agent);
         setAdminRole(agent.role as AdminRole);
         setIsAdmin(true);
@@ -256,6 +285,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     await supabase.auth.signOut();
+    localStorage.removeItem('admin_agent'); // Clear admin agent session
     setIsAuthenticated(false);
     setIsAdmin(false);
     setAdminRole(null);
