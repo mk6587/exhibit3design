@@ -62,6 +62,7 @@ const AdminAIDemoConfigPage = lazy(() => lazyRetry(() => import("./pages/AdminAI
 const AdminFileRequestsPage = lazy(() => lazyRetry(() => import("./pages/AdminFileRequestsPage")));
 const AdminSecurityPage = lazy(() => lazyRetry(() => import("./pages/AdminSecurityPage")));
 const AdminRolesPage = lazy(() => lazyRetry(() => import("./pages/AdminRolesPage")));
+const AdminActivityLogPage = lazy(() => lazyRetry(() => import("./pages/AdminActivityLogPage")));
 const BlogPage = lazy(() => lazyRetry(() => import("./pages/BlogPage")));
 const BlogPostPage = lazy(() => lazyRetry(() => import("./pages/BlogPostPage")));
 const AdminBlogSamplePage = lazy(() => lazyRetry(() => import("./pages/AdminBlogSamplePage")));
@@ -185,6 +186,11 @@ const App = () => {
                         <Route path="/admin/roles" element={
                           <ProtectedAdminRoute>
                             <AdminRolesPage />
+                          </ProtectedAdminRoute>
+                        } />
+                        <Route path="/admin/activity-log" element={
+                          <ProtectedAdminRoute>
+                            <AdminActivityLogPage />
                           </ProtectedAdminRoute>
                         } />
                         <Route path="/admin/blog-sample" element={

@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_activity_log: {
+        Row: {
+          action_details: Json | null
+          action_type: string
+          admin_agent_id: string | null
+          admin_user_id: string | null
+          created_at: string
+          id: string
+          ip_address: string | null
+          resource_id: string | null
+          resource_type: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action_details?: Json | null
+          action_type: string
+          admin_agent_id?: string | null
+          admin_user_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action_details?: Json | null
+          action_type?: string
+          admin_agent_id?: string | null
+          admin_user_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_activity_log_admin_agent_id_fkey"
+            columns: ["admin_agent_id"]
+            isOneToOne: false
+            referencedRelation: "admin_agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_agents: {
         Row: {
           created_at: string

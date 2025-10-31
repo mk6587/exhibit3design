@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdmin } from "@/contexts/AdminContext";
+import { logAdminAction, AdminActionTypes } from "@/utils/adminActivityLogger";
 import {
   Dialog,
   DialogContent,
@@ -95,9 +96,22 @@ export function CreateAdminAgentDialog({ open, onOpenChange }: CreateAdminAgentD
 
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       toast.success('Admin agent created successfully');
+      
+      // Log the admin action
+      logAdminAction({
+        actionType: AdminActionTypes.CREATE,
+        resourceType: 'admin_agent',
+        resourceId: response.agentId,
+        actionDetails: {
+          username: formData.username,
+          email: formData.email,
+          role: formData.role,
+        }
+      });
+      
       setFormData({ username: "", email: "", password: "", role: "" });
       setErrors({});
       onOpenChange(false);
