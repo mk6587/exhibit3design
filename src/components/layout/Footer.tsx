@@ -88,6 +88,17 @@ const Footer = () => {
             </ul>
           </div>
           
+          <div>
+            <h3 className="font-semibold text-lg mb-4">Company</h3>
+            <ul className="space-y-1 text-sm">
+              <li>
+                <Link to="/careers/3d-designer" className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20" style={{
+                WebkitTapHighlightColor: 'transparent'
+              }}>Careers</Link>
+              </li>
+            </ul>
+          </div>
+          
           
         </div>
         
