@@ -39,8 +39,8 @@ const menuStructure = [
     title: "Main",
     icon: LayoutDashboard,
     children: [
-      { title: "Dashboard", url: "/admin", icon: LayoutDashboard, requiredRole: null },
-      { title: "Products", url: "/admin/products", icon: Package, requiredRole: 'operator' },
+      { title: "Dashboard", url: "/admin", icon: LayoutDashboard, requiredRole: ['super_admin', 'operator'] },
+      { title: "Products", url: "/admin/products", icon: Package, requiredRole: ['operator', 'content_creator'] },
       { title: "File Requests", url: "/admin/file-requests", icon: FileText, requiredRole: 'operator' },
       { title: "Subscriptions", url: "/admin/subscriptions", icon: Crown, requiredRole: 'super_admin' },
       { title: "Users", url: "/admin/users", icon: Users, requiredRole: 'super_admin' },
@@ -147,6 +147,12 @@ export function AdminSidebar() {
                 // Filter children based on individual item permissions
                 const visibleChildren = section.children.filter(item => {
                   if (!item.requiredRole) return true;
+                  
+                  // Handle array of roles
+                  if (Array.isArray(item.requiredRole)) {
+                    return item.requiredRole.some(role => hasPermission(role as any));
+                  }
+                  
                   return hasPermission(item.requiredRole as any);
                 });
 
