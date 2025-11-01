@@ -324,6 +324,27 @@ export type Database = {
         }
         Relationships: []
       }
+      application_attempts: {
+        Row: {
+          attempt_time: string
+          id: string
+          job_slug: string
+          user_id: string
+        }
+        Insert: {
+          attempt_time?: string
+          id?: string
+          job_slug: string
+          user_id: string
+        }
+        Update: {
+          attempt_time?: string
+          id?: string
+          job_slug?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       blog_categories: {
         Row: {
           created_at: string
@@ -529,6 +550,57 @@ export type Database = {
           id?: string
           topics_source?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      career_applications: {
+        Row: {
+          admin_notes: string | null
+          cover_note: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          job_slug: string
+          linkedin_url: string | null
+          portfolio_url: string | null
+          resume_url: string
+          status: string
+          token_usage_snapshot: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          cover_note?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          job_slug: string
+          linkedin_url?: string | null
+          portfolio_url?: string | null
+          resume_url: string
+          status?: string
+          token_usage_snapshot?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          cover_note?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          job_slug?: string
+          linkedin_url?: string | null
+          portfolio_url?: string | null
+          resume_url?: string
+          status?: string
+          token_usage_snapshot?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1128,6 +1200,14 @@ export type Database = {
       }
       check_admin_rate_limit: {
         Args: { p_email: string; p_ip_address: string }
+        Returns: Json
+      }
+      check_application_eligibility: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
+      check_application_rate_limit: {
+        Args: { p_job_slug: string; p_user_id: string }
         Returns: Json
       }
       check_file_access: {
