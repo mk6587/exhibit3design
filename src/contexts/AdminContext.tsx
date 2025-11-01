@@ -220,7 +220,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
         localStorage.setItem('admin_agent', JSON.stringify({
           id: agent.id,
           email: agent.email,
-          name: agent.name,
+          username: agent.username,
           role: agent.role,
           loginTime: Date.now()
         }));
