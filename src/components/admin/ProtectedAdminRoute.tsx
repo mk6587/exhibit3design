@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
-import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface ProtectedAdminRouteProps {
@@ -9,46 +8,35 @@ interface ProtectedAdminRouteProps {
 }
 
 const ProtectedAdminRoute = ({ children }: ProtectedAdminRouteProps) => {
-  const { isAuthenticated, isAdmin, checkAdminStatus } = useAdmin();
+  const { isAuthenticated, isAdmin, adminAgent } = useAdmin();
   const navigate = useNavigate();
   const location = useLocation();
   const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
     const verifyAccess = async () => {
-      try {
-        // First check: Is user authenticated?
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        
-        if (authError || !user) {
-          // Not authenticated - redirect to login
-          const redirectPath = encodeURIComponent(location.pathname);
-          navigate(`/admin/login?redirect=${redirectPath}`, { replace: true });
-          return;
-        }
-
-        // Second check: Is user an admin?
-        const adminStatus = await checkAdminStatus(user.id);
-        
-        if (!adminStatus) {
-          // Authenticated but not admin - show 403
-          navigate('/403', { replace: true });
-          return;
-        }
-
-        // All checks passed
-        setIsVerifying(false);
-      } catch (error) {
-        console.error('Error verifying admin access:', error);
-        navigate('/admin/login', { replace: true });
+      console.log('🔒 ProtectedAdminRoute - Checking auth:', { isAuthenticated, isAdmin, hasAdminAgent: !!adminAgent });
+      
+      // Small delay to allow AdminContext to initialize from localStorage
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Check if authenticated (either admin agent or regular admin user)
+      if (!isAuthenticated || !isAdmin) {
+        console.log('❌ Not authenticated or not admin, redirecting to login');
+        const redirectPath = encodeURIComponent(location.pathname);
+        navigate(`/admin/login?redirect=${redirectPath}`, { replace: true });
+        return;
       }
+
+      console.log('✅ Access granted');
+      setIsVerifying(false);
     };
 
     verifyAccess();
-  }, [location.pathname, navigate, checkAdminStatus]);
+  }, [isAuthenticated, isAdmin, adminAgent, location.pathname, navigate]);
 
   // Show loading state during verification
-  if (isVerifying || !isAuthenticated || !isAdmin) {
+  if (isVerifying) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="space-y-4 w-full max-w-md p-6">
@@ -58,6 +46,10 @@ const ProtectedAdminRoute = ({ children }: ProtectedAdminRouteProps) => {
         </div>
       </div>
     );
+  }
+
+  if (!isAuthenticated || !isAdmin) {
+    return null; // Will redirect in useEffect
   }
 
   return <>{children}</>;
