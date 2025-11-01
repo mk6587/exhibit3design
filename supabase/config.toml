@@ -1,5 +1,11 @@
 project_id = "fipebdkvzdrljwwxccrj"
 
+[functions.check-token-eligibility]
+verify_jwt = true
+
+[functions.submit-career-application]
+verify_jwt = true
+
 [functions.send-email]
 verify_jwt = false
 
