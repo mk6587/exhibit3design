@@ -39,11 +39,11 @@ const menuStructure = [
     title: "Main",
     icon: LayoutDashboard,
     children: [
-      { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
-      { title: "Products", url: "/admin/products", icon: Package },
-      { title: "File Requests", url: "/admin/file-requests", icon: FileText },
-      { title: "Subscriptions", url: "/admin/subscriptions", icon: Crown },
-      { title: "Users", url: "/admin/users", icon: Users },
+      { title: "Dashboard", url: "/admin", icon: LayoutDashboard, requiredRole: null },
+      { title: "Products", url: "/admin/products", icon: Package, requiredRole: 'operator' },
+      { title: "File Requests", url: "/admin/file-requests", icon: FileText, requiredRole: 'operator' },
+      { title: "Subscriptions", url: "/admin/subscriptions", icon: Crown, requiredRole: 'super_admin' },
+      { title: "Users", url: "/admin/users", icon: Users, requiredRole: 'super_admin' },
     ],
     requiredRole: null
   },
@@ -51,13 +51,13 @@ const menuStructure = [
     title: "Blog Academy",
     icon: Newspaper,
     children: [
-      { title: "Blog Generator", url: "/admin/blog-generator", icon: Sparkles },
-      { title: "Blog Posts", url: "/admin/blog-posts", icon: FileText },
-      { title: "Quick Generate", url: "/admin/blog-sample", icon: FileCheck },
-      { title: "Generate Images", url: "/admin/generate-blog-images", icon: Image },
-      { title: "Cleanup Content", url: "/admin/blog-cleanup", icon: Eraser },
-      { title: "Categories", url: "/admin/blog-categories", icon: FileText },
-      { title: "Settings", url: "/admin/blog-settings", icon: Settings },
+      { title: "Blog Generator", url: "/admin/blog-generator", icon: Sparkles, requiredRole: 'content_creator' },
+      { title: "Blog Posts", url: "/admin/blog-posts", icon: FileText, requiredRole: 'content_creator' },
+      { title: "Quick Generate", url: "/admin/blog-sample", icon: FileCheck, requiredRole: 'content_creator' },
+      { title: "Generate Images", url: "/admin/generate-blog-images", icon: Image, requiredRole: 'content_creator' },
+      { title: "Cleanup Content", url: "/admin/blog-cleanup", icon: Eraser, requiredRole: 'content_creator' },
+      { title: "Categories", url: "/admin/blog-categories", icon: FileText, requiredRole: 'content_creator' },
+      { title: "Settings", url: "/admin/blog-settings", icon: Settings, requiredRole: 'content_creator' },
     ],
     requiredRole: 'content_creator'
   },
@@ -65,13 +65,13 @@ const menuStructure = [
     title: "Settings",
     icon: Settings,
     children: [
-      { title: "Plans", url: "/admin/plans", icon: Settings },
-      { title: "AI Samples", url: "/admin/ai-samples", icon: Sparkles },
-      { title: "AI Demo Config", url: "/admin/ai-demo-config", icon: MonitorPlay },
-      { title: "Role Management", url: "/admin/roles", icon: Shield },
-      { title: "Activity Log", url: "/admin/activity-log", icon: FileCheck },
-      { title: "Security", url: "/admin/security", icon: Shield },
-      { title: "Bulk Email", url: "/admin/bulk-email", icon: Mail },
+      { title: "Plans", url: "/admin/plans", icon: Settings, requiredRole: 'super_admin' },
+      { title: "AI Samples", url: "/admin/ai-samples", icon: Sparkles, requiredRole: 'super_admin' },
+      { title: "AI Demo Config", url: "/admin/ai-demo-config", icon: MonitorPlay, requiredRole: 'super_admin' },
+      { title: "Role Management", url: "/admin/roles", icon: Shield, requiredRole: 'super_admin' },
+      { title: "Activity Log", url: "/admin/activity-log", icon: FileCheck, requiredRole: 'super_admin' },
+      { title: "Security", url: "/admin/security", icon: Shield, requiredRole: 'super_admin' },
+      { title: "Bulk Email", url: "/admin/bulk-email", icon: Mail, requiredRole: 'super_admin' },
     ],
     requiredRole: 'super_admin'
   },
@@ -144,13 +144,19 @@ export function AdminSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {menuStructure.map((section) => {
-                // Check if user has permission to see this section
-                if (section.requiredRole && !hasPermission(section.requiredRole as any)) {
+                // Filter children based on individual item permissions
+                const visibleChildren = section.children.filter(item => {
+                  if (!item.requiredRole) return true;
+                  return hasPermission(item.requiredRole as any);
+                });
+
+                // Don't show section if no children are visible
+                if (visibleChildren.length === 0) {
                   return null;
                 }
                 
                 const isOpen = openSections[section.title];
-                const hasActiveChild = section.children.some(child => isActive(child.url));
+                const hasActiveChild = visibleChildren.some(child => isActive(child.url));
 
                 return (
                   <Collapsible
@@ -181,7 +187,7 @@ export function AdminSidebar() {
 
                       <CollapsibleContent>
                         <SidebarMenu className="ml-4 border-l border-border">
-                          {section.children.map((item) => (
+                          {visibleChildren.map((item) => (
                             <SidebarMenuItem key={item.title}>
                               <SidebarMenuButton asChild>
                                 <NavLink 
