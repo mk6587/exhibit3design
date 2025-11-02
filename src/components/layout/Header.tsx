@@ -115,7 +115,7 @@ const Header = () => {
               {profile && totalTokens > 0 && (
                 <Badge 
                   variant="secondary" 
-                  className="ml-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10"
+                  className="ml-1 h-5 w-5 flex items-center justify-center p-0 text-[11px] font-bold bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10 rounded-full"
                 >
                   {totalTokens}
                 </Badge>
@@ -162,7 +162,7 @@ const Header = () => {
               {profile && totalTokens > 0 && (
                 <Badge 
                   variant="secondary" 
-                  className="ml-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10"
+                  className="ml-1 h-5 w-5 flex items-center justify-center p-0 text-[11px] font-bold bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10 rounded-full"
                 >
                   {totalTokens}
                 </Badge>
