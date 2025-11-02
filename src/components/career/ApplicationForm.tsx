@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,6 +30,13 @@ export const ApplicationForm = ({ jobSlug }: ApplicationFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isEligible = eligibility?.eligible ?? false;
+
+  // Update email when user logs in
+  useEffect(() => {
+    if (user?.email) {
+      setFormData(prev => ({ ...prev, email: user.email }));
+    }
+  }, [user?.email]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,7 +156,14 @@ export const ApplicationForm = ({ jobSlug }: ApplicationFormProps) => {
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             required
             placeholder="john@example.com"
+            disabled={!!user}
+            className={!!user ? 'bg-muted cursor-not-allowed' : ''}
           />
+          {user && (
+            <p className="text-xs text-muted-foreground">
+              Email is locked to your account
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
