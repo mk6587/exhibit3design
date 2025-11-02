@@ -24,6 +24,7 @@ export const ApplicationForm = ({ jobSlug }: ApplicationFormProps) => {
     email: user?.email || '',
     linkedinUrl: '',
     portfolioUrl: '',
+    portfolioUrl2: '',
     coverNote: '',
   });
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -76,6 +77,7 @@ export const ApplicationForm = ({ jobSlug }: ApplicationFormProps) => {
           email: formData.email,
           linkedinUrl: formData.linkedinUrl || undefined,
           portfolioUrl: formData.portfolioUrl || undefined,
+          portfolioUrl2: formData.portfolioUrl2 || undefined,
           coverNote: formData.coverNote || undefined,
           resumeFile: {
             name: resumeFile.name,
@@ -195,6 +197,17 @@ export const ApplicationForm = ({ jobSlug }: ApplicationFormProps) => {
             value={formData.portfolioUrl}
             onChange={(e) => setFormData({ ...formData, portfolioUrl: e.target.value })}
             placeholder="https://yourportfolio.com"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="portfolioUrl2">Additional Portfolio URL (Optional)</Label>
+          <Input
+            id="portfolioUrl2"
+            type="url"
+            value={formData.portfolioUrl2}
+            onChange={(e) => setFormData({ ...formData, portfolioUrl2: e.target.value })}
+            placeholder="https://anotherportfolio.com"
           />
         </div>
 
