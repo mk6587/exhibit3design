@@ -47,32 +47,45 @@ export const ResumeUploadField = ({
   const getHelperText = () => {
     if (!user) {
       return (
-        <span className="flex items-center gap-1 text-muted-foreground">
-          <Lock className="h-3 w-3" />
-          Sign in to upload your resume
-        </span>
+        <div className="space-y-1">
+          <p className="text-sm text-muted-foreground flex items-center gap-1">
+            <Lock className="h-3 w-3" />
+            Please sign in to upload your resume
+          </p>
+          <button
+            onClick={() => navigate('/auth?next=' + encodeURIComponent('/careers/3d-designer#apply'))}
+            className="text-sm text-primary hover:underline font-medium"
+          >
+            Sign in or create an account →
+          </button>
+        </div>
       );
     }
     if (isLoading) {
-      return <span className="text-muted-foreground">Checking eligibility...</span>;
+      return <span className="text-sm text-muted-foreground">Checking your eligibility...</span>;
     }
     if (!isEligible) {
       return (
-        <span className="flex items-center gap-1 text-warning">
-          <Lock className="h-3 w-3" />
-          Use ≥1 token to unlock resume upload
-        </span>
+        <div className="space-y-1">
+          <p className="text-sm flex items-center gap-1 text-warning font-medium">
+            <Lock className="h-3 w-3" />
+            Resume upload locked
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Use at least 1 AI token in our AI Studio to unlock
+          </p>
+        </div>
       );
     }
     if (file) {
       return (
-        <span className="flex items-center gap-1 text-green-600">
+        <span className="flex items-center gap-1 text-sm text-green-600">
           <CheckCircle2 className="h-3 w-3" />
           {file.name} ({(file.size / 1024).toFixed(1)} KB)
         </span>
       );
     }
-    return <span className="text-muted-foreground">PDF or DOC/DOCX, max 10MB</span>;
+    return <span className="text-sm text-muted-foreground">PDF or DOC/DOCX, max 10MB</span>;
   };
 
   const isDisabled = !user || !isEligible || isLoading;
