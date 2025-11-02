@@ -66,13 +66,19 @@ serve(async (req) => {
     // Get ai_tokens_used from profiles table
     const { data: profile } = await supabase
       .from('profiles')
-      .select('ai_tokens_used')
+      .select('ai_tokens_used, video_results_used')
       .eq('user_id', userId)
       .single();
 
-    const tokensUsed = profile?.ai_tokens_used || 0;
-    const tokensBalance = tokenData?.[0]?.ai_tokens || 0;
-    const tokensLimit = tokenData?.[0]?.ai_tokens_limit || 2;
+    const aiTokens = tokenData?.[0]?.ai_tokens || 0;
+    const videoTokens = tokenData?.[0]?.video_results || 0;
+    const aiTokensLimit = tokenData?.[0]?.ai_tokens_limit || 1;
+    const videoTokensLimit = tokenData?.[0]?.video_results_limit || 1;
+    
+    // Sum AI tokens and video tokens for total balance and limit
+    const tokensBalance = aiTokens + videoTokens;
+    const tokensLimit = aiTokensLimit + videoTokensLimit;
+    const tokensUsed = (profile?.ai_tokens_used || 0) + (profile?.video_results_used || 0);
     const hasTokens = tokensBalance > 0;
 
     return new Response(
