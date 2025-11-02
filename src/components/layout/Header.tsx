@@ -24,6 +24,7 @@ const Header = () => {
   // Get token balances from profile
   const aiTokens = profile?.ai_tokens_balance || 0;
   const videoResults = profile?.video_results_balance || 0;
+  const totalTokens = aiTokens + videoResults;
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const handleSignOut = async () => {
     console.log('Logout button clicked');
@@ -111,12 +112,12 @@ const Header = () => {
               <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-none">
                 AI Studio
               </span>
-              {profile && aiTokens > 0 && (
+              {profile && totalTokens > 0 && (
                 <Badge 
                   variant="secondary" 
                   className="ml-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10"
                 >
-                  {aiTokens}
+                  {totalTokens}
                 </Badge>
               )}
             </Button>
@@ -158,12 +159,12 @@ const Header = () => {
               <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-none">
                 AI Studio
               </span>
-              {profile && aiTokens > 0 && (
+              {profile && totalTokens > 0 && (
                 <Badge 
                   variant="secondary" 
                   className="ml-1 h-5 min-w-5 flex items-center justify-center p-0 px-1 text-[10px] bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10"
                 >
-                  {aiTokens}
+                  {totalTokens}
                 </Badge>
               )}
             </Button>
@@ -182,7 +183,7 @@ const Header = () => {
       <div className={cn("md:hidden bg-background absolute w-full shadow-sm border-t border-flat-border z-50 left-0 right-0", isMenuOpen ? "block" : "hidden")}>
         <nav className="container mx-auto px-4 sm:px-6 py-2 flex flex-col">
           {/* Token Counter - Mobile */}
-          {user && profile && (
+          {user && profile && totalTokens > 0 && (
             <div className="py-3 px-4 bg-primary/10 rounded-lg border border-primary/20 mb-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -190,13 +191,7 @@ const Header = () => {
                   <span className="text-xs font-medium text-muted-foreground">Your Balance:</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm font-semibold">
-                  <span className="text-primary">{aiTokens} tokens</span>
-                  {videoResults > 0 && (
-                    <>
-                      <span className="text-muted-foreground">•</span>
-                      <span className="text-primary">{videoResults} videos</span>
-                    </>
-                  )}
+                  <span className="text-primary">{totalTokens} tokens</span>
                 </div>
               </div>
             </div>
