@@ -1178,6 +1178,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_fix_user_tokens: {
+        Args: {
+          p_ai_tokens_balance: number
+          p_ai_tokens_limit: number
+          p_user_id: string
+        }
+        Returns: Json
+      }
       admin_toggle_user_status: {
         Args: {
           p_admin_id: string
