@@ -79,7 +79,13 @@ export const ResumeUploadField = ({
             Resume upload locked
           </p>
           <p className="text-sm text-muted-foreground">
-            Use at least 1 AI token in our AI Studio to unlock
+            You must use at least 1 AI token before applying.{' '}
+            <button
+              onClick={() => navigate('/ai-samples')}
+              className="text-primary hover:underline font-medium"
+            >
+              Try AI Studio now →
+            </button>
           </p>
         </div>
       );
