@@ -80,12 +80,14 @@ export const ResumeUploadField = ({
           </p>
           <p className="text-sm text-muted-foreground">
             You must use at least 1 AI token before applying.{' '}
-            <button
-              onClick={() => navigate('/ai-samples')}
+            <a
+              href="https://ai.exhibit3design.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-primary hover:underline font-medium"
             >
               Try AI Studio now →
-            </button>
+            </a>
           </p>
         </div>
       );
