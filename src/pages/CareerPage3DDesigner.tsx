@@ -5,15 +5,9 @@ import { CheckCircle2, Sparkles, Globe, Users, Calendar, Euro, Heart, Linkedin, 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-
 const CareerPage3DDesigner = () => {
-  return (
-    <Layout>
-      <SEOHead
-        title="3D Designer - Career Opportunity | Exhibit3Design"
-        description="Join our team as a 3D Designer and work on cutting-edge exhibition stand designs powered by AI technology. Apply now to shape the future of exhibition design."
-        keywords="3d designer job, exhibition design career, ai design job, 3d modeling job"
-      />
+  return <Layout>
+      <SEOHead title="3D Designer - Career Opportunity | Exhibit3Design" description="Join our team as a 3D Designer and work on cutting-edge exhibition stand designs powered by AI technology. Apply now to shape the future of exhibition design." keywords="3d designer job, exhibition design career, ai design job, 3d modeling job" />
       
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         {/* Header */}
@@ -68,18 +62,10 @@ const CareerPage3DDesigner = () => {
             What You'll Do
           </h2>
           <ul className="space-y-3">
-            {[
-              'Design creative 3D spaces and exhibition booths for global brands',
-              'Collaborate remotely with our international team of designers and project managers',
-              'Use AI tools alongside 3D software to enhance workflows and explore new ideas',
-              'Join weekly team meetings to share progress and inspiration',
-              'Learn from real projects with direct guidance from senior designers'
-            ].map((item, i) => (
-              <li key={i} className="flex items-start gap-3">
+            {['Design creative 3D spaces and exhibition booths for global brands', 'Collaborate remotely with our international team of designers and project managers', 'Use AI tools alongside 3D software to enhance workflows and explore new ideas', 'Join weekly team meetings to share progress and inspiration', 'Learn from real projects with direct guidance from senior designers'].map((item, i) => <li key={i} className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                 <span>{item}</span>
-              </li>
-            ))}
+              </li>)}
           </ul>
         </section>
 
@@ -87,17 +73,10 @@ const CareerPage3DDesigner = () => {
         <section className="mb-12">
           <h2 className="text-2xl font-bold mb-4">What We're Looking For</h2>
           <ul className="space-y-3">
-            {[
-              'A computer that can smoothly run 3D software',
-              'Basic understanding of architecture or interior design',
-              'Experience with at least one 3D tool (3ds Max, SketchUp, Blender, Cinema4D, etc.)',
-              'Responsible, motivated, organized, and eager to grow'
-            ].map((item, i) => (
-              <li key={i} className="flex items-start gap-3">
+            {['A computer that can smoothly run 3D software', 'Basic understanding of architecture or interior design', 'Experience with at least one 3D tool (3ds Max, SketchUp, Blender, Cinema4D, etc.)', 'Responsible, motivated, organized, and eager to grow'].map((item, i) => <li key={i} className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                 <span>{item}</span>
-              </li>
-            ))}
+              </li>)}
           </ul>
           <Alert className="mt-4 border-primary/30 bg-primary/5">
             <Sparkles className="h-4 w-4" />
@@ -114,16 +93,10 @@ const CareerPage3DDesigner = () => {
             Work & Schedule
           </h2>
           <ul className="space-y-3">
-            {[
-              'Fully remote, flexible hours',
-              'Just meet project deadlines',
-              'Weekends off (Saturday & Sunday)'
-            ].map((item, i) => (
-              <li key={i} className="flex items-start gap-3">
+            {['Fully remote, flexible hours', 'Just meet project deadlines', 'Weekends off (Saturday & Sunday)'].map((item, i) => <li key={i} className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                 <span>{item}</span>
-              </li>
-            ))}
+              </li>)}
           </ul>
         </section>
 
@@ -134,17 +107,10 @@ const CareerPage3DDesigner = () => {
             Salary & Benefits
           </h2>
           <ul className="space-y-3">
-            {[
-              '€3,200 – €4,800/month (depending on experience)',
-              'Continuous learning and support from senior designers',
-              'Exciting, diverse international projects',
-              'Friendly, creative, and inspiring work environment'
-            ].map((item, i) => (
-              <li key={i} className="flex items-start gap-3">
+            {['€3,200 – €4,800/month (depending on experience)', 'Continuous learning and support from senior designers', 'Exciting, diverse international projects', 'Friendly, creative, and inspiring work environment'].map((item, i) => <li key={i} className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                 <span>{item}</span>
-              </li>
-            ))}
+              </li>)}
           </ul>
         </section>
 
@@ -180,12 +146,7 @@ const CareerPage3DDesigner = () => {
                   </div>
                   <div>
                     <p className="font-semibold mb-2">Follow our LinkedIn page</p>
-                    <a 
-                      href="https://www.linkedin.com/company/exhibit3design" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline flex items-center gap-2"
-                    >
+                    <a href="https://www.linkedin.com/company/exhibit3design" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-2">
                       <Linkedin className="h-4 w-4" />
                       linkedin.com/company/exhibit3design
                     </a>
@@ -223,20 +184,7 @@ const CareerPage3DDesigner = () => {
             </Card>
           </div>
 
-          <div className="mb-8 p-4 bg-secondary/50 rounded-lg border">
-            <p className="text-sm text-muted-foreground flex items-center gap-2">
-              <Instagram className="h-4 w-4" />
-              Follow us on Instagram: 
-              <a 
-                href="https://www.instagram.com/exhibit3design" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:underline font-semibold"
-              >
-                @exhibit3design
-              </a>
-            </p>
-          </div>
+          
 
           <ApplicationForm jobSlug="3d-designer" />
         </section>
@@ -251,8 +199,6 @@ const CareerPage3DDesigner = () => {
           </p>
         </div>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default CareerPage3DDesigner;
