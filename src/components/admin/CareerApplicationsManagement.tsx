@@ -41,6 +41,7 @@ interface Application {
   email: string;
   linkedin_url: string | null;
   portfolio_url: string | null;
+  portfolio_url_2: string | null;
   cover_note: string | null;
   resume_url: string;
   status: ApplicationStatus;
@@ -296,6 +297,20 @@ export function CareerApplicationsManagement() {
                     className="text-sm text-primary hover:underline block"
                   >
                     {selectedApplication.portfolio_url}
+                  </a>
+                </div>
+              )}
+
+              {selectedApplication.portfolio_url_2 && (
+                <div>
+                  <label className="text-sm font-medium">Additional Portfolio</label>
+                  <a
+                    href={selectedApplication.portfolio_url_2}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline block"
+                  >
+                    {selectedApplication.portfolio_url_2}
                   </a>
                 </div>
               )}

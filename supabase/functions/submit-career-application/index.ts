@@ -19,6 +19,7 @@ interface ApplicationSubmission {
   email: string;
   linkedinUrl?: string;
   portfolioUrl?: string;
+  portfolioUrl2?: string;
   coverNote?: string;
   resumeFile: {
     name: string;
@@ -74,7 +75,7 @@ Deno.serve(async (req) => {
 
     // Parse request body
     const body: ApplicationSubmission = await req.json();
-    const { jobSlug, fullName, email, linkedinUrl, portfolioUrl, coverNote, resumeFile } = body;
+    const { jobSlug, fullName, email, linkedinUrl, portfolioUrl, portfolioUrl2, coverNote, resumeFile } = body;
 
     console.log('Processing application for user:', user.id, 'job:', jobSlug);
 
@@ -218,6 +219,7 @@ Deno.serve(async (req) => {
         email: email,
         linkedin_url: linkedinUrl || null,
         portfolio_url: portfolioUrl || null,
+        portfolio_url_2: portfolioUrl2 || null,
         cover_note: coverNote || null,
         resume_url: publicUrl,
         token_usage_snapshot: eligibilityData.used_count,

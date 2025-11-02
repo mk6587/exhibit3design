@@ -564,6 +564,7 @@ export type Database = {
           job_slug: string
           linkedin_url: string | null
           portfolio_url: string | null
+          portfolio_url_2: string | null
           resume_url: string
           status: string
           token_usage_snapshot: number
@@ -580,6 +581,7 @@ export type Database = {
           job_slug: string
           linkedin_url?: string | null
           portfolio_url?: string | null
+          portfolio_url_2?: string | null
           resume_url: string
           status?: string
           token_usage_snapshot?: number
@@ -596,6 +598,7 @@ export type Database = {
           job_slug?: string
           linkedin_url?: string | null
           portfolio_url?: string | null
+          portfolio_url_2?: string | null
           resume_url?: string
           status?: string
           token_usage_snapshot?: number
