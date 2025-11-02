@@ -18,6 +18,7 @@ import {
   Image,
   Eraser,
   Mail,
+  Briefcase,
 } from "lucide-react";
 import {
   Sidebar,
@@ -42,6 +43,7 @@ const menuStructure = [
       { title: "Dashboard", url: "/admin", icon: LayoutDashboard, requiredRole: ['super_admin', 'operator'] },
       { title: "Products", url: "/admin/products", icon: Package, requiredRole: ['operator', 'content_creator'] },
       { title: "File Requests", url: "/admin/file-requests", icon: FileText, requiredRole: 'operator' },
+      { title: "Career Applications", url: "/admin/career-applications", icon: Briefcase, requiredRole: ['super_admin', 'operator'] },
       { title: "Subscriptions", url: "/admin/subscriptions", icon: Crown, requiredRole: 'super_admin' },
       { title: "Users", url: "/admin/users", icon: Users, requiredRole: 'super_admin' },
     ],

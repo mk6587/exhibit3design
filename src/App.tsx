@@ -61,6 +61,7 @@ const AdminPlansPage = lazy(() => lazyRetry(() => import("./pages/AdminPlansPage
 const AdminAISamplesPage = lazy(() => lazyRetry(() => import("./pages/AdminAISamplesPage")));
 const AdminAIDemoConfigPage = lazy(() => lazyRetry(() => import("./pages/AdminAIDemoConfigPage")));
 const AdminFileRequestsPage = lazy(() => lazyRetry(() => import("./pages/AdminFileRequestsPage")));
+const AdminCareerApplicationsPage = lazy(() => lazyRetry(() => import("./pages/AdminCareerApplicationsPage")));
 const AdminSecurityPage = lazy(() => lazyRetry(() => import("./pages/AdminSecurityPage")));
 const AdminRolesPage = lazy(() => lazyRetry(() => import("./pages/AdminRolesPage")));
 const AdminActivityLogPage = lazy(() => lazyRetry(() => import("./pages/AdminActivityLogPage")));
@@ -162,6 +163,11 @@ const App = () => {
                         <Route path="/admin/file-requests" element={
                           <ProtectedAdminRoute>
                             <AdminFileRequestsPage />
+                          </ProtectedAdminRoute>
+                        } />
+                        <Route path="/admin/career-applications" element={
+                          <ProtectedAdminRoute>
+                            <AdminCareerApplicationsPage />
                           </ProtectedAdminRoute>
                         } />
                         <Route path="/admin/plans" element={
