@@ -1,21 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
-import { useProtectedExternalLink } from "@/hooks/useProtectedExternalLink";
-import LazyImage from "@/components/performance/LazyImage";
+import { AIStudioLink } from "@/components/ui/AIStudioLink";
 export const HeroSection = () => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [posterLoaded, setPosterLoaded] = useState(false);
   const [posterError, setPosterError] = useState(false);
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
-  const {
-    navigateToProtectedLink
-  } = useProtectedExternalLink();
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const videoUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/videos-public/exhibit_hp_video.mp4";
   const posterUrl = "https://fipebdkvzdrljwwxccrj.supabase.co/storage/v1/object/public/images/1.jpg";
   const hasVideo = true;
-  const aiStudioUrl = "https://ai.exhibit3design.com/?service=rotate-360";
   const handleVideoCanPlay = () => {
     setVideoLoaded(true);
   };
@@ -67,9 +62,11 @@ export const HeroSection = () => {
         }}>Add visitors, edit objects, and create rotating videos with AI.</p>
           
           <div className="flex justify-center">
-            <Button size="lg" variant="outline" className="bg-purple-600/40 text-white border-purple-400/70 hover:bg-purple-600/50" onClick={() => navigateToProtectedLink(aiStudioUrl)}>
-              Create with AI Now
-            </Button>
+            <AIStudioLink queryParams="?service=rotate-360">
+              <Button size="lg" variant="outline" className="bg-purple-600/40 text-white border-purple-400/70 hover:bg-purple-600/50">
+                Create with AI Now
+              </Button>
+            </AIStudioLink>
           </div>
           {!hasVideo && <div className="text-sm text-white/80 bg-black/20 px-4 py-2 rounded-lg backdrop-blur-sm mt-4">
               💡 Upload a video to the videos storage bucket to replace this image

@@ -26,8 +26,9 @@ export async function generateAIStudioToken(userId: string, email: string): Prom
 /**
  * Opens AI Studio with authentication token
  * Opens the window immediately to avoid popup blockers, then updates the URL
+ * @param queryParams - Optional query parameters to append (e.g., "?service=rotate-360")
  */
-export async function openAIStudio(userId: string, email: string) {
+export async function openAIStudio(userId: string, email: string, queryParams?: string) {
   // Open window immediately (synchronously) to avoid popup blockers
   const newWindow = window.open('about:blank', '_blank');
   
@@ -37,7 +38,9 @@ export async function openAIStudio(userId: string, email: string) {
 
   try {
     const token = await generateAIStudioToken(userId, email);
-    const url = `${AI_STUDIO_URL}?token=${encodeURIComponent(token)}`;
+    const separator = queryParams?.includes('?') ? '&' : '?';
+    const params = queryParams || '';
+    const url = `${AI_STUDIO_URL}${params}${separator}token=${encodeURIComponent(token)}`;
     newWindow.location.href = url;
   } catch (error) {
     console.error('Error opening AI Studio:', error);

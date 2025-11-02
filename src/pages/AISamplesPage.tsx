@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { trackPageView } from "@/services/ga4Analytics";
 import { BeforeAfterSlider } from "@/components/home/BeforeAfterSlider";
 import { PageSkeleton } from "@/components/ui/page-skeleton";
+import { AIStudioLink } from "@/components/ui/AIStudioLink";
 
 interface AICuratedSample {
   id: string;
@@ -735,12 +736,12 @@ export default function AISamplesPage() {
                     <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                     <span className="text-sm sm:text-base">Generate (Demo)</span>
                   </Button>
-                  <Button asChild size="default" variant="outline" className="w-full sm:w-auto">
-                    <a href={selectedService?.aiStudioLink || "https://ai.exhibit3design.com"} target="_blank" rel="noopener noreferrer">
+                  <AIStudioLink queryParams={selectedService?.aiStudioLink?.replace('https://ai.exhibit3design.com', '') || ''}>
+                    <Button size="default" variant="outline" className="w-full sm:w-auto">
                       <span className="text-sm sm:text-base">Use Now in AI Studio</span>
                       <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-2" />
-                    </a>
-                  </Button>
+                    </Button>
+                  </AIStudioLink>
                 </>
               ) : (
                 <>
@@ -748,12 +749,12 @@ export default function AISamplesPage() {
                     <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                     <span className="text-sm sm:text-base">Get Started Free</span>
                   </Button>
-                  <Button asChild size="default" variant="outline" className="w-full sm:w-auto">
-                    <a href={selectedService?.aiStudioLink || "https://ai.exhibit3design.com"} target="_blank" rel="noopener noreferrer">
+                  <AIStudioLink queryParams={selectedService?.aiStudioLink?.replace('https://ai.exhibit3design.com', '') || ''}>
+                    <Button size="default" variant="outline" className="w-full sm:w-auto">
                       <span className="text-sm sm:text-base">Use Now in AI Studio</span>
                       <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-2" />
-                    </a>
-                  </Button>
+                    </Button>
+                  </AIStudioLink>
                 </>
               )}
             </div>

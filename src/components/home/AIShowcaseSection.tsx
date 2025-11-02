@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Wand2, Zap, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useProtectedExternalLink } from "@/hooks/useProtectedExternalLink";
+import { AIStudioLink } from "@/components/ui/AIStudioLink";
 import { BeforeAfterSlider } from "./BeforeAfterSlider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,9 +35,7 @@ export const AIShowcaseSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [aiSamples, setAiSamples] = useState<AISample[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { navigateToProtectedLink } = useProtectedExternalLink();
   const isMobile = useIsMobile();
-  const pricingUrl = "https://ai.exhibit3design.com/";
 
   useEffect(() => {
     fetchSamples();
@@ -217,14 +215,15 @@ export const AIShowcaseSection = () => {
 
         {/* CTA Button */}
         <div className="flex justify-center">
-          <Button
-            size="lg"
-            className="px-6 py-5 md:px-8 md:py-6 text-sm md:text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-            style={{ backgroundColor: "#8E44FF" }}
-            onClick={() => navigateToProtectedLink(pricingUrl)}
-          >
-            Create with AI Now
-          </Button>
+          <AIStudioLink>
+            <Button
+              size="lg"
+              className="px-6 py-5 md:px-8 md:py-6 text-sm md:text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+              style={{ backgroundColor: "#8E44FF" }}
+            >
+              Create with AI Now
+            </Button>
+          </AIStudioLink>
         </div>
       </div>
     </section>
