@@ -25,7 +25,8 @@ export const PasswordResetEmail = ({
   redirect_to,
   user_email,
 }: PasswordResetEmailProps) => {
-  const resetUrl = `${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to || `${supabase_url}/reset-password`}`
+  const exhibitUrl = 'https://www.exhibit3design.com/reset-password'
+  const resetUrl = `${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to || exhibitUrl}`
 
   return (
     <Html>
