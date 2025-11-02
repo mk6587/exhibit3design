@@ -16,14 +16,16 @@ import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { otpSchema } from '@/lib/validationSchemas';
 import { trackPageView, trackAuthEvent } from '@/services/ga4Analytics';
+import { setAuthRedirect, getAndClearAuthRedirect } from '@/utils/authRedirect';
 
 // Cloudflare Turnstile site key from environment variables
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
 
 const OTPAuthPage = () => {
-  // Get email from URL params if available
+  // Get email and next redirect from URL params if available
   const searchParams = new URLSearchParams(window.location.search);
   const emailFromUrl = searchParams.get('email') || '';
+  const nextUrl = searchParams.get('next');
   
   const [email, setEmail] = useState(emailFromUrl);
   const [otp, setOTP] = useState('');
@@ -37,6 +39,13 @@ const OTPAuthPage = () => {
   const { user, signInWithGoogle } = useAuth();
   const { sendOTP, verifyOTP, isLoading } = useOTPAuth();
   const navigate = useNavigate();
+
+  // Store redirect URL if provided
+  useEffect(() => {
+    if (nextUrl) {
+      setAuthRedirect(nextUrl);
+    }
+  }, [nextUrl]);
   
   // Refs for focus management
   const otpInputRef = useRef<HTMLInputElement>(null);
@@ -50,7 +59,8 @@ const OTPAuthPage = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      navigate('/');
+      const redirectUrl = getAndClearAuthRedirect();
+      navigate(redirectUrl || '/');
     }
   }, [user, navigate]);
 
@@ -152,12 +162,12 @@ const OTPAuthPage = () => {
     
     if (result.success) {
       if (result.magicLink) {
-        // Redirect to the magic link - AuthContext will handle the post-login redirect
-        // to any stored URL (like AI Studio) after authentication completes
+        // Redirect to the magic link
         window.location.href = result.magicLink;
       } else {
-        // Fallback: navigate to home if no magic link
-        navigate('/');
+        // Check for stored redirect URL, otherwise go to home
+        const redirectUrl = getAndClearAuthRedirect();
+        navigate(redirectUrl || '/');
       }
     } else {
       // Show specific error messages based on error type
