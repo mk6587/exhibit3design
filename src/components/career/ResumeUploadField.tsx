@@ -9,6 +9,7 @@ interface ResumeUploadFieldProps {
   onChange: (file: File | null) => void;
   isEligible: boolean;
   isLoading: boolean;
+  email?: string;
 }
 
 export const ResumeUploadField = ({
@@ -16,6 +17,7 @@ export const ResumeUploadField = ({
   onChange,
   isEligible,
   isLoading,
+  email = ''
 }: ResumeUploadFieldProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -53,7 +55,12 @@ export const ResumeUploadField = ({
             Please sign in to upload your resume
           </p>
           <button
-            onClick={() => navigate('/auth?next=' + encodeURIComponent('/careers/3d-designer#apply'))}
+            onClick={() => {
+              const params = new URLSearchParams();
+              params.set('next', '/careers/3d-designer#apply');
+              if (email) params.set('email', email);
+              navigate('/auth?' + params.toString());
+            }}
             className="text-sm text-primary hover:underline font-medium"
           >
             Sign in or create an account →

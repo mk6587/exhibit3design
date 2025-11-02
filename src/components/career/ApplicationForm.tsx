@@ -190,6 +190,7 @@ export const ApplicationForm = ({ jobSlug }: ApplicationFormProps) => {
           onChange={setResumeFile}
           isEligible={isEligible}
           isLoading={checkingEligibility}
+          email={formData.email}
         />
 
         <Button

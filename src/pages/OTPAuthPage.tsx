@@ -21,7 +21,11 @@ import { trackPageView, trackAuthEvent } from '@/services/ga4Analytics';
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
 
 const OTPAuthPage = () => {
-  const [email, setEmail] = useState('');
+  // Get email from URL params if available
+  const searchParams = new URLSearchParams(window.location.search);
+  const emailFromUrl = searchParams.get('email') || '';
+  
+  const [email, setEmail] = useState(emailFromUrl);
   const [otp, setOTP] = useState('');
   const [step, setStep] = useState<'email' | 'otp'>('email');
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
