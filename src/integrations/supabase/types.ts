@@ -1207,7 +1207,13 @@ export type Database = {
       }
       check_application_eligibility: {
         Args: { p_user_id: string }
-        Returns: Json
+        Returns: {
+          eligible: boolean
+          has_used_token: boolean
+          reason: string
+          remaining_tokens: number
+          used_count: number
+        }[]
       }
       check_application_rate_limit: {
         Args: { p_job_slug: string; p_user_id: string }
