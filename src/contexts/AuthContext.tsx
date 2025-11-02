@@ -352,6 +352,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, [user?.id]);
 
+  // Refresh profile when window regains focus (e.g., returning from AI Studio)
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('Window became visible - refreshing profile');
+        refreshProfile();
+      }
+    };
+
+    const handleFocus = () => {
+      console.log('Window gained focus - refreshing profile');
+      refreshProfile();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [user?.id]);
+
   // Email validation function
   const validateEmail = (email: string): { isValid: boolean; error?: string } => {
     // Basic format check
