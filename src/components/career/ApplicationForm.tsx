@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { ResumeUploadField } from './ResumeUploadField';
 import { TokenGateBanner } from './TokenGateBanner';
 import { useTokenEligibility } from '@/hooks/useTokenEligibility';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle } from 'lucide-react';
 
 interface ApplicationFormProps {
   jobSlug: string;
@@ -28,6 +28,7 @@ export const ApplicationForm = ({ jobSlug }: ApplicationFormProps) => {
   });
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const isEligible = eligibility?.eligible ?? false;
 
@@ -104,15 +105,8 @@ export const ApplicationForm = ({ jobSlug }: ApplicationFormProps) => {
 
       toast.success('Application submitted successfully!');
       
-      // Reset form
-      setFormData({
-        fullName: '',
-        email: user?.email || '',
-        linkedinUrl: '',
-        portfolioUrl: '',
-        coverNote: '',
-      });
-      setResumeFile(null);
+      // Show success message
+      setSubmitted(true);
 
       // Scroll to top to show success message
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -124,6 +118,22 @@ export const ApplicationForm = ({ jobSlug }: ApplicationFormProps) => {
       setIsSubmitting(false);
     }
   };
+
+  if (submitted) {
+    return (
+      <div className="bg-card rounded-lg border p-6" id="apply">
+        <div className="flex flex-col items-center justify-center py-12 space-y-4">
+          <div className="bg-green-100 dark:bg-green-900/20 rounded-full p-4">
+            <CheckCircle className="h-16 w-16 text-green-600 dark:text-green-400" />
+          </div>
+          <h2 className="text-2xl font-bold text-center">Resume Successfully Submitted!</h2>
+          <p className="text-muted-foreground text-center max-w-md">
+            Thank you for your application. We've received your resume and will get back to you as soon as possible.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-card rounded-lg border p-6" id="apply">
