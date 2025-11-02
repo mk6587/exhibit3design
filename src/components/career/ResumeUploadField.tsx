@@ -3,6 +3,8 @@ import { Input } from '@/components/ui/input';
 import { Lock, Upload, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { openAIStudio } from '@/utils/aiStudioAuth';
+import { toast } from 'sonner';
 
 interface ResumeUploadFieldProps {
   file: File | null;
@@ -80,14 +82,20 @@ export const ResumeUploadField = ({
           </p>
           <p className="text-sm text-muted-foreground">
             You must use at least 1 AI token before applying.{' '}
-            <a
-              href="https://ai.exhibit3design.com"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={async () => {
+                if (user) {
+                  try {
+                    await openAIStudio(user.id, user.email || '');
+                  } catch (error) {
+                    toast.error('Failed to open AI Studio. Please try again.');
+                  }
+                }
+              }}
               className="text-primary hover:underline font-medium"
             >
               Try AI Studio now →
-            </a>
+            </button>
           </p>
         </div>
       );
