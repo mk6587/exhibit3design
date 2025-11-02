@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return <footer className="bg-secondary mt-auto relative z-10">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="font-semibold text-lg mb-4">Exhibit3Designs</h3>
             <p className="text-sm text-muted-foreground mb-4">
@@ -58,6 +58,13 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/faq" className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20" style={{
+                WebkitTapHighlightColor: 'transparent'
+              }}>
+                  FAQ
+                </Link>
+              </li>
+              <li>
                 <Link to="/academy" className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20" style={{
                 WebkitTapHighlightColor: 'transparent'
               }}>
@@ -66,25 +73,6 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Support</h3>
-            <ul className="space-y-1 text-sm">
-              <li>
-                <Link to="/auth" className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20" style={{
-                WebkitTapHighlightColor: 'transparent'
-              }}>Login / Register</Link>
-              </li>
-              <li>
-                <Link to="/faq" className="block py-3 px-2 -mx-2 hover:text-primary hover:bg-muted/50 rounded transition-all duration-200 min-h-[44px] flex items-center relative z-20" style={{
-                WebkitTapHighlightColor: 'transparent'
-              }}>
-                  FAQ
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
           
         </div>
         
