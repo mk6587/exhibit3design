@@ -27,6 +27,7 @@ const PricingPage = lazy(() => lazyRetry(() => import("./pages/PricingPage")));
 const AISamplesPage = lazy(() => lazyRetry(() => import("./pages/AISamplesPage")));
 const ProfilePage = lazy(() => lazyRetry(() => import("./pages/ProfilePage")));
 const CareerPage3DDesigner = lazy(() => lazyRetry(() => import("./pages/CareerPage3DDesigner")));
+const CareersPage = lazy(() => lazyRetry(() => import("./pages/CareersPage")));
 
 // Secondary pages with retry logic
 const AboutPage = lazy(() => lazyRetry(() => import("./pages/AboutPage")));
@@ -254,6 +255,7 @@ const App = () => {
                         <Route path="/subscription-checkout" element={<SubscriptionCheckoutPage />} />
                         <Route path="/ai-samples" element={<AISamplesPage />} />
                         <Route path="/ai-sample" element={<AISamplesPage />} />
+                        <Route path="/careers" element={<CareersPage />} />
                         <Route path="/careers/3d-designer" element={<CareerPage3DDesigner />} />
                         <Route path="/403" element={<ForbiddenPage />} />
                         
