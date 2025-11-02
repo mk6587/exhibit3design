@@ -176,8 +176,8 @@ const CareerPage3DDesigner = () => {
                     3
                   </div>
                   <div>
-                    <p className="font-semibold mb-2">Complete a short design task</p>
-                    <p className="text-sm text-muted-foreground">After submission, we'll send you a short design task to assess your creativity</p>
+                    <p className="font-semibold mb-2">Complete a short task</p>
+                    <p className="text-sm text-muted-foreground">During submission, we want you to do a short task just for more familiarity with our services and values.</p>
                   </div>
                 </div>
               </CardContent>
