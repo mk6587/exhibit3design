@@ -219,9 +219,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             const isOAuthCallback = searchParams.get('oauth') === 'google';
             
             if (isEmbedded && isOAuthCallback) {
-              console.log('🔐 OAuth callback in embedded mode - sending postMessage');
+              console.log('[Google OAuth Embedded] Starting embedded OAuth flow', {
+                isEmbedded,
+                isOAuthCallback,
+                hasOpener: !!window.opener,
+                userId: session.user.id,
+                email: session.user.email
+              });
+              
               try {
                 // Get JWT token for AI Studio
+                console.log('[Google OAuth Embedded] Calling auth-postmessage edge function...');
                 const { data: tokenData, error: tokenError } = await supabase.functions.invoke('auth-postmessage', {
                   body: { 
                     userId: session.user.id, 
@@ -229,29 +237,37 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                   }
                 });
 
+                console.log('[Google OAuth Embedded] Edge function response:', { tokenData, tokenError });
+
                 if (tokenError || !tokenData?.token) {
+                  console.error('[Google OAuth Embedded] Failed to generate token:', tokenError);
                   throw new Error('Failed to generate authentication token');
                 }
 
                 // Send auth success message to AI Studio
                 if (window.opener) {
-                  window.opener.postMessage(
-                    {
-                      type: 'auth-success',
-                      token: tokenData.token,
-                      userId: session.user.id,
-                      email: session.user.email
-                    },
-                    'https://ai.exhibit3design.com'
-                  );
+                  const message = {
+                    type: 'auth-success',
+                    token: tokenData.token,
+                    userId: session.user.id,
+                    email: session.user.email
+                  };
                   
-                  // Close the OAuth popup after a short delay
+                  console.log('[Google OAuth Embedded] Sending postMessage to AI Studio:', message);
+                  window.opener.postMessage(message, 'https://ai.exhibit3design.com');
+                  console.log('[Google OAuth Embedded] postMessage sent successfully');
+                  
+                  // Close the OAuth popup after a delay
+                  console.log('[Google OAuth Embedded] Window will close in 5 seconds');
                   setTimeout(() => {
+                    console.log('[Google OAuth Embedded] Closing window now');
                     window.close();
-                  }, 1500);
+                  }, 5000);
+                } else {
+                  console.warn('[Google OAuth Embedded] No window.opener available');
                 }
               } catch (error) {
-                console.error('Failed to send postMessage after OAuth:', error);
+                console.error('[Google OAuth Embedded] Error in embedded OAuth flow:', error);
               }
               return;
             }

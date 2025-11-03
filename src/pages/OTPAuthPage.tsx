@@ -164,8 +164,16 @@ const OTPAuthPage = () => {
     if (result.success) {
       // If embedded mode, send postMessage to opener and close
       if (isEmbedded && result.user) {
+        console.log('[OTP Embedded Auth] Starting embedded auth flow', {
+          isEmbedded,
+          hasOpener: !!window.opener,
+          userId: result.user.id,
+          email: result.user.email
+        });
+
         try {
           // Get JWT token for AI Studio
+          console.log('[OTP Embedded Auth] Calling auth-postmessage edge function...');
           const { data: tokenData, error: tokenError } = await supabase.functions.invoke('auth-postmessage', {
             body: { 
               userId: result.user.id, 
@@ -173,21 +181,27 @@ const OTPAuthPage = () => {
             }
           });
 
+          console.log('[OTP Embedded Auth] Edge function response:', { tokenData, tokenError });
+
           if (tokenError || !tokenData?.token) {
+            console.error('[OTP Embedded Auth] Failed to generate token:', tokenError);
             throw new Error('Failed to generate authentication token');
           }
 
           // Send auth success message to AI Studio
           if (window.opener) {
-            window.opener.postMessage(
-              {
-                type: 'auth-success',
-                token: tokenData.token,
-                userId: result.user.id,
-                email: result.user.email
-              },
-              'https://ai.exhibit3design.com'
-            );
+            const message = {
+              type: 'auth-success',
+              token: tokenData.token,
+              userId: result.user.id,
+              email: result.user.email
+            };
+            
+            console.log('[OTP Embedded Auth] Sending postMessage to AI Studio:', message);
+            window.opener.postMessage(message, 'https://ai.exhibit3design.com');
+            console.log('[OTP Embedded Auth] postMessage sent successfully');
+          } else {
+            console.warn('[OTP Embedded Auth] No window.opener available');
           }
 
           // Show success message and auto-close
@@ -196,13 +210,15 @@ const OTPAuthPage = () => {
             description: "Redirecting you back to AI Studio...",
           });
 
+          console.log('[OTP Embedded Auth] Window will close in 5 seconds');
           setTimeout(() => {
+            console.log('[OTP Embedded Auth] Closing window now');
             window.close();
-          }, 1500);
+          }, 5000);
           
           return;
         } catch (error) {
-          console.error('Failed to send postMessage:', error);
+          console.error('[OTP Embedded Auth] Error in embedded flow:', error);
           setError('Authentication successful, but failed to communicate with AI Studio. Please try again.');
           return;
         }
