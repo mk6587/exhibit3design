@@ -212,15 +212,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           }, 1000);
           
           // Handle post-login redirect to stored URL (e.g., AI Studio)
-          setTimeout(() => {
+          setTimeout(async () => {
             const redirectUrl = sessionStorage.getItem('auth_redirect_url');
             if (redirectUrl) {
               sessionStorage.removeItem('auth_redirect_url');
               console.log('🔄 Redirecting authenticated user to stored URL:', redirectUrl);
-              // Use a longer delay to ensure auth state is fully established
-              setTimeout(() => {
-                window.location.href = redirectUrl;
-              }, 1000);
+              
+              // Check if this is an AI Studio redirect
+              if (redirectUrl.startsWith('ai-studio:')) {
+                const queryParams = redirectUrl.replace('ai-studio:', '');
+                const { openAIStudio } = await import('@/utils/aiStudioAuth');
+                try {
+                  await openAIStudio(session.user.id, session.user.email || '', queryParams);
+                } catch (error) {
+                  console.error('Failed to redirect to AI Studio:', error);
+                }
+              } else {
+                // Regular URL redirect
+                setTimeout(() => {
+                  window.location.href = redirectUrl;
+                }, 500);
+              }
             }
           }, 500);
         }

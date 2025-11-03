@@ -126,6 +126,9 @@ export default function PricingPage() {
     e.preventDefault();
     
     if (!user) {
+      // Store AI Studio redirect for after authentication
+      const { setAuthRedirect } = await import('@/utils/authRedirect');
+      setAuthRedirect('ai-studio:');
       navigate('/auth');
       return;
     }

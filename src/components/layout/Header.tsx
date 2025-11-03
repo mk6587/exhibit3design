@@ -59,6 +59,9 @@ const Header = () => {
 
   const handleAIStudioClick = async () => {
     if (!user) {
+      // Store AI Studio redirect for after authentication
+      const { setAuthRedirect } = await import('@/utils/authRedirect');
+      setAuthRedirect('ai-studio:');
       toast({
         title: "Login Required",
         description: "Please login to access AI Studio",
