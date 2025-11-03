@@ -62,7 +62,7 @@ export const HeroSection = () => {
         }}>Add visitors, edit objects, and create rotating videos with AI.</p>
           
           <div className="flex justify-center">
-            <AIStudioLink queryParams="?service=rotate-360">
+            <AIStudioLink serviceId="rotate-360">
               <Button size="lg" variant="outline" className="bg-purple-600/40 text-white border-purple-400/70 hover:bg-purple-600/50">
                 Create with AI Now
               </Button>

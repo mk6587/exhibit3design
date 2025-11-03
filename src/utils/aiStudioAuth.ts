@@ -1,36 +1,79 @@
+/**
+ * Helper utility for navigating to AI Studio with authentication
+ * This file is used on the main site (exhibit3design.com)
+ */
+
 import { supabase } from '@/integrations/supabase/client';
 
-const AI_STUDIO_URL = 'https://ai.exhibit3design.com';
+/**
+ * Navigate to AI Studio with current session tokens
+ * Call this function when user clicks link to AI Studio
+ */
+export async function navigateToAIStudio(serviceId?: string) {
+  try {
+    // Get current session
+    const { data: { session }, error } = await supabase.auth.getSession();
+    
+    console.log('[Auth Redirect] Getting session for AI Studio navigation...');
+    console.log('[Auth Redirect] Session exists:', !!session);
+    console.log('[Auth Redirect] User:', session?.user?.email);
+    
+    if (error || !session) {
+      console.error('[Auth Redirect] No active session:', error);
+      // Redirect without tokens - user will need to sign in
+      const baseUrl = 'https://ai.exhibit3design.com';
+      const url = serviceId ? `${baseUrl}?service=${serviceId}` : baseUrl;
+      window.location.href = url;
+      return;
+    }
+    
+    // Extract tokens from session
+    const accessToken = session.access_token;
+    const refreshToken = session.refresh_token;
+    
+    if (!accessToken || !refreshToken) {
+      console.error('[Auth Redirect] Session missing tokens');
+      const baseUrl = 'https://ai.exhibit3design.com';
+      const url = serviceId ? `${baseUrl}?service=${serviceId}` : baseUrl;
+      window.location.href = url;
+      return;
+    }
+    
+    console.log('[Auth Redirect] Building URL with tokens...');
+    console.log('[Auth Redirect] Access token length:', accessToken.length);
+    console.log('[Auth Redirect] Refresh token length:', refreshToken.length);
+    
+    // Build URL with tokens
+    const baseUrl = 'https://ai.exhibit3design.com';
+    const params = new URLSearchParams();
+    params.append('access_token', accessToken);
+    params.append('refresh_token', refreshToken);
+    if (serviceId) {
+      params.append('service', serviceId);
+    }
+    
+    const finalUrl = `${baseUrl}?${params.toString()}`;
+    console.log('[Auth Redirect] Final URL:', finalUrl.substring(0, 100) + '...');
+    console.log('[Auth Redirect] Navigating to AI Studio...');
+    
+    // Navigate to AI Studio with tokens
+    window.location.href = finalUrl;
+    
+  } catch (error) {
+    console.error('[Auth Redirect] Error during navigation:', error);
+    // Fallback: redirect without tokens
+    const baseUrl = 'https://ai.exhibit3design.com';
+    const url = serviceId ? `${baseUrl}?service=${serviceId}` : baseUrl;
+    window.location.href = url;
+  }
+}
 
 /**
- * Opens AI Studio in a new tab with Supabase session tokens
- * @param queryParams - Optional query parameters to append (e.g., "?service=rotate-360")
+ * Legacy function name for backwards compatibility
  */
 export async function openAIStudio(userId: string, email: string, queryParams?: string) {
-  try {
-    // Get the current Supabase session
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (session?.access_token && session?.refresh_token) {
-      // User is authenticated - pass tokens to AI Studio
-      const url = new URL(AI_STUDIO_URL);
-      if (queryParams) {
-        // Add any query params from the queryParams string
-        const params = new URLSearchParams(queryParams.replace(/^\?/, ''));
-        params.forEach((value, key) => url.searchParams.set(key, value));
-      }
-      url.searchParams.set('access_token', session.access_token);
-      url.searchParams.set('refresh_token', session.refresh_token);
-      window.open(url.toString(), '_blank');
-    } else {
-      // User not authenticated - open AI Studio without tokens
-      const url = queryParams 
-        ? `${AI_STUDIO_URL}${queryParams}`
-        : AI_STUDIO_URL;
-      window.open(url, '_blank');
-    }
-  } catch (error) {
-    console.error('Error opening AI Studio:', error);
-    throw new Error('Failed to authenticate with AI Studio');
-  }
+  // Extract service from query params if present
+  const serviceMatch = queryParams?.match(/[?&]service=([^&]+)/);
+  const serviceId = serviceMatch ? serviceMatch[1] : undefined;
+  return navigateToAIStudio(serviceId);
 }

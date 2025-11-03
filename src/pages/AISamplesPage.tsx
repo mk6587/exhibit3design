@@ -736,7 +736,7 @@ export default function AISamplesPage() {
                     <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                     <span className="text-sm sm:text-base">Generate (Demo)</span>
                   </Button>
-                  <AIStudioLink queryParams={selectedService?.aiStudioLink?.replace('https://ai.exhibit3design.com', '') || ''}>
+                  <AIStudioLink serviceId={selectedService?.aiStudioLink?.match(/[?&]service=([^&]+)/)?.[1] || undefined}>
                     <Button size="default" variant="outline" className="w-full sm:w-auto">
                       <span className="text-sm sm:text-base">Use Now in AI Studio</span>
                       <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-2" />
@@ -749,7 +749,7 @@ export default function AISamplesPage() {
                     <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                     <span className="text-sm sm:text-base">Get Started Free</span>
                   </Button>
-                  <AIStudioLink queryParams={selectedService?.aiStudioLink?.replace('https://ai.exhibit3design.com', '') || ''}>
+                  <AIStudioLink serviceId={selectedService?.aiStudioLink?.match(/[?&]service=([^&]+)/)?.[1] || undefined}>
                     <Button size="default" variant="outline" className="w-full sm:w-auto">
                       <span className="text-sm sm:text-base">Use Now in AI Studio</span>
                       <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-2" />

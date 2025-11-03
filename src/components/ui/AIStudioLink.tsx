@@ -1,43 +1,24 @@
-import { useAuth } from '@/contexts/AuthContext';
-import { openAIStudio } from '@/utils/aiStudioAuth';
-import { toast } from 'sonner';
+import { navigateToAIStudio } from '@/utils/aiStudioAuth';
 import { AnchorHTMLAttributes } from 'react';
 
 interface AIStudioLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'onClick'> {
   children: React.ReactNode;
-  queryParams?: string; // e.g., "?service=rotate-360" or "/?service=rotate-360"
+  serviceId?: string; // e.g., "rotate-360" or "add-visitors"
 }
 
 /**
  * A link component that automatically handles authentication when navigating to AI Studio
  * Use this for any link that points to ai.exhibit3design.com
- * Supports query parameters for specific services
+ * Supports service parameter for specific services
  */
-export const AIStudioLink = ({ children, className, queryParams, ...props }: AIStudioLinkProps) => {
-  const { user } = useAuth();
-
+export const AIStudioLink = ({ children, className, serviceId, ...props }: AIStudioLinkProps) => {
   const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    
-    if (!user) {
-      // Open AI Studio without auth - AI Studio will handle auth requirement
-      const url = queryParams 
-        ? `https://ai.exhibit3design.com${queryParams}`
-        : 'https://ai.exhibit3design.com';
-      window.open(url, '_blank');
-      return;
-    }
-
-    try {
-      await openAIStudio(user.id, user.email || '', queryParams);
-    } catch (error) {
-      console.error('Failed to open AI Studio:', error);
-      toast.error('Failed to open AI Studio. Please try again.');
-    }
+    await navigateToAIStudio(serviceId);
   };
 
-  const displayUrl = queryParams 
-    ? `https://ai.exhibit3design.com${queryParams}`
+  const displayUrl = serviceId 
+    ? `https://ai.exhibit3design.com?service=${serviceId}`
     : 'https://ai.exhibit3design.com';
 
   return (
