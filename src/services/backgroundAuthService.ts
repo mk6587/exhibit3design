@@ -4,7 +4,7 @@
  */
 
 import { refreshToken } from './tokenRefreshClient';
-import { checkAITokens } from '@/utils/tokenApi';
+import { getUserBalance } from '@/utils/tokenApi';
 import { onUnauthorized } from '@/utils/tokenApi';
 import {
   getToken,
@@ -142,7 +142,7 @@ class BackgroundAuthService {
     }
 
     try {
-      await checkAITokens(currentToken);
+      await getUserBalance(currentToken);
       console.log('[BackgroundAuth] Auth verification passed');
     } catch (error) {
       // 401 will be caught by onUnauthorized callback
