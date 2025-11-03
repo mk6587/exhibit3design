@@ -16,6 +16,7 @@ interface UserData {
   first_name: string;
   last_name: string;
   ai_tokens_balance: number;
+  ai_tokens_limit: number;
   video_results_balance: number;
   created_at: string;
   has_subscription: boolean;
@@ -58,6 +59,7 @@ export function UsersManagement() {
         first_name: profile.first_name || '',
         last_name: profile.last_name || '',
         ai_tokens_balance: profile.ai_tokens_balance || 0,
+        ai_tokens_limit: profile.ai_tokens_limit || 2,
         video_results_balance: profile.video_results_balance || 0,
         created_at: profile.created_at,
         has_subscription: subscribedUserIds.has(profile.user_id),

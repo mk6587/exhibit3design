@@ -1195,16 +1195,28 @@ export type Database = {
         }
         Returns: Json
       }
-      admin_update_user_tokens: {
-        Args: {
-          p_admin_id: string
-          p_ai_tokens: number
-          p_reason: string
-          p_user_id: string
-          p_video_results: number
-        }
-        Returns: Json
-      }
+      admin_update_user_tokens:
+        | {
+            Args: {
+              p_admin_id: string
+              p_ai_tokens: number
+              p_reason: string
+              p_user_id: string
+              p_video_results: number
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_admin_id: string
+              p_ai_tokens: number
+              p_ai_tokens_limit: number
+              p_reason: string
+              p_user_id: string
+              p_video_results: number
+            }
+            Returns: Json
+          }
       check_admin_ip_whitelist: {
         Args: { p_ip_address: string }
         Returns: boolean

@@ -70,7 +70,7 @@ export function AdjustTokensDialog({ open, onOpenChange, user, onUpdate }: Adjus
         p_ai_tokens_limit: aiTokensLimitNum,
         p_video_results: videoResultsNum,
         p_reason: reason
-      });
+      } as any);
 
       if (error) throw error;
       const result = data as any;

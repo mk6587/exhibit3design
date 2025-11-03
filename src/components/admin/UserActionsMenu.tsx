@@ -21,6 +21,7 @@ interface UserData {
   first_name: string;
   last_name: string;
   ai_tokens_balance: number;
+  ai_tokens_limit: number;
   video_results_balance: number;
   created_at: string;
   has_subscription: boolean;
