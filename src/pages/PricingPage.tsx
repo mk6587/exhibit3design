@@ -8,7 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { trackPageView, trackButtonClick } from "@/services/ga4Analytics";
-import { openAIStudio } from "@/utils/aiStudioAuth";
 import { toast } from "sonner";
 
 interface SubscriptionPlan {
@@ -122,22 +121,10 @@ export default function PricingPage() {
     return Check;
   };
 
-  const handleGetFreeTokens = async (e: React.MouseEvent) => {
+  const handleGetFreeTokens = (e: React.MouseEvent) => {
     e.preventDefault();
-    
-    if (!user) {
-      // Open AI Studio without auth - AI Studio will handle auth requirement
-      window.open('https://ai.exhibit3design.com', '_blank');
-      return;
-    }
-
-    try {
-      await openAIStudio(user.id, user.email || '');
-      trackButtonClick('get_free_tokens', 'pricing_page', { user_logged_in: true });
-    } catch (error) {
-      console.error('Error opening AI Studio:', error);
-      toast.error('Failed to open AI Studio');
-    }
+    trackButtonClick('get_free_tokens', 'pricing_page', { user_logged_in: !!user });
+    window.location.href = 'https://ai.exhibit3design.com';
   };
 
   return (

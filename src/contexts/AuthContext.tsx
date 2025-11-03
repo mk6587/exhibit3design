@@ -275,13 +275,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               
               // Check if this is an AI Studio redirect
               if (redirectUrl.startsWith('ai-studio:')) {
-                const queryParams = redirectUrl.replace('ai-studio:', '');
-                const { openAIStudio } = await import('@/utils/aiStudioAuth');
-                try {
-                  await openAIStudio(session.user.id, session.user.email || '', queryParams);
-                } catch (error) {
-                  console.error('Failed to redirect to AI Studio:', error);
-                }
+                // Simple redirect to AI Studio - cookies will handle auth
+                window.location.href = 'https://ai.exhibit3design.com';
               } else {
                 // Regular URL redirect
                 setTimeout(() => {

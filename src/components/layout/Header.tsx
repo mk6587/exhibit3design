@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/contexts/ProductsContext";
 import { useAdmin } from "@/contexts/AdminContext";
-import { openAIStudio } from "@/utils/aiStudioAuth";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { AIStudioCTA, AIStudioCTAMobile } from "./AIStudioCTA";
@@ -56,28 +55,6 @@ const Header = () => {
       window.location.reload();
     }
   };
-
-  const handleAIStudioClick = async () => {
-    if (!user) {
-      // Open AI Studio without auth - AI Studio will handle auth requirement
-      window.open('https://ai.exhibit3design.com', '_blank');
-      return;
-    }
-
-    try {
-      await openAIStudio(user.id, user.email || '');
-      toast({
-        title: "Opening AI Studio",
-        description: "A new window will open with your AI Studio access",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to open AI Studio. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
   return <header className="bg-background border-b border-border fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between min-h-16">
         <Link to="/" className="font-bold text-lg sm:text-xl text-primary shrink-0 flex items-center h-full">
@@ -101,21 +78,23 @@ const Header = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={handleAIStudioClick}
+              asChild
               className="hidden md:flex items-center gap-1.5 hover:bg-muted px-2 relative"
             >
-              <Sparkles className="h-4 w-4 text-purple-600 transition-none" />
-              <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-none">
-                AI Studio
-              </span>
-              {profile && totalTokens > 0 && (
-                <Badge 
-                  variant="secondary" 
-                  className="ml-1 h-5 w-5 flex items-center justify-center p-0 text-[11px] font-bold bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10 rounded-full"
-                >
-                  {totalTokens}
-                </Badge>
-              )}
+              <a href="https://ai.exhibit3design.com" rel="noopener noreferrer">
+                <Sparkles className="h-4 w-4 text-purple-600 transition-none" />
+                <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-none">
+                  AI Studio
+                </span>
+                {profile && totalTokens > 0 && (
+                  <Badge 
+                    variant="secondary" 
+                    className="ml-1 h-5 w-5 flex items-center justify-center p-0 text-[11px] font-bold bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10 rounded-full"
+                  >
+                    {totalTokens}
+                  </Badge>
+                )}
+              </a>
             </Button>
           ) : (
             <AIStudioCTA />
@@ -148,21 +127,23 @@ const Header = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={handleAIStudioClick}
+              asChild
               className="md:hidden relative hover:bg-muted flex items-center gap-1 px-2"
             >
-              <Sparkles className="h-4 w-4 text-purple-600 transition-none" />
-              <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-none">
-                AI Studio
-              </span>
-              {profile && totalTokens > 0 && (
-                <Badge 
-                  variant="secondary" 
-                  className="ml-1 h-5 w-5 flex items-center justify-center p-0 text-[11px] font-bold bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10 rounded-full"
-                >
-                  {totalTokens}
-                </Badge>
-              )}
+              <a href="https://ai.exhibit3design.com" rel="noopener noreferrer">
+                <Sparkles className="h-4 w-4 text-purple-600 transition-none" />
+                <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-none">
+                  AI Studio
+                </span>
+                {profile && totalTokens > 0 && (
+                  <Badge 
+                    variant="secondary" 
+                    className="ml-1 h-5 w-5 flex items-center justify-center p-0 text-[11px] font-bold bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10 rounded-full"
+                  >
+                    {totalTokens}
+                  </Badge>
+                )}
+              </a>
             </Button>
           ) : (
             <AIStudioCTAMobile />
@@ -212,16 +193,15 @@ const Header = () => {
             FAQ
           </Link>
           
-          <button
-            onClick={() => {
-              handleAIStudioClick();
-              setIsMenuOpen(false);
-            }} 
+          <a
+            href="https://ai.exhibit3design.com"
+            rel="noopener noreferrer"
+            onClick={() => setIsMenuOpen(false)} 
             className="mobile-nav-item bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 transition-all text-left flex items-center w-full font-semibold"
           >
             <Sparkles className="h-5 w-5 mr-3" />
             AI Studio
-          </button>
+          </a>
           
           {user ? <>
               <Link to="/profile" className="mobile-nav-item hover:bg-flat-hover transition-colors flex items-center" onClick={() => setIsMenuOpen(false)}>
