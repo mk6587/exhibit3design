@@ -1,9 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { openAIStudio } from '@/utils/aiStudioAuth';
-import { setAuthRedirect } from '@/utils/authRedirect';
 import { toast } from 'sonner';
 import { AnchorHTMLAttributes } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 interface AIStudioLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'onClick'> {
   children: React.ReactNode;
@@ -17,16 +15,16 @@ interface AIStudioLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>
  */
 export const AIStudioLink = ({ children, className, queryParams, ...props }: AIStudioLinkProps) => {
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     
     if (!user) {
-      // Store the AI Studio URL with query params for post-auth redirect
-      const aiStudioUrl = `ai-studio:${queryParams || ''}`;
-      setAuthRedirect(aiStudioUrl);
-      navigate('/auth');
+      // Open AI Studio without auth - AI Studio will handle auth requirement
+      const url = queryParams 
+        ? `https://ai.exhibit3design.com${queryParams}`
+        : 'https://ai.exhibit3design.com';
+      window.open(url, '_blank');
       return;
     }
 

@@ -126,10 +126,8 @@ export default function PricingPage() {
     e.preventDefault();
     
     if (!user) {
-      // Store AI Studio redirect for after authentication
-      const { setAuthRedirect } = await import('@/utils/authRedirect');
-      setAuthRedirect('ai-studio:');
-      navigate('/auth');
+      // Open AI Studio without auth - AI Studio will handle auth requirement
+      window.open('https://ai.exhibit3design.com', '_blank');
       return;
     }
 
