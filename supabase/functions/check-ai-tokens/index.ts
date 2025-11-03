@@ -1,114 +1,78 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
-import * as jose from "https://deno.land/x/jose@v5.9.6/index.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+}
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    // Get JWT token from Authorization header
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return new Response(
-        JSON.stringify({ error: 'Missing or invalid authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      throw new Error('No authorization header')
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const secret = Deno.env.get('SHARED_JWT_SECRET');
+    const token = authHeader.replace('Bearer ', '')
     
-    if (!secret) {
-      console.error('SHARED_JWT_SECRET not configured');
-      return new Response(
-        JSON.stringify({ error: 'Server configuration error' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Create Supabase client with the user's JWT
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    )
 
-    // Verify JWT token
-    const secretKey = new TextEncoder().encode(secret);
-    const { payload } = await jose.jwtVerify(token, secretKey);
-
-    const userId = payload.userId as string;
-    if (!userId) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid token payload' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Query user's AI token usage
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Use the get_user_token_balance function to get accurate token data including limits
-    const { data: tokenData, error } = await supabase
-      .rpc('get_user_token_balance', { p_user_id: userId });
-
-    if (error) {
-      console.error('Error fetching token balance:', error);
-      return new Response(
-        JSON.stringify({ error: 'Failed to fetch user data' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Get ai_tokens_used from profiles table
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('ai_tokens_used, video_results_used')
-      .eq('user_id', userId)
-      .single();
-
-    const aiTokens = tokenData?.[0]?.ai_tokens || 0;
-    const videoTokens = tokenData?.[0]?.video_results || 0;
-    const aiTokensLimit = tokenData?.[0]?.ai_tokens_limit || 1;
-    const videoTokensLimit = tokenData?.[0]?.video_results_limit || 1;
+    // Get user from JWT
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token)
     
-    // Sum AI tokens and video tokens for total balance and limit
-    const tokensBalance = aiTokens + videoTokens;
-    const tokensLimit = aiTokensLimit + videoTokensLimit;
-    const tokensUsed = (profile?.ai_tokens_used || 0) + (profile?.video_results_used || 0);
-    const hasTokens = tokensBalance > 0;
+    if (userError || !user) {
+      console.error('[check-ai-tokens] Auth error:', userError)
+      throw new Error('Unauthorized')
+    }
+
+    // Query user_ai_tokens table for this user
+    const { data: tokenData, error: tokenError } = await supabase
+      .from('user_ai_tokens')
+      .select('tokens_used, tokens_limit, is_premium')
+      .eq('user_id', user.id)
+      .single()
+
+    if (tokenError && tokenError.code !== 'PGRST116') { // PGRST116 = no rows
+      console.error('[check-ai-tokens] Database error:', tokenError)
+      throw tokenError
+    }
+
+    // If no record exists, return default values
+    const tokensUsed = tokenData?.tokens_used || 0
+    const tokensLimit = tokenData?.tokens_limit || 100
+    const isPremium = tokenData?.is_premium || false
+    const tokensRemaining = Math.max(0, tokensLimit - tokensUsed)
+    const tokensBalance = tokensRemaining
 
     return new Response(
       JSON.stringify({
-        hasTokens,
+        hasTokens: tokensRemaining > 0,
         tokensUsed,
-        tokensRemaining: tokensBalance,
+        tokensRemaining,
         tokensBalance,
-        tokensLimit
+        tokensLimit,
+        isPremium
       }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    );
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
 
   } catch (error) {
-    console.error('Error in check-ai-tokens:', error);
-    
-    // Handle JWT verification errors specifically
-    if (error.code === 'ERR_JWT_EXPIRED') {
-      return new Response(
-        JSON.stringify({ error: 'Token expired' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
+    console.error('[check-ai-tokens] Error:', error)
     return new Response(
-      JSON.stringify({ error: error.message || 'Internal server error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+      JSON.stringify({ error: error.message }),
+      { 
+        status: error.message === 'Unauthorized' ? 401 : 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    )
   }
-});
+})
