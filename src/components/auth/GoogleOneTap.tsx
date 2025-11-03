@@ -12,10 +12,20 @@ const GoogleOneTap = ({ clientId }: GoogleOneTapProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const initialized = useRef(false);
 
   useEffect(() => {
+    // Wait for auth to finish loading
+    if (loading) {
+      return;
+    }
+
+    // Don't show if user is already authenticated
+    if (user) {
+      return;
+    }
+
     // Don't show on auth pages
     if (location.pathname === '/auth' || location.pathname === '/login' || location.pathname === '/register') {
       return;
@@ -26,10 +36,10 @@ const GoogleOneTap = ({ clientId }: GoogleOneTapProps) => {
       return;
     }
 
-    // Check if user dismissed or already authenticated
+    // Check if user dismissed One Tap
     const dismissed = localStorage.getItem('google-onetap-dismissed');
     
-    if (dismissed || user || initialized.current) {
+    if (dismissed || initialized.current) {
       return;
     }
 
@@ -66,7 +76,7 @@ const GoogleOneTap = ({ clientId }: GoogleOneTapProps) => {
       document.body.removeChild(script);
       }
     };
-  }, [clientId, user, location.pathname]);
+  }, [clientId, user, loading, location.pathname]);
 
   const handleCredentialResponse = async (response: any) => {
     try {
