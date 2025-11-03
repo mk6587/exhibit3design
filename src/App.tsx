@@ -16,6 +16,7 @@ import HashConfirmationHandler from "./components/HashConfirmationHandler";
 import { hideWelcomeModals } from "./utils/hideWelcomeModal";
 import { lazyRetry } from "./utils/lazyRetry";
 import { PageSkeleton } from "@/components/ui/page-skeleton";
+import GoogleOneTap from "@/components/auth/GoogleOneTap";
 
 // CRITICAL: Homepage loads immediately (no lazy) for best UX and zero white screens
 import Index from "./pages/Index";
@@ -106,6 +107,7 @@ const App = () => {
                     <ScrollToTop />
                     <Toaster />
                     <Sonner />
+                    <GoogleOneTap clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''} />
                     <Suspense fallback={<PageLoader />}>
                       <Routes>
                         <Route path="/" element={
