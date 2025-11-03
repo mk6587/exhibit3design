@@ -211,62 +211,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             window.dispatchEvent(new CustomEvent('authStateChanged'));
           }, 1000);
           
-          // Handle post-login redirect to stored URL (e.g., AI Studio)
+          // Handle post-login redirect to stored URL
           setTimeout(async () => {
-            // Check if we're in embedded mode (OAuth callback from Google)
-            const searchParams = new URLSearchParams(window.location.search);
-            const isEmbedded = searchParams.get('embedded') === 'true';
-            const isOAuthCallback = searchParams.get('oauth') === 'google';
-            
-            if (isEmbedded && isOAuthCallback) {
-              console.log('[Google OAuth Embedded] Starting embedded OAuth flow', {
-                isEmbedded,
-                isOAuthCallback,
-                hasOpener: !!window.opener,
-                userId: session.user.id,
-                email: session.user.email
-              });
-              
-              try {
-                // Get JWT token for AI Studio
-                console.log('[Google OAuth Embedded] Calling auth-postmessage edge function...');
-                const { data: tokenData, error: tokenError } = await supabase.functions.invoke('auth-postmessage', {
-                  body: { 
-                    userId: session.user.id, 
-                    email: session.user.email 
-                  }
-                });
-
-                console.log('[Google OAuth Embedded] Edge function response:', { tokenData, tokenError });
-
-                if (tokenError || !tokenData?.token) {
-                  console.error('[Google OAuth Embedded] Failed to generate token:', tokenError);
-                  throw new Error('Failed to generate authentication token');
-                }
-
-                // Send auth success message to AI Studio
-                if (window.opener) {
-                  const message = {
-                    type: 'auth-success',
-                    token: tokenData.token,
-                    userId: session.user.id,
-                    email: session.user.email
-                  };
-                  
-                  console.log('[Google OAuth Embedded] Sending postMessage to AI Studio:', message);
-                  window.opener.postMessage(message, 'https://ai.exhibit3design.com');
-                  console.log('[Google OAuth Embedded] postMessage sent successfully - waiting for AI Studio to close window');
-                  
-                  // Don't auto-close - let AI Studio close the window after receiving the message
-                } else {
-                  console.warn('[Google OAuth Embedded] No window.opener available');
-                }
-              } catch (error) {
-                console.error('[Google OAuth Embedded] Error in embedded OAuth flow:', error);
-              }
-              return;
-            }
-
             // Regular redirect handling
             const redirectUrl = sessionStorage.getItem('auth_redirect_url');
             if (redirectUrl) {
@@ -533,17 +479,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signInWithGoogle = async () => {
     try {
-      // Check if we're in embedded mode
-      const isEmbedded = new URLSearchParams(window.location.search).get('embedded') === 'true';
-      
-      const redirectTo = isEmbedded 
-        ? `${window.location.origin}/auth?embedded=true&oauth=google`
-        : `${window.location.origin}/`;
-
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo,
+          redirectTo: `${window.location.origin}/`,
         }
       });
 
