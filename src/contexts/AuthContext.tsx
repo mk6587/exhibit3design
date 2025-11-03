@@ -255,14 +255,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                   
                   console.log('[Google OAuth Embedded] Sending postMessage to AI Studio:', message);
                   window.opener.postMessage(message, 'https://ai.exhibit3design.com');
-                  console.log('[Google OAuth Embedded] postMessage sent successfully');
+                  console.log('[Google OAuth Embedded] postMessage sent successfully - waiting for AI Studio to close window');
                   
-                  // Close the OAuth popup after a delay
-                  console.log('[Google OAuth Embedded] Window will close in 5 seconds');
-                  setTimeout(() => {
-                    console.log('[Google OAuth Embedded] Closing window now');
-                    window.close();
-                  }, 5000);
+                  // Don't auto-close - let AI Studio close the window after receiving the message
                 } else {
                   console.warn('[Google OAuth Embedded] No window.opener available');
                 }

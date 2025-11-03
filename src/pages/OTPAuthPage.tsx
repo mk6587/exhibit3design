@@ -200,21 +200,22 @@ const OTPAuthPage = () => {
             console.log('[OTP Embedded Auth] Sending postMessage to AI Studio:', message);
             window.opener.postMessage(message, 'https://ai.exhibit3design.com');
             console.log('[OTP Embedded Auth] postMessage sent successfully');
+            
+            // Show success message - AI Studio will close this window
+            toast({
+              title: "Authentication Successful",
+              description: "Returning to AI Studio...",
+            });
+            
+            // Don't auto-close - let AI Studio close the window after receiving the message
+            console.log('[OTP Embedded Auth] Waiting for AI Studio to close window...');
           } else {
             console.warn('[OTP Embedded Auth] No window.opener available');
+            toast({
+              title: "Authentication Successful",
+              description: "You can close this window.",
+            });
           }
-
-          // Show success message and auto-close
-          toast({
-            title: "Authentication Successful",
-            description: "Redirecting you back to AI Studio...",
-          });
-
-          console.log('[OTP Embedded Auth] Window will close in 5 seconds');
-          setTimeout(() => {
-            console.log('[OTP Embedded Auth] Closing window now');
-            window.close();
-          }, 5000);
           
           return;
         } catch (error) {
