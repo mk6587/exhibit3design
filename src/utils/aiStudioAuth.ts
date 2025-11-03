@@ -3,33 +3,32 @@ import { supabase } from '@/integrations/supabase/client';
 const AI_STUDIO_URL = 'https://ai.exhibit3design.com';
 
 /**
- * Navigates to AI Studio with authentication token
- * Calls the auth-postmessage edge function to get JWT token
- * Navigates in the same window to AI Studio with the token
+ * Opens AI Studio in a new tab with Supabase session tokens
  * @param queryParams - Optional query parameters to append (e.g., "?service=rotate-360")
  */
 export async function openAIStudio(userId: string, email: string, queryParams?: string) {
   try {
-    // Call the auth-postmessage edge function to get JWT
-    const { data, error } = await supabase.functions.invoke('auth-postmessage', {
-      body: {
-        userId,
-        email
-      }
-    });
-
-    if (error) throw error;
-    if (!data?.token) throw new Error('No token received');
+    // Get the current session
+    const { data: { session } } = await supabase.auth.getSession();
     
-    // Build the AI Studio URL with token
+    if (!session) {
+      // No session, open AI Studio without auth
+      const url = queryParams 
+        ? `${AI_STUDIO_URL}${queryParams}`
+        : AI_STUDIO_URL;
+      window.open(url, '_blank');
+      return;
+    }
+    
+    // Build the AI Studio URL with session tokens
     const separator = queryParams?.includes('?') ? '&' : '?';
     const params = queryParams || '';
-    const url = `${AI_STUDIO_URL}${params}${separator}token=${encodeURIComponent(data.token)}`;
+    const url = `${AI_STUDIO_URL}${params}${separator}access_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token)}`;
     
-    // Navigate to AI Studio in the same window
-    window.location.href = url;
+    // Open AI Studio in a new tab
+    window.open(url, '_blank');
   } catch (error) {
-    console.error('Error navigating to AI Studio:', error);
+    console.error('Error opening AI Studio:', error);
     throw new Error('Failed to authenticate with AI Studio');
   }
 }
