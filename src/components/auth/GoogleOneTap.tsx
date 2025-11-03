@@ -12,7 +12,19 @@ const GoogleOneTap = ({ clientId }: GoogleOneTapProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const { user, loading } = useAuth();
+  
+  // Safely get auth context - handle cases where it might not be available
+  let user = null;
+  let loading = true;
+  try {
+    const auth = useAuth();
+    user = auth.user;
+    loading = auth.loading;
+  } catch (error) {
+    console.warn('GoogleOneTap: Auth context not available yet');
+    return null;
+  }
+  
   const initialized = useRef(false);
 
   useEffect(() => {
