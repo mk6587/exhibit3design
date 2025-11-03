@@ -17,13 +17,27 @@ const cookieStorage = {
     return null;
   },
   setItem: (key: string, value: string): void => {
-    const domain = '.exhibit3design.com';
     const maxAge = 60 * 60 * 24 * 365; // 1 year
-    document.cookie = `${key}=${encodeURIComponent(value)}; domain=${domain}; path=/; max-age=${maxAge}; secure; samesite=lax`;
+    const hostname = window.location.hostname;
+    
+    let cookieString = `${key}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; samesite=lax`;
+    
+    if (hostname.includes('exhibit3design.com')) {
+      cookieString = `${key}=${encodeURIComponent(value)}; domain=.exhibit3design.com; path=/; max-age=${maxAge}; secure; samesite=lax`;
+    } else if (window.location.protocol === 'https:') {
+      cookieString += '; secure';
+    }
+    
+    document.cookie = cookieString;
   },
   removeItem: (key: string): void => {
-    const domain = '.exhibit3design.com';
-    document.cookie = `${key}=; domain=${domain}; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    const hostname = window.location.hostname;
+    
+    if (hostname.includes('exhibit3design.com')) {
+      document.cookie = `${key}=; domain=.exhibit3design.com; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    } else {
+      document.cookie = `${key}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    }
   }
 };
 
