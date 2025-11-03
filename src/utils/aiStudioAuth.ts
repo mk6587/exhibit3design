@@ -9,18 +9,26 @@ const AI_STUDIO_URL = 'https://ai.exhibit3design.com';
 export async function openAIStudio(userId: string, email: string, queryParams?: string) {
   try {
     // Get the current Supabase session
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const { data: { session } } = await supabase.auth.getSession();
     
-    if (error) throw error;
-    if (!session?.access_token) throw new Error('No active session');
-    
-    // Build the AI Studio URL with session tokens
-    const separator = queryParams?.includes('?') ? '&' : '?';
-    const params = queryParams || '';
-    const url = `${AI_STUDIO_URL}${params}${separator}access_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token)}`;
-    
-    // Open AI Studio in a new tab
-    window.open(url, '_blank');
+    if (session?.access_token && session?.refresh_token) {
+      // User is authenticated - pass tokens to AI Studio
+      const url = new URL(AI_STUDIO_URL);
+      if (queryParams) {
+        // Add any query params from the queryParams string
+        const params = new URLSearchParams(queryParams.replace(/^\?/, ''));
+        params.forEach((value, key) => url.searchParams.set(key, value));
+      }
+      url.searchParams.set('access_token', session.access_token);
+      url.searchParams.set('refresh_token', session.refresh_token);
+      window.open(url.toString(), '_blank');
+    } else {
+      // User not authenticated - open AI Studio without tokens
+      const url = queryParams 
+        ? `${AI_STUDIO_URL}${queryParams}`
+        : AI_STUDIO_URL;
+      window.open(url, '_blank');
+    }
   } catch (error) {
     console.error('Error opening AI Studio:', error);
     throw new Error('Failed to authenticate with AI Studio');
