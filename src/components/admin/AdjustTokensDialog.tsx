@@ -15,6 +15,7 @@ interface UserData {
   first_name: string;
   last_name: string;
   ai_tokens_balance: number;
+  ai_tokens_limit: number;
   video_results_balance: number;
 }
 
@@ -27,6 +28,7 @@ interface AdjustTokensDialogProps {
 
 export function AdjustTokensDialog({ open, onOpenChange, user, onUpdate }: AdjustTokensDialogProps) {
   const [aiTokens, setAiTokens] = useState(user.ai_tokens_balance.toString());
+  const [aiTokensLimit, setAiTokensLimit] = useState(user.ai_tokens_limit?.toString() || "2");
   const [videoResults, setVideoResults] = useState(user.video_results_balance.toString());
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,10 +41,16 @@ export function AdjustTokensDialog({ open, onOpenChange, user, onUpdate }: Adjus
     }
 
     const aiTokensNum = parseInt(aiTokens);
+    const aiTokensLimitNum = parseInt(aiTokensLimit);
     const videoResultsNum = parseInt(videoResults);
 
     if (isNaN(aiTokensNum) || aiTokensNum < 0) {
       toast.error('Please enter a valid AI tokens amount');
+      return;
+    }
+
+    if (isNaN(aiTokensLimitNum) || aiTokensLimitNum < 0) {
+      toast.error('Please enter a valid AI tokens limit');
       return;
     }
 
@@ -59,6 +67,7 @@ export function AdjustTokensDialog({ open, onOpenChange, user, onUpdate }: Adjus
         p_user_id: user.user_id,
         p_admin_id: adminUser.id,
         p_ai_tokens: aiTokensNum,
+        p_ai_tokens_limit: aiTokensLimitNum,
         p_video_results: videoResultsNum,
         p_reason: reason
       });
@@ -92,7 +101,7 @@ export function AdjustTokensDialog({ open, onOpenChange, user, onUpdate }: Adjus
             <div className="space-y-2">
               <Label htmlFor="aiTokens" className="flex items-center gap-2">
                 <Zap className="h-4 w-4 text-primary" />
-                AI Tokens
+                AI Tokens Balance
               </Label>
               <Input
                 id="aiTokens"
@@ -104,6 +113,24 @@ export function AdjustTokensDialog({ open, onOpenChange, user, onUpdate }: Adjus
               />
               <p className="text-xs text-muted-foreground">
                 Current: {user.ai_tokens_balance}
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="aiTokensLimit" className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-primary" />
+                Monthly Token Limit
+              </Label>
+              <Input
+                id="aiTokensLimit"
+                type="number"
+                min="0"
+                value={aiTokensLimit}
+                onChange={(e) => setAiTokensLimit(e.target.value)}
+                disabled={loading}
+              />
+              <p className="text-xs text-muted-foreground">
+                Current: {user.ai_tokens_limit || 2}
               </p>
             </div>
             

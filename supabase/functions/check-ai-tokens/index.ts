@@ -73,10 +73,11 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         hasTokens: tokensRemaining > 0,
-        tokensUsed,
-        tokensRemaining,
-        tokensBalance,
-        tokensLimit,
+        tokensUsed: aiTokensUsed,
+        tokensRemaining: aiTokensBalance,
+        totalTokens: aiTokensBalance,
+        monthlyLimit: aiTokensLimit,
+        videoCredits: videoResultsBalance,
         isPremium
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
