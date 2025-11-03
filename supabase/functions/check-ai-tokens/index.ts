@@ -34,10 +34,10 @@ serve(async (req) => {
       throw new Error('Unauthorized')
     }
 
-    // Query user_ai_tokens table for this user
-    const { data: tokenData, error: tokenError } = await supabase
-      .from('user_ai_tokens')
-      .select('tokens_used, tokens_limit, is_premium')
+    // Query profiles table for this user's token data
+    const { data: profile, error: tokenError } = await supabase
+      .from('profiles')
+      .select('ai_tokens_balance, ai_tokens_used, ai_tokens_limit, video_results_balance, video_results_used')
       .eq('user_id', user.id)
       .single()
 
@@ -46,12 +46,29 @@ serve(async (req) => {
       throw tokenError
     }
 
-    // If no record exists, return default values
-    const tokensUsed = tokenData?.tokens_used || 0
-    const tokensLimit = tokenData?.tokens_limit || 100
-    const isPremium = tokenData?.is_premium || false
-    const tokensRemaining = Math.max(0, tokensLimit - tokensUsed)
-    const tokensBalance = tokensRemaining
+    // Calculate token values from profiles table
+    const aiTokensBalance = profile?.ai_tokens_balance || 0
+    const aiTokensUsed = profile?.ai_tokens_used || 0
+    const aiTokensLimit = profile?.ai_tokens_limit || 2
+    const videoResultsBalance = profile?.video_results_balance || 0
+    const videoResultsUsed = profile?.video_results_used || 0
+    
+    // Total tokens = AI tokens + video results
+    const tokensBalance = aiTokensBalance + videoResultsBalance
+    const tokensUsed = aiTokensUsed + videoResultsUsed
+    const tokensLimit = aiTokensLimit
+    const tokensRemaining = tokensBalance
+    
+    // Check if user has active subscription (premium)
+    const { data: subscription } = await supabase
+      .from('user_subscriptions')
+      .select('status')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .gte('current_period_end', new Date().toISOString())
+      .single()
+    
+    const isPremium = !!subscription
 
     return new Response(
       JSON.stringify({
