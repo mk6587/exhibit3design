@@ -135,9 +135,8 @@ export function SubscriptionPanel() {
                   </div>
                   <p className="text-3xl font-bold text-primary">
                     {tokenBalance.ai_tokens}
-                    <span className="text-base font-normal text-muted-foreground">/{tokenBalance.ai_tokens_limit}</span>
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">remaining</p>
+                  <p className="text-xs text-muted-foreground mt-1">tokens remaining</p>
                 </div>
                 <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
                   <div className="flex items-center gap-2 mb-2">
@@ -146,9 +145,8 @@ export function SubscriptionPanel() {
                   </div>
                   <p className="text-3xl font-bold text-primary">
                     {tokenBalance.video_results}
-                    <span className="text-base font-normal text-muted-foreground">/{tokenBalance.video_results_limit}</span>
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">remaining</p>
+                  <p className="text-xs text-muted-foreground mt-1">credits remaining</p>
                 </div>
               </div>
             )}
@@ -162,11 +160,11 @@ export function SubscriptionPanel() {
                 </div>
                 <div className="flex items-start gap-2 text-sm">
                   <Zap className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-muted-foreground">20 AI image edits per month</span>
+                  <span className="text-muted-foreground">20 AI image edit tokens (one-time)</span>
                 </div>
                 <div className="flex items-start gap-2 text-sm">
                   <Video className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-muted-foreground">3 video results per month</span>
+                  <span className="text-muted-foreground">3 video result credits (one-time)</span>
                 </div>
                 <div className="flex items-start gap-2 text-sm">
                   <FileText className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
@@ -200,20 +198,20 @@ export function SubscriptionPanel() {
             <CardDescription>Get more tokens and exclusive features</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <Zap className="h-4 w-4 text-primary" />
-                <span>More AI image edit tokens every month</span>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <Zap className="h-4 w-4 text-primary" />
+                  <span>More AI image edit tokens with each purchase</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Video className="h-4 w-4 text-primary" />
+                  <span>Additional AI video result credits</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <FileText className="h-4 w-4 text-primary" />
+                  <span>Access to exclusive premium design files</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Video className="h-4 w-4 text-primary" />
-                <span>Additional AI video result tokens</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <FileText className="h-4 w-4 text-primary" />
-                <span>Access to exclusive premium design files</span>
-              </div>
-            </div>
             <Button asChild variant="outline" className="w-full">
               <Link to="/pricing">View Subscription Plans</Link>
             </Button>
@@ -263,12 +261,12 @@ export function SubscriptionPanel() {
                 <p className="text-xs text-muted-foreground capitalize">{subscription.file_access_tier}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Calendar className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-medium">Renews</p>
+                <p className="text-sm font-medium">Valid Until</p>
                 <p className="text-xs text-muted-foreground">
                   {format(new Date(subscription.current_period_end), 'MMM dd, yyyy')}
                 </p>
@@ -296,7 +294,7 @@ export function SubscriptionPanel() {
                 </div>
                 <p className="text-2xl font-bold">{tokenBalance.ai_tokens}</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {subscription.ai_tokens_included} included/month
+                  tokens remaining
                 </p>
               </div>
               <div className="p-4 rounded-lg bg-muted">
@@ -306,7 +304,7 @@ export function SubscriptionPanel() {
                 </div>
                 <p className="text-2xl font-bold">{tokenBalance.video_results}</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {subscription.video_results_included} included/month
+                  credits remaining
                 </p>
               </div>
             </div>

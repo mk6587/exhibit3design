@@ -92,7 +92,7 @@ serve(async (req) => {
       );
     }
 
-    // 4. Calculate subscription period
+    // 4. Calculate subscription period (one-time purchase, expires at end of period)
     const now = new Date();
     const periodEnd = new Date(now);
     if (plan.billing_period === 'monthly') {
@@ -101,7 +101,7 @@ serve(async (req) => {
       periodEnd.setFullYear(periodEnd.getFullYear() + 1);
     }
 
-    // 5. Create or update subscription
+    // 5. Create or update subscription (one-time purchase, no auto-renewal)
     const { error: subError } = await supabaseAdmin
       .from('user_subscriptions')
       .upsert({
@@ -110,7 +110,7 @@ serve(async (req) => {
         status: 'active',
         current_period_start: now.toISOString(),
         current_period_end: periodEnd.toISOString(),
-        cancel_at_period_end: false
+        cancel_at_period_end: true // One-time purchase, will expire after period
       });
 
     if (subError) {

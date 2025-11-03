@@ -21,7 +21,7 @@ const features = [
   {
     icon: DollarSign,
     title: "No Per-File Costs",
-    description: "Subscribe once, access all design files. Predictable monthly pricing."
+    description: "One-time payment, access all design files. No hidden fees or recurring charges."
   },
   {
     icon: Star,

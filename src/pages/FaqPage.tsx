@@ -12,11 +12,11 @@ import { Link } from "react-router-dom";
 const faqItems = [
   {
     question: "What subscription plans do you offer?",
-    answer: "We offer three subscription tiers: Basic, Professional, and Enterprise. Each plan includes a monthly allocation of AI tokens for generating images and videos, plus access to our library of ready-made exhibition stand designs. Higher tiers provide more tokens and additional features. Visit our Pricing page to compare plans and find the right fit for your needs."
+    answer: "We offer three one-time payment plans: Basic, Professional, and Enterprise. Each plan includes a one-time allocation of AI tokens for generating images and videos, plus access to our library of ready-made exhibition stand designs for the plan duration. Higher tiers provide more tokens and additional features. Visit our Pricing page to compare plans and find the right fit for your needs."
   },
   {
     question: "What are AI tokens and how do they work?",
-    answer: "AI tokens are credits used to generate images and videos using our AI tools. Each generation consumes a certain number of tokens depending on the complexity and type of content. For example, image generation may use fewer tokens than video generation. Your token balance resets monthly based on your subscription plan."
+    answer: "AI tokens are credits used to generate images and videos using our AI tools. Each generation consumes a certain number of tokens depending on the complexity and type of content. For example, image generation may use fewer tokens than video generation. You receive tokens once when you purchase a plan and can use them throughout the plan period."
   },
   {
     question: "What AI tools are included in my subscription?",
@@ -24,7 +24,7 @@ const faqItems = [
   },
   {
     question: "What happens when I run out of tokens?",
-    answer: "When you use all your monthly tokens, you won't be able to generate new AI content until your tokens reset at the start of your next billing cycle. You can upgrade to a higher-tier plan at any time to receive more tokens immediately. You'll still have full access to any previously generated content and our library of ready-made designs."
+    answer: "When you use all your tokens, you won't be able to generate new AI content until you purchase a new plan. You can upgrade to a higher-tier plan at any time to receive more tokens. You'll still have full access to any previously generated content and our library of ready-made designs during your plan period."
   },
   {
     question: "Can I download and modify the designs?",
@@ -35,12 +35,12 @@ const faqItems = [
     answer: "Absolutely. Your subscription license allows you to use both ready-made designs and AI-generated content for commercial exhibition projects and client work. You can modify and adapt them to your specific needs. However, you may not resell, redistribute, or share the original design files or your account access with others."
   },
   {
-    question: "How does billing work for subscriptions?",
-    answer: "Subscriptions are billed monthly or annually (depending on your choice) via Stripe. You'll be charged automatically at the start of each billing cycle. Your AI tokens reset monthly regardless of whether you choose monthly or annual billing. You can view your billing history and manage your subscription from your profile dashboard."
+    question: "How does billing work?",
+    answer: "All plans are one-time payments processed securely via payment gateway. You pay once and get access to your plan benefits for the specified period (monthly or annual based on the plan you choose). There are no automatic renewals or recurring charges. When your plan expires, you can choose to purchase a new plan to continue access. You can view your purchase history from your profile dashboard."
   },
   {
-    question: "Can I cancel my subscription anytime?",
-    answer: "Yes, you can cancel your subscription at any time from your profile dashboard. When you cancel, you'll retain access to your subscription benefits until the end of your current billing period. After that, you'll no longer be charged, and your access to AI tools and new content will end. Any content you've already generated or downloaded remains yours."
+    question: "Can I cancel my plan anytime?",
+    answer: "Since plans are one-time purchases rather than subscriptions, there's no recurring billing to cancel. You have access to your plan benefits for the full duration of your purchased period. After the period ends, you simply won't be charged again unless you choose to purchase a new plan. Any content you've already generated or downloaded remains yours permanently."
   },
   {
     question: "What file formats are provided for ready-made designs?",
@@ -48,7 +48,7 @@ const faqItems = [
   },
   {
     question: "How often is new content added?",
-    answer: "We regularly update our library with new ready-made designs and continuously improve our AI generation capabilities. New designs are typically added monthly. As a subscriber, you'll have immediate access to all new additions and AI model upgrades at no extra cost."
+    answer: "We regularly update our library with new ready-made designs and continuously improve our AI generation capabilities. New designs are typically added monthly. As a plan holder, you'll have immediate access to all new additions and AI model upgrades at no extra cost during your plan period."
   },
   {
     question: "What if I need help using the AI tools?",
