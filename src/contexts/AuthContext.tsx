@@ -213,6 +213,50 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           
           // Handle post-login redirect to stored URL (e.g., AI Studio)
           setTimeout(async () => {
+            // Check if we're in embedded mode (OAuth callback from Google)
+            const searchParams = new URLSearchParams(window.location.search);
+            const isEmbedded = searchParams.get('embedded') === 'true';
+            const isOAuthCallback = searchParams.get('oauth') === 'google';
+            
+            if (isEmbedded && isOAuthCallback) {
+              console.log('🔐 OAuth callback in embedded mode - sending postMessage');
+              try {
+                // Get JWT token for AI Studio
+                const { data: tokenData, error: tokenError } = await supabase.functions.invoke('auth-postmessage', {
+                  body: { 
+                    userId: session.user.id, 
+                    email: session.user.email 
+                  }
+                });
+
+                if (tokenError || !tokenData?.token) {
+                  throw new Error('Failed to generate authentication token');
+                }
+
+                // Send auth success message to AI Studio
+                if (window.opener) {
+                  window.opener.postMessage(
+                    {
+                      type: 'auth-success',
+                      token: tokenData.token,
+                      userId: session.user.id,
+                      email: session.user.email
+                    },
+                    'https://ai.exhibit3design.com'
+                  );
+                  
+                  // Close the OAuth popup after a short delay
+                  setTimeout(() => {
+                    window.close();
+                  }, 1500);
+                }
+              } catch (error) {
+                console.error('Failed to send postMessage after OAuth:', error);
+              }
+              return;
+            }
+
+            // Regular redirect handling
             const redirectUrl = sessionStorage.getItem('auth_redirect_url');
             if (redirectUrl) {
               sessionStorage.removeItem('auth_redirect_url');
@@ -483,10 +527,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signInWithGoogle = async () => {
     try {
+      // Check if we're in embedded mode
+      const isEmbedded = new URLSearchParams(window.location.search).get('embedded') === 'true';
+      
+      const redirectTo = isEmbedded 
+        ? `${window.location.origin}/auth?embedded=true&oauth=google`
+        : `${window.location.origin}/`;
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo,
         }
       });
 

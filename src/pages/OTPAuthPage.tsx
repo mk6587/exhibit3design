@@ -26,6 +26,7 @@ const OTPAuthPage = () => {
   const searchParams = new URLSearchParams(window.location.search);
   const emailFromUrl = searchParams.get('email') || '';
   const nextUrl = searchParams.get('next');
+  const isEmbedded = searchParams.get('embedded') === 'true';
   
   const [email, setEmail] = useState(emailFromUrl);
   const [otp, setOTP] = useState('');
@@ -161,6 +162,53 @@ const OTPAuthPage = () => {
     const result = await verifyOTP(email, otp);
     
     if (result.success) {
+      // If embedded mode, send postMessage to opener and close
+      if (isEmbedded && result.user) {
+        try {
+          // Get JWT token for AI Studio
+          const { data: tokenData, error: tokenError } = await supabase.functions.invoke('auth-postmessage', {
+            body: { 
+              userId: result.user.id, 
+              email: result.user.email 
+            }
+          });
+
+          if (tokenError || !tokenData?.token) {
+            throw new Error('Failed to generate authentication token');
+          }
+
+          // Send auth success message to AI Studio
+          if (window.opener) {
+            window.opener.postMessage(
+              {
+                type: 'auth-success',
+                token: tokenData.token,
+                userId: result.user.id,
+                email: result.user.email
+              },
+              'https://ai.exhibit3design.com'
+            );
+          }
+
+          // Show success message and auto-close
+          toast({
+            title: "Authentication Successful",
+            description: "Redirecting you back to AI Studio...",
+          });
+
+          setTimeout(() => {
+            window.close();
+          }, 1500);
+          
+          return;
+        } catch (error) {
+          console.error('Failed to send postMessage:', error);
+          setError('Authentication successful, but failed to communicate with AI Studio. Please try again.');
+          return;
+        }
+      }
+
+      // Regular flow (non-embedded)
       if (result.magicLink) {
         // Redirect to the magic link
         window.location.href = result.magicLink;

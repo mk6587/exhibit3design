@@ -1,5 +1,8 @@
 project_id = "fipebdkvzdrljwwxccrj"
 
+[functions.auth-postmessage]
+verify_jwt = false
+
 [functions.check-token-eligibility]
 verify_jwt = true
 
