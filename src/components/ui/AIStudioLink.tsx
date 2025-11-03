@@ -18,6 +18,7 @@ export const AIStudioLink = ({ children, className, serviceId, ...props }: AIStu
     <a
       {...props}
       href={href}
+      target="_blank"
       className={className}
       rel="noopener noreferrer"
     >

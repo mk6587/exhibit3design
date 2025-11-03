@@ -222,7 +222,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               // Check if this is an AI Studio redirect
               if (redirectUrl.startsWith('ai-studio:')) {
                 // Simple redirect to AI Studio - cookies will handle auth
-                window.location.href = 'https://ai.exhibit3design.com';
+                window.open('https://ai.exhibit3design.com', '_blank', 'noopener,noreferrer');
               } else {
                 // Regular URL redirect
                 setTimeout(() => {

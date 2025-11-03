@@ -6,5 +6,5 @@
 export function navigateToAIStudio(serviceId?: string) {
   const baseUrl = 'https://ai.exhibit3design.com';
   const url = serviceId ? `${baseUrl}?service=${serviceId}` : baseUrl;
-  window.location.href = url;
+  window.open(url, '_blank', 'noopener,noreferrer');
 }

@@ -124,7 +124,7 @@ export default function PricingPage() {
   const handleGetFreeTokens = (e: React.MouseEvent) => {
     e.preventDefault();
     trackButtonClick('get_free_tokens', 'pricing_page', { user_logged_in: !!user });
-    window.location.href = 'https://ai.exhibit3design.com';
+    window.open('https://ai.exhibit3design.com', '_blank', 'noopener,noreferrer');
   };
 
   return (

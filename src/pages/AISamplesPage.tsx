@@ -407,9 +407,9 @@ export default function AISamplesPage() {
                           asChild 
                           size="sm"
                         >
-                          <Link to={service.aiStudioLink}>
+                          <a href={service.aiStudioLink} target="_blank" rel="noopener noreferrer">
                             Use Now <ArrowRight className="h-4 w-4 ml-2" />
-                          </Link>
+                          </a>
                         </Button>
                       </div>
                     </CardContent>

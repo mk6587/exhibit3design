@@ -81,7 +81,7 @@ const Header = () => {
               asChild
               className="hidden md:flex items-center gap-1.5 hover:bg-muted px-2 relative"
             >
-              <a href="https://ai.exhibit3design.com" rel="noopener noreferrer">
+              <a href="https://ai.exhibit3design.com" target="_blank" rel="noopener noreferrer">
                 <Sparkles className="h-4 w-4 text-purple-600 transition-none" />
                 <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-none">
                   AI Studio
@@ -130,7 +130,7 @@ const Header = () => {
               asChild
               className="md:hidden relative hover:bg-muted flex items-center gap-1 px-2"
             >
-              <a href="https://ai.exhibit3design.com" rel="noopener noreferrer">
+              <a href="https://ai.exhibit3design.com" target="_blank" rel="noopener noreferrer">
                 <Sparkles className="h-4 w-4 text-purple-600 transition-none" />
                 <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-none">
                   AI Studio
@@ -195,6 +195,7 @@ const Header = () => {
           
           <a
             href="https://ai.exhibit3design.com"
+            target="_blank"
             rel="noopener noreferrer"
             onClick={() => setIsMenuOpen(false)} 
             className="mobile-nav-item bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 transition-all text-left flex items-center w-full font-semibold"
