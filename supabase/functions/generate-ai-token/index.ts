@@ -31,19 +31,21 @@ serve(async (req) => {
       );
     }
 
-    // Generate JWT token that expires in 1 hour
+    // Generate JWT token that expires in 8 hours for AI Studio
     const secretKey = new TextEncoder().encode(secret);
     const token = await new jose.SignJWT({
       userId,
       email,
     })
       .setProtectedHeader({ alg: 'HS256' })
-      .setExpirationTime('1h')
+      .setExpirationTime('8h')
       .setIssuedAt()
       .sign(secretKey);
 
+    const expiresAt = Date.now() + (8 * 60 * 60 * 1000); // 8 hours in milliseconds
+
     return new Response(
-      JSON.stringify({ token }),
+      JSON.stringify({ token, expiresAt }),
       {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

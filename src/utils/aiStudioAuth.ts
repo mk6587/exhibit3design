@@ -4,7 +4,7 @@ const AI_STUDIO_URL = 'https://ai.exhibit3design.com';
 
 /**
  * Generates a JWT token for cross-project authentication
- * Token expires in 1 hour
+ * Token expires in 8 hours
  */
 export async function generateAIStudioToken(userId: string, email: string): Promise<string> {
   try {
