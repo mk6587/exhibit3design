@@ -254,14 +254,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setTimeout(async () => {
               if (!mounted) return;
               
-              // Extra delay after sign-in to ensure session is established in DB for RLS
-              console.log('⏳ Waiting for session to be established for RLS...');
-              await new Promise(resolve => setTimeout(resolve, 500));
-              
               try {
+                // CRITICAL: Ensure Supabase client has the session before making requests
+                console.log('🔐 Ensuring session is set in Supabase client...');
+                const { data: currentSession } = await supabase.auth.getSession();
+                
+                if (!currentSession.session) {
+                  console.error('❌ No session available in Supabase client');
+                  return;
+                }
+                
+                console.log('✅ Session confirmed in client, fetching profile...');
                 let profileData = await fetchProfile(session.user.id);
                 
                 if (!profileData) {
+                  console.log('📝 No profile found, creating new profile...');
                   profileData = await createInitialProfile(session.user.id, session.user.email);
                 }
                 
