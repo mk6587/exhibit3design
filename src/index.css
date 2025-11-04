@@ -5,89 +5,63 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Futuristic Dark-Only Color System */
+    
+    /* Surface colors - Deep dark backgrounds */
+    --background: 240 5% 6%;      /* #0F0F12 - Deepest background */
+    --surface: 240 5% 10%;        /* #18181B - Elevated surface */
+    --card: 240 6% 12%;           /* #1C1C21 - Card background */
+    --card-foreground: 0 0% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --popover: 240 6% 12%;
+    --popover-foreground: 0 0% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 260 84% 60%;
+    /* Purple gradient identity */
+    --primary-from: 258 90% 66%;  /* #7C3AED - Gradient start */
+    --primary-to: 270 91% 75%;    /* #C084FC - Gradient end */
+    --primary: 264 90% 70%;       /* #A855F7 - Solid purple */
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 250 15% 96%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Neon cyan interactive */
+    --accent: 189 94% 57%;        /* #22D3EE - Neon cyan */
+    --accent-hover: 189 100% 65%; /* Brighter hover */
+    --accent-foreground: 240 6% 10%;
 
-    --muted: 210 40% 98%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Secondary surfaces */
+    --secondary: 240 6% 16%;
+    --secondary-foreground: 0 0% 95%;
 
-    --accent: 262 83% 58%;
-    --accent-foreground: 0 0% 98%;
+    /* Muted elements */
+    --muted: 240 5% 20%;
+    --muted-foreground: 0 0% 65%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Text hierarchy */
+    --foreground: 0 0% 95%;       /* #F2F2F3 - Not pure white */
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 260 84% 60%;
+    /* Borders & inputs */
+    --border: 240 6% 20%;         /* #2E2E33 - Subtle separation */
+    --input: 240 6% 18%;          /* #27272A - Input background */
+    --ring: 264 90% 70%;          /* Purple focus ring */
 
-    --radius: 0.125rem;
-    
-    /* Colorful accents */
-    --color-blue: 210 100% 56%;
-    --color-teal: 174 72% 56%;
-    --color-orange: 25 95% 53%;
-    --color-pink: 330 81% 60%;
-    --color-green: 142 76% 45%;
-    
-    /* Flat design specific variables */
-    --flat-surface: 0 0% 99%;
-    --flat-border: 214.3 31.8% 87%;
-    --flat-hover: 250 15% 93%;
-  }
-
-  .dark {
-    --background: 0 0% 10%;
-    --foreground: 0 0% 98%;
-
-    --card: 0 0% 14%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 0 0% 14%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 260 84% 60%;
-    --primary-foreground: 0 0% 98%;
-
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 0 0% 35%;
-    --muted-foreground: 0 0% 70%;
-
-    --accent: 262 83% 58%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 62.8% 30.6%;
+    /* Semantic colors */
+    --success: 142 76% 45%;       /* #10B981 */
+    --warning: 38 92% 50%;        /* #F59E0B */
+    --destructive: 0 72% 51%;     /* #EF4444 */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 260 84% 60%;
+    /* Border radius - Smooth geometry */
+    --radius: 0.75rem;            /* 12px base */
+
+    /* Glow effects */
+    --glow-purple: 258 90% 66%;
+    --glow-cyan: 189 94% 57%;
     
-    /* Colorful accents for dark mode */
+    /* Colorful accents */
     --color-blue: 210 100% 60%;
     --color-teal: 174 72% 60%;
     --color-orange: 25 95% 58%;
     --color-pink: 330 81% 65%;
     --color-green: 142 76% 50%;
-    
-    /* Flat design specific variables for dark mode */
-    --flat-surface: 0 0% 10%;
-    --flat-border: 0 0% 22%;
-    --flat-hover: 0 0% 24%;
   }
 }
 
@@ -98,6 +72,7 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
@@ -114,6 +89,54 @@
     input, select, textarea {
       font-size: 16px; /* Prevent zoom on focus */
     }
+  }
+}
+
+/* Gradient text utilities */
+@layer utilities {
+  .text-gradient-purple {
+    @apply bg-gradient-to-r from-[#7C3AED] to-[#C084FC] bg-clip-text text-transparent;
+  }
+
+  .text-gradient-cyan {
+    @apply bg-gradient-to-r from-[#22D3EE] to-[#06B6D4] bg-clip-text text-transparent;
+  }
+
+  /* Glow effects */
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+  }
+
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+  }
+
+  .glow-purple-strong {
+    box-shadow: 0 0 40px rgba(124, 58, 237, 0.6), 0 0 60px rgba(124, 58, 237, 0.3);
+  }
+
+  /* Elevation system */
+  .elevation-1 {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  .elevation-2 {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  .elevation-3 {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -199,7 +222,7 @@ html, body {
   
   /* Mobile navigation improvements */
   .mobile-nav-item {
-    @apply text-base font-medium py-4 px-4 border-b border-flat-border;
+    @apply text-base font-medium py-4 px-4 border-b border-border;
     min-height: 56px;
     display: flex;
     align-items: center;
@@ -212,7 +235,7 @@ html, body {
   
   /* Flat input design */
   .mobile-flat-input {
-    @apply border border-flat-border bg-flat-surface rounded-lg;
+    @apply border border-border bg-input rounded-lg;
     padding: 14px 16px;
     font-size: 16px;
     min-height: 48px;
@@ -231,7 +254,7 @@ html, body {
   
   /* Touch-friendly product cards */
   .mobile-product-card {
-    @apply bg-background border border-flat-border rounded-lg overflow-hidden;
+    @apply bg-background border border-border rounded-lg overflow-hidden;
     min-height: 200px;
   }
   
