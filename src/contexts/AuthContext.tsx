@@ -288,7 +288,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               if (!mounted) return;
               
               try {
-                console.log('🔍 Fetching profile for user:', session.user.id);
+                // CRITICAL: Ensure session is set in Supabase client before queries
+                console.log('🔐 Verifying session in Supabase client...');
+                await supabase.auth.setSession({
+                  access_token: session.access_token,
+                  refresh_token: session.refresh_token
+                });
+                
+                console.log('✅ Session set, now fetching profile for user:', session.user.id);
                 let profileData = await fetchProfile(session.user.id);
                 
                 if (!profileData) {
@@ -340,7 +347,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                   setLoading(false);
                 }
               }
-            }, 500); // Wait 500ms before trying to fetch
+            }, 1000); // Wait 1 second for session to fully propagate
           } else {
             setProfile(null);
           }
