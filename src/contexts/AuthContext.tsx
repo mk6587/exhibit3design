@@ -24,6 +24,7 @@ interface Profile {
   free_tokens_claimed: boolean;
   video_results_used: number;
   video_results_balance: number;
+  video_results_limit: number;
   selected_files: any;
   is_active: boolean;
   deactivated_at: string | null;
@@ -192,115 +193,135 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     let mounted = true;
+    let authSubscription: any = null;
 
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (!mounted) return;
+    const initialize = async () => {
+      // Set up auth state listener FIRST
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          if (!mounted) return;
 
-        console.log('Auth state changed:', event, session?.user?.email);
-        
-        // Only synchronous state updates here
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Dispatch custom event to trigger popup hiding
-        if (session?.user) {
-          window.dispatchEvent(new CustomEvent('authStateChanged'));
-          setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('authStateChanged'));
-          }, 1000);
+          console.log('Auth state changed:', event, session?.user?.email);
           
-          // Handle post-login redirect to stored URL
-          setTimeout(async () => {
-            // Regular redirect handling
-            const redirectUrl = sessionStorage.getItem('auth_redirect_url');
-            if (redirectUrl) {
-              sessionStorage.removeItem('auth_redirect_url');
-              console.log('🔄 Redirecting authenticated user to stored URL:', redirectUrl);
-              
-              // Check if this is an AI Studio redirect
-              if (redirectUrl.startsWith('ai-studio:')) {
-                // Simple redirect to AI Studio - cookies will handle auth
-                window.open('https://ai.exhibit3design.com', '_blank', 'noopener,noreferrer');
-              } else {
-                // Regular URL redirect
-                setTimeout(() => {
-                  window.location.href = redirectUrl;
-                }, 500);
-              }
+          // Update state
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          // Clean up OAuth hash from URL after successful sign in
+          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            if (window.location.hash.includes('access_token') || window.location.hash.includes('refresh_token')) {
+              console.log('Cleaning up OAuth hash from URL');
+              window.history.replaceState(null, '', window.location.pathname + window.location.search);
             }
-          }, 500);
-        }
-        
-        // Defer all Supabase calls with setTimeout to prevent deadlock
-        if (session?.user) {
-          setTimeout(async () => {
-            if (!mounted) return;
+          }
+          
+          // Dispatch custom event to trigger popup hiding
+          if (session?.user) {
+            window.dispatchEvent(new CustomEvent('authStateChanged'));
+            setTimeout(() => {
+              window.dispatchEvent(new CustomEvent('authStateChanged'));
+            }, 1000);
             
-            try {
-              let profileData = await fetchProfile(session.user.id);
-              
-              // If no profile exists, create one with guest order data transfer
-              if (!profileData) {
-                profileData = await createInitialProfile(session.user.id, session.user.email);
-              }
-              
-              if (mounted) {
-                setProfile(profileData);
+            // Handle post-login redirect to stored URL
+            setTimeout(async () => {
+              const redirectUrl = sessionStorage.getItem('auth_redirect_url');
+              if (redirectUrl) {
+                sessionStorage.removeItem('auth_redirect_url');
+                console.log('🔄 Redirecting authenticated user to stored URL:', redirectUrl);
                 
-                // Set user properties in GA4
-                if (profileData) {
-                  setTimeout(async () => {
-                    try {
-                      const { data: subscription } = await supabase.rpc('get_active_subscription', { 
-                        p_user_id: session.user.id 
-                      }) as any;
-                      
-                      setUserProperties({
-                        user_id: session.user.id,
-                        subscription_tier: subscription?.[0]?.file_access_tier || 'free',
-                        subscription_status: subscription?.[0]?.status || 'inactive',
-                        ai_tokens_balance: profileData.ai_tokens_balance || 0,
-                        video_results_balance: profileData.video_results_balance || 0,
-                        max_files: subscription?.[0]?.max_files || 0
-                      });
-                    } catch (e) {
-                      console.error('Failed to set user properties:', e);
-                    }
-                  }, 100);
+                if (redirectUrl.startsWith('ai-studio:')) {
+                  window.open('https://ai.exhibit3design.com', '_blank', 'noopener,noreferrer');
+                } else {
+                  setTimeout(() => {
+                    window.location.href = redirectUrl;
+                  }, 500);
                 }
               }
-            } catch (error) {
-              console.error('Profile fetch error:', error);
-              if (mounted) {
-                setProfile(null);
+            }, 500);
+          }
+          
+          // Defer all Supabase calls with setTimeout to prevent deadlock
+          if (session?.user) {
+            setTimeout(async () => {
+              if (!mounted) return;
+              
+              try {
+                let profileData = await fetchProfile(session.user.id);
+                
+                if (!profileData) {
+                  profileData = await createInitialProfile(session.user.id, session.user.email);
+                }
+                
+                if (mounted) {
+                  setProfile(profileData);
+                  
+                  if (profileData) {
+                    setTimeout(async () => {
+                      try {
+                        const { data: subscription } = await supabase.rpc('get_active_subscription', { 
+                          p_user_id: session.user.id 
+                        }) as any;
+                        
+                        setUserProperties({
+                          user_id: session.user.id,
+                          subscription_tier: subscription?.[0]?.file_access_tier || 'free',
+                          subscription_status: subscription?.[0]?.status || 'inactive',
+                          ai_tokens_balance: profileData.ai_tokens_balance || 0,
+                          video_results_balance: profileData.video_results_balance || 0,
+                          max_files: subscription?.[0]?.max_files || 0
+                        });
+                      } catch (e) {
+                        console.error('Failed to set user properties:', e);
+                      }
+                    }, 100);
+                  }
+                }
+              } catch (error) {
+                console.error('Profile fetch error:', error);
+                if (mounted) {
+                  setProfile(null);
+                }
               }
-            }
-          }, 0);
-        } else {
-          setProfile(null);
+            }, 0);
+          } else {
+            setProfile(null);
+          }
+          
+          if (mounted) {
+            setLoading(false);
+          }
         }
-        
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    );
+      );
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+      authSubscription = subscription;
+
+      // Check if there's an OAuth callback in the URL
+      const hasOAuthToken = window.location.hash.includes('access_token');
+      
+      if (hasOAuthToken) {
+        console.log('OAuth callback detected - giving Supabase time to process tokens...');
+        // Wait for Supabase to process OAuth tokens
+        // The onAuthStateChange listener will fire with SIGNED_IN event once processed
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+
+      // Then check for existing session
+      const { data: { session } } = await supabase.auth.getSession();
       if (mounted) {
         console.log('Initial session check:', session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
       }
-    });
+    };
+
+    initialize();
 
     return () => {
       mounted = false;
-      subscription.unsubscribe();
+      if (authSubscription) {
+        authSubscription.unsubscribe();
+      }
     };
   }, []);
 
