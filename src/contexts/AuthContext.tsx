@@ -203,15 +203,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
           console.log('Auth state changed:', event, session?.user?.email);
           
-          // Update state
+          // Update state synchronously
           setSession(session);
           setUser(session?.user ?? null);
           
-          // Clean up OAuth hash from URL after successful sign in
-          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-            if (window.location.hash.includes('access_token') || window.location.hash.includes('refresh_token')) {
-              console.log('Cleaning up OAuth hash from URL');
-              window.history.replaceState(null, '', window.location.pathname + window.location.search);
+          // Clean up OAuth hash ONLY after successful sign in
+          if (event === 'SIGNED_IN' && session) {
+            const hash = window.location.hash;
+            if (hash.includes('access_token') || hash.includes('refresh_token')) {
+              console.log('Cleaning up OAuth hash after successful sign in');
+              // Use setTimeout to avoid blocking the auth flow
+              setTimeout(() => {
+                window.history.replaceState(null, '', window.location.pathname + window.location.search);
+              }, 100);
             }
           }
           
@@ -295,17 +299,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       authSubscription = subscription;
 
-      // Check if there's an OAuth callback in the URL
-      const hasOAuthToken = window.location.hash.includes('access_token');
-      
-      if (hasOAuthToken) {
-        console.log('OAuth callback detected - giving Supabase time to process tokens...');
-        // Wait for Supabase to process OAuth tokens
-        // The onAuthStateChange listener will fire with SIGNED_IN event once processed
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
-
-      // Then check for existing session
+      // Check for existing session immediately
+      // Don't delay - Supabase handles OAuth tokens automatically on client init
       const { data: { session } } = await supabase.auth.getSession();
       if (mounted) {
         console.log('Initial session check:', session?.user?.email);

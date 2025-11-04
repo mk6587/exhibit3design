@@ -7,9 +7,9 @@ export default function HashConfirmationHandler() {
   useEffect(() => {
     const hash = window.location.hash;
     
-    // Only handle email confirmation redirects
-    // OAuth tokens are automatically processed by Supabase client on initialization
-    if (hash && (hash.includes('type=signup') || hash.includes('token_hash'))) {
+    // ONLY handle email confirmation redirects, NOT OAuth
+    // OAuth tokens (access_token, refresh_token) are handled by Supabase automatically
+    if (hash && (hash.includes('type=signup') || hash.includes('token_hash')) && !hash.includes('access_token')) {
       // Redirect to the email confirmation page with the hash intact
       window.location.href = '/confirm-email' + hash;
     }
