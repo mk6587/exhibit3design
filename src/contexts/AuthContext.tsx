@@ -196,72 +196,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     let authSubscription: any = null;
 
     const initialize = async () => {
-      // Check if there are OAuth tokens in the URL hash
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const hasAccessToken = hashParams.has('access_token');
-      
-      if (hasAccessToken) {
-        console.log('OAuth callback detected - waiting for Supabase to process tokens...');
-        
-        // Give Supabase time to process the OAuth callback
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Now get the session
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session && mounted) {
-          console.log('OAuth session established:', session.user.email);
-          setSession(session);
-          setUser(session.user);
-          setLoading(false);
-          
-          // Clean URL hash
-          window.history.replaceState(null, '', window.location.pathname + window.location.search);
-          
-          // Fetch/create profile
-          setTimeout(async () => {
-            if (!mounted) return;
-            try {
-              let profileData = await fetchProfile(session.user.id);
-              if (!profileData) {
-                profileData = await createInitialProfile(session.user.id, session.user.email);
-              }
-              if (mounted) {
-                setProfile(profileData);
-              }
-            } catch (error) {
-              console.error('Profile error:', error);
-            }
-          }, 0);
-        } else {
-          console.warn('OAuth callback detected but no session found');
-        }
-      } else {
-        // Normal session check (no OAuth callback)
-        const { data: { session } } = await supabase.auth.getSession();
-        if (mounted) {
-          console.log('Initial session check:', session?.user?.email);
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
-        }
-      }
-
-      // NOW set up auth state listener AFTER initialization
+      // Set up auth state listener FIRST
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        (event, session) => {
+        async (event, session) => {
           if (!mounted) return;
 
           console.log('Auth state changed:', event, session?.user?.email);
           
-          // Only synchronous state updates here
+          // Update state
           setSession(session);
           setUser(session?.user ?? null);
           
           // Clean up OAuth hash from URL after successful sign in
-          if (event === 'SIGNED_IN' && window.location.hash.includes('access_token')) {
-            console.log('Cleaning up OAuth hash from URL');
-            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            if (window.location.hash.includes('access_token') || window.location.hash.includes('refresh_token')) {
+              console.log('Cleaning up OAuth hash from URL');
+              window.history.replaceState(null, '', window.location.pathname + window.location.search);
+            }
           }
           
           // Dispatch custom event to trigger popup hiding
@@ -343,6 +294,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       );
 
       authSubscription = subscription;
+
+      // Then check for existing session
+      // Supabase will automatically process OAuth tokens if present in the hash
+      const { data: { session } } = await supabase.auth.getSession();
+      if (mounted) {
+        console.log('Initial session check:', session?.user?.email);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
     };
 
     initialize();
