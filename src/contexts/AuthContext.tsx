@@ -119,62 +119,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Create initial profile
-  const createInitialProfile = async (userId: string, userEmail?: string) => {
-    try {
-      console.log('🔨 Creating profile for user:', userId);
-      
-      // Wait for auth state to fully propagate after OAuth
+  // Profile is now automatically created by database trigger
+  // This function just waits for it to appear with retries
+  const waitForProfile = async (userId: string, maxRetries = 5): Promise<Profile | null> => {
+    console.log('⏳ Waiting for profile to be created by database trigger...');
+    
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      // Wait before checking (gives trigger time to complete)
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Verify we have an active session with valid JWT
-      const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError || !currentSession) {
-        console.error('❌ No valid session for profile creation:', sessionError);
-        return null;
+      const profileData = await fetchProfile(userId);
+      if (profileData) {
+        console.log('✅ Profile found!');
+        return profileData;
       }
       
-      console.log('✅ Valid session confirmed, JWT present:', !!currentSession.access_token);
-      
-      // Create basic profile with retry logic for RLS timing issues
-      let retries = 3;
-      let lastError = null;
-      
-      while (retries > 0) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .insert({
-            user_id: userId,
-            email: userEmail || '',
-            selected_files: [],
-          })
-          .select()
-          .single();
-
-        if (!error) {
-          console.log('✅ Profile created successfully');
-          return data;
-        }
-        
-        // If RLS error, wait and retry
-        if (error.code === '42501') {
-          console.log(`⏳ RLS timing issue, retrying... (${retries} attempts left)`);
-          await new Promise(resolve => setTimeout(resolve, 500));
-          retries--;
-          lastError = error;
-        } else {
-          console.error('❌ Error creating profile:', error);
-          return null;
-        }
-      }
-      
-      console.error('❌ Failed to create profile after retries:', lastError);
-      return null;
-    } catch (error) {
-      console.error('❌ Error creating profile:', error);
-      return null;
+      console.log(`⏳ Profile not ready yet, retry ${attempt + 1}/${maxRetries}`);
     }
+    
+    console.error('❌ Profile was not created by trigger after max retries');
+    return null;
   };
 
   // Refresh profile data and update GA4 user properties
@@ -183,13 +147,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (!user) return;
     
     setProfileError(null);
-    const profileData = await createInitialProfile(user.id, user.email);
+    const profileData = await waitForProfile(user.id);
     
     if (profileData) {
       setProfile(profileData);
       setProfileError(null);
     } else {
-      setProfileError('Failed to create your profile. Please contact support.');
+      setProfileError('Failed to find your profile. Please contact support.');
     }
   };
 
@@ -328,11 +292,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 let profileData = await fetchProfile(session.user.id);
                 
                 if (!profileData) {
-                  console.log('📝 No profile found, creating new profile...');
-                  profileData = await createInitialProfile(session.user.id, session.user.email);
+                  console.log('📝 No profile found yet, waiting for database trigger...');
+                  profileData = await waitForProfile(session.user.id);
                   
                   if (!profileData) {
-                    // Profile creation failed after retries
+                    // Profile was not created by trigger
                     clearTimeout(timeoutId);
                     setProfileError('Failed to create your profile. Please try again or contact support.');
                     setProfile(null);
