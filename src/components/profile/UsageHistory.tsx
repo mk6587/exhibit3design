@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Loader2, Zap, Image, Video, Calendar, Eye, Download } from "lucide-react";
 import { format } from "date-fns";
 import ImageViewer from "@/components/ui/image-viewer";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AIGeneration {
   id: string;
@@ -21,6 +22,7 @@ interface AIGeneration {
 }
 
 export function UsageHistory() {
+  const { user } = useAuth();
   const [aiGenerations, setAiGenerations] = useState<AIGeneration[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -29,14 +31,17 @@ export function UsageHistory() {
   const [imageLoadErrors, setImageLoadErrors] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    loadUsageHistory();
-  }, []);
+    if (user) {
+      loadUsageHistory();
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
 
   const loadUsageHistory = async () => {
+    if (!user) return;
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       // Get AI generation history
       const { data: aiData, error: aiError } = await supabase
         .from('ai_generation_history')
