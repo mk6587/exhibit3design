@@ -193,22 +193,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     let mounted = true;
-    let initializing = false;
+    let authSubscription: any = null;
 
-    // Function to initialize auth
-    const initializeAuth = async () => {
-      if (initializing) return;
-      initializing = true;
-
-      // First, check if there are OAuth tokens in the URL hash
+    const initialize = async () => {
+      // Check if there are OAuth tokens in the URL hash
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const hasAccessToken = hashParams.has('access_token');
       
       if (hasAccessToken) {
-        console.log('OAuth callback detected - waiting for session...');
+        console.log('OAuth callback detected - waiting for Supabase to process tokens...');
         
-        // Wait a moment for Supabase to process the OAuth callback
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Give Supabase time to process the OAuth callback
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
         // Now get the session
         const { data: { session } } = await supabase.auth.getSession();
@@ -237,28 +233,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               console.error('Profile error:', error);
             }
           }, 0);
-          
-          return true; // Indicate OAuth was handled
+        } else {
+          console.warn('OAuth callback detected but no session found');
+        }
+      } else {
+        // Normal session check (no OAuth callback)
+        const { data: { session } } = await supabase.auth.getSession();
+        if (mounted) {
+          console.log('Initial session check:', session?.user?.email);
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
         }
       }
 
-      // Normal session check (no OAuth callback)
-      const { data: { session } } = await supabase.auth.getSession();
-      if (mounted) {
-        console.log('Initial session check:', session?.user?.email);
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-      
-      return false; // No OAuth handled
-    };
-
-    // Initialize auth FIRST, then set up listener
-    initializeAuth().then((oauthHandled) => {
-      if (!mounted) return;
-
-      // Set up auth state listener
+      // NOW set up auth state listener AFTER initialization
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         (event, session) => {
           if (!mounted) return;
@@ -284,18 +273,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             
             // Handle post-login redirect to stored URL
             setTimeout(async () => {
-              // Regular redirect handling
               const redirectUrl = sessionStorage.getItem('auth_redirect_url');
               if (redirectUrl) {
                 sessionStorage.removeItem('auth_redirect_url');
                 console.log('🔄 Redirecting authenticated user to stored URL:', redirectUrl);
                 
-                // Check if this is an AI Studio redirect
                 if (redirectUrl.startsWith('ai-studio:')) {
-                  // Simple redirect to AI Studio - cookies will handle auth
                   window.open('https://ai.exhibit3design.com', '_blank', 'noopener,noreferrer');
                 } else {
-                  // Regular URL redirect
                   setTimeout(() => {
                     window.location.href = redirectUrl;
                   }, 500);
@@ -312,7 +297,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               try {
                 let profileData = await fetchProfile(session.user.id);
                 
-                // If no profile exists, create one with guest order data transfer
                 if (!profileData) {
                   profileData = await createInitialProfile(session.user.id, session.user.email);
                 }
@@ -320,7 +304,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 if (mounted) {
                   setProfile(profileData);
                   
-                  // Set user properties in GA4
                   if (profileData) {
                     setTimeout(async () => {
                       try {
@@ -359,15 +342,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
       );
 
-      // Cleanup
-      return () => {
-        mounted = false;
-        subscription.unsubscribe();
-      };
-    });
+      authSubscription = subscription;
+    };
+
+    initialize();
 
     return () => {
       mounted = false;
+      if (authSubscription) {
+        authSubscription.unsubscribe();
+      }
     };
   }, []);
 
