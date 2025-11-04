@@ -194,34 +194,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     let mounted = true;
     let authSubscription: any = null;
-    let initialSessionSet = false;
 
     const initialize = async () => {
-      // Check for existing session FIRST (before setting up listener)
-      const { data: { session: existingSession } } = await supabase.auth.getSession();
-      
-      if (mounted && existingSession) {
-        console.log('Found existing session:', existingSession.user?.email);
-        setSession(existingSession);
-        setUser(existingSession.user);
-        initialSessionSet = true;
-        
-        // Fetch profile for existing session
-        setTimeout(async () => {
-          if (!mounted) return;
-          try {
-            let profileData = await fetchProfile(existingSession.user.id);
-            if (!profileData) {
-              profileData = await createInitialProfile(existingSession.user.id, existingSession.user.email);
-            }
-            if (mounted) setProfile(profileData);
-          } catch (error) {
-            console.error('Profile fetch error:', error);
-          }
-        }, 0);
-      }
-      
-      // Set up auth state listener
+      // Set up auth state listener FIRST - it handles both existing sessions and OAuth
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, session) => {
           if (!mounted) return;
@@ -323,10 +298,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       authSubscription = subscription;
       
-      // Only set loading to false if we didn't find an existing session
-      if (mounted && !initialSessionSet) {
-        setLoading(false);
-      }
+      // Check for existing session AFTER listener is set up
+      // This ensures we don't miss any auth state changes
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (mounted && session) {
+          console.log('Restored existing session:', session.user?.email);
+          // The onAuthStateChange listener will handle this
+        } else if (mounted) {
+          setLoading(false);
+        }
+      });
     };
 
     initialize();
