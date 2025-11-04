@@ -5,75 +5,89 @@
 
 @layer base {
   :root {
-    /* Material Design Purple 500 + Gray 800-900 Neumorphism System */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 260 84% 60%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 250 15% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 98%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 262 83% 58%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 260 84% 60%;
+
+    --radius: 0.125rem;
     
-    /* Material Gray gradient backgrounds (800 to 900) */
-    --background: 0 0% 13%;         /* #212121 - Gray 900 base */
-    --background-gradient: linear-gradient(135deg, hsl(0 0% 26%) 0%, hsl(0 0% 13%) 100%);
-    --surface: 0 0% 20%;            /* Between 800-900 - Elevated surface */
-    --card: 0 0% 22%;               /* #383838 - Cards with subtle lift */
-    --card-foreground: 0 0% 100%;   /* Pure white for neumorphism */
-
-    --popover: 0 0% 22%;
-    --popover-foreground: 0 0% 100%;
-
-    /* Material Design Purple 500 brand identity */
-    --primary-from: 291 64% 42%;    /* #9C27B0 - Purple 500 */
-    --primary-to: 291 64% 50%;      /* Lighter Purple 500 variant */
-    --primary: 291 64% 42%;         /* #9C27B0 - Purple 500 */
-    --primary-foreground: 0 0% 100%; /* Pure white on purple */
-
-    /* Material Design Purple variants for accents */
-    --accent: 291 64% 42%;          /* #9C27B0 - Purple 500 (buttons) */
-    --accent-hover: 294 48% 50%;    /* #AB47BC - Purple 400 (hover) */
-    --accent-foreground: 0 0% 100%;
-
-    /* Secondary surfaces - neumorphic */
-    --secondary: 0 0% 24%;          /* Slightly lighter gray */
-    --secondary-foreground: 0 0% 100%;
-
-    /* Muted elements */
-    --muted: 0 0% 28%;
-    --muted-foreground: 0 0% 70%;   /* Softer text for neumorphism */
-
-    /* Text hierarchy - neumorphic white and purple */
-    --foreground: 0 0% 100%;        /* Pure white - Body text */
-    --heading: 0 0% 100%;           /* Pure white - Headings */
-    --text-purple: 291 64% 42%;     /* Purple 500 for accent text */
-
-    /* Borders & inputs - neumorphic */
-    --border: 0 0% 30%;             /* Subtle gray border */
-    --input: 0 0% 18%;              /* Input background */
-    --ring: 291 64% 42%;            /* Purple 500 focus ring */
-
-    /* Semantic colors - Material Design */
-    --success: 122 39% 49%;         /* #4CAF50 - Green 500 */
-    --warning: 45 100% 51%;         /* #FFC107 - Amber 500 */
-    --destructive: 4 90% 58%;       /* #F44336 - Red 500 */
-    --destructive-foreground: 0 0% 100%;
-
-    /* Border radius - neumorphic (softer) */
-    --radius: 1rem;                 /* 16px for neumorphism */
-
-    /* Motion timing tokens */
-    --motion-fast: 150ms;
-    --motion-medium: 250ms;
-    --motion-slow: 400ms;
-
-    /* Neumorphic shadows */
-    --shadow-light: 0 0% 30%;       /* Light shadow (top-left) */
-    --shadow-dark: 0 0% 8%;         /* Dark shadow (bottom-right) */
+    /* Colorful accents */
+    --color-blue: 210 100% 56%;
+    --color-teal: 174 72% 56%;
+    --color-orange: 25 95% 53%;
+    --color-pink: 330 81% 60%;
+    --color-green: 142 76% 45%;
     
-    /* Glow effects */
-    --glow-purple: 291 64% 42%;
-    --glow-accent: 291 64% 50%;
+    /* Flat design specific variables */
+    --flat-surface: 0 0% 99%;
+    --flat-border: 214.3 31.8% 87%;
+    --flat-hover: 250 15% 93%;
+  }
+
+  .dark {
+    --background: 0 0% 10%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 14%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 14%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 260 84% 60%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 35%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 262 83% 58%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 260 84% 60%;
     
-    /* Material Design color accents */
-    --color-blue: 207 90% 54%;      /* #2196F3 - Blue 500 */
-    --color-teal: 174 62% 47%;      /* #009688 - Teal 500 */
-    --color-orange: 14 100% 63%;    /* #FF5722 - Deep Orange 500 */
-    --color-pink: 340 82% 52%;      /* #E91E63 - Pink 500 */
-    --color-green: 122 39% 49%;     /* #4CAF50 - Green 500 */
+    /* Colorful accents for dark mode */
+    --color-blue: 210 100% 60%;
+    --color-teal: 174 72% 60%;
+    --color-orange: 25 95% 58%;
+    --color-pink: 330 81% 65%;
+    --color-green: 142 76% 50%;
+    
+    /* Flat design specific variables for dark mode */
+    --flat-surface: 0 0% 10%;
+    --flat-border: 0 0% 22%;
+    --flat-hover: 0 0% 24%;
   }
 }
 
@@ -83,12 +97,7 @@
   }
 
   body {
-    @apply text-foreground;
-    background: linear-gradient(135deg, hsl(0 0% 26%) 0%, hsl(0 0% 13%) 100%);
-    background-attachment: fixed;
-    background-size: 400% 400%;
-    animation: gradient-flow 15s ease infinite;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
@@ -105,115 +114,6 @@
     input, select, textarea {
       font-size: 16px; /* Prevent zoom on focus */
     }
-  }
-}
-
-/* Neumorphic utilities */
-@layer utilities {
-  .text-gradient-purple {
-    @apply bg-gradient-to-r from-[#9C27B0] to-[#BA68C8] bg-clip-text text-transparent;
-  }
-
-  .text-purple {
-    color: hsl(var(--text-purple));
-  }
-
-  /* Neumorphic shadows */
-  .neumorphic {
-    box-shadow: 
-      8px 8px 16px hsl(var(--shadow-dark)),
-      -8px -8px 16px hsl(var(--shadow-light));
-  }
-
-  .neumorphic-inset {
-    box-shadow: 
-      inset 4px 4px 8px hsl(var(--shadow-dark)),
-      inset -4px -4px 8px hsl(var(--shadow-light));
-  }
-
-  .neumorphic-flat {
-    box-shadow: 
-      4px 4px 8px hsl(var(--shadow-dark)),
-      -4px -4px 8px hsl(var(--shadow-light));
-  }
-
-  /* Glow effects - Purple 500 */
-  .glow-purple {
-    box-shadow: 0 0 20px rgba(156, 39, 176, 0.5);
-  }
-
-  .glow-accent {
-    box-shadow: 0 0 20px rgba(156, 39, 176, 0.5);
-  }
-
-  .glow-purple-strong {
-    box-shadow: 0 0 40px rgba(156, 39, 176, 0.7), 0 0 60px rgba(156, 39, 176, 0.4);
-  }
-
-  /* Text shadows for neumorphism */
-  .text-neumorphic {
-    text-shadow: 
-      2px 2px 4px hsl(var(--shadow-dark)),
-      -1px -1px 2px hsl(var(--shadow-light));
-  }
-
-  /* Vignette utility */
-  .vignette-overlay {
-    background: radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
-  }
-
-  /* Hover glow pulse */
-  .hover-glow {
-    transition: box-shadow var(--motion-medium) ease;
-  }
-
-  .hover-glow:hover {
-    box-shadow: 0 0 30px rgba(106, 27, 154, 0.6), 0 4px 20px rgba(106, 27, 154, 0.4);
-  }
-
-  /* Elevation system - Material Design */
-  .elevation-1 {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  }
-
-  .elevation-2 {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.35);
-  }
-
-  .elevation-3 {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-  }
-
-  /* Floating particle animation background */
-  .animated-bg {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .animated-bg::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-      radial-gradient(circle at 20% 50%, rgba(156, 39, 176, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(186, 104, 200, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 40% 20%, rgba(171, 71, 188, 0.1) 0%, transparent 50%);
-    animation: particle-float 20s ease-in-out infinite;
-    pointer-events: none;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
   }
 }
 
@@ -299,7 +199,7 @@ html, body {
   
   /* Mobile navigation improvements */
   .mobile-nav-item {
-    @apply text-base font-medium py-4 px-4 border-b border-border;
+    @apply text-base font-medium py-4 px-4 border-b border-flat-border;
     min-height: 56px;
     display: flex;
     align-items: center;
@@ -312,7 +212,7 @@ html, body {
   
   /* Flat input design */
   .mobile-flat-input {
-    @apply border border-border bg-input rounded-lg;
+    @apply border border-flat-border bg-flat-surface rounded-lg;
     padding: 14px 16px;
     font-size: 16px;
     min-height: 48px;
@@ -331,7 +231,7 @@ html, body {
   
   /* Touch-friendly product cards */
   .mobile-product-card {
-    @apply bg-background border border-border rounded-lg overflow-hidden;
+    @apply bg-background border border-flat-border rounded-lg overflow-hidden;
     min-height: 200px;
   }
   

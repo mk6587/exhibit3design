@@ -42,8 +42,7 @@ export const HeroSection = () => {
               Your browser does not support the video tag.
             </video>}
           
-          {/* Vignette overlay instead of color wash */}
-          <div className="absolute inset-0 vignette-overlay" />
+          <div className="absolute inset-0 bg-black/20" />
           
           {posterError && !posterLoaded && <div className="absolute inset-0 bg-gradient-to-br from-purple-900 to-purple-700" />}
         </> : <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
@@ -53,20 +52,18 @@ export const HeroSection = () => {
         </div>}
       
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center text-white px-4 max-w-4xl">
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-[0_0_30px_rgba(0,0,0,0.9)]" style={{
-          color: '#FFFFFF',
-          textShadow: '0 4px 20px rgba(0, 0, 0, 0.8)'
+        <div className="text-center text-white px-4">
+          <h1 className="text-lg md:text-2xl font-bold mb-2" style={{
+          textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6)'
         }}>Your Booth Design Can Spin Like This</h1>
           
-          <p className="text-lg md:text-xl lg:text-2xl font-normal mb-8" style={{
-          color: 'hsl(var(--foreground))',
-          textShadow: '0 2px 10px rgba(0, 0, 0, 0.8)'
+          <p className="text-base md:text-lg font-normal mb-6" style={{
+          textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6)'
         }}>Add visitors, edit objects, and create rotating videos with AI.</p>
           
           <div className="flex justify-center">
             <AIStudioLink serviceId="rotate-360">
-              <Button size="lg" variant="default" className="animate-glow-pulse">
+              <Button size="lg" variant="outline" className="bg-purple-600/40 text-white border-purple-400/70 hover:bg-purple-600/50">
                 Create with AI Now
               </Button>
             </AIStudioLink>
