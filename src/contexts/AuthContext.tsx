@@ -101,20 +101,33 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Fetch user profile
   const fetchProfile = async (userId: string) => {
     try {
+      console.log('📥 Fetching profile for user:', userId);
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle(); // Use maybeSingle() to avoid error when no profile exists
 
       if (error) {
-        console.error('Error fetching profile:', error);
+        console.error('❌ Error fetching profile:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
         return null;
       }
 
+      if (!data) {
+        console.log('ℹ️ No profile found for user');
+        return null;
+      }
+
+      console.log('✅ Profile fetched successfully:', data.id);
       return data;
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('❌ Exception fetching profile:', error);
       return null;
     }
   };
