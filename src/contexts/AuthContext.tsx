@@ -38,6 +38,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
+  profileError: string | null;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signInWithGoogle: () => Promise<{ error: any }>;
@@ -45,6 +46,7 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<{ error: any }>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
   refreshProfile: () => Promise<void>;
+  retryProfileCreation: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -66,6 +68,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileError, setProfileError] = useState<string | null>(null);
 
   // Get user's location based on IP
   const getUserLocation = async () => {
@@ -175,10 +178,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   // Refresh profile data and update GA4 user properties
+  // Retry profile creation manually
+  const retryProfileCreation = async () => {
+    if (!user) return;
+    
+    setProfileError(null);
+    const profileData = await createInitialProfile(user.id, user.email);
+    
+    if (profileData) {
+      setProfile(profileData);
+      setProfileError(null);
+    } else {
+      setProfileError('Failed to create your profile. Please contact support.');
+    }
+  };
+
   const refreshProfile = async () => {
     if (user) {
       const profileData = await fetchProfile(user.id);
       setProfile(profileData);
+      setProfileError(null);
       
       // Update user properties in GA4 if profile exists
       if (profileData) {
@@ -299,10 +318,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 if (!profileData) {
                   console.log('📝 No profile found, creating new profile...');
                   profileData = await createInitialProfile(session.user.id, session.user.email);
+                  
+                  if (!profileData) {
+                    // Profile creation failed after retries
+                    setProfileError('Failed to create your profile. Please try again or contact support.');
+                    setProfile(null);
+                    return;
+                  }
                 }
                 
                 if (mounted) {
                   setProfile(profileData);
+                  setProfileError(null);
                   
                   if (profileData) {
                     setTimeout(async () => {
@@ -641,6 +668,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     session,
     profile,
     loading,
+    profileError,
     signUp,
     signIn,
     signInWithGoogle,
@@ -648,6 +676,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     resetPassword,
     updateProfile,
     refreshProfile,
+    retryProfileCreation,
   };
 
   return (

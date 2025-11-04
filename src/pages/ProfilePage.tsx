@@ -24,7 +24,7 @@ import { trackPageView, trackProfileUpdate } from "@/services/ga4Analytics";
 import { PageSkeleton } from "@/components/ui/page-skeleton";
 
 const ProfilePage = () => {
-  const { user, profile, loading: authLoading, updateProfile, signOut } = useAuth();
+  const { user, profile, loading: authLoading, profileError, retryProfileCreation, updateProfile, signOut } = useAuth();
   const [updating, setUpdating] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -180,12 +180,33 @@ const ProfilePage = () => {
   }
 
   if (!profile) {
-    console.log('ProfilePage: No profile yet, showing loading state');
+    console.log('ProfilePage: No profile yet, showing loading/error state');
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-8 text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Setting up your profile...</p>
+        <div className="container mx-auto px-4 py-8 text-center max-w-md">
+          {profileError ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-destructive">Profile Setup Failed</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground">{profileError}</p>
+                <div className="flex gap-2 justify-center">
+                  <Button onClick={retryProfileCreation}>
+                    Retry
+                  </Button>
+                  <Button variant="outline" onClick={handleSignOut}>
+                    Sign Out
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+              <p className="text-muted-foreground">Setting up your profile...</p>
+            </>
+          )}
         </div>
       </Layout>
     );
