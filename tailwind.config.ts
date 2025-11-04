@@ -91,9 +91,11 @@ export default {
 				}
 			},
 			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				sm: '0.25rem',  // 4px
+				md: '0.5rem',   // 8px - Zone baseline
+				lg: '0.75rem',  // 12px
+				xl: '1rem',     // 16px
+				'2xl': '1.5rem' // 24px - pills
 			},
 			keyframes: {
 				'accordion-down': {
@@ -177,6 +179,19 @@ export default {
 						opacity: '1',
 						transform: 'translateY(0)'
 					}
+				},
+				'icon-hover': {
+					'0%': {
+						transform: 'scale(1) rotate(0deg)'
+					},
+					'100%': {
+						transform: 'scale(1.05) rotate(3deg)'
+					}
+				},
+				'spring-bounce': {
+					'0%': { transform: 'scaleY(0)' },
+					'50%': { transform: 'scaleY(1.1)' },
+					'100%': { transform: 'scaleY(1)' }
 				}
 			},
 			animation: {
@@ -188,7 +203,14 @@ export default {
 				'gradient-shift': 'gradient-shift 3s ease infinite',
 				'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
 				'lift': 'lift 0.2s ease-out forwards',
-				'fade-up': 'fade-up 0.6s ease-out forwards'
+				'fade-up': 'fade-up 0.6s ease-out forwards',
+				'icon-hover': 'icon-hover 0.25s ease forwards',
+				'spring-bounce': 'spring-bounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
+			},
+			transitionDuration: {
+				'fast': '150ms',
+				'medium': '250ms',
+				'slow': '400ms'
 			}
 		}
 	},

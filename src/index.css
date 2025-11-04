@@ -5,63 +5,70 @@
 
 @layer base {
   :root {
-    /* Futuristic Dark-Only Color System */
+    /* Refined Dynamic Dark System */
     
-    /* Surface colors - Deep dark backgrounds */
-    --background: 240 5% 6%;      /* #0F0F12 - Deepest background */
-    --surface: 240 5% 10%;        /* #18181B - Elevated surface */
-    --card: 240 6% 12%;           /* #1C1C21 - Card background */
-    --card-foreground: 0 0% 95%;
+    /* Dynamic gradient backgrounds */
+    --background: 240 8% 6%;      /* #0F0F12 - Base */
+    --background-gradient: linear-gradient(145deg, hsl(240 8% 6%) 0%, hsl(258 15% 12%) 100%);
+    --surface: 258 12% 10%;       /* #1A1525 - Elevated surface */
+    --card: 258 12% 11%;          /* Slightly elevated */
+    --card-foreground: 0 0% 98%;  /* #FAFAFA - High contrast */
 
-    --popover: 240 6% 12%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 258 12% 11%;
+    --popover-foreground: 0 0% 98%;
 
-    /* Purple gradient identity */
+    /* Strong purple brand identity */
     --primary-from: 258 90% 66%;  /* #7C3AED - Gradient start */
     --primary-to: 270 91% 75%;    /* #C084FC - Gradient end */
-    --primary: 264 90% 70%;       /* #A855F7 - Solid purple */
-    --primary-foreground: 0 0% 98%;
+    --primary: 264 81% 65%;       /* #A855F7 - Stronger brand purple */
+    --primary-foreground: 0 0% 100%; /* Pure white on purple */
 
-    /* Neon cyan interactive */
+    /* Neon cyan interactive accent */
     --accent: 189 94% 57%;        /* #22D3EE - Neon cyan */
     --accent-hover: 189 100% 65%; /* Brighter hover */
     --accent-foreground: 240 6% 10%;
 
     /* Secondary surfaces */
     --secondary: 240 6% 16%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary-foreground: 0 0% 98%;
 
     /* Muted elements */
     --muted: 240 5% 20%;
-    --muted-foreground: 0 0% 65%;
+    --muted-foreground: 220 9% 62%; /* #9CA3AF - Better readability */
 
-    /* Text hierarchy */
-    --foreground: 0 0% 95%;       /* #F2F2F3 - Not pure white */
+    /* Text hierarchy - high contrast */
+    --foreground: 220 13% 91%;    /* #E5E7EB - Body text */
+    --heading: 0 0% 100%;         /* #FFFFFF - Headings */
 
     /* Borders & inputs */
-    --border: 240 6% 20%;         /* #2E2E33 - Subtle separation */
-    --input: 240 6% 18%;          /* #27272A - Input background */
-    --ring: 264 90% 70%;          /* Purple focus ring */
+    --border: 240 6% 20%;         /* #2E2E33 */
+    --input: 240 6% 18%;          /* #27272A */
+    --ring: 264 81% 65%;          /* Strong purple focus ring */
 
     /* Semantic colors */
-    --success: 142 76% 45%;       /* #10B981 */
+    --success: 142 71% 45%;       /* #22C55E */
     --warning: 38 92% 50%;        /* #F59E0B */
     --destructive: 0 72% 51%;     /* #EF4444 */
     --destructive-foreground: 0 0% 98%;
 
-    /* Border radius - Smooth geometry */
-    --radius: 0.75rem;            /* 12px base */
+    /* Border radius - Zone baseline (8px) */
+    --radius: 0.5rem;             /* 8px base */
+
+    /* Motion timing tokens */
+    --motion-fast: 150ms;
+    --motion-medium: 250ms;
+    --motion-slow: 400ms;
 
     /* Glow effects */
     --glow-purple: 258 90% 66%;
     --glow-cyan: 189 94% 57%;
     
     /* Colorful accents */
-    --color-blue: 210 100% 60%;
+    --color-blue: 217 91% 60%;    /* #3B82F6 - Electric blue */
     --color-teal: 174 72% 60%;
     --color-orange: 25 95% 58%;
     --color-pink: 330 81% 65%;
-    --color-green: 142 76% 50%;
+    --color-green: 142 71% 45%;   /* #22C55E */
   }
 }
 
@@ -71,7 +78,9 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background: linear-gradient(145deg, hsl(240 8% 6%) 0%, hsl(258 15% 12%) 100%);
+    background-attachment: fixed;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-text-size-adjust: 100%;
@@ -108,11 +117,25 @@
   }
 
   .glow-cyan {
-    box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.5);
   }
 
   .glow-purple-strong {
     box-shadow: 0 0 40px rgba(124, 58, 237, 0.6), 0 0 60px rgba(124, 58, 237, 0.3);
+  }
+
+  /* Vignette utility */
+  .vignette-overlay {
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+  }
+
+  /* Hover glow pulse */
+  .hover-glow {
+    transition: box-shadow var(--motion-medium) ease;
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.5), 0 4px 20px rgba(124, 58, 237, 0.3);
   }
 
   /* Elevation system */

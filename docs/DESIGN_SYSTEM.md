@@ -2,7 +2,7 @@
 
 ## Overview
 
-This design system creates a **cinematic, dark-only interface** for Exhibit3Design's AI platform. Inspired by high-tech design studios, it balances AI precision with artistic creativity through futuristic elements, immersive gradients, and subtle motion.
+This design system creates a **cinematic, dark-only interface** for Exhibit3Design's AI platform. Inspired by high-tech design studios and the Zone MUI template, it balances AI precision with artistic creativity through dynamic gradients, neon cyan accents, and refined micro-interactions.
 
 ---
 
@@ -24,45 +24,52 @@ This design system creates a **cinematic, dark-only interface** for Exhibit3Desi
 
 ## Color System
 
-### Surface Colors (Dark-Only)
+### Surface Colors (Dynamic Dark Gradients)
 
 ```css
---background: 240 5% 6%     /* #0F0F12 - Deepest background */
---surface: 240 5% 10%       /* #18181B - Elevated surface */
---card: 240 6% 12%          /* #1C1C21 - Card background */
+--background: 240 8% 6%     /* #0F0F12 - Base */
+--background-gradient: linear-gradient(145deg, #0F0F12 0%, #1C1830 100%)
+--surface: 258 12% 10%      /* #1A1525 - Elevated surface */
+--card: 258 12% 11%         /* Slightly elevated cards */
 ```
 
-### Purple Gradient Identity
+**Note:** Body uses a dynamic gradient background that creates depth without flatness. This "liquid dark" approach adds subtle visual interest.
+
+### Purple Gradient Identity (Stronger)
 
 ```css
 --primary-from: 258 90% 66% /* #7C3AED - Gradient start */
 --primary-to: 270 91% 75%   /* #C084FC - Gradient end */
---primary: 264 90% 70%      /* #A855F7 - Solid purple */
+--primary: 264 81% 65%      /* #A855F7 - Stronger brand purple */
 ```
 
 **Usage:**
 - Primary CTAs with gradient background
-- Brand signatures and hero elements
+- Brand signatures and logo (stronger visibility)
 - Glow effects on interactive components
 
-### Neon Cyan Interactive
+### Neon Cyan Interactive Accent
 
 ```css
---accent: 189 94% 57%       /* #22D3EE - Neon cyan */
---accent-hover: 189 100% 65% /* #06B6D4 - Brighter hover */
+--accent: 189 94% 57%       /* #22D3EE - Neon cyan (replaces magenta) */
+--accent-hover: 189 100% 65% /* Brighter hover state */
 ```
 
 **Usage:**
 - Hover states on buttons and links
 - Active navigation indicators
-- Focus rings on inputs
+- Icon hover effects
+- Interactive highlights
 
-### Text Hierarchy
+### Text Hierarchy (High Contrast)
 
 ```css
---foreground: 0 0% 95%      /* #F2F2F3 - Primary text (not pure white) */
---muted-foreground: 0 0% 65% /* #A6A6A8 - Secondary text */
+--foreground: 220 13% 91%   /* #E5E7EB - Body text */
+--heading: 0 0% 100%        /* #FFFFFF - Headings (maximum contrast) */
+--muted-foreground: 220 9% 62% /* #9CA3AF - Secondary text */
 ```
+
+**Important:** Use pure white (#FFFFFF) for headings on dark backgrounds for maximum readability. Avoid purple text overlays that reduce contrast.
 
 ### Borders & Inputs
 
@@ -153,17 +160,19 @@ wider:   0.05em /* Uppercase labels */
 
 ---
 
-## Border Radius
+## Border Radius (Zone Baseline)
 
-**Smooth, friendly geometry:**
+**Consistent 8px system:**
 
 ```css
-sm:  0.5rem   /* 8px  - Small elements */
-md:  0.625rem /* 10px - Buttons */
-lg:  0.75rem  /* 12px - Cards (base) */
-xl:  1rem     /* 16px - Large cards */
+sm:  0.25rem  /* 4px  - Micro elements */
+md:  0.5rem   /* 8px  - Buttons, cards (base) */
+lg:  0.75rem  /* 12px - Large cards */
+xl:  1rem     /* 16px - Modals */
 2xl: 1.5rem   /* 24px - Pills/chips */
 ```
+
+**Key Change:** Primary buttons and cards use 8px radius (md) to match Zone's modern aesthetic.
 
 ---
 
@@ -203,15 +212,16 @@ lg: 0 8px 32px rgba(0, 0, 0, 0.6)  /* Strong elevation */
 
 ## Animation System
 
-### Timing Functions
+### Timing Functions (Motion Tokens)
 
 ```css
-fast: 150ms
-base: 200ms
-slow: 300ms
+--motion-fast:   150ms
+--motion-medium: 250ms
+--motion-slow:   400ms
 
 easeOut:    cubic-bezier(0.16, 1, 0.3, 1)
 easeInOut:  cubic-bezier(0.65, 0, 0.35, 1)
+spring:     cubic-bezier(0.68, -0.55, 0.265, 1.55)
 ```
 
 ### Keyframes
@@ -266,24 +276,26 @@ easeInOut:  cubic-bezier(0.65, 0, 0.35, 1)
 
 #### Variant: Default (Gradient Primary)
 
-**Design:**
-- Background: `linear-gradient(135deg, #7C3AED, #C084FC)`
-- Border radius: 10px
-- Padding: 12px 24px
+**Design (Zone-Aligned):**
+- Background: `linear-gradient(90deg, #7C3AED, #C084FC)`
+- Border radius: **8px** (md)
+- Height: **44px** (standard), **36px** (small/header)
+- Padding: 0 20px (md), 0 12px (sm)
 - Font: 500 weight, 0.02em letter-spacing
 - Glow: `0 4px 20px rgba(124, 58, 237, 0.4)`
+- Gradient shift animation on background
 
 **Hover:**
 - Lift: `translateY(-2px)`
 - Stronger glow: `0 6px 30px rgba(124, 58, 237, 0.6)`
-- Slight brightness increase
+- Gradient continues shifting
 
 **Active:**
 - Scale: 0.98
 
 **Code:**
 ```tsx
-<Button variant="default">
+<Button variant="default" size="default">
   Primary Action
 </Button>
 ```
