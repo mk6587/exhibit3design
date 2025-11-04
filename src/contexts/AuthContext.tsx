@@ -203,6 +203,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
           console.log('Auth state changed:', event, session?.user?.email);
           
+          // CRITICAL FIX: Ignore INITIAL_SESSION with undefined session during OAuth callback
+          // Wait for the actual SIGNED_IN event with the real session
+          if (event === 'INITIAL_SESSION' && !session) {
+            const hash = window.location.hash;
+            const isOAuthCallback = hash.includes('access_token') || hash.includes('refresh_token');
+            
+            if (isOAuthCallback) {
+              console.log('🔄 Ignoring undefined INITIAL_SESSION during OAuth - waiting for SIGNED_IN event');
+              return; // Don't update state, wait for next event
+            }
+          }
+          
           // Update state synchronously
           setSession(session);
           setUser(session?.user ?? null);
@@ -298,25 +310,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       authSubscription = subscription;
       
-      // Only check for existing session if NOT in OAuth callback flow
-      // OAuth tokens are handled automatically by Supabase client + onAuthStateChange
-      const hash = window.location.hash;
-      const isOAuthCallback = hash.includes('access_token') || hash.includes('refresh_token');
-      
-      if (!isOAuthCallback) {
-        console.log('Checking for existing session (not OAuth callback)');
-        supabase.auth.getSession().then(({ data: { session } }) => {
-          if (mounted && session) {
-            console.log('Restored existing session:', session.user?.email);
-            // The onAuthStateChange listener will handle setting state
-          } else if (mounted) {
-            setLoading(false);
-          }
-        });
-      } else {
-        console.log('OAuth callback detected - skipping getSession(), letting Supabase handle it');
-        // Loading will be set to false by onAuthStateChange when session is ready
-      }
+      // Check for existing session - onAuthStateChange will handle OAuth callbacks properly now
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (mounted && session) {
+          console.log('Restored existing session:', session.user?.email);
+        } else if (mounted && !window.location.hash.includes('access_token')) {
+          // Only set loading to false if we're not in an OAuth callback
+          setLoading(false);
+        }
+      });
     };
 
     initialize();
