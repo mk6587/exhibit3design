@@ -193,6 +193,66 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     let mounted = true;
+    let initializing = false;
+
+    // Function to initialize auth
+    const initializeAuth = async () => {
+      if (initializing) return;
+      initializing = true;
+
+      // First, check if there are OAuth tokens in the URL hash
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const hasAccessToken = hashParams.has('access_token');
+      
+      if (hasAccessToken) {
+        console.log('OAuth callback detected - waiting for session...');
+        
+        // Wait a moment for Supabase to process the OAuth callback
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Now get the session
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session && mounted) {
+          console.log('OAuth session established:', session.user.email);
+          setSession(session);
+          setUser(session.user);
+          
+          // Clean URL hash
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+          
+          // Fetch/create profile
+          setTimeout(async () => {
+            if (!mounted) return;
+            try {
+              let profileData = await fetchProfile(session.user.id);
+              if (!profileData) {
+                profileData = await createInitialProfile(session.user.id, session.user.email);
+              }
+              if (mounted) {
+                setProfile(profileData);
+              }
+            } catch (error) {
+              console.error('Profile error:', error);
+            }
+            if (mounted) {
+              setLoading(false);
+            }
+          }, 0);
+          
+          return; // Exit early, auth state listener will handle future changes
+        }
+      }
+
+      // Normal session check (no OAuth callback)
+      const { data: { session } } = await supabase.auth.getSession();
+      if (mounted) {
+        console.log('Initial session check:', session?.user?.email);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    };
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -295,15 +355,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     );
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (mounted) {
-        console.log('Initial session check:', session?.user?.email);
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    });
+    // Initialize auth (handles OAuth callback if present)
+    initializeAuth();
 
     return () => {
       mounted = false;
