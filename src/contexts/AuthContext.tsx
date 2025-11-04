@@ -98,16 +98,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Fetch user profile
+  // Fetch user profile using security definer function (bypasses RLS timing issues)
   const fetchProfile = async (userId: string) => {
     try {
       console.log('📥 Fetching profile for user:', userId);
       
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle(); // Use maybeSingle() to avoid error when no profile exists
+        .rpc('get_user_profile', { p_user_id: userId });
 
       if (error) {
         console.error('❌ Error fetching profile:', {
@@ -119,41 +116,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return null;
       }
 
-      if (!data) {
+      if (!data || data.length === 0) {
         console.log('ℹ️ No profile found for user');
         return null;
       }
 
-      console.log('✅ Profile fetched successfully:', data.id);
-      return data;
+      console.log('✅ Profile fetched successfully:', data[0].id);
+      return data[0] as Profile;
     } catch (error) {
       console.error('❌ Exception fetching profile:', error);
       return null;
     }
   };
 
-  // Profile is now automatically created by database trigger
-  // This function just waits for it to appear with retries
-  const waitForProfile = async (userId: string, maxRetries = 10): Promise<Profile | null> => {
-    console.log('⏳ Waiting for profile to be accessible via RLS...');
-    
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-      // Wait progressively longer (RLS + auth.uid() timing issue)
-      const waitTime = attempt === 0 ? 1000 : 1500;
-      await new Promise(resolve => setTimeout(resolve, waitTime));
-      
-      const profileData = await fetchProfile(userId);
-      if (profileData) {
-        console.log('✅ Profile found!');
-        return profileData;
-      }
-      
-      console.log(`⏳ Profile not accessible yet, retry ${attempt + 1}/${maxRetries}`);
-    }
-    
-    console.error('❌ Profile not accessible after max retries');
-    return null;
-  };
+  // Remove waitForProfile - no longer needed with security definer function
 
   // Refresh profile data and update GA4 user properties
   // Retry profile creation manually
@@ -161,7 +137,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (!user) return;
     
     setProfileError(null);
-    const profileData = await waitForProfile(user.id);
+    const profileData = await fetchProfile(user.id);
     
     if (profileData) {
       setProfile(profileData);
@@ -274,84 +250,57 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }, 500);
           }
           
-          // Database trigger creates profile automatically - just wait for it
+          // Database trigger creates profile automatically
+          // Security definer function bypasses RLS timing issues
           if (session?.user) {
-            // Set a timeout to show error if profile loading takes too long
-            const timeoutId = setTimeout(() => {
-              if (mounted && !profile) {
-                console.error('⏱️ Profile loading timeout');
-                setProfileError('Profile loading is taking too long. Please try again.');
-                setLoading(false);
-              }
-            }, 15000); // 15 second timeout
-            
             setTimeout(async () => {
               if (!mounted) return;
               
               try {
-                // CRITICAL: Ensure session is set in Supabase client before queries
-                console.log('🔐 Verifying session in Supabase client...');
-                await supabase.auth.setSession({
-                  access_token: session.access_token,
-                  refresh_token: session.refresh_token
-                });
-                
-                // Wait for session to fully propagate (critical for RLS with auth.uid())
-                await new Promise(resolve => setTimeout(resolve, 500));
-                
-                console.log('✅ Session set, now fetching profile for user:', session.user.id);
-                let profileData = await fetchProfile(session.user.id);
+                console.log('🔍 Fetching profile for user:', session.user.id);
+                const profileData = await fetchProfile(session.user.id);
                 
                 if (!profileData) {
-                  console.log('⏳ Profile not found yet, waiting for database trigger...');
-                  profileData = await waitForProfile(session.user.id);
-                  
-                  if (!profileData) {
-                    // Profile was not created by trigger
-                    clearTimeout(timeoutId);
-                    setProfileError('Failed to load your profile. Please try again or contact support.');
-                    setProfile(null);
-                    setLoading(false);
-                    return;
-                  }
+                  console.error('❌ Profile not found - trigger may have failed');
+                  setProfileError('Failed to load your profile. Please try again or contact support.');
+                  setProfile(null);
+                  setLoading(false);
+                  return;
                 }
                 
                 if (mounted) {
-                  clearTimeout(timeoutId);
                   setProfile(profileData);
                   setProfileError(null);
                   
-                  if (profileData) {
-                    setTimeout(async () => {
-                      try {
-                        const { data: subscription } = await supabase.rpc('get_active_subscription', { 
-                          p_user_id: session.user.id 
-                        }) as any;
-                        
-                        setUserProperties({
-                          user_id: session.user.id,
-                          subscription_tier: subscription?.[0]?.file_access_tier || 'free',
-                          subscription_status: subscription?.[0]?.status || 'inactive',
-                          ai_tokens_balance: profileData.ai_tokens_balance || 0,
-                          video_results_balance: profileData.video_results_balance || 0,
-                          max_files: subscription?.[0]?.max_files || 0
-                        });
-                      } catch (e) {
-                        console.error('Failed to set user properties:', e);
-                      }
-                    }, 100);
-                  }
+                  // Update GA4 user properties
+                  setTimeout(async () => {
+                    try {
+                      const { data: subscription } = await supabase.rpc('get_active_subscription', { 
+                        p_user_id: session.user.id 
+                      }) as any;
+                      
+                      setUserProperties({
+                        user_id: session.user.id,
+                        subscription_tier: subscription?.[0]?.file_access_tier || 'free',
+                        subscription_status: subscription?.[0]?.status || 'inactive',
+                        ai_tokens_balance: profileData.ai_tokens_balance || 0,
+                        video_results_balance: profileData.video_results_balance || 0,
+                        max_files: subscription?.[0]?.max_files || 0
+                      });
+                    } catch (e) {
+                      console.error('Failed to set user properties:', e);
+                    }
+                  }, 100);
                 }
               } catch (error) {
                 console.error('Profile fetch error:', error);
-                clearTimeout(timeoutId);
                 if (mounted) {
                   setProfileError('An error occurred while loading your profile. Please try again.');
                   setProfile(null);
                   setLoading(false);
                 }
               }
-            }, 1500); // Wait 1.5 seconds for OAuth session to stabilize
+            }, 0);
           } else {
             setProfile(null);
           }

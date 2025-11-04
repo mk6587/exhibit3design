@@ -1392,6 +1392,37 @@ export type Database = {
           role: string
         }[]
       }
+      get_user_profile: {
+        Args: { p_user_id: string }
+        Returns: {
+          address_line_1: string
+          ai_tokens_balance: number
+          ai_tokens_limit: number
+          ai_tokens_used: number
+          city: string
+          country: string
+          created_at: string
+          deactivated_at: string
+          deactivation_reason: string
+          email: string
+          email_confirmed: boolean
+          first_name: string
+          free_tokens_claimed: boolean
+          id: string
+          is_active: boolean
+          last_name: string
+          phone_number: string
+          postcode: string
+          reserved_tokens: number
+          selected_files: Json
+          state_region: string
+          updated_at: string
+          user_id: string
+          video_results_balance: number
+          video_results_limit: number
+          video_results_used: number
+        }[]
+      }
       get_user_token_balance: {
         Args: { p_user_id: string }
         Returns: {
