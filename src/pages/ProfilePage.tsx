@@ -174,9 +174,21 @@ const ProfilePage = () => {
 
   console.log('ProfilePage: User:', user?.email, 'Profile:', !!profile);
 
-  if (!user || !profile) {
-    console.log('ProfilePage: No user or profile, redirecting to auth');
+  if (!user) {
+    console.log('ProfilePage: No user, will redirect to auth');
     return null;
+  }
+
+  if (!profile) {
+    console.log('ProfilePage: No profile yet, showing loading state');
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8 text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Setting up your profile...</p>
+        </div>
+      </Layout>
+    );
   }
 
   return (

@@ -121,6 +121,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       console.log('🔨 Creating profile for user:', userId);
       
+      // Verify we have an active session with valid JWT
+      const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !currentSession) {
+        console.error('❌ No valid session for profile creation:', sessionError);
+        return null;
+      }
+      
+      console.log('✅ Valid session confirmed, creating profile with JWT');
+      
       // Create basic profile - RLS policy should allow user to create their own profile
       const { data, error } = await supabase
         .from('profiles')
