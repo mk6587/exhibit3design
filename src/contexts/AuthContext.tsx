@@ -299,6 +299,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           // Defer all Supabase calls with setTimeout to prevent deadlock
           // AND to ensure session is fully established for RLS
           if (session?.user) {
+            // Set a timeout to show error if profile creation takes too long
+            const timeoutId = setTimeout(() => {
+              if (mounted && !profile) {
+                console.error('⏱️ Profile creation timeout - taking too long');
+                setProfileError('Profile creation is taking too long. Please try again.');
+                setLoading(false);
+              }
+            }, 15000); // 15 second timeout
+            
             setTimeout(async () => {
               if (!mounted) return;
               
@@ -309,6 +318,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 
                 if (!currentSession.session) {
                   console.error('❌ No session available in Supabase client');
+                  clearTimeout(timeoutId);
+                  setProfileError('Session not available. Please try signing in again.');
+                  setLoading(false);
                   return;
                 }
                 
@@ -321,13 +333,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                   
                   if (!profileData) {
                     // Profile creation failed after retries
+                    clearTimeout(timeoutId);
                     setProfileError('Failed to create your profile. Please try again or contact support.');
                     setProfile(null);
+                    setLoading(false);
                     return;
                   }
                 }
                 
                 if (mounted) {
+                  clearTimeout(timeoutId);
                   setProfile(profileData);
                   setProfileError(null);
                   
@@ -354,8 +369,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 }
               } catch (error) {
                 console.error('Profile fetch error:', error);
+                clearTimeout(timeoutId);
                 if (mounted) {
+                  setProfileError('An error occurred while setting up your profile. Please try again.');
                   setProfile(null);
+                  setLoading(false);
                 }
               }
             }, 0);
