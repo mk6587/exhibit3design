@@ -249,9 +249,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           }
           
           // Defer all Supabase calls with setTimeout to prevent deadlock
+          // AND to ensure session is fully established for RLS
           if (session?.user) {
             setTimeout(async () => {
               if (!mounted) return;
+              
+              // Extra delay after sign-in to ensure session is established in DB for RLS
+              console.log('⏳ Waiting for session to be established for RLS...');
+              await new Promise(resolve => setTimeout(resolve, 500));
               
               try {
                 let profileData = await fetchProfile(session.user.id);
