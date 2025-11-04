@@ -7,8 +7,9 @@ export default function HashConfirmationHandler() {
   useEffect(() => {
     const hash = window.location.hash;
     
-    // Check if we have confirmation parameters in the hash
-    if (hash && (hash.includes('access_token') || hash.includes('token_hash') || hash.includes('type=signup'))) {
+    // Only redirect to confirmation page if it's an actual email confirmation
+    // (has type=signup or token_hash), not an OAuth login (which only has access_token)
+    if (hash && (hash.includes('type=signup') || hash.includes('token_hash'))) {
       // Redirect to the email confirmation page with the hash intact
       window.location.href = '/confirm-email' + hash;
     }

@@ -24,6 +24,7 @@ interface Profile {
   free_tokens_claimed: boolean;
   video_results_used: number;
   video_results_balance: number;
+  video_results_limit: number;
   selected_files: any;
   is_active: boolean;
   deactivated_at: string | null;
