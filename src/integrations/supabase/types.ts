@@ -753,6 +753,7 @@ export type Database = {
           updated_at: string
           user_id: string
           video_results_balance: number | null
+          video_results_limit: number
           video_results_used: number | null
         }
         Insert: {
@@ -780,6 +781,7 @@ export type Database = {
           updated_at?: string
           user_id: string
           video_results_balance?: number | null
+          video_results_limit?: number
           video_results_used?: number | null
         }
         Update: {
@@ -807,6 +809,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           video_results_balance?: number | null
+          video_results_limit?: number
           video_results_used?: number | null
         }
         Relationships: []
