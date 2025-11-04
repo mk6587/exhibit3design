@@ -5,63 +5,68 @@
 
 @layer base {
   :root {
-    /* Material Design Purple 800 Dark System */
+    /* Material Design Purple 500 + Gray 800-900 Neumorphism System */
     
-    /* Dark gray gradient backgrounds - not too dark */
-    --background: 245 15% 20%;      /* #2E2F3E - Dark gray base */
-    --background-gradient: linear-gradient(135deg, hsl(245 15% 20%) 0%, hsl(280 20% 16%) 100%);
-    --surface: 245 18% 24%;         /* #353649 - Elevated surface */
-    --card: 245 20% 26%;            /* #3A3C4F - Cards */
-    --card-foreground: 0 0% 98%;    /* #FAFAFA - High contrast */
+    /* Material Gray gradient backgrounds (800 to 900) */
+    --background: 0 0% 13%;         /* #212121 - Gray 900 base */
+    --background-gradient: linear-gradient(135deg, hsl(0 0% 26%) 0%, hsl(0 0% 13%) 100%);
+    --surface: 0 0% 20%;            /* Between 800-900 - Elevated surface */
+    --card: 0 0% 22%;               /* #383838 - Cards with subtle lift */
+    --card-foreground: 0 0% 100%;   /* Pure white for neumorphism */
 
-    --popover: 245 20% 26%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 22%;
+    --popover-foreground: 0 0% 100%;
 
-    /* Material Design Purple 800 brand identity */
-    --primary-from: 280 70% 36%;    /* #6A1B9A - Purple 800 */
-    --primary-to: 288 68% 40%;      /* #8E24AA - Purple 600 */
-    --primary: 283 70% 38%;         /* #7B1FA2 - Purple 700 */
+    /* Material Design Purple 500 brand identity */
+    --primary-from: 291 64% 42%;    /* #9C27B0 - Purple 500 */
+    --primary-to: 291 64% 50%;      /* Lighter Purple 500 variant */
+    --primary: 291 64% 42%;         /* #9C27B0 - Purple 500 */
     --primary-foreground: 0 0% 100%; /* Pure white on purple */
 
-    /* Material Design Purple lighter variants */
-    --accent: 291 64% 42%;          /* #9C27B0 - Purple 500 (interactive) */
+    /* Material Design Purple variants for accents */
+    --accent: 291 64% 42%;          /* #9C27B0 - Purple 500 (buttons) */
     --accent-hover: 294 48% 50%;    /* #AB47BC - Purple 400 (hover) */
     --accent-foreground: 0 0% 100%;
 
-    /* Secondary surfaces */
-    --secondary: 245 12% 30%;       /* Lighter gray */
-    --secondary-foreground: 0 0% 98%;
+    /* Secondary surfaces - neumorphic */
+    --secondary: 0 0% 24%;          /* Slightly lighter gray */
+    --secondary-foreground: 0 0% 100%;
 
     /* Muted elements */
-    --muted: 245 10% 35%;
-    --muted-foreground: 240 5% 75%; /* #B8B9C0 - Better readability on dark gray */
+    --muted: 0 0% 28%;
+    --muted-foreground: 0 0% 70%;   /* Softer text for neumorphism */
 
-    /* Text hierarchy - high contrast */
-    --foreground: 240 10% 90%;      /* #E3E4E8 - Body text */
-    --heading: 0 0% 100%;           /* #FFFFFF - Headings */
+    /* Text hierarchy - neumorphic white and purple */
+    --foreground: 0 0% 100%;        /* Pure white - Body text */
+    --heading: 0 0% 100%;           /* Pure white - Headings */
+    --text-purple: 291 64% 42%;     /* Purple 500 for accent text */
 
-    /* Borders & inputs */
-    --border: 245 12% 32%;          /* #464856 */
-    --input: 245 15% 28%;           /* #3E3F4D */
-    --ring: 283 70% 38%;            /* Purple 700 focus ring */
+    /* Borders & inputs - neumorphic */
+    --border: 0 0% 30%;             /* Subtle gray border */
+    --input: 0 0% 18%;              /* Input background */
+    --ring: 291 64% 42%;            /* Purple 500 focus ring */
 
     /* Semantic colors - Material Design */
     --success: 122 39% 49%;         /* #4CAF50 - Green 500 */
     --warning: 45 100% 51%;         /* #FFC107 - Amber 500 */
     --destructive: 4 90% 58%;       /* #F44336 - Red 500 */
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    /* Border radius */
-    --radius: 0.5rem;               /* 8px base */
+    /* Border radius - neumorphic (softer) */
+    --radius: 1rem;                 /* 16px for neumorphism */
 
     /* Motion timing tokens */
     --motion-fast: 150ms;
     --motion-medium: 250ms;
     --motion-slow: 400ms;
 
+    /* Neumorphic shadows */
+    --shadow-light: 0 0% 30%;       /* Light shadow (top-left) */
+    --shadow-dark: 0 0% 8%;         /* Dark shadow (bottom-right) */
+    
     /* Glow effects */
-    --glow-purple: 280 70% 36%;
-    --glow-accent: 291 64% 42%;
+    --glow-purple: 291 64% 42%;
+    --glow-accent: 291 64% 50%;
     
     /* Material Design color accents */
     --color-blue: 207 90% 54%;      /* #2196F3 - Blue 500 */
@@ -79,7 +84,7 @@
 
   body {
     @apply text-foreground;
-    background: linear-gradient(135deg, hsl(245 15% 20%) 0%, hsl(280 20% 16%) 100%);
+    background: linear-gradient(135deg, hsl(0 0% 26%) 0%, hsl(0 0% 13%) 100%);
     background-attachment: fixed;
     background-size: 400% 400%;
     animation: gradient-flow 15s ease infinite;
@@ -103,19 +108,38 @@
   }
 }
 
-/* Gradient text utilities */
+/* Neumorphic utilities */
 @layer utilities {
   .text-gradient-purple {
-    @apply bg-gradient-to-r from-[#6A1B9A] to-[#8E24AA] bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-[#9C27B0] to-[#BA68C8] bg-clip-text text-transparent;
   }
 
-  .text-gradient-accent {
-    @apply bg-gradient-to-r from-[#9C27B0] to-[#AB47BC] bg-clip-text text-transparent;
+  .text-purple {
+    color: hsl(var(--text-purple));
   }
 
-  /* Glow effects - Material Design Purple */
+  /* Neumorphic shadows */
+  .neumorphic {
+    box-shadow: 
+      8px 8px 16px hsl(var(--shadow-dark)),
+      -8px -8px 16px hsl(var(--shadow-light));
+  }
+
+  .neumorphic-inset {
+    box-shadow: 
+      inset 4px 4px 8px hsl(var(--shadow-dark)),
+      inset -4px -4px 8px hsl(var(--shadow-light));
+  }
+
+  .neumorphic-flat {
+    box-shadow: 
+      4px 4px 8px hsl(var(--shadow-dark)),
+      -4px -4px 8px hsl(var(--shadow-light));
+  }
+
+  /* Glow effects - Purple 500 */
   .glow-purple {
-    box-shadow: 0 0 20px rgba(106, 27, 154, 0.5);
+    box-shadow: 0 0 20px rgba(156, 39, 176, 0.5);
   }
 
   .glow-accent {
@@ -123,7 +147,14 @@
   }
 
   .glow-purple-strong {
-    box-shadow: 0 0 40px rgba(106, 27, 154, 0.7), 0 0 60px rgba(106, 27, 154, 0.4);
+    box-shadow: 0 0 40px rgba(156, 39, 176, 0.7), 0 0 60px rgba(156, 39, 176, 0.4);
+  }
+
+  /* Text shadows for neumorphism */
+  .text-neumorphic {
+    text-shadow: 
+      2px 2px 4px hsl(var(--shadow-dark)),
+      -1px -1px 2px hsl(var(--shadow-light));
   }
 
   /* Vignette utility */
@@ -167,8 +198,8 @@
     right: 0;
     bottom: 0;
     background: 
-      radial-gradient(circle at 20% 50%, rgba(106, 27, 154, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(156, 39, 176, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 20% 50%, rgba(156, 39, 176, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(186, 104, 200, 0.15) 0%, transparent 50%),
       radial-gradient(circle at 40% 20%, rgba(171, 71, 188, 0.1) 0%, transparent 50%);
     animation: particle-float 20s ease-in-out infinite;
     pointer-events: none;

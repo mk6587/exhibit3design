@@ -1,36 +1,36 @@
-# Exhibit3Design Material Design Purple Dark System
+# Exhibit3Design Material Design Purple 500 Neumorphism System
 
 ## Overview
 
-A sophisticated dark-mode design system based on Material Design Purple 800 (#6A1B9A), featuring dark gray gradients, animated backgrounds, and consistent Material Design principles. Built for an AI-powered 3D exhibition design platform.
+A sophisticated neumorphic dark-mode design system based on Material Design Purple 500 (#9C27B0), featuring Material Gray 800-900 gradient backgrounds, soft shadows, and white/purple typography. Built for an AI-powered 3D exhibition design platform.
 
 ---
 
 ## Design Philosophy
 
-**"Create a consistent, Material Design-based dark interface with Purple 800 as the brand color, animated backgrounds, and proper contrast for long creative sessions."**
+**"Create a neumorphic, Material Design-based dark interface with Purple 500 buttons, white and purple typography, and soft gray gradient backgrounds for elegant depth."**
 
 ### Core Principles
 
-1. **Material Design Purple**: Based on Purple 800 (#6A1B9A) with full color palette
-2. **Dark Gray Backgrounds**: Not too dark - uses #2E2F3E base with gradients
-3. **Animated Backgrounds**: Subtle gradient flow and floating particle effects
-4. **High Contrast**: White headings (#FFFFFF) with proper contrast ratios
-5. **Material Elevation**: Consistent shadow system following Material Design
-6. **8px Baseline**: Consistent spacing and 8px border radius
-7. **Micro Animations**: Smooth transitions, hover effects, and background motion
+1. **Material Design Purple 500**: Primary color for buttons and accents (#9C27B0)
+2. **Material Gray 800-900 Backgrounds**: Gradient from #424242 to #212121
+3. **Neumorphism**: Soft shadows creating subtle 3D effects
+4. **White & Purple Typography**: Pure white headings, purple accent text
+5. **Soft Shadows**: Light/dark dual shadows for depth
+6. **16px Border Radius**: Softer, neumorphic corners
+7. **Micro Animations**: Smooth transitions, subtle background motion
 
 ---
 
 ## Color System
 
-### Surface Colors (Dark Gray - Not Too Dark)
+### Surface Colors (Material Gray 800-900)
 
 ```css
---background: #2E2F3E          /* Base: Dark gray (245 15% 20%) */
---background-gradient: linear-gradient(135deg, #2E2F3E 0%, #26243B 100%)
---surface: #353649             /* Elevated: Lighter gray (245 18% 24%) */
---card: #3A3C4F                /* Cards: Even lighter (245 20% 26%) */
+--background: #212121          /* Gray 900 base (0 0% 13%) */
+--background-gradient: linear-gradient(135deg, #424242 0%, #212121 100%)
+--surface: #333333             /* Between 800-900 - Elevated surface (0 0% 20%) */
+--card: #383838                /* Slightly lighter cards (0 0% 22%) */
 ```
 
 **Note:** Background uses animated gradient with `gradient-flow` animation (15s) and `particle-float` for subtle motion effects.
@@ -38,49 +38,50 @@ A sophisticated dark-mode design system based on Material Design Purple 800 (#6A
 ### Material Design Purple Palette
 
 ```css
-/* Primary - Purple 800 & 700 */
---primary-from: #6A1B9A        /* Purple 800 (280 70% 36%) */
---primary-to: #8E24AA          /* Purple 600 (288 68% 40%) */
---primary: #7B1FA2             /* Purple 700 (283 70% 38%) - Main brand */
+/* Primary - Purple 500 (Button Color) */
+--primary: #9C27B0              /* Purple 500 (291 64% 42%) - Main brand */
+--primary-from: #9C27B0         /* Purple 500 start */
+--primary-to: #BA68C8           /* Purple 300 - Lighter variant */
 
 /* Interactive - Purple 500 & 400 */
---accent: #9C27B0              /* Purple 500 (291 64% 42%) */
---accent-hover: #AB47BC        /* Purple 400 (294 48% 50%) - Hover state */
+--accent: #9C27B0               /* Purple 500 (291 64% 42%) */
+--accent-hover: #AB47BC         /* Purple 400 (294 48% 50%) - Hover state */
 ```
 
 ### Full Material Purple Scale
 
 ```css
-Purple 900: #4A148C  /* Darkest */
-Purple 800: #6A1B9A  ← Primary brand color (main identity)
-Purple 700: #7B1FA2  ← Primary solid color
-Purple 600: #8E24AA  ← Gradient end
-Purple 500: #9C27B0  ← Interactive accent
+Purple 500: #9C27B0  ← Primary button color ⭐
 Purple 400: #AB47BC  ← Hover state
-Purple 300: #BA68C8  /* Lightest */
+Purple 300: #BA68C8  ← Lighter accents
 ```
 
 **Usage:**
-- Purple 800-600: Primary CTAs with gradient background
-- Purple 700: Solid purple for single-color uses (borders, icons)
-- Purple 500-400: Interactive states and hover effects
-- Gradients always use 800 → 600 for consistency
+- Purple 500: Primary buttons, links, focus rings
+- Purple 400: Hover states
+- Purple 300: Lighter text accents and highlights
 
-### Text Hierarchy (High Contrast)
+### Text Hierarchy (Neumorphic White & Purple)
 
 ```css
---heading: #FFFFFF             /* Pure white for headings (maximum contrast) */
---foreground: #E3E4E8          /* Light gray for body text (240 10% 90%) */
---muted-foreground: #B8B9C0    /* Medium gray for secondary text (240 5% 75%) */
+--foreground: #FFFFFF           /* Pure white - Body text (0 0% 100%) */
+--heading: #FFFFFF              /* Pure white - Headings with text shadow */
+--text-purple: #9C27B0          /* Purple 500 for accent text (291 64% 42%) */
+--muted-foreground: #B3B3B3     /* Softer text (0 0% 70%) */
 ```
 
-**Important:** Always use pure white (#FFFFFF) for headings on dark backgrounds. Never use purple text overlays that reduce readability.
+**Important:** 
+- Use pure white (#FFFFFF) for all primary text
+- Apply subtle text shadows for neumorphic effect
+- Use Purple 500 (#9C27B0) for accent text, links, and highlights
 
-### Borders & Inputs
+### Borders & Inputs (Neumorphic)
 
 ```css
---border: #464856              /* Subtle separation (245 12% 32%) */
---input: #3E3F4D               /* Input background (245 15% 28%) */
+--border: #4D4D4D              /* Subtle separation (0 0% 30%) */
+--input: #2E2E2E               /* Input background (0 0% 18%) */
+--shadow-light: #4D4D4D        /* Light shadow for neumorphism (0 0% 30%) */
+--shadow-dark: #141414         /* Dark shadow for neumorphism (0 0% 8%) */
 ```
 
 ### Semantic Colors (Material Design)
@@ -165,53 +166,81 @@ wider:   0.05em /* Uppercase labels */
 
 ---
 
-## Border Radius (Zone Baseline)
+## Border Radius (Neumorphic Softness)
 
-**Consistent 8px system:**
+**Softer 16px baseline system:**
 
 ```css
-sm:  0.25rem  /* 4px  - Micro elements */
-md:  0.5rem   /* 8px  - Buttons, cards (base) */
-lg:  0.75rem  /* 12px - Large cards */
-xl:  1rem     /* 16px - Modals */
-2xl: 1.5rem   /* 24px - Pills/chips */
+sm:  0.5rem   /* 8px  - Micro elements */
+md:  1rem     /* 16px - Buttons, cards (neumorphic base) */
+lg:  1.5rem   /* 24px - Large cards */
+xl:  2rem     /* 32px - Modals */
+2xl: 3rem     /* 48px - Pills/chips */
 ```
 
-**Key Change:** Primary buttons and cards use 8px radius (md) to match Zone's modern aesthetic.
+**Key Change:** Primary buttons and cards use 16px radius (md) for soft neumorphic aesthetic.
 
 ---
 
-## Shadows & Glows
+## Shadows & Neumorphic Effects
 
-### Standard Elevation
+### Neumorphic Shadows
 
 ```css
-sm: 0 2px 8px rgba(0, 0, 0, 0.4)   /* Subtle depth */
-md: 0 4px 16px rgba(0, 0, 0, 0.5)  /* Moderate elevation */
-lg: 0 8px 32px rgba(0, 0, 0, 0.6)  /* Strong elevation */
+/* Standard neumorphic depth */
+.neumorphic {
+  box-shadow: 
+    8px 8px 16px hsl(var(--shadow-dark)),
+    -8px -8px 16px hsl(var(--shadow-light));
+}
+
+/* Inset neumorphic (pressed) */
+.neumorphic-inset {
+  box-shadow: 
+    inset 4px 4px 8px hsl(var(--shadow-dark)),
+    inset -4px -4px 8px hsl(var(--shadow-light));
+}
+
+/* Flat neumorphic (subtle) */
+.neumorphic-flat {
+  box-shadow: 
+    4px 4px 8px hsl(var(--shadow-dark)),
+    -4px -4px 8px hsl(var(--shadow-light));
+}
 ```
 
-### Glow Effects
+### Glow Effects (Purple 500)
 
 ```css
-/* Purple glows (brand identity) */
---glow-purple: 0 4px 20px rgba(124, 58, 237, 0.4)
---glow-purple-strong: 0 8px 40px rgba(124, 58, 237, 0.6),
-                      0 0 60px rgba(124, 58, 237, 0.3)
+/* Purple 500 glows (brand identity) */
+.glow-purple {
+  box-shadow: 0 0 20px rgba(156, 39, 176, 0.5);
+}
 
-/* Cyan glows (interactive states) */
---glow-cyan: 0 4px 20px rgba(34, 211, 238, 0.4)
-
-/* Card hover glow */
---glow-card-hover: 0 8px 32px rgba(124, 58, 237, 0.2),
-                   0 0 0 1px rgba(124, 58, 237, 0.3)
+.glow-purple-strong {
+  box-shadow: 
+    0 0 40px rgba(156, 39, 176, 0.7),
+    0 0 60px rgba(156, 39, 176, 0.4);
+}
 ```
 
 **Usage:**
-- Purple glow on primary CTAs
-- Cyan glow on hover states
+- Purple 500 glow on primary buttons
 - Card edges glow on hover
 - Input focus rings
+- Accent highlights
+
+### Text Shadows (Neumorphic)
+
+```css
+.text-neumorphic {
+  text-shadow: 
+    2px 2px 4px hsl(var(--shadow-dark)),
+    -1px -1px 2px hsl(var(--shadow-light));
+}
+```
+
+**Usage:** Apply to headings for subtle neumorphic text effect.
 
 ---
 
@@ -240,15 +269,15 @@ spring:     cubic-bezier(0.68, -0.55, 0.265, 1.55)
 /* Duration: 3s infinite */
 ```
 
-#### Glow Pulse
+#### Glow Pulse (Purple 500)
 ```css
 @keyframes glow-pulse {
   0%, 100% { 
-    box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 0 20px rgba(156, 39, 176, 0.4);
     opacity: 1;
   }
   50% { 
-    box-shadow: 0 0 40px rgba(124, 58, 237, 0.6);
+    box-shadow: 0 0 40px rgba(156, 39, 176, 0.7);
     opacity: 0.9;
   }
 }
@@ -279,21 +308,20 @@ spring:     cubic-bezier(0.68, -0.55, 0.265, 1.55)
 
 ### Buttons
 
-#### Variant: Default (Gradient Primary)
+#### Variant: Default (Neumorphic Purple 500)
 
-**Design (Zone-Aligned):**
-- Background: `linear-gradient(90deg, #7C3AED, #C084FC)`
-- Border radius: **8px** (md)
-- Height: **44px** (standard), **36px** (small/header)
-- Padding: 0 20px (md), 0 12px (sm)
+**Design:**
+- Background: `#9C27B0` (Purple 500)
+- Border radius: **16px** (md - neumorphic)
+- Height: **44px** (standard), **36px** (small)
+- Padding: 0 20px (default), 0 12px (sm)
 - Font: 500 weight, 0.02em letter-spacing
-- Glow: `0 4px 20px rgba(124, 58, 237, 0.4)`
-- Gradient shift animation on background
+- Shadow: Neumorphic dual shadow
+- Text: Pure white
 
 **Hover:**
-- Lift: `translateY(-2px)`
-- Stronger glow: `0 6px 30px rgba(124, 58, 237, 0.6)`
-- Gradient continues shifting
+- Glow: `0 0 20px rgba(156, 39, 176, 0.5)`
+- Lift: `translateY(-1px)`
 
 **Active:**
 - Scale: 0.98
@@ -307,18 +335,19 @@ spring:     cubic-bezier(0.68, -0.55, 0.265, 1.55)
 
 ---
 
-#### Variant: Outline (Neon Cyan)
+#### Variant: Outline (Neumorphic Inset)
 
 **Design:**
-- Border: 2px solid `#22D3EE`
+- Border: 2px solid `rgba(156, 39, 176, 0.3)`
 - Background: transparent
-- Text color: `#22D3EE`
-- Border radius: 10px
+- Text color: white
+- Inset neumorphic shadow
+- Border radius: 16px
 
 **Hover:**
-- Fill background with cyan: `#22D3EE`
-- Text becomes white
-- Subtle glow ring
+- Border becomes Purple 500: `#9C27B0`
+- Text becomes purple
+- Glow effect
 
 **Code:**
 ```tsx
@@ -473,25 +502,29 @@ spring:     cubic-bezier(0.68, -0.55, 0.265, 1.55)
 
 ## Utility Classes
 
-### Gradient Text
+### Gradient Text (White & Purple)
 
 ```css
-/* Purple gradient text */
+/* Purple 500 gradient text */
 .text-gradient-purple {
-  @apply bg-gradient-to-r from-[#7C3AED] to-[#C084FC] bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-[#9C27B0] to-[#BA68C8] bg-clip-text text-transparent;
 }
 
-/* Cyan gradient text */
-.text-gradient-cyan {
-  @apply bg-gradient-to-r from-[#22D3EE] to-[#06B6D4] bg-clip-text text-transparent;
+/* Purple accent text */
+.text-purple {
+  color: hsl(var(--text-purple));
 }
 ```
 
 **Usage:**
 ```tsx
 <h1 className="text-gradient-purple">
-  Futuristic Heading
+  Purple Gradient Heading
 </h1>
+
+<span className="text-purple">
+  Accent Text
+</span>
 ```
 
 ---

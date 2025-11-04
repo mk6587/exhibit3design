@@ -9,21 +9,21 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-primary-from to-primary-to text-white rounded-md shadow-[0_4px_20px_rgba(124,58,237,0.4)] hover:shadow-[0_6px_30px_rgba(124,58,237,0.6)] hover:-translate-y-[2px] animate-gradient-shift bg-[length:200%_100%]",
+        default: "bg-primary text-white neumorphic hover:glow-purple hover:-translate-y-[1px] transition-all duration-[250ms]",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:shadow-sm hover:-translate-y-[1px] rounded-md",
+          "bg-destructive text-destructive-foreground neumorphic-flat hover:glow-accent hover:-translate-y-[1px]",
         outline:
-          "border-2 border-accent bg-transparent text-accent rounded-md hover:bg-accent hover:text-background hover:shadow-[0_0_20px_rgba(34,211,238,0.5)] transition-all duration-[250ms]",
+          "border-2 border-primary/30 bg-transparent text-white neumorphic-inset hover:border-primary hover:text-primary transition-all duration-[250ms]",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-sm hover:-translate-y-[1px] rounded-md",
-        ghost: "hover:bg-primary/10 hover:scale-[1.02] rounded-md transition-all duration-[250ms]",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-secondary text-secondary-foreground neumorphic-flat hover:-translate-y-[1px]",
+        ghost: "hover:bg-primary/10 hover:scale-[1.02] transition-all duration-[250ms]",
+        link: "text-purple underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-[44px] px-5 text-sm",
-        sm: "h-[36px] px-3 text-xs",
-        lg: "h-[52px] px-6 text-base",
-        icon: "h-[44px] w-[44px]",
+        default: "h-[44px] px-5 text-sm rounded-2xl",
+        sm: "h-[36px] px-3 text-xs rounded-xl",
+        lg: "h-[52px] px-6 text-base rounded-3xl",
+        icon: "h-[44px] w-[44px] rounded-2xl",
       },
     },
     defaultVariants: {

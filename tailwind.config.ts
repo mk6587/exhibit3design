@@ -52,6 +52,7 @@ export default {
 				surface: 'hsl(var(--surface))',
 				foreground: 'hsl(var(--foreground))',
 				heading: 'hsl(var(--heading))',
+				purple: 'hsl(var(--text-purple))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					from: 'hsl(var(--primary-from))',
@@ -104,11 +105,11 @@ export default {
 				}
 			},
 			borderRadius: {
-				sm: '0.25rem',  // 4px
-				md: '0.5rem',   // 8px - Zone baseline
-				lg: '0.75rem',  // 12px
-				xl: '1rem',     // 16px
-				'2xl': '1.5rem' // 24px - pills
+				sm: '0.5rem',   // 8px
+				md: '1rem',     // 16px - neumorphic baseline
+				lg: '1.5rem',   // 24px
+				xl: '2rem',     // 32px
+				'2xl': '3rem'   // 48px - pills
 			},
 			keyframes: {
 				'accordion-down': {
@@ -167,11 +168,11 @@ export default {
 				},
 				'glow-pulse': {
 					'0%, 100%': {
-						boxShadow: '0 0 20px rgba(124, 58, 237, 0.3)',
+						boxShadow: '0 0 20px rgba(156, 39, 176, 0.4)',
 						opacity: '1'
 					},
 					'50%': {
-						boxShadow: '0 0 40px rgba(124, 58, 237, 0.6)',
+						boxShadow: '0 0 40px rgba(156, 39, 176, 0.7)',
 						opacity: '0.9'
 					}
 				},
