@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Crown, Calendar, Zap, Video, FileText, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SubscriptionData {
   subscription_id: string;
@@ -29,52 +30,46 @@ interface TokenBalance {
 }
 
 export function SubscriptionPanel() {
+  const { user } = useAuth();
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
   const [tokenBalance, setTokenBalance] = useState<TokenBalance | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const setupRealtimeAndLoadData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
-      loadSubscriptionData();
+    loadSubscriptionData();
 
-      // Set up real-time subscription for profile changes
-      const channel = supabase
-        .channel('profile-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'profiles',
-            filter: `user_id=eq.${user.id}`
-          },
-          async () => {
-            console.log('Profile updated, reloading token balance');
-            await loadSubscriptionData();
-          }
-        )
-        .subscribe();
-
-      return channel;
-    };
-
-    let channelPromise = setupRealtimeAndLoadData();
+    // Set up real-time subscription for profile changes
+    const channel = supabase
+      .channel('profile-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `user_id=eq.${user.id}`
+        },
+        async () => {
+          console.log('Profile updated, reloading token balance');
+          await loadSubscriptionData();
+        }
+      )
+      .subscribe();
 
     return () => {
-      channelPromise.then(channel => {
-        if (channel) supabase.removeChannel(channel);
-      });
+      supabase.removeChannel(channel);
     };
-  }, []);
+  }, [user]);
 
   const loadSubscriptionData = async () => {
+    if (!user) return;
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       // Get active subscription
       const { data: subData, error: subError } = await supabase
         .rpc('get_active_subscription', { p_user_id: user.id });
