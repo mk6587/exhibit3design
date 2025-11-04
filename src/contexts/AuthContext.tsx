@@ -116,52 +116,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Create initial profile with guest order data transfer
+  // Create initial profile
   const createInitialProfile = async (userId: string, userEmail?: string) => {
     try {
-      if (userEmail) {
-        // Use Supabase function to create profile with guest order data
-        const { data, error } = await supabase.rpc('create_profile_with_guest_data', {
-          p_user_id: userId,
-          p_email: userEmail
-        });
-
-        if (error) {
-          console.error('Error creating profile with guest data:', error);
-          // Continue to fallback
-        } else if (data && data.length > 0 && data[0]?.profile_data) {
-          console.log('Successfully created profile with guest order data transfer');
-          // The profile_data is a JSON object that matches our Profile interface
-          return data[0].profile_data as unknown as Profile;
-        }
-      }
-
-      // Fallback: create basic profile with location data
-      const location = await getUserLocation();
+      console.log('🔨 Creating profile for user:', userId);
+      
+      // Create basic profile - RLS policy should allow user to create their own profile
       const { data, error } = await supabase
         .from('profiles')
         .insert({
           user_id: userId,
-          first_name: location.first_name,
-          last_name: location.last_name,
-          country: location.country,
-          city: location.city,
-          phone_number: location.phone_number,
-          address_line_1: location.address_line_1,
-          postcode: location.postcode,
+          email: userEmail || '',
           selected_files: [],
         })
         .select()
         .single();
 
       if (error) {
-        console.error('Error creating profile:', error);
+        console.error('❌ Error creating profile:', error);
         return null;
       }
 
+      console.log('✅ Profile created successfully');
       return data;
     } catch (error) {
-      console.error('Error creating profile:', error);
+      console.error('❌ Error creating profile:', error);
       return null;
     }
   };
