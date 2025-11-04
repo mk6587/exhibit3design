@@ -134,12 +134,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Profile is now automatically created by database trigger
   // This function just waits for it to appear with retries
-  const waitForProfile = async (userId: string, maxRetries = 5): Promise<Profile | null> => {
-    console.log('⏳ Waiting for profile to be created by database trigger...');
+  const waitForProfile = async (userId: string, maxRetries = 10): Promise<Profile | null> => {
+    console.log('⏳ Waiting for profile to be accessible via RLS...');
     
     for (let attempt = 0; attempt < maxRetries; attempt++) {
-      // Wait before checking (gives trigger time to complete)
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Wait progressively longer (RLS + auth.uid() timing issue)
+      const waitTime = attempt === 0 ? 1000 : 1500;
+      await new Promise(resolve => setTimeout(resolve, waitTime));
       
       const profileData = await fetchProfile(userId);
       if (profileData) {
@@ -147,10 +148,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return profileData;
       }
       
-      console.log(`⏳ Profile not ready yet, retry ${attempt + 1}/${maxRetries}`);
+      console.log(`⏳ Profile not accessible yet, retry ${attempt + 1}/${maxRetries}`);
     }
     
-    console.error('❌ Profile was not created by trigger after max retries');
+    console.error('❌ Profile not accessible after max retries');
     return null;
   };
 
@@ -295,6 +296,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                   refresh_token: session.refresh_token
                 });
                 
+                // Wait for session to fully propagate (critical for RLS with auth.uid())
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
                 console.log('✅ Session set, now fetching profile for user:', session.user.id);
                 let profileData = await fetchProfile(session.user.id);
                 
@@ -347,7 +351,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                   setLoading(false);
                 }
               }
-            }, 1000); // Wait 1 second for session to fully propagate
+            }, 1500); // Wait 1.5 seconds for OAuth session to stabilize
           } else {
             setProfile(null);
           }
