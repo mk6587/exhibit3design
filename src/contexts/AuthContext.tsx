@@ -205,6 +205,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setSession(session);
         setUser(session?.user ?? null);
         
+        // Clean up OAuth hash from URL after successful sign in
+        if (event === 'SIGNED_IN' && window.location.hash.includes('access_token')) {
+          console.log('Cleaning up OAuth hash from URL');
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+        
         // Dispatch custom event to trigger popup hiding
         if (session?.user) {
           window.dispatchEvent(new CustomEvent('authStateChanged'));
