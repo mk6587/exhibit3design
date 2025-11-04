@@ -5,8 +5,9 @@ const supabaseUrl = 'https://fipebdkvzdrljwwxccrj.supabase.co'
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGViZGt2emRybGp3d3hjY3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjczMTAsImV4cCI6MjA2NzMwMzMxMH0.N_48R70OWvLsf5INnGiswao__kjUW6ybYdnPIRm0owk'
 
 // Cookie-based storage for cross-subdomain session sharing
+// IMPORTANT: Supabase requires async storage methods
 const cookieStorage = {
-  getItem: (key: string): string | null => {
+  getItem: async (key: string): Promise<string | null> => {
     const cookies = document.cookie.split(';');
     for (const cookie of cookies) {
       const [name, value] = cookie.trim().split('=');
@@ -16,7 +17,7 @@ const cookieStorage = {
     }
     return null;
   },
-  setItem: (key: string, value: string): void => {
+  setItem: async (key: string, value: string): Promise<void> => {
     const maxAge = 60 * 60 * 24 * 365; // 1 year
     const hostname = window.location.hostname;
     
@@ -30,7 +31,7 @@ const cookieStorage = {
     
     document.cookie = cookieString;
   },
-  removeItem: (key: string): void => {
+  removeItem: async (key: string): Promise<void> => {
     const hostname = window.location.hostname;
     
     if (hostname.includes('exhibit3design.com')) {
