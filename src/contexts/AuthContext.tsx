@@ -260,14 +260,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }, 500);
           }
           
-          // Defer all Supabase calls with setTimeout to prevent deadlock
-          // AND to ensure session is fully established for RLS
+          // Database trigger creates profile automatically - just wait for it
           if (session?.user) {
-            // Set a timeout to show error if profile creation takes too long
+            // Set a timeout to show error if profile loading takes too long
             const timeoutId = setTimeout(() => {
               if (mounted && !profile) {
-                console.error('⏱️ Profile creation timeout - taking too long');
-                setProfileError('Profile creation is taking too long. Please try again.');
+                console.error('⏱️ Profile loading timeout');
+                setProfileError('Profile loading is taking too long. Please try again.');
                 setLoading(false);
               }
             }, 15000); // 15 second timeout
@@ -276,29 +275,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               if (!mounted) return;
               
               try {
-                // CRITICAL: Ensure Supabase client has the session before making requests
-                console.log('🔐 Ensuring session is set in Supabase client...');
-                const { data: currentSession } = await supabase.auth.getSession();
-                
-                if (!currentSession.session) {
-                  console.error('❌ No session available in Supabase client');
-                  clearTimeout(timeoutId);
-                  setProfileError('Session not available. Please try signing in again.');
-                  setLoading(false);
-                  return;
-                }
-                
-                console.log('✅ Session confirmed in client, fetching profile...');
+                console.log('🔍 Fetching profile for user:', session.user.id);
                 let profileData = await fetchProfile(session.user.id);
                 
                 if (!profileData) {
-                  console.log('📝 No profile found yet, waiting for database trigger...');
+                  console.log('⏳ Profile not found yet, waiting for database trigger...');
                   profileData = await waitForProfile(session.user.id);
                   
                   if (!profileData) {
                     // Profile was not created by trigger
                     clearTimeout(timeoutId);
-                    setProfileError('Failed to create your profile. Please try again or contact support.');
+                    setProfileError('Failed to load your profile. Please try again or contact support.');
                     setProfile(null);
                     setLoading(false);
                     return;
@@ -335,12 +322,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 console.error('Profile fetch error:', error);
                 clearTimeout(timeoutId);
                 if (mounted) {
-                  setProfileError('An error occurred while setting up your profile. Please try again.');
+                  setProfileError('An error occurred while loading your profile. Please try again.');
                   setProfile(null);
                   setLoading(false);
                 }
               }
-            }, 0);
+            }, 500); // Wait 500ms before trying to fetch
           } else {
             setProfile(null);
           }
