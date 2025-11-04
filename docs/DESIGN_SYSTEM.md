@@ -1,89 +1,94 @@
-# Exhibit3Design Futuristic Dark-Mode Design System
+# Exhibit3Design Material Design Purple Dark System
 
 ## Overview
 
-This design system creates a **cinematic, dark-only interface** for Exhibit3Design's AI platform. Inspired by high-tech design studios and the Zone MUI template, it balances AI precision with artistic creativity through dynamic gradients, neon cyan accents, and refined micro-interactions.
+A sophisticated dark-mode design system based on Material Design Purple 800 (#6A1B9A), featuring dark gray gradients, animated backgrounds, and consistent Material Design principles. Built for an AI-powered 3D exhibition design platform.
 
 ---
 
 ## Design Philosophy
 
-**"Design a cinematic dark interface for an AI platform that turns 3D booth designs into dynamic visuals — glowing purples, subtle motion, and futuristic clarity."**
+**"Create a consistent, Material Design-based dark interface with Purple 800 as the brand color, animated backgrounds, and proper contrast for long creative sessions."**
 
 ### Core Principles
 
-1. **Dark-only design**: No light mode — optimized for long creative sessions
-2. **Purple gradient identity**: `#7C3AED → #C084FC` as brand signature
-3. **Neon cyan interactivity**: `#22D3EE` for hover states and active elements
-4. **Cinematic depth**: Elevation through glow effects, soft shadows, and gradients
-5. **Smooth geometry**: 8–12px border radius for friendly tech aesthetic
-6. **Subtle motion**: Micro-interactions that enhance without distracting
-7. **High contrast**: Readable text on dark surfaces (no pure white)
+1. **Material Design Purple**: Based on Purple 800 (#6A1B9A) with full color palette
+2. **Dark Gray Backgrounds**: Not too dark - uses #2E2F3E base with gradients
+3. **Animated Backgrounds**: Subtle gradient flow and floating particle effects
+4. **High Contrast**: White headings (#FFFFFF) with proper contrast ratios
+5. **Material Elevation**: Consistent shadow system following Material Design
+6. **8px Baseline**: Consistent spacing and 8px border radius
+7. **Micro Animations**: Smooth transitions, hover effects, and background motion
 
 ---
 
 ## Color System
 
-### Surface Colors (Dynamic Dark Gradients)
+### Surface Colors (Dark Gray - Not Too Dark)
 
 ```css
---background: 240 8% 6%     /* #0F0F12 - Base */
---background-gradient: linear-gradient(145deg, #0F0F12 0%, #1C1830 100%)
---surface: 258 12% 10%      /* #1A1525 - Elevated surface */
---card: 258 12% 11%         /* Slightly elevated cards */
+--background: #2E2F3E          /* Base: Dark gray (245 15% 20%) */
+--background-gradient: linear-gradient(135deg, #2E2F3E 0%, #26243B 100%)
+--surface: #353649             /* Elevated: Lighter gray (245 18% 24%) */
+--card: #3A3C4F                /* Cards: Even lighter (245 20% 26%) */
 ```
 
-**Note:** Body uses a dynamic gradient background that creates depth without flatness. This "liquid dark" approach adds subtle visual interest.
+**Note:** Background uses animated gradient with `gradient-flow` animation (15s) and `particle-float` for subtle motion effects.
 
-### Purple Gradient Identity (Stronger)
+### Material Design Purple Palette
 
 ```css
---primary-from: 258 90% 66% /* #7C3AED - Gradient start */
---primary-to: 270 91% 75%   /* #C084FC - Gradient end */
---primary: 264 81% 65%      /* #A855F7 - Stronger brand purple */
+/* Primary - Purple 800 & 700 */
+--primary-from: #6A1B9A        /* Purple 800 (280 70% 36%) */
+--primary-to: #8E24AA          /* Purple 600 (288 68% 40%) */
+--primary: #7B1FA2             /* Purple 700 (283 70% 38%) - Main brand */
+
+/* Interactive - Purple 500 & 400 */
+--accent: #9C27B0              /* Purple 500 (291 64% 42%) */
+--accent-hover: #AB47BC        /* Purple 400 (294 48% 50%) - Hover state */
+```
+
+### Full Material Purple Scale
+
+```css
+Purple 900: #4A148C  /* Darkest */
+Purple 800: #6A1B9A  ← Primary brand color (main identity)
+Purple 700: #7B1FA2  ← Primary solid color
+Purple 600: #8E24AA  ← Gradient end
+Purple 500: #9C27B0  ← Interactive accent
+Purple 400: #AB47BC  ← Hover state
+Purple 300: #BA68C8  /* Lightest */
 ```
 
 **Usage:**
-- Primary CTAs with gradient background
-- Brand signatures and logo (stronger visibility)
-- Glow effects on interactive components
-
-### Neon Cyan Interactive Accent
-
-```css
---accent: 189 94% 57%       /* #22D3EE - Neon cyan (replaces magenta) */
---accent-hover: 189 100% 65% /* Brighter hover state */
-```
-
-**Usage:**
-- Hover states on buttons and links
-- Active navigation indicators
-- Icon hover effects
-- Interactive highlights
+- Purple 800-600: Primary CTAs with gradient background
+- Purple 700: Solid purple for single-color uses (borders, icons)
+- Purple 500-400: Interactive states and hover effects
+- Gradients always use 800 → 600 for consistency
 
 ### Text Hierarchy (High Contrast)
 
 ```css
---foreground: 220 13% 91%   /* #E5E7EB - Body text */
---heading: 0 0% 100%        /* #FFFFFF - Headings (maximum contrast) */
---muted-foreground: 220 9% 62% /* #9CA3AF - Secondary text */
+--heading: #FFFFFF             /* Pure white for headings (maximum contrast) */
+--foreground: #E3E4E8          /* Light gray for body text (240 10% 90%) */
+--muted-foreground: #B8B9C0    /* Medium gray for secondary text (240 5% 75%) */
 ```
 
-**Important:** Use pure white (#FFFFFF) for headings on dark backgrounds for maximum readability. Avoid purple text overlays that reduce contrast.
+**Important:** Always use pure white (#FFFFFF) for headings on dark backgrounds. Never use purple text overlays that reduce readability.
 
 ### Borders & Inputs
 
 ```css
---border: 240 6% 20%        /* #2E2E33 - Subtle separation */
---input: 240 6% 18%         /* #27272A - Input background */
+--border: #464856              /* Subtle separation (245 12% 32%) */
+--input: #3E3F4D               /* Input background (245 15% 28%) */
 ```
 
-### Semantic Colors
+### Semantic Colors (Material Design)
 
 ```css
---success: 142 76% 45%      /* #10B981 - Green */
---warning: 38 92% 50%       /* #F59E0B - Orange */
---error: 0 72% 51%          /* #EF4444 - Red */
+--success: #4CAF50             /* Green 500 (122 39% 49%) */
+--warning: #FFC107             /* Amber 500 (45 100% 51%) */
+--error: #F44336               /* Red 500 (4 90% 58%) */
 ```
 
 ---
