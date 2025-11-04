@@ -295,8 +295,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       authSubscription = subscription;
 
+      // Check if there's an OAuth callback in the URL
+      const hasOAuthToken = window.location.hash.includes('access_token');
+      
+      if (hasOAuthToken) {
+        console.log('OAuth callback detected - giving Supabase time to process tokens...');
+        // Wait for Supabase to process OAuth tokens
+        // The onAuthStateChange listener will fire with SIGNED_IN event once processed
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+
       // Then check for existing session
-      // Supabase will automatically process OAuth tokens if present in the hash
       const { data: { session } } = await supabase.auth.getSession();
       if (mounted) {
         console.log('Initial session check:', session?.user?.email);
