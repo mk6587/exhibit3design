@@ -175,6 +175,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     let authSubscription: any = null;
 
     const initialize = async () => {
+      let hasSignedIn = false; // Track successful sign-ins
+      
       // Set up auth state listener FIRST - it handles both existing sessions and OAuth
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, session) => {
@@ -182,15 +184,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
           console.log('Auth state changed:', event, session?.user?.email);
           
-          // CRITICAL FIX: Ignore INITIAL_SESSION with undefined session during OAuth callback
-          // Wait for the actual SIGNED_IN event with the real session
-          if (event === 'INITIAL_SESSION' && !session) {
-            const hash = window.location.hash;
-            const isOAuthCallback = hash.includes('access_token') || hash.includes('refresh_token');
+          // Track successful sign-ins
+          if (event === 'SIGNED_IN' && session) {
+            hasSignedIn = true;
+          }
+          
+          // CRITICAL FIX: Completely ignore INITIAL_SESSION if we've already signed in
+          // Also ignore undefined INITIAL_SESSION during OAuth callback
+          if (event === 'INITIAL_SESSION') {
+            if (hasSignedIn) {
+              console.log('🚫 Ignoring INITIAL_SESSION - already signed in successfully');
+              return;
+            }
             
-            if (isOAuthCallback) {
-              console.log('🔄 Ignoring undefined INITIAL_SESSION during OAuth - waiting for SIGNED_IN event');
-              return; // Don't update state, wait for next event
+            if (!session) {
+              const hash = window.location.hash;
+              const isOAuthCallback = hash.includes('access_token') || hash.includes('refresh_token');
+              
+              if (isOAuthCallback) {
+                console.log('🔄 Ignoring undefined INITIAL_SESSION during OAuth - waiting for SIGNED_IN');
+                return;
+              }
             }
           }
           
