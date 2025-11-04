@@ -208,7 +208,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.log('OAuth callback detected - waiting for session...');
         
         // Wait a moment for Supabase to process the OAuth callback
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Now get the session
         const { data: { session } } = await supabase.auth.getSession();
@@ -217,6 +217,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           console.log('OAuth session established:', session.user.email);
           setSession(session);
           setUser(session.user);
+          setLoading(false);
           
           // Clean URL hash
           window.history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -235,12 +236,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             } catch (error) {
               console.error('Profile error:', error);
             }
-            if (mounted) {
-              setLoading(false);
-            }
           }, 0);
           
-          return; // Exit early, auth state listener will handle future changes
+          return true; // Indicate OAuth was handled
         }
       }
 
@@ -252,115 +250,124 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(session?.user ?? null);
         setLoading(false);
       }
+      
+      return false; // No OAuth handled
     };
 
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (!mounted) return;
+    // Initialize auth FIRST, then set up listener
+    initializeAuth().then((oauthHandled) => {
+      if (!mounted) return;
 
-        console.log('Auth state changed:', event, session?.user?.email);
-        
-        // Only synchronous state updates here
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Clean up OAuth hash from URL after successful sign in
-        if (event === 'SIGNED_IN' && window.location.hash.includes('access_token')) {
-          console.log('Cleaning up OAuth hash from URL');
-          window.history.replaceState(null, '', window.location.pathname + window.location.search);
-        }
-        
-        // Dispatch custom event to trigger popup hiding
-        if (session?.user) {
-          window.dispatchEvent(new CustomEvent('authStateChanged'));
-          setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('authStateChanged'));
-          }, 1000);
+      // Set up auth state listener
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        (event, session) => {
+          if (!mounted) return;
+
+          console.log('Auth state changed:', event, session?.user?.email);
           
-          // Handle post-login redirect to stored URL
-          setTimeout(async () => {
-            // Regular redirect handling
-            const redirectUrl = sessionStorage.getItem('auth_redirect_url');
-            if (redirectUrl) {
-              sessionStorage.removeItem('auth_redirect_url');
-              console.log('🔄 Redirecting authenticated user to stored URL:', redirectUrl);
-              
-              // Check if this is an AI Studio redirect
-              if (redirectUrl.startsWith('ai-studio:')) {
-                // Simple redirect to AI Studio - cookies will handle auth
-                window.open('https://ai.exhibit3design.com', '_blank', 'noopener,noreferrer');
-              } else {
-                // Regular URL redirect
-                setTimeout(() => {
-                  window.location.href = redirectUrl;
-                }, 500);
-              }
-            }
-          }, 500);
-        }
-        
-        // Defer all Supabase calls with setTimeout to prevent deadlock
-        if (session?.user) {
-          setTimeout(async () => {
-            if (!mounted) return;
+          // Only synchronous state updates here
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          // Clean up OAuth hash from URL after successful sign in
+          if (event === 'SIGNED_IN' && window.location.hash.includes('access_token')) {
+            console.log('Cleaning up OAuth hash from URL');
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+          }
+          
+          // Dispatch custom event to trigger popup hiding
+          if (session?.user) {
+            window.dispatchEvent(new CustomEvent('authStateChanged'));
+            setTimeout(() => {
+              window.dispatchEvent(new CustomEvent('authStateChanged'));
+            }, 1000);
             
-            try {
-              let profileData = await fetchProfile(session.user.id);
-              
-              // If no profile exists, create one with guest order data transfer
-              if (!profileData) {
-                profileData = await createInitialProfile(session.user.id, session.user.email);
-              }
-              
-              if (mounted) {
-                setProfile(profileData);
+            // Handle post-login redirect to stored URL
+            setTimeout(async () => {
+              // Regular redirect handling
+              const redirectUrl = sessionStorage.getItem('auth_redirect_url');
+              if (redirectUrl) {
+                sessionStorage.removeItem('auth_redirect_url');
+                console.log('🔄 Redirecting authenticated user to stored URL:', redirectUrl);
                 
-                // Set user properties in GA4
-                if (profileData) {
-                  setTimeout(async () => {
-                    try {
-                      const { data: subscription } = await supabase.rpc('get_active_subscription', { 
-                        p_user_id: session.user.id 
-                      }) as any;
-                      
-                      setUserProperties({
-                        user_id: session.user.id,
-                        subscription_tier: subscription?.[0]?.file_access_tier || 'free',
-                        subscription_status: subscription?.[0]?.status || 'inactive',
-                        ai_tokens_balance: profileData.ai_tokens_balance || 0,
-                        video_results_balance: profileData.video_results_balance || 0,
-                        max_files: subscription?.[0]?.max_files || 0
-                      });
-                    } catch (e) {
-                      console.error('Failed to set user properties:', e);
-                    }
-                  }, 100);
+                // Check if this is an AI Studio redirect
+                if (redirectUrl.startsWith('ai-studio:')) {
+                  // Simple redirect to AI Studio - cookies will handle auth
+                  window.open('https://ai.exhibit3design.com', '_blank', 'noopener,noreferrer');
+                } else {
+                  // Regular URL redirect
+                  setTimeout(() => {
+                    window.location.href = redirectUrl;
+                  }, 500);
                 }
               }
-            } catch (error) {
-              console.error('Profile fetch error:', error);
-              if (mounted) {
-                setProfile(null);
+            }, 500);
+          }
+          
+          // Defer all Supabase calls with setTimeout to prevent deadlock
+          if (session?.user) {
+            setTimeout(async () => {
+              if (!mounted) return;
+              
+              try {
+                let profileData = await fetchProfile(session.user.id);
+                
+                // If no profile exists, create one with guest order data transfer
+                if (!profileData) {
+                  profileData = await createInitialProfile(session.user.id, session.user.email);
+                }
+                
+                if (mounted) {
+                  setProfile(profileData);
+                  
+                  // Set user properties in GA4
+                  if (profileData) {
+                    setTimeout(async () => {
+                      try {
+                        const { data: subscription } = await supabase.rpc('get_active_subscription', { 
+                          p_user_id: session.user.id 
+                        }) as any;
+                        
+                        setUserProperties({
+                          user_id: session.user.id,
+                          subscription_tier: subscription?.[0]?.file_access_tier || 'free',
+                          subscription_status: subscription?.[0]?.status || 'inactive',
+                          ai_tokens_balance: profileData.ai_tokens_balance || 0,
+                          video_results_balance: profileData.video_results_balance || 0,
+                          max_files: subscription?.[0]?.max_files || 0
+                        });
+                      } catch (e) {
+                        console.error('Failed to set user properties:', e);
+                      }
+                    }, 100);
+                  }
+                }
+              } catch (error) {
+                console.error('Profile fetch error:', error);
+                if (mounted) {
+                  setProfile(null);
+                }
               }
-            }
-          }, 0);
-        } else {
-          setProfile(null);
+            }, 0);
+          } else {
+            setProfile(null);
+          }
+          
+          if (mounted) {
+            setLoading(false);
+          }
         }
-        
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    );
+      );
 
-    // Initialize auth (handles OAuth callback if present)
-    initializeAuth();
+      // Cleanup
+      return () => {
+        mounted = false;
+        subscription.unsubscribe();
+      };
+    });
 
     return () => {
       mounted = false;
-      subscription.unsubscribe();
     };
   }, []);
 
