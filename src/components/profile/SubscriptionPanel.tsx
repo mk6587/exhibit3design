@@ -134,7 +134,7 @@ export function SubscriptionPanel() {
                     <p className="text-sm font-medium">AI Image Edits</p>
                   </div>
                   <p className="text-3xl font-bold text-primary">
-                    {tokenBalance.ai_tokens}
+                    {tokenBalance.ai_tokens} / {tokenBalance.ai_tokens_limit}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">tokens remaining</p>
                 </div>
@@ -144,7 +144,7 @@ export function SubscriptionPanel() {
                     <p className="text-sm font-medium">AI Video Results</p>
                   </div>
                   <p className="text-3xl font-bold text-primary">
-                    {tokenBalance.video_results}
+                    {tokenBalance.video_results} / {tokenBalance.video_results_limit}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">credits remaining</p>
                 </div>
@@ -292,7 +292,7 @@ export function SubscriptionPanel() {
                   <Zap className="h-4 w-4 text-primary" />
                   <p className="text-sm font-medium">AI Image Edits</p>
                 </div>
-                <p className="text-2xl font-bold">{tokenBalance.ai_tokens}</p>
+                <p className="text-2xl font-bold">{tokenBalance.ai_tokens} / {tokenBalance.ai_tokens_limit}</p>
                 <p className="text-xs text-muted-foreground mt-1">
                   tokens remaining
                 </p>
@@ -302,7 +302,7 @@ export function SubscriptionPanel() {
                   <Video className="h-4 w-4 text-primary" />
                   <p className="text-sm font-medium">AI Video Results</p>
                 </div>
-                <p className="text-2xl font-bold">{tokenBalance.video_results}</p>
+                <p className="text-2xl font-bold">{tokenBalance.video_results} / {tokenBalance.video_results_limit}</p>
                 <p className="text-xs text-muted-foreground mt-1">
                   credits remaining
                 </p>
