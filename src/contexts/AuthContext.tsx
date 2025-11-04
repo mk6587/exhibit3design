@@ -194,9 +194,34 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     let mounted = true;
     let authSubscription: any = null;
+    let initialSessionSet = false;
 
     const initialize = async () => {
-      // Set up auth state listener FIRST
+      // Check for existing session FIRST (before setting up listener)
+      const { data: { session: existingSession } } = await supabase.auth.getSession();
+      
+      if (mounted && existingSession) {
+        console.log('Found existing session:', existingSession.user?.email);
+        setSession(existingSession);
+        setUser(existingSession.user);
+        initialSessionSet = true;
+        
+        // Fetch profile for existing session
+        setTimeout(async () => {
+          if (!mounted) return;
+          try {
+            let profileData = await fetchProfile(existingSession.user.id);
+            if (!profileData) {
+              profileData = await createInitialProfile(existingSession.user.id, existingSession.user.email);
+            }
+            if (mounted) setProfile(profileData);
+          } catch (error) {
+            console.error('Profile fetch error:', error);
+          }
+        }, 0);
+      }
+      
+      // Set up auth state listener
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, session) => {
           if (!mounted) return;
@@ -212,7 +237,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             const hash = window.location.hash;
             if (hash.includes('access_token') || hash.includes('refresh_token')) {
               console.log('Cleaning up OAuth hash after successful sign in');
-              // Use setTimeout to avoid blocking the auth flow
               setTimeout(() => {
                 window.history.replaceState(null, '', window.location.pathname + window.location.search);
               }, 100);
@@ -298,14 +322,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       );
 
       authSubscription = subscription;
-
-      // Check for existing session immediately
-      // Don't delay - Supabase handles OAuth tokens automatically on client init
-      const { data: { session } } = await supabase.auth.getSession();
-      if (mounted) {
-        console.log('Initial session check:', session?.user?.email);
-        setSession(session);
-        setUser(session?.user ?? null);
+      
+      // Only set loading to false if we didn't find an existing session
+      if (mounted && !initialSessionSet) {
         setLoading(false);
       }
     };
