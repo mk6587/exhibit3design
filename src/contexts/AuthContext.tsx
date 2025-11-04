@@ -121,6 +121,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       console.log('🔨 Creating profile for user:', userId);
       
+      // Wait for auth state to fully propagate after OAuth
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       // Verify we have an active session with valid JWT
       const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
       
@@ -129,26 +132,42 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return null;
       }
       
-      console.log('✅ Valid session confirmed, creating profile with JWT');
+      console.log('✅ Valid session confirmed, JWT present:', !!currentSession.access_token);
       
-      // Create basic profile - RLS policy should allow user to create their own profile
-      const { data, error } = await supabase
-        .from('profiles')
-        .insert({
-          user_id: userId,
-          email: userEmail || '',
-          selected_files: [],
-        })
-        .select()
-        .single();
+      // Create basic profile with retry logic for RLS timing issues
+      let retries = 3;
+      let lastError = null;
+      
+      while (retries > 0) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: userId,
+            email: userEmail || '',
+            selected_files: [],
+          })
+          .select()
+          .single();
 
-      if (error) {
-        console.error('❌ Error creating profile:', error);
-        return null;
+        if (!error) {
+          console.log('✅ Profile created successfully');
+          return data;
+        }
+        
+        // If RLS error, wait and retry
+        if (error.code === '42501') {
+          console.log(`⏳ RLS timing issue, retrying... (${retries} attempts left)`);
+          await new Promise(resolve => setTimeout(resolve, 500));
+          retries--;
+          lastError = error;
+        } else {
+          console.error('❌ Error creating profile:', error);
+          return null;
+        }
       }
-
-      console.log('✅ Profile created successfully');
-      return data;
+      
+      console.error('❌ Failed to create profile after retries:', lastError);
+      return null;
     } catch (error) {
       console.error('❌ Error creating profile:', error);
       return null;
