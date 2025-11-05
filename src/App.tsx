@@ -7,16 +7,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect, lazy, Suspense } from "react";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 import { HelmetProvider } from 'react-helmet-async';
-import { AdminProvider } from "@/contexts/AdminContext";
 import { ProductsProvider } from "@/contexts/ProductsContext";
+import { SessionProvider } from "@/contexts/SessionContext";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { OTPAuthProvider } from "@/contexts/OTPAuthContext";
+import { AdminProvider } from "@/contexts/AdminContext";
 import ErrorBoundary from "@/components/ui/error-boundary";
-import HashConfirmationHandler from "./components/HashConfirmationHandler";
 import { hideWelcomeModals } from "./utils/hideWelcomeModal";
 import { lazyRetry } from "./utils/lazyRetry";
 import { PageSkeleton } from "@/components/ui/page-skeleton";
-import GoogleOneTap from "@/components/auth/GoogleOneTap";
 
 // CRITICAL: Homepage loads immediately (no lazy) for best UX and zero white screens
 import Index from "./pages/Index";
@@ -39,11 +37,6 @@ const SitemapPage = lazy(() => lazyRetry(() => import("./pages/SitemapPage")));
 const NotFound = lazy(() => lazyRetry(() => import("./pages/NotFound")));
 const ForbiddenPage = lazy(() => lazyRetry(() => import("./pages/ForbiddenPage")));
 
-// Auth pages with retry logic
-const OTPAuthPage = lazy(() => lazyRetry(() => import("./pages/OTPAuthPage")));
-const ResetPasswordPage = lazy(() => lazyRetry(() => import("./pages/ResetPasswordPage")));
-const EmailConfirmationPage = lazy(() => lazyRetry(() => import("./pages/EmailConfirmationPage")));
-
 // Payment pages with retry logic
 const PaymentSuccessPage = lazy(() => lazyRetry(() => import("./pages/PaymentSuccessPage")));
 const PaymentFailedPage = lazy(() => lazyRetry(() => import("./pages/PaymentFailedPage")));
@@ -52,7 +45,6 @@ const PaymentErrorPage = lazy(() => lazyRetry(() => import("./pages/PaymentError
 const SubscriptionCheckoutPage = lazy(() => lazyRetry(() => import("./pages/SubscriptionCheckoutPage")));
 
 // Admin pages - lazy loaded with retry (low priority)
-const AdminLoginPage = lazy(() => lazyRetry(() => import("./pages/AdminLoginPage")));
 const AdminDashboardPage = lazy(() => lazyRetry(() => import("./pages/AdminDashboardPage")));
 const AdminPage = lazy(() => lazyRetry(() => import("./pages/AdminPage")));
 const AdminProductCreatePage = lazy(() => lazyRetry(() => import("./pages/AdminProductCreatePage")));
@@ -79,7 +71,6 @@ const DynamicSitemapPage = lazy(() => lazyRetry(() => import("./pages/DynamicSit
 const AdminBlogPostEditPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogPostEditPage")));
 const AdminGenerateBlogImagesPage = lazy(() => lazyRetry(() => import("./pages/AdminGenerateBlogImagesPage")));
 const AdminBlogCleanupPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogCleanupPage")));
-const ProtectedAdminRoute = lazy(() => lazyRetry(() => import("./components/admin/ProtectedAdminRoute")));
 
 // Loading fallback component - Shows while lazy routes are loading
 const PageLoader = () => {
@@ -99,23 +90,17 @@ const App = () => {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <AuthProvider>
-            <OTPAuthProvider>
-              <ProductsProvider>
-                <AdminProvider>
+          <SessionProvider>
+            <AuthProvider>
+              <AdminProvider>
+                <ProductsProvider>
                   <TooltipProvider>
                     <ScrollToTop />
                     <Toaster />
                     <Sonner />
-                    <GoogleOneTap clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''} />
                     <Suspense fallback={<PageLoader />}>
                       <Routes>
-                        <Route path="/" element={
-                          <>
-                            <HashConfirmationHandler />
-                            <Index />
-                          </>
-                        } />
+                        <Route path="/" element={<Index />} />
                         <Route path="/products" element={<ProductsPage />} />
                         <Route path="/product/:id" element={<ProductDetailPage />} />
                         <Route path="/about" element={<AboutPage />} />
@@ -126,128 +111,30 @@ const App = () => {
                         <Route path="/payment-failed" element={<PaymentFailedPage />} />
                         <Route path="/payment-cancelled" element={<PaymentCancelledPage />} />
                         <Route path="/payment-error" element={<PaymentErrorPage />} />
-                        <Route path="/auth" element={<OTPAuthPage />} />
-                        <Route path="/login" element={<OTPAuthPage />} />
-                        <Route path="/register" element={<OTPAuthPage />} />
-                        <Route path="/reset-password" element={<ResetPasswordPage />} />
-                        <Route path="/confirm-email" element={<EmailConfirmationPage />} />
                         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-                        <Route path="/admin/login" element={<AdminLoginPage />} />
-                        <Route path="/admin" element={
-                          <ProtectedAdminRoute>
-                            <AdminDashboardPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/products" element={
-                          <ProtectedAdminRoute>
-                            <AdminPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/product/new" element={
-                          <ProtectedAdminRoute>
-                            <AdminProductCreatePage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/product/:id/edit" element={
-                          <ProtectedAdminRoute>
-                            <AdminProductEditPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/subscriptions" element={
-                          <ProtectedAdminRoute>
-                            <AdminSubscriptionsPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/users" element={
-                          <ProtectedAdminRoute>
-                            <AdminUsersPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/file-requests" element={
-                          <ProtectedAdminRoute>
-                            <AdminFileRequestsPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/career-applications" element={
-                          <ProtectedAdminRoute>
-                            <AdminCareerApplicationsPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/plans" element={
-                          <ProtectedAdminRoute>
-                            <AdminPlansPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/ai-samples" element={
-                          <ProtectedAdminRoute>
-                            <AdminAISamplesPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/ai-demo-config" element={
-                          <ProtectedAdminRoute>
-                            <AdminAIDemoConfigPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/security" element={
-                          <ProtectedAdminRoute>
-                            <AdminSecurityPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/roles" element={
-                          <ProtectedAdminRoute>
-                            <AdminRolesPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/activity-log" element={
-                          <ProtectedAdminRoute>
-                            <AdminActivityLogPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/blog-sample" element={
-                          <ProtectedAdminRoute>
-                            <AdminBlogSamplePage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/blog-generator" element={
-                          <ProtectedAdminRoute>
-                            <AdminBlogGeneratorPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/blog-settings" element={
-                          <ProtectedAdminRoute>
-                            <AdminBlogSettingsPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/blog-categories" element={
-                          <ProtectedAdminRoute>
-                            <AdminBlogCategoriesPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/generate-blog-images" element={
-                          <ProtectedAdminRoute>
-                            <AdminGenerateBlogImagesPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/blog-cleanup" element={
-                          <ProtectedAdminRoute>
-                            <AdminBlogCleanupPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/blog-posts" element={
-                          <ProtectedAdminRoute>
-                            <AdminBlogPostsPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/blog-posts/:id" element={
-                          <ProtectedAdminRoute>
-                            <AdminBlogPostEditPage />
-                          </ProtectedAdminRoute>
-                        } />
-                        <Route path="/admin/bulk-email" element={
-                          <ProtectedAdminRoute>
-                            <AdminBulkEmailPage />
-                          </ProtectedAdminRoute>
-                        } />
+                        <Route path="/admin" element={<AdminDashboardPage />} />
+                    <Route path="/admin/products" element={<AdminPage />} />
+                    <Route path="/admin/product/new" element={<AdminProductCreatePage />} />
+                    <Route path="/admin/product/:id/edit" element={<AdminProductEditPage />} />
+                    <Route path="/admin/subscriptions" element={<AdminSubscriptionsPage />} />
+                    <Route path="/admin/users" element={<AdminUsersPage />} />
+                    <Route path="/admin/file-requests" element={<AdminFileRequestsPage />} />
+                    <Route path="/admin/career-applications" element={<AdminCareerApplicationsPage />} />
+                    <Route path="/admin/plans" element={<AdminPlansPage />} />
+                    <Route path="/admin/ai-samples" element={<AdminAISamplesPage />} />
+                    <Route path="/admin/ai-demo-config" element={<AdminAIDemoConfigPage />} />
+                    <Route path="/admin/security" element={<AdminSecurityPage />} />
+                    <Route path="/admin/roles" element={<AdminRolesPage />} />
+                    <Route path="/admin/activity-log" element={<AdminActivityLogPage />} />
+                    <Route path="/admin/blog-sample" element={<AdminBlogSamplePage />} />
+                    <Route path="/admin/blog-generator" element={<AdminBlogGeneratorPage />} />
+                    <Route path="/admin/blog-settings" element={<AdminBlogSettingsPage />} />
+                    <Route path="/admin/blog-categories" element={<AdminBlogCategoriesPage />} />
+                    <Route path="/admin/generate-blog-images" element={<AdminGenerateBlogImagesPage />} />
+                    <Route path="/admin/blog-cleanup" element={<AdminBlogCleanupPage />} />
+                    <Route path="/admin/blog-posts" element={<AdminBlogPostsPage />} />
+                    <Route path="/admin/blog-posts/:id" element={<AdminBlogPostEditPage />} />
+                    <Route path="/admin/bulk-email" element={<AdminBulkEmailPage />} />
                         <Route path="/academy" element={<BlogPage />} />
                         <Route path="/academy/:slug" element={<BlogPostPage />} />
                         <Route path="/blog" element={<BlogPage />} />
@@ -265,10 +152,10 @@ const App = () => {
                       </Routes>
                     </Suspense>
                   </TooltipProvider>
-                </AdminProvider>
-              </ProductsProvider>
-            </OTPAuthProvider>
-          </AuthProvider>
+                </ProductsProvider>
+              </AdminProvider>
+            </AuthProvider>
+          </SessionProvider>
         </BrowserRouter>
       </QueryClientProvider>
     </HelmetProvider>

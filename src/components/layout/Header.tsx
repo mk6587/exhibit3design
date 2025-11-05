@@ -1,61 +1,33 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { User, Menu, X, LogOut, Sparkles, Coins, Shield, LogIn } from "lucide-react";
+import { User, Menu, X, LogOut, Sparkles, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/contexts/AuthContext";
-import { useProducts } from "@/contexts/ProductsContext";
-import { useAdmin } from "@/contexts/AdminContext";
-import { toast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
+import { useSession } from "@/contexts/SessionContext";
 import { AIStudioCTA, AIStudioCTAMobile } from "./AIStudioCTA";
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const {
-    user,
-    profile,
-    signOut
-  } = useAuth();
-  const { isAdmin } = useAdmin();
-  // Removed cartItems - using subscription model now
-  const navigate = useNavigate();
+  const { user } = useSession();
 
-  // Get token balances from profile
-  const aiTokens = profile?.ai_tokens_balance || 0;
-  const videoResults = profile?.video_results_balance || 0;
-  const totalTokens = aiTokens + videoResults;
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const handleSignOut = async () => {
-    console.log('Logout button clicked');
-    setIsMenuOpen(false);
-    
-    try {
-      console.log('Calling signOut...');
-      await signOut();
-      console.log('SignOut successful');
-      
-      toast({
-        title: "Signed out successfully",
-        description: "You have been logged out of your account.",
-      });
-      
-      // Navigate to home and reload
-      navigate("/", { replace: true });
-      window.location.reload();
-    } catch (error) {
-      console.error('Sign out error:', error);
-      
-      // Still show success message and reload since local state is cleared
-      toast({
-        title: "Signed out",
-        description: "You have been logged out.",
-      });
-      
-      navigate("/", { replace: true });
-      window.location.reload();
-    }
+  
+  const handleLogin = () => {
+    const returnTo = window.location.href;
+    window.location.href = `https://auth.exhibit3design.com/signin?return_to=${encodeURIComponent(returnTo)}`;
   };
-  return <header className="bg-background border-b border-border fixed top-0 left-0 right-0 z-50">
+
+  const handleLogout = () => {
+    // POST to hosted auth logout endpoint
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://auth.exhibit3design.com/logout?return_to=https://exhibit3design.com';
+    document.body.appendChild(form);
+    form.submit();
+  };
+
+  return (
+    <header className="bg-background border-b border-border fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between min-h-16">
         <Link to="/" className="font-bold text-lg sm:text-xl text-primary shrink-0 flex items-center h-full">
           Exhibit3Design
@@ -73,54 +45,45 @@ const Header = () => {
         
         {/* Actions */}
         <div className="flex items-center space-x-1 sm:space-x-2">
-          {/* AI Studio Button with Token Balance or CTA */}
+          {/* AI Studio Button */}
           {user ? (
             <Button 
               variant="ghost" 
               size="sm" 
               asChild
-              className="hidden md:flex items-center gap-1.5 hover:bg-muted px-2 relative"
+              className="hidden md:flex items-center gap-1.5 hover:bg-muted px-2"
             >
               <a href="https://ai.exhibit3design.com" target="_blank" rel="noopener noreferrer">
-                <Sparkles className="h-4 w-4 text-purple-600 transition-none" />
-                <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-none">
+                <Sparkles className="h-4 w-4 text-purple-600" />
+                <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
                   AI Studio
                 </span>
-                {profile && totalTokens > 0 && (
-                  <Badge 
-                    variant="secondary" 
-                    className="ml-1 h-5 w-5 flex items-center justify-center p-0 text-[11px] font-bold bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10 rounded-full"
-                  >
-                    {totalTokens}
-                  </Badge>
-                )}
               </a>
             </Button>
           ) : (
             <AIStudioCTA />
           )}
 
-          {/* User Menu */}
+          {/* User Menu (Desktop) */}
           {user ? (
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon" asChild>
+            <div className="hidden md:flex items-center space-x-2">
+              <Button variant="ghost" size="sm" asChild>
                 <Link to="/profile">
-                  <User className="h-5 w-5" />
+                  <User className="h-4 w-4 mr-2" />
+                  Profile
                 </Link>
               </Button>
-              <Button variant="ghost" size="icon" onClick={handleSignOut} className="hidden md:flex">
-                <LogOut className="h-5 w-5" />
+              <Button variant="ghost" size="sm" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
               </Button>
             </div>
           ) : (
-            <Button variant="default" size="sm" asChild className="hidden md:flex">
-              <Link to="/auth">
-                Login / Register
-              </Link>
+            <Button variant="default" size="sm" onClick={handleLogin} className="hidden md:inline-flex">
+              <LogIn className="h-4 w-4 mr-2" />
+              Login / Register
             </Button>
           )}
-
-          {/* Cart removed - subscription model */}
 
           {/* AI Studio Mobile Button */}
           {user ? (
@@ -131,18 +94,10 @@ const Header = () => {
               className="md:hidden relative hover:bg-muted flex items-center gap-1 px-2"
             >
               <a href="https://ai.exhibit3design.com" target="_blank" rel="noopener noreferrer">
-                <Sparkles className="h-4 w-4 text-purple-600 transition-none" />
-                <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent transition-none">
+                <Sparkles className="h-4 w-4 text-purple-600" />
+                <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
                   AI Studio
                 </span>
-                {profile && totalTokens > 0 && (
-                  <Badge 
-                    variant="secondary" 
-                    className="ml-1 h-5 w-5 flex items-center justify-center p-0 text-[11px] font-bold bg-purple-600 text-white border-0 opacity-100 pointer-events-none z-10 rounded-full"
-                  >
-                    {totalTokens}
-                  </Badge>
-                )}
               </a>
             </Button>
           ) : (
@@ -159,21 +114,6 @@ const Header = () => {
       {/* Mobile Menu */}
       <div className={cn("md:hidden bg-background absolute w-full shadow-sm border-t border-flat-border z-50 left-0 right-0", isMenuOpen ? "block" : "hidden")}>
         <nav className="container mx-auto px-4 sm:px-6 py-2 flex flex-col">
-          {/* Token Counter - Mobile */}
-          {user && profile && totalTokens > 0 && (
-            <div className="py-3 px-4 bg-primary/10 rounded-lg border border-primary/20 mb-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Coins className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-medium text-muted-foreground">Your Balance:</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm font-semibold">
-                  <span className="text-primary">{totalTokens} tokens</span>
-                </div>
-              </div>
-            </div>
-          )}
-
           <Link to="/ai-samples" className="mobile-nav-item hover:bg-flat-hover transition-colors" onClick={() => setIsMenuOpen(false)}>
             AI Examples
           </Link>
@@ -209,21 +149,23 @@ const Header = () => {
                 <User className="h-5 w-5 mr-3" />
                 My Profile
               </Link>
-              <button onClick={handleSignOut} className="mobile-nav-item hover:bg-flat-hover transition-colors text-left flex items-center w-full">
+              <button onClick={handleLogout} className="mobile-nav-item hover:bg-flat-hover transition-colors text-left flex items-center w-full">
                 <LogOut className="h-5 w-5 mr-3" />
                 Sign Out
               </button>
             </> : <>
-              <Link to="/auth" className="mobile-nav-item hover:bg-flat-hover transition-colors flex items-center" onClick={() => setIsMenuOpen(false)}>
+              <button onClick={handleLogin} className="mobile-nav-item hover:bg-flat-hover transition-colors flex items-center text-left w-full">
                 <LogIn className="h-5 w-5 mr-3" />
                 Login / Register
-              </Link>
+              </button>
               <Link to="/pricing" className="mobile-nav-item hover:bg-flat-hover transition-colors font-semibold text-primary" onClick={() => setIsMenuOpen(false)}>
                 Get Started Free
               </Link>
             </>}
         </nav>
       </div>
-    </header>;
+    </header>
+  );
 };
+
 export default Header;
