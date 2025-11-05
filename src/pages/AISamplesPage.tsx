@@ -616,21 +616,19 @@ export default function AISamplesPage() {
 
         {/* Value Proposition - Flat Design */}
         <section className="py-12 px-4 bg-gradient-to-r from-colorful-pink/5 via-colorful-blue/5 to-colorful-teal/5">
-          <div className="container mx-auto max-w-4xl">
-            <Card>
-              <CardContent className="p-8 md:p-12 text-center">
-                <Sparkles className="h-12 w-12 mx-auto mb-4 text-colorful-blue" />
-                <h2 className="text-3xl md:text-4xl font-bold mb-3">Ready to Transform Your Designs?</h2>
-                <p className="text-base text-muted-foreground mb-6 max-w-2xl mx-auto">
-                  Start with 2 free AI tokens. Experience the power of AI-driven exhibition design today.
-                </p>
-                <Button asChild size="lg" className="bg-colorful-blue hover:bg-colorful-blue/90">
-                  <Link to="/pricing">
-                    Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+          <div className="w-full">
+            <div className="p-8 md:p-12 text-center">
+              <Sparkles className="h-12 w-12 mx-auto mb-4 text-colorful-blue" />
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Ready to Transform Your Designs?</h2>
+              <p className="text-base text-muted-foreground mb-6 max-w-2xl mx-auto">
+                Start with 2 free AI tokens. Experience the power of AI-driven exhibition design today.
+              </p>
+              <Button asChild size="lg" className="bg-colorful-blue hover:bg-colorful-blue/90 border-0">
+                <Link to="/pricing">
+                  Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </section>
       </div>
