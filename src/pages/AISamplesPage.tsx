@@ -617,7 +617,7 @@ export default function AISamplesPage() {
         {/* Value Proposition - Flat Design */}
         <section className="py-12 px-4 bg-gradient-to-r from-colorful-pink/5 via-colorful-blue/5 to-colorful-teal/5">
           <div className="container mx-auto max-w-4xl">
-            <Card className="border-2 border-colorful-blue hover:border-colorful-pink transition-colors">
+            <Card>
               <CardContent className="p-8 md:p-12 text-center">
                 <Sparkles className="h-12 w-12 mx-auto mb-4 text-colorful-blue" />
                 <h2 className="text-3xl md:text-4xl font-bold mb-3">Ready to Transform Your Designs?</h2>
