@@ -1,28 +1,28 @@
-import { AnchorHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes } from 'react';
+import { navigateToAIStudioWithAuth } from '@/utils/crossDomainAuth';
 
-interface AIStudioLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
+interface AIStudioLinkProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   children: React.ReactNode;
   serviceId?: string; // e.g., "rotate-360" or "add-visitors"
 }
 
 /**
- * A link component for navigating to AI Studio
- * Sessions are automatically shared via cookies across subdomains
+ * A button component for navigating to AI Studio with session transfer
+ * Uses URL-based session transfer to authenticate across domains
  */
 export const AIStudioLink = ({ children, className, serviceId, ...props }: AIStudioLinkProps) => {
-  const href = serviceId 
-    ? `https://ai.exhibit3design.com?service=${serviceId}`
-    : 'https://ai.exhibit3design.com';
+  const handleClick = async () => {
+    await navigateToAIStudioWithAuth(serviceId);
+  };
 
   return (
-    <a
+    <button
       {...props}
-      href={href}
-      target="_blank"
+      onClick={handleClick}
       className={className}
-      rel="noopener noreferrer"
+      type="button"
     >
       {children}
-    </a>
+    </button>
   );
 };
