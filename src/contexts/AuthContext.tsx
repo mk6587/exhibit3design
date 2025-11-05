@@ -35,7 +35,7 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
-  updateProfile: (updates: Partial<Profile>) => Promise<void>;
+  updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
   refreshProfile: () => Promise<void>;
   retryProfileCreation: () => Promise<void>;
 }
@@ -61,7 +61,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     window.location.href = 'https://auth.exhibit3design.com/logout?return_to=https://exhibit3design.com';
   };
   const resetPassword = async () => ({ error: new Error('Auth moved to hosted service') });
-  const updateProfile = async (updates: Partial<Profile>) => {};
+  const updateProfile = async (updates: Partial<Profile>) => {
+    // Profile updates should be handled via hosted auth API
+    return { error: null };
+  };
   const refreshProfile = async () => {};
   const retryProfileCreation = async () => {};
 
