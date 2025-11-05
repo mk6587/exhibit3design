@@ -13,8 +13,10 @@ const Header = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   
   const handleLogin = () => {
-    const returnTo = window.location.href;
-    window.location.href = `https://auth.exhibit3design.com/signin?return_to=${encodeURIComponent(returnTo)}`;
+    const { origin, pathname, search } = window.location;
+    const clean = origin + pathname + search; // excludes window.location.hash
+    window.location.href =
+      `https://auth.exhibit3design.com/signin?return_to=${encodeURIComponent(clean)}`;
   };
 
   const handleLogout = () => {
