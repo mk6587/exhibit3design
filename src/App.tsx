@@ -71,6 +71,7 @@ const DynamicSitemapPage = lazy(() => lazyRetry(() => import("./pages/DynamicSit
 const AdminBlogPostEditPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogPostEditPage")));
 const AdminGenerateBlogImagesPage = lazy(() => lazyRetry(() => import("./pages/AdminGenerateBlogImagesPage")));
 const AdminBlogCleanupPage = lazy(() => lazyRetry(() => import("./pages/AdminBlogCleanupPage")));
+const AuthDebugPage = lazy(() => lazyRetry(() => import("./pages/AuthDebugPage")));
 
 // Loading fallback component - Shows while lazy routes are loading
 const PageLoader = () => {
@@ -146,6 +147,7 @@ const App = () => {
                         <Route path="/ai-sample" element={<AISamplesPage />} />
                         <Route path="/careers" element={<CareersPage />} />
                         <Route path="/careers/3d-designer" element={<CareerPage3DDesigner />} />
+                        <Route path="/auth/debug" element={<AuthDebugPage />} />
                         <Route path="/403" element={<ForbiddenPage />} />
                         
                         <Route path="*" element={<NotFound />} />

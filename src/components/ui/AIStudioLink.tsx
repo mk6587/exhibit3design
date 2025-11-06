@@ -1,12 +1,12 @@
-import { ButtonHTMLAttributes } from 'react';
+import { HTMLAttributes } from 'react';
 
-interface AIStudioLinkProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
+interface AIStudioLinkProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onClick'> {
   children: React.ReactNode;
   serviceId?: string; // e.g., "rotate-360" or "add-visitors"
 }
 
 /**
- * A button component for navigating to AI Studio with session transfer
+ * A component for navigating to AI Studio with session transfer
  * Uses URL-based session transfer to authenticate across domains
  */
 export const AIStudioLink = ({ children, className, serviceId, ...props }: AIStudioLinkProps) => {
@@ -17,13 +17,21 @@ export const AIStudioLink = ({ children, className, serviceId, ...props }: AIStu
   };
 
   return (
-    <button
+    <div
       {...props}
       onClick={handleClick}
       className={className}
-      type="button"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      style={{ cursor: 'pointer' }}
     >
       {children}
-    </button>
+    </div>
   );
 };

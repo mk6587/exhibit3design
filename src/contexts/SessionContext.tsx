@@ -35,19 +35,34 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
 
   const fetchSession = async () => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+      
       const res = await fetch('https://auth.exhibit3design.com/api/session', {
         method: 'GET',
-        credentials: 'include', // Send the shared HttpOnly cookie
+        credentials: 'include',
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json',
+        },
       });
+      
+      clearTimeout(timeoutId);
       
       if (res.ok) {
         const data = await res.json();
+        console.log('✅ Session fetched:', data.user ? 'User logged in' : 'No user');
         setUser(data.user || null);
       } else {
+        console.warn('⚠️ Session fetch failed:', res.status, res.statusText);
         setUser(null);
       }
-    } catch (error) {
-      console.error('Failed to fetch session:', error);
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.error('❌ Session fetch timeout - auth service not responding');
+      } else {
+        console.error('❌ Session fetch error:', error.message);
+      }
       setUser(null);
     } finally {
       setIsLoading(false);
